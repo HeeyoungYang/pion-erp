@@ -1,0 +1,17 @@
+
+/* 최상단 로고 영역 */
+.v-toolbar__content{background-color: #17294b;}
+.menu_icon{color: #fff!important}
+.user_icon_button{position: absolute; right: 20px;}
+
+
+/* 좌측 메뉴 영역 */
+
+
+/* 본문영역 공통 */
+.v-application--wrap{background-color: #efefef;}
+.v-main__wrap{padding: 30px 15px;}
+.v-card{padding: 10px;}
+
+
+/* 마이페이지 */
