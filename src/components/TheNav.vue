@@ -10,17 +10,17 @@
         nav
       >
         <v-list-item
-          v-for="item in items"
-          :key="item.title"
+          v-for="menu in menu_lists"
+          :key="menu.title"
           link
-          :to="item.to"
+          :to="menu.to"
         >
           <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>{{ menu.icon }}</v-icon>
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title>{{ menu.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -41,15 +41,12 @@
           />
         </router-link>
       </v-toolbar-title>
-      <v-menu
-        bottom
-        rounded
-        offset-y
-      >
-        <template v-slot:activator="{ on }">
+      <v-menu offset-y>
+        <template v-slot:activator="{ on, attrs }">
           <v-btn
             icon
             x-large
+            v-bind="attrs"
             v-on="on"
             class="user_icon_button"
           >
@@ -61,31 +58,15 @@
             </v-avatar>
           </v-btn>
         </template>
-        <v-card>
-          <v-list-item-content class="justify-center">
-            <div class="mx-auto text-center">
-              <router-link to="/my-page">
-                <v-btn
-                  depressed
-                  rounded
-                  text
-                >
-                  My page
-                </v-btn>
-              </router-link>
-              <v-divider class="my-3"></v-divider>
-              <router-link to="/">
-                <v-btn
-                  depressed
-                  rounded
-                  text
-                >
-                  Logout
-                </v-btn>
-              </router-link>
-            </div>
-          </v-list-item-content>
-        </v-card>
+        <v-list>
+          <v-list-item
+            v-for="(item, index) in items"
+            :key="index"
+            :to=item.to
+          >
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
       </v-menu>
     </v-app-bar>
   </div>
@@ -104,9 +85,14 @@
           fullName: 'John Doe',
           email: 'john.doe@doe.com',
         },
-      items: [
-          { title: 'Member', icon: 'mdi-account-group', to:'/member-list' },
+      menu_lists: [
+          { title: 'Members', icon: 'mdi-account-group', to:'/member-list' },
         ],
+
+      items: [
+        { title: 'My page', to:'/my-page'},
+        { title: 'Logout', to:'/'},
+      ],
         right: null,
     }),
   }

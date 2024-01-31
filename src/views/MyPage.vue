@@ -20,7 +20,7 @@
                   >
                     <v-banner
                       rounded
-                      color="blue-grey lighten-4"
+                      color="blue lighten-5"
                     >
                       <v-row>
                         <v-col
@@ -78,7 +78,7 @@
                             </template>
                             <!-- 비밀번호 변경 모달 -->
                             <v-card>
-                              <v-card-title class=" blue-grey lighten-4">
+                              <v-card-title class=" blue lighten-5">
                                 <div class="font-weight-black text-6">비밀번호 변경</div>
                               </v-card-title>
                               <v-card-text>
