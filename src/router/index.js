@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import UserLogin from '@/views/UserLogin'
+import LoginPage from '@/views/LoginPage'
 import MainPage from '@/views/MainPage'
-import MemberList from '@/views/MemberList'
+import MembersPage from '@/views/MembersPage'
 import MyPage from '@/views/MyPage'
 
 Vue.use(VueRouter)
@@ -15,13 +15,13 @@ const routes = [
   },
   {
     path: '/',
-    name: 'UserLogin',
-    component: UserLogin
+    name: 'LoginPage',
+    component: LoginPage
   },
   {
     path: '/member-list',
-    name: 'MemberList',
-    component: MemberList
+    name: 'MembersPage',
+    component: MembersPage
   },
   {
     path: '/my-page',

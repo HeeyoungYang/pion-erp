@@ -1,7 +1,9 @@
 <template>
   <div>
-    <TheNav></TheNav>
+    <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
+    <NavComponent></NavComponent>
 
+    <!-- ▼ 본문 영역 -->
     <v-main>
       Home
     </v-main>
@@ -9,14 +11,19 @@
   </div>
 </template>
 <script>
-import TheNav from "@/components/TheNav";
+import NavComponent from "@/components/NavComponent";
 export default {
   components: {
-                TheNav,
+                NavComponent,
               },
+  data(){
+    return {
 
+    }
+  }
 }
+
 </script>
-<style lang="">
+<style>
 
 </style>

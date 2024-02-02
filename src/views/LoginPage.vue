@@ -1,5 +1,4 @@
 <template>
-  <div>
   <v-row justify="center">
     <v-col
       cols="12"
@@ -11,6 +10,7 @@
       >
         <v-row justify="center"
           style="padding: 45px 0px 40px;">
+          <!-- ▼ LOGO 영역 -->
           <v-col
             cols="12"
             md="9"
@@ -25,22 +25,22 @@
               style="left: 50%; margin-left: -75px!important;"
             />
           </v-col>
+          <!-- ▼ 아이디 및 비밀번호 input box -->
           <v-col
             cols="12"
             md="9"
           >
             <v-text-field
               label="아이디"
-              required
               filled
             ></v-text-field>
             <v-text-field
               label="비밀번호"
               type="password"
-              required
               filled
             ></v-text-field>
           </v-col>
+          <!-- ▼ 로그인 버튼. 클릭 시 /home으로 이동 -->
           <v-col
             cols="12"
             md="9"
@@ -62,17 +62,20 @@
             cols="12"
             md="9"
           >
+            <!-- ▼ 아이디 저장 체크박스 -->
             <v-checkbox
               v-model="checkbox"
               label="아이디 저장"
               class="float-left mt-0"
             ></v-checkbox>
+            <!-- ▼ 비밀번호 찾기 관련 Dialog(모달)  -->
             <v-dialog
               v-model="dialog"
               persistent
               max-width="300px"
             >
               <template v-slot:activator="{ on, attrs }">
+                <!-- ▼ 비밀번호 찾기 버튼 -->
                 <v-btn
                   v-bind="attrs"
                   v-on="on"
@@ -82,6 +85,7 @@
                   비밀번호 찾기
                 </v-btn>
               </template>
+              <!-- ▼ 비밀번호 찾기 (임시 비밀번호 발급) 모달 창 -->
               <v-card>
                 <v-card-title>
                   <span class="text-h5">임시 비밀번호</span>
@@ -94,7 +98,6 @@
                         class="pb-0">
                         <v-text-field
                           label="성함"
-                          required
                         ></v-text-field>
                       </v-col>
                       <v-col
@@ -102,7 +105,6 @@
                         class="pt-0">
                         <v-text-field
                           label="Email"
-                          required
                         ></v-text-field>
                       </v-col>
                     </v-row>
@@ -121,26 +123,18 @@
                   <v-btn
                     color="blue darken-1"
                     text
-                    @click="dialog = false"
+                    @click="reissuePasswordFunc()"
                   >
                     발급
                   </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
-            <!-- <v-btn
-              outlined
-              color="primary"
-              class="float-right body-2">
-              비밀번호 찾기
-            </v-btn> -->
           </v-col>
         </v-row>
       </v-card>
     </v-col>
   </v-row>
-
-  </div>
 </template>
 <script>
 export default {
@@ -149,7 +143,13 @@ export default {
         dialog: false,
         checkbox: true,
     }
-  }
+  },
+  methods: {
+    // ▼ 비밀번호 재발급 함수, 아직은 모달만 열림
+    reissuePasswordFunc(){
+      this.dialog = false;
+    },
+  },
 
 }
 </script>

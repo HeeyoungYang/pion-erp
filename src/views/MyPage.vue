@@ -1,6 +1,9 @@
 <template>
   <div>
-    <TheNav></TheNav>
+    <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
+    <NavComponent></NavComponent>
+
+    <!-- ▼ 본문 영역 -->
     <v-main>
       <v-row justify="center">
         <v-col
@@ -13,7 +16,7 @@
             <v-form>
               <v-container>
                 <v-row>
-                  <!-- 계정 이름 및 비밀번호 변경, 정보 수정 아이콘 노출 영역 -->
+                  <!-- ▼ 계정 이름 및 비밀번호 변경, 정보 수정 아이콘 노출 영역 -->
                   <v-col
                     cols="12"
                     md="12"
@@ -25,10 +28,12 @@
                       <v-row>
                         <v-col
                         xs="6">
+                          <!-- ▼ 계정 이름 -->
                           <span class="mr-2 font-weight-black text-h6">{{ userInfo.name }}</span>
                         </v-col>
                         <v-col
                         xs="6">
+                          <!-- ▼ 수정 아이콘(연필) 클릭 시 노출되는 저장 아이콘(체크) -->
                           <v-btn
                             color="primary"
                             fab
@@ -42,6 +47,7 @@
                               small
                             >mdi-check-circle</v-icon>
                           </v-btn>
+                          <!-- ▼ 수정 아이콘(연필). 클릭 시 부서~모바일 inputbox의 disabled 해제 -->
                           <v-btn
                             color="default"
                             fab
@@ -55,97 +61,47 @@
                               small
                             >mdi-pencil</v-icon>
                           </v-btn>
-                          <!-- 비밀번호 변경 관련 -->
-                          <v-dialog
-                            v-model="dialog"
-                            persistent
-                            max-width="300px"
-                          >
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-btn
-                                color="default"
-                                fab
-                                x-small
-                                class="mr-2 float-right"
-                                elevation="0"
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                <v-icon
-                                  small
-                                >mdi-lock-alert</v-icon>
-                              </v-btn>
-                            </template>
-                            <!-- 비밀번호 변경 모달 -->
-                            <v-card>
-                              <v-card-title class=" blue lighten-5">
-                                <div class="font-weight-black text-6">비밀번호 변경</div>
-                              </v-card-title>
-                              <v-card-text>
-                                <v-container>
-                                  <v-row>
-                                    <v-col cols="12">
-                                      <v-text-field
-                                        v-model="passwords.currentPassword"
-                                        label="현재 비밀번호"
-                                        :rules="checkCurrentPasswordRules"
-                                        type="password"
-                                        required
-                                      ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12">
-                                      <v-text-field
-                                        v-model="passwords.newPassword"
-                                        label="새 비밀번호"
-                                        :rules="passwordRules"
-                                        type="password"
-                                        required
-                                      ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12">
-                                      <v-text-field
-                                        v-model="passwords.newPasswordCheck"
-                                        label="새 비밀번호 확인"
-                                        :rules="checkPasswordRules"
-                                        type="password"
-                                        required
-                                      ></v-text-field>
-                                    </v-col>
-                                  </v-row>
-                                </v-container>
-                              </v-card-text>
-                              <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn
-                                  color="blue darken-1"
-                                  text
-                                  @click="dialog = false"
-                                >
-                                  저장
-                                </v-btn>
-                                <v-btn
-                                  color="blue darken-1"
-                                  text
-                                  @click="dialog = false"
-                                >
-                                  닫기
-                                </v-btn>
-                              </v-card-actions>
-                            </v-card>
-                          </v-dialog>
+                          <!-- ▼ 비밀번호 변경 관련 Dialog(모달) -->
+                          <FormDialogComponent :formDialogInfo = "findPasswordDialog">
+                            <v-row>
+                              <v-col cols="12">
+                                <v-text-field
+                                  v-model="passwords.currentPassword"
+                                  label="현재 비밀번호"
+                                  :rules="checkCurrentPasswordRules"
+                                  type="password"
+                                ></v-text-field>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-text-field
+                                  v-model="passwords.newPassword"
+                                  label="새 비밀번호"
+                                  :rules="passwordRules"
+                                  type="password"
+                                ></v-text-field>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-text-field
+                                  v-model="passwords.newPasswordCheck"
+                                  label="새 비밀번호 확인"
+                                  :rules="checkPasswordRules"
+                                  type="password"
+                                ></v-text-field>
+                              </v-col>
+                            </v-row>
+                          </FormDialogComponent>
                         </v-col>
                       </v-row>
                     </v-banner>
                   </v-col>
 
-                  <!-- 이름 외 계정 정보 input 영역 -->
+                  <!-- ▼ 부서~모바일까지의 계정 정보 input 영역 -->
                   <v-col
                     cols="12"
                     md="6"
                     v-for="userInput in userInput"
                     :key="userInput.label"
-                  >
-
+                  ><!-- ▼ script에 기입된 userInput의 데이터를 가져와 순서대로 노출. disabled가 기본이며 수정 버튼을 클릭해야 disabled가 해제 됨-->
                     <v-text-field
                       v-model="userInput.data"
                       :prepend-icon="userInput.icon"
@@ -168,22 +124,30 @@
 .theme--light.v-input--is-disabled input{color:black;}
 </style>
 <script>
-import TheNav from "@/components/TheNav";
+import NavComponent from "@/components/NavComponent";
+import FormDialogComponent from "@/components/FormDialogComponent";
 
 export default {
   components: {
-                TheNav,
+                NavComponent,
+                FormDialogComponent,
               },
   data(){
     return{
       disabledInput: true,
-      //정보 수정 버튼
+      // ▼ 정보 수정 버튼
       showEditButton: true,
-      //정보 수정 저장 버튼
+      // ▼ 정보 수정 후 저장 버튼
       showSaveButton: false,
       //modal
-      dialog:false,
-      //계정 기본 정보
+      findPasswordDialog: {
+        dialog: false,
+        dialogButton: {buttonName:'', buttonColor:'default', buttonXsmall:true, buttonClass:'mr-2 float-right', buttonFab:true, buttonIcon:'mdi-lock-alert', buttonElevation:'0'}, //필수
+        dialogTitle: '비밀번호 변경',  //필수
+        dialogWidth: '300px', //선택. 미 입력시 600px
+        modalTitleClass: 'blue lighten-5 text-h6 font-weight-black' // 선택. 미 입력 시 blue lighten-5 text-h5 font-weight-black
+      },
+      // ▼ 계정 기본 정보
       userInfo: {name: '윤준수', password:'test1234'},
       userInput: [
           {icon: 'mdi-crowd', label: '부서', data: '기획관리'},
@@ -193,33 +157,35 @@ export default {
           {icon: 'mdi-email-fast', label: '이메일', data: 'yjs@pionelectric.com'},
           {icon: 'mdi-cellphone-text', label: '모바일', data: '010-1234-5678'},
       ],
-      //비밀번호 변경
+      // ▼ 비밀번호 변경
       passwords:{
         currentPassword:'',
         newPassword: '',
         newPasswordCheck: '',
       },
-      //비밀번호 변경 유효성 검사
+      // ▼ 비밀번호 변경 유효성 검사
       passwordRules: [
         v => !!v || '비밀번호 입력',
         v => !!(v &&  /^(?=.*[a-zA-z])(?=.*[0-9]).{8,16}$/.test(v) ) || '영문 + 숫자, 8자 이상 16자 이하',
       ],
-      //새 비밀번호와 새 비밀번호 확인의 일치 여부
+      // ▼ 새 비밀번호와 새 비밀번호 확인의 일치 여부
       checkPasswordRules: [
         v => !!(v == this.passwords.newPassword) || '새 비밀번호와 일치하지 않습니다.',
       ],
-      //실제 현 비밀번호와 사용자가 입력한 현재 비밀번호 일치 여부
+      // ▼ 실제 현 비밀번호와 사용자가 입력한 현재 비밀번호 일치 여부
       checkCurrentPasswordRules: [
         v => !!(v == this.userInfo.password) || '비밀번호를 확인해주세요.',
       ],
     }
   },
   methods: {
+    // ▼ 수정버튼 onclick 함수
     editPrivacyInfoFunc(){
       this.disabledInput = false;
       this.showEditButton = false;
       this.showSaveButton = true;
     },
+    // ▼ 저장버튼 onclick 함수
     savePrivacyInfoFunc(){
       this.disabledInput = true;
       this.showEditButton = true;
@@ -228,6 +194,3 @@ export default {
   },
 }
 </script>
-<style lang="">
-
-</styl>

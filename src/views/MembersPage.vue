@@ -1,6 +1,9 @@
 <template>
   <div>
-    <TheNav></TheNav>
+    <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
+    <NavComponent></NavComponent>
+
+    <!-- ▼ 본문 영역 -->
     <v-main>
       <v-row justify="center">
         <v-col
@@ -14,11 +17,13 @@
             <v-row>
               <v-col cols="12">
                 <p class="float-left text-h5 font-weight-black mb-0">Members</p>
+                <!-- ▼ 계정 추가 버튼 혹은 수정 아이콘(연필모양) 클릭 시 노출되는 Dialog(모달) -->
                 <v-dialog
                   v-model="dialog"
                   max-width="500px"
                 >
                   <template v-slot:activator="{ on, attrs }">
+                    <!-- ▼ 계정 추가 버튼 -->
                     <v-btn
                       color="primary"
                       outlined
@@ -29,8 +34,10 @@
                       계정 추가
                     </v-btn>
                   </template>
+                  <!-- ▼ 버튼 혹은 아이콘 클릭 시 노출되는 모달 창 -->
                   <v-card>
                     <v-card-title>
+                      <!-- ▼ editedIndex의 값에 따라 계정 등록인지 계정 수정인지 파악하여 텍스트 노출 : formTitle -->
                       <span class="text-h5">{{ formTitle }}</span>
                     </v-card-title>
 
@@ -42,6 +49,7 @@
                             sm="6"
                             md="6"
                           >
+                            <!-- ▼ editedIndex의 값에 따라 계정 등록인지 계정 수정인지 파악하여 ID inputbox는 disabled 처리 : formDisabled -->
                             <v-text-field
                               v-model="editedItem.user_id"
                               label="ID"
@@ -145,10 +153,11 @@
             </v-row>
           </v-card-title>
 
+          <!-- ▼ 구분선 -->
           <v-divider></v-divider>
 
+          <!-- ▼ 키워드 검색 영역 (Vuetify Datatable 기능 사용)-->
           <v-card-text class="pb-0">
-
             <v-row>
               <v-col
               cols="12"
@@ -163,18 +172,36 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-
           </v-card-text>
 
+          <!-- ▼ 시스템 전체 계정(임직원) 테이블 (Vuetify Datatable 사용)-->
           <v-card-text class=" pt-3">
             <v-data-table
               :headers="headers"
               :items="members"
-
               :search="search"
               sort-by="calories"
               class="elevation-1"
             >
+              <!-- ▼ 편집 Field에 들어가는 아이콘 설정 -->
+              <template v-slot:[`item.actions`]="{ item }">
+                <!-- ▼ 수정 아이콘(연필) -->
+                <v-icon
+                  small
+                  class="mr-2"
+                  @click="editItem(item)"
+                >
+                  mdi-pencil
+                </v-icon>
+                <!-- ▼ 삭제 아이콘(휴지통) -->
+                <v-icon
+                  small
+                  @click="deleteItem(item)"
+                >
+                  mdi-delete
+                </v-icon>
+              </template>
+              <!-- ▼ 삭제 아이콘(휴지통) 클릭 시 노출되는 Dialog(모달)-->
               <template v-slot:top>
                 <v-dialog v-model="dialogDelete" max-width="300px">
                   <v-card>
@@ -192,29 +219,6 @@
                   </v-card>
                 </v-dialog>
               </template>
-              <template v-slot:[`item.actions`]="{ item }">
-                <v-icon
-                  small
-                  class="mr-2"
-                  @click="editItem(item)"
-                >
-                  mdi-pencil
-                </v-icon>
-                <v-icon
-                  small
-                  @click="deleteItem(item)"
-                >
-                  mdi-delete
-                </v-icon>
-              </template>
-              <template v-slot:no-data>
-                <v-btn
-                  color="primary"
-                  @click="initialize"
-                >
-                  Reset
-                </v-btn>
-              </template>
             </v-data-table>
           </v-card-text>
           </v-card>
@@ -224,11 +228,11 @@
   </div>
 </template>
 <script>
-import TheNav from "@/components/TheNav";
+import NavComponent from "@/components/NavComponent";
 
 export default {
   components: {
-                TheNav,
+                NavComponent,
               },
   data(){
     return{
@@ -246,7 +250,7 @@ export default {
         {text: '모바일', align: 'center', value: 'mobile'},
         { text: '편집', value: 'actions', sortable: false },
       ],
-      departments:['전체', '기획관리팀',' 영업팀'],
+      departments:['전체', '기획관리부',' 영업팀'],
       members: [],
       editedIndex: -1,
       editedItem: {
