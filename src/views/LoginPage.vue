@@ -1,8 +1,10 @@
 <template>
   <v-row justify="center">
     <v-col
-      cols="12"
-      md="4"
+      cols="10"
+      sm="6"
+      md="6"
+      lg="4"
     >
       <v-card
       elevation="1"
