@@ -27,7 +27,7 @@
       </template>
       <v-card>
         <v-card-title
-        :class="formDialogInfo.modalTitleClass ? formDialogInfo.modalTitleClass : 'blue lighten-5 text-h5 font-weight-black'">
+        :class="formDialogInfo.modalTitleClass ? formDialogInfo.modalTitleClass : 'blue lighten-5 text-h6 font-weight-black'">
           <span>{{ formDialogInfo.dialogTitle }}</span>
         </v-card-title>
         <v-card-text>

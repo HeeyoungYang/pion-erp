@@ -1,6 +1,6 @@
 
 /* 최상단 로고 영역 */
-.v-toolbar__content{background-color: #17294b;}
+.top_bar{background-color: #17294b!important;}
 .menu_icon{color: #fff!important}
 .user_icon_button{position: absolute; right: 20px;}
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent></NavComponent>
+    <NavComponent :userMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -16,7 +16,7 @@
           <v-card-title style="width:100%;">
             <v-row>
               <v-col cols="12">
-                <p class="float-left text-h5 font-weight-black mb-0">Members</p>
+                <p class="float-left text-h6 font-weight-black mb-0">Members</p>
                 <!-- ▼ 계정 추가 버튼 혹은 수정 아이콘(연필모양) 클릭 시 노출되는 Dialog(모달) -->
                 <v-dialog
                   v-model="dialog"
@@ -38,7 +38,7 @@
                   <v-card>
                     <v-card-title>
                       <!-- ▼ editedIndex의 값에 따라 계정 등록인지 계정 수정인지 파악하여 텍스트 노출 : formTitle -->
-                      <span class="text-h5">{{ formTitle }}</span>
+                      <span class="text-h6">{{ formTitle }}</span>
                     </v-card-title>
 
                     <v-card-text>

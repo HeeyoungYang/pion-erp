@@ -88,7 +88,7 @@
               <!-- ▼ 비밀번호 찾기 (임시 비밀번호 발급) 모달 창 -->
               <v-card>
                 <v-card-title>
-                  <span class="text-h5">임시 비밀번호</span>
+                  <span class="text-h6">임시 비밀번호</span>
                 </v-card-title>
                 <v-card-text>
                   <v-container>

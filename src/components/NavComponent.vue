@@ -11,37 +11,85 @@
         nav
       >
       <!-- 1차 메뉴형 -->
-      <v-list-item>
+      <!-- ▼ 캘린더 -->
+      <!-- <v-list-item
+        link
+        to="/calendar"
+      >
         <v-list-item-icon>
           <v-icon>mdi-calendar</v-icon>
         </v-list-item-icon>
 
         <v-list-item-title>일정관리</v-list-item-title>
-      </v-list-item>
+      </v-list-item> -->
 
       <!-- 2차 메뉴형 -->
-      <v-list-group
-        :value="true"
-        prepend-icon="mdi-account-circle"
-      >
-        <template v-slot:activator>
-          <v-list-item-title>계정관리</v-list-item-title>
-        </template>
-
-        <v-list-item
-            v-for="([title, icon, to], i) in admins"
-            :key="i"
-            link
-            :to="to"
-            class="pl-6 grey lighten-3"
+        <v-list-group
+          :value="stockMenu"
+          prepend-icon="mdi-archive-search"
         >
-          <v-list-item-title v-text="title"></v-list-item-title>
+          <template v-slot:activator>
+            <v-list-item-title>자재 관리</v-list-item-title>
+          </template>
 
-          <v-list-item-icon>
-            <v-icon v-text="icon"></v-icon>
-          </v-list-item-icon>
-        </v-list-item>
-      </v-list-group>
+          <v-list-item
+              v-for="([title, icon, to], i) in stockPages"
+              :key="i"
+              link
+              :to="to"
+              class="pl-6 grey lighten-3"
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
+        <v-list-group
+          :value="estimateMenu"
+          prepend-icon="mdi-invoice-list"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>견적 관리</v-list-item-title>
+          </template>
+
+          <v-list-item
+              v-for="([title, icon, to], i) in estimatePages"
+              :key="i"
+              link
+              :to="to"
+              class="pl-6 grey lighten-3"
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
+        <v-list-group
+          :value="userMenu"
+          prepend-icon="mdi-account-circle"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>계정 관리</v-list-item-title>
+          </template>
+
+          <v-list-item
+              v-for="([title, icon, to], i) in adminPages"
+              :key="i"
+              link
+              :to="to"
+              class="pl-6 grey lighten-3"
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
 
@@ -76,11 +124,11 @@
               color="white"
               size="30"
             >
-              <v-icon class="indigo--text text-h5"> mdi-account </v-icon>
+              <v-icon class="indigo--text text-h6"> mdi-account </v-icon>
             </v-avatar>
           </v-btn>
         </template>
-        <!-- ▼ User 아이콘 클릭 시 노출되는 리스트(dropdown) -->
+        <!-- ▼ 계정관리 클릭 시 노출되는 리스트(dropdown) -->
         <v-list>
           <v-list-item
             v-for="(item, index) in userMenuList"
@@ -100,6 +148,7 @@
 </style>
 <script>
   export default {
+    props: ['userMenu', 'stockMenu', 'estimateMenu'],
     data: () => ({
       drawer: null,
       menuList: [
@@ -112,8 +161,17 @@
       ],
         right: null,
 
-      admins: [
-        ['계정목록', '', '/member-list'],
+      stockPages: [
+        ['자재 조회', '', '/stock-search'],
+      ],
+
+      estimatePages: [
+        ['견적 작성', '', '/home'],
+        ['견적 조회', '', '/estimate-search'],
+      ],
+
+      adminPages: [
+        ['계정 목록', '', '/member-list'],
       ],
     }),
   }
