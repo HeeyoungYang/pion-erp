@@ -82,6 +82,63 @@
 
             <v-card-text class=" pt-3">
               <v-row>
+                <v-dialog
+                  v-model="mailDialog"
+                  persistent
+                  max-width="800px"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      color="primary"
+                      fab
+                      x-small
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon >mdi-email</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-text>
+                      <v-container>
+                        <v-row>
+                          <v-col cols="12">
+                            <v-text-field
+                              label="받는사람"
+                              required
+                            ></v-text-field>
+                          </v-col>
+                          <v-col cols="12">
+                            <v-text-field
+                              label="참조"
+                              required
+                            ></v-text-field>
+                          </v-col>
+                          <v-col cols="12">
+                            <vue-editor v-model="content" :editor-toolbar="customToolbar"/>
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="mailDialog = false"
+                      >
+                        Close
+                      </v-btn>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="mailDialog = false"
+                      >
+                        Save
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
                 <v-col
                   cols="12"
                 >
@@ -90,6 +147,7 @@
                     :headers="headers"
                     :items="desserts"
                     item-key="name"
+                    show-select
                     class="elevation-1"
                   ></v-data-table>
                 </v-col>
@@ -110,6 +168,21 @@ export default {
               },
   data(){
     return{
+      mailDialog: false,
+      content: "<h1>Html For Editor</h1>",
+      customToolbar: [
+        [{ header: [false, 1, 2, 3, 4, 5, 6] }],
+        ["bold", "italic", "underline", "strike"], // toggled buttons
+        [
+          { align: "" },
+          { align: "center" },
+          { align: "right" },
+          { align: "justify" }
+        ],
+        [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+        [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+        ["link", "image"],
+      ],
       desserts: [
         {
           name: 'Frozen Yogurt',

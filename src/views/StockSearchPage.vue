@@ -117,8 +117,9 @@
                   <v-data-table
                     dense
                     :headers="headers"
-                    :items="desserts"
-                    item-key="name"
+                    :items="product_data"
+                    item-key="product_code"
+                    show-select
                     class="elevation-1"
                   ></v-data-table>
                 </v-col>
@@ -165,8 +166,7 @@ export default {
         { text: '총액', align: 'center', value: 'stock_price', },
       ],
 
-
-      desserts: [
+      product_data: [
         {
           product_type:'일반',
           product_code: '공장2F_E-09-02_PN-AF_SVG-001',
