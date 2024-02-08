@@ -7,8 +7,10 @@ import StockSearchPage from '@/views/StockSearchPage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
 import MyPage from '@/views/MyPage'
 import CalendarPage from '@/views/CalendarPage'
+import Vue2Editor from "vue2-editor"
 
 Vue.use(VueRouter)
+Vue.use(Vue2Editor);
 
 const routes = [
   {

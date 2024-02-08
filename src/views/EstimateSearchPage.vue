@@ -85,11 +85,50 @@
                 <v-col
                   cols="12"
                 >
+                  <v-dialog
+                    v-model="mailDialog"
+                    persistent
+                    max-width="1000px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        color="primary"
+                        elevation="0"
+                        fab
+                        x-small
+                        v-bind="attrs"
+                        v-on="on"
+                        class="mb-3"
+                      >
+                        <v-icon >mdi-email</v-icon>
+                      </v-btn>
+                    </template>
+                    <MailFormComponent>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          color="blue darken-1"
+                          text
+                          @click="mailDialog = false"
+                        >
+                          취소
+                        </v-btn>
+                        <v-btn
+                          color="blue darken-1"
+                          text
+                          @click="mailDialog = false"
+                        >
+                          발송
+                        </v-btn>
+                      </v-card-actions>
+                    </MailFormComponent>
+                  </v-dialog>
                   <v-data-table
                     dense
                     :headers="headers"
                     :items="desserts"
                     item-key="name"
+                    show-select
                     class="elevation-1"
                   ></v-data-table>
                 </v-col>
@@ -103,13 +142,30 @@
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
+import MailFormComponent from "@/components/MailFormComponent";
 
 export default {
   components: {
                 NavComponent,
+                MailFormComponent,
               },
   data(){
     return{
+      files: [],
+      mailDialog: false,
+      customToolbar: [
+        [{ header: [false, 1, 2, 3, 4, 5, 6] }],
+        ["bold", "italic", "underline", "strike"], // toggled buttons
+        [
+          { align: "" },
+          { align: "center" },
+          { align: "right" },
+          { align: "justify" }
+        ],
+        [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+        [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+        ["link", "image"],
+      ],
       desserts: [
         {
           name: 'Frozen Yogurt',

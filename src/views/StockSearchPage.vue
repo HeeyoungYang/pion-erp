@@ -18,7 +18,8 @@
               <v-row>
                 <v-col
                   cols="12"
-                  sm="2"
+                  sm="4"
+                  lg="2"
                 >
                   <v-autocomplete
                     v-model="product_type"
@@ -32,7 +33,8 @@
                 </v-col>
                 <v-col
                   cols="12"
-                  sm="2"
+                  sm="4"
+                  lg="2"
                 >
                   <v-text-field
                     v-model="product_code"
@@ -45,7 +47,8 @@
                 </v-col>
                 <v-col
                   cols="12"
-                  sm="2"
+                  sm="4"
+                  lg="2"
                 >
                   <v-text-field
                     v-model="product_name"
@@ -58,7 +61,8 @@
                 </v-col>
                 <v-col
                   cols="12"
-                  sm="2"
+                  sm="4"
+                  lg="2"
                 >
                   <v-text-field
                     v-model="product_model"
@@ -70,8 +74,9 @@
                   ></v-text-field>
                 </v-col>
                 <v-col
-                  cols="12"
-                  sm="3"
+                  cols="6"
+                  sm="4"
+                  lg="2"
                 >
                   <v-checkbox
                     v-model="stock_more_0"
@@ -79,13 +84,15 @@
                   ></v-checkbox>
                 </v-col>
                 <v-col
-                  cols="12"
-                  sm="1"
+                  cols="6"
+                  sm="4"
+                  lg="2"
                   align-self="center"
                 >
                   <v-btn
                     color="primary"
                     elevation="2"
+                    class="float-right"
                   >
                     <v-icon>mdi-magnify</v-icon>검색
                   </v-btn>
@@ -110,8 +117,9 @@
                   <v-data-table
                     dense
                     :headers="headers"
-                    :items="desserts"
-                    item-key="name"
+                    :items="product_data"
+                    item-key="product_code"
+                    show-select
                     class="elevation-1"
                   ></v-data-table>
                 </v-col>
@@ -154,10 +162,11 @@ export default {
         { text: '상태', align: 'center', value: 'product_condition', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
         { text: '입고일자', align: 'center', value: 'inbound_date', },
+        { text: '단가', align: 'center', value: 'unit_price', },
+        { text: '총액', align: 'center', value: 'stock_price', },
       ],
 
-
-      desserts: [
+      product_data: [
         {
           product_type:'일반',
           product_code: '공장2F_E-09-02_PN-AF_SVG-001',
@@ -169,6 +178,8 @@ export default {
           product_condition: 'G',
           pe_number: 'PE240207-001',
           inbound_date: '2024-02-07',
+          unit_price: '100',
+          stock_price: '300',
         },
         {
           product_type:'GFM',
@@ -181,6 +192,8 @@ export default {
           product_condition: 'G',
           pe_number: 'PE240207-002',
           inbound_date: '2024-02-07',
+          unit_price: '200',
+          stock_price: '400',
         },
         {
           product_type:'전력변환기',
@@ -193,6 +206,8 @@ export default {
           product_condition: 'G',
           pe_number: 'PE240207-003',
           inbound_date: '2024-02-07',
+          unit_price: '1,000',
+          stock_price: '5,000',
         },
         {
           product_type:'일반',
@@ -205,6 +220,8 @@ export default {
           product_condition: 'G',
           pe_number: 'PE240207-004',
           inbound_date: '2024-02-07',
+          unit_price: '100,000',
+          stock_price: '100,000',
         },
       ],
     }
