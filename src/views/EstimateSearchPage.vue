@@ -82,66 +82,74 @@
 
             <v-card-text class=" pt-3">
               <v-row>
-                <v-dialog
-                  v-model="mailDialog"
-                  persistent
-                  max-width="800px"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      color="primary"
-                      fab
-                      x-small
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      <v-icon >mdi-email</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-card>
-                    <v-card-text>
-                      <v-container>
-                        <v-row>
-                          <v-col cols="12">
-                            <v-text-field
-                              label="받는사람"
-                              required
-                            ></v-text-field>
-                          </v-col>
-                          <v-col cols="12">
-                            <v-text-field
-                              label="참조"
-                              required
-                            ></v-text-field>
-                          </v-col>
-                          <v-col cols="12">
-                            <vue-editor v-model="content" :editor-toolbar="customToolbar"/>
-                          </v-col>
-                        </v-row>
-                      </v-container>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="mailDialog = false"
-                      >
-                        Close
-                      </v-btn>
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="mailDialog = false"
-                      >
-                        Save
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
                 <v-col
                   cols="12"
                 >
+                  <v-dialog
+                    v-model="mailDialog"
+                    persistent
+                    max-width="800px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        color="primary"
+                        elevation="0"
+                        fab
+                        x-small
+                        v-bind="attrs"
+                        v-on="on"
+                        class="mb-3"
+                      >
+                        <v-icon >mdi-email</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-card>
+                      <v-card-text>
+                        <v-container>
+                          <v-row>
+                            <v-col cols="12" sm="6">
+                              <v-text-field
+                                label="받는 사람"
+                                required
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6">
+                              <v-text-field
+                                label="참조"
+                                required
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                              <v-text-field
+                                label="제목"
+                                required
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                              <vue-editor v-model="content" :editor-toolbar="customToolbar"/>
+                            </v-col>
+                          </v-row>
+                        </v-container>
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          color="blue darken-1"
+                          text
+                          @click="mailDialog = false"
+                        >
+                          취소
+                        </v-btn>
+                        <v-btn
+                          color="blue darken-1"
+                          text
+                          @click="mailDialog = false"
+                        >
+                          발송
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
                   <v-data-table
                     dense
                     :headers="headers"
