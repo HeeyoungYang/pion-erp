@@ -88,7 +88,7 @@
                   <v-dialog
                     v-model="mailDialog"
                     persistent
-                    max-width="800px"
+                    max-width="1000px"
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn
@@ -103,34 +103,7 @@
                         <v-icon >mdi-email</v-icon>
                       </v-btn>
                     </template>
-                    <v-card>
-                      <v-card-text>
-                        <v-container>
-                          <v-row>
-                            <v-col cols="12" sm="6">
-                              <v-text-field
-                                label="받는 사람"
-                                required
-                              ></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6">
-                              <v-text-field
-                                label="참조"
-                                required
-                              ></v-text-field>
-                            </v-col>
-                            <v-col cols="12">
-                              <v-text-field
-                                label="제목"
-                                required
-                              ></v-text-field>
-                            </v-col>
-                            <v-col cols="12">
-                              <vue-editor v-model="content" :editor-toolbar="customToolbar"/>
-                            </v-col>
-                          </v-row>
-                        </v-container>
-                      </v-card-text>
+                    <MailFormComponent>
                       <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn
@@ -148,7 +121,7 @@
                           발송
                         </v-btn>
                       </v-card-actions>
-                    </v-card>
+                    </MailFormComponent>
                   </v-dialog>
                   <v-data-table
                     dense
@@ -169,15 +142,17 @@
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
+import MailFormComponent from "@/components/MailFormComponent";
 
 export default {
   components: {
                 NavComponent,
+                MailFormComponent,
               },
   data(){
     return{
+      files: [],
       mailDialog: false,
-      content: "<h1>Html For Editor</h1>",
       customToolbar: [
         [{ header: [false, 1, 2, 3, 4, 5, 6] }],
         ["bold", "italic", "underline", "strike"], // toggled buttons
