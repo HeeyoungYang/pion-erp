@@ -43,13 +43,7 @@ mux.Server = {
       timeout: this.defaultTimeout
     };
     try {
-      if (typeof pathOrObject === "string"){
-        defaultObj.path = pathOrObject.trim();
-      }else if (typeof pathOrObject === "object"){
-        Object.keys(pathOrObject).forEach(key => {
-          defaultObj[key] = pathOrObject[key];
-        });
-      }
+      this.setObjFromPathOrObject(defaultObj, pathOrObject);
       this.axiosInstance.defaults.timeout = defaultObj.timeout;
 
       const sendData = {};
@@ -76,25 +70,19 @@ mux.Server = {
   /**
    * REST Api 요청 함수
    * @param {string | Object} pathOrObject 가능한 Key : {str}path, {str}method, {milliseconds}timeout, {str}body, {object}something ...
+   * @param {string} [method] 'get'(기본값), 'post', 'put', 'patch', 'delete'
    * @returns {Promise}
    * @example
    * const result = await mux.Server.request({path:'/list', method:'post', number:1});
    */
-  async request(pathOrObject) {
+  async request(pathOrObject, method) {
     const defaultObj = {
       timeout: this.defaultTimeout
     };
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
-      let method;
       try {
-        if (typeof pathOrObject === "string"){
-          defaultObj.path = pathOrObject.trim();
-        }else if (typeof pathOrObject === "object"){
-          Object.keys(pathOrObject).forEach(key => {
-            defaultObj[key] = pathOrObject[key];
-          });
-        }
+        this.setObjFromPathOrObject(defaultObj, pathOrObject);
         this.axiosInstance.defaults.timeout = defaultObj.timeout;
 
         const sendData = {};
@@ -103,7 +91,7 @@ mux.Server = {
             sendData[key] = defaultObj[key];
           }
         });
-        method = defaultObj.method;
+
         let response;
         switch (method) {
           case 'post':
@@ -124,7 +112,8 @@ mux.Server = {
             response = await this.axiosInstance.get(defaultObj.path, sendData);
             break;
         }
-        resolve(response.data);
+        this.axiosInstance = axios.create();
+        resolve(response);
       } catch (error) {
         if (axios.isCancel(error)) {
           console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Request canceled:', error.message); // 요청이 취소된 경우
@@ -136,6 +125,7 @@ mux.Server = {
         } else {
           console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Request error:', error.message); // 기타 에러
         }
+        this.axiosInstance = axios.create();
         reject(error);
       }
     });
@@ -152,8 +142,7 @@ mux.Server = {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        pathOrObject.method = 'get';
-        const response = await this.request(pathOrObject);
+        const response = await this.request(pathOrObject, 'get');
         resolve(response.data);
       } catch (error) {
         reject(error);
@@ -172,8 +161,7 @@ mux.Server = {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        pathOrObject.method = 'post';
-        const response = await this.request(pathOrObject);
+        const response = await this.request(pathOrObject, 'post');
         resolve(response.data);
       } catch (error) {
         reject(error);
@@ -192,8 +180,7 @@ mux.Server = {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        pathOrObject.method = 'put';
-        const response = await this.request(pathOrObject);
+        const response = await this.request(pathOrObject, 'put');
         resolve(response.data);
       } catch (error) {
         reject(error);
@@ -212,8 +199,7 @@ mux.Server = {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        pathOrObject.method = 'patch';
-        const response = await this.request(pathOrObject);
+        const response = await this.request(pathOrObject, 'patch');
         resolve(response.data);
       } catch (error) {
         reject(error);
@@ -232,13 +218,24 @@ mux.Server = {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        pathOrObject.method = 'delete';
-        const response = await this.request(pathOrObject);
+        const response = await this.request(pathOrObject, 'delete');
         resolve(response.data);
       } catch (error) {
         reject(error);
       }
     });
+  },
+
+  setObjFromPathOrObject(defaultObj, pathOrObject) {
+    if (typeof pathOrObject === "string"){
+      defaultObj.path = pathOrObject;
+    }else if (typeof pathOrObject === "object"){
+      Object.keys(pathOrObject).forEach(key => {
+        if (key !== 'url'){
+          defaultObj[key] = pathOrObject[key];
+        }
+      });
+    }
   },
 
 }
@@ -699,6 +696,28 @@ mux.Style = {
  */
 
 mux.Table = {
+
+  /**
+   * 테이블 데이터 가져오기 함수
+   * @param {Array} headers - 테이블 헤더 정보 배열
+   * @param {Array} items - 테이블 내용 정보 배열
+   * @returns {Array} - 테이블 데이터 배열
+   */
+  getTableData(headers, items) {
+    const rows = [];
+
+    // 테이블 내용 가져오기
+    items.forEach((rowData) => {
+      const row = {};
+      headers.forEach((header) => {
+        row[header.text] = rowData[header.value];
+      });
+      rows.push(row);
+    });
+
+    return rows;
+  },
+
   /**
    * 테이블에 행 추가 및 추가되는 셀들의 데이터 입력
    * @param {Array} headers
@@ -1111,32 +1130,11 @@ mux.Excel = {
    * }
    */
   downloadTable(headers, items, fileName = 'data') {
-    const tableData = this.getTableData(headers, items);
+    const tableData = mux.Table.getTableData(headers, items);
     const ws = XLSX.utils.json_to_sheet(tableData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
     XLSX.writeFile(wb, `${fileName}.xlsx`);
-  },
-
-  /**
-   * 테이블 데이터 가져오기 함수
-   * @param {Array} headers - 테이블 헤더 정보 배열
-   * @param {Array} items - 테이블 내용 정보 배열
-   * @returns {Array} - 테이블 데이터 배열
-   */
-  getTableData(headers, items) {
-    const rows = [];
-
-    // 테이블 내용 가져오기
-    items.forEach((rowData) => {
-      const row = {};
-      headers.forEach((header) => {
-        row[header.value] = rowData[header.value];
-      });
-      rows.push(row);
-    });
-
-    return rows;
   },
 
   /**
