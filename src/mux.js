@@ -1,6 +1,8 @@
+/* eslint-disable no-async-promise-executor */
 import * as XLSX from "xlsx"; // npm install xlsx
 import axios from 'axios'; // npm install axios
 import router from '@/router/index'; // npm install vue-router
+import config from '@/mux.json';
 
 // @ts-check
 
@@ -25,7 +27,7 @@ mux.Server = {
    * @memberof mux.Server
    */
 
-  defaultTimeout: 1000 * 60 * 5, // 기본 타임아웃을 5분으로 설정
+  defaultTimeout: config.defaultTimeout, // 기본 타임아웃
   axiosInstance : axios.create({
     // baseURL: 'https://Blabla/api/'
   }),
@@ -67,6 +69,197 @@ mux.Server = {
     }
   },
 
+
+  /**
+   * REST Api GET 요청 함수
+   * @param {string | Object} pathOrObject 가능한 Key : {str}path, {milliseconds}timeout, {str}body, {object}something ...
+   * @returns {Promise}
+   * @example
+   * const result = await mux.Server.get({path:'/list', number:1});
+   */
+  async get(pathOrObject) {
+    
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await this.request(pathOrObject, 'get');
+        resolve(response.data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  /**
+   * REST Api POST 요청
+   * @param {string | Object} pathOrObject 가능한 Key : {str}path, {milliseconds}timeout, {str}body, {object}something ...
+   * @returns {Promise}
+   * @example
+   * const result = await mux.Server.post({path: '/list', target: 'something'});
+   */
+  async post(pathOrObject) {
+    
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await this.request(pathOrObject, 'post');
+        resolve(response.data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  /**
+   * REST Api PUT 요청
+   * @param {string | Object} pathOrObject 가능한 Key : {str}path, {milliseconds}timeout, {str}body, {object}something ...
+   * @returns {Promise}
+   * @example
+   * const result = await mux.Server.put({path: '/update', target:'something', change:'new'});
+   */
+  async put(pathOrObject) {
+    
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await this.request(pathOrObject, 'put');
+        resolve(response.data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  /**
+   * REST Api PATCH 요청
+   * @param {string | Object} pathOrObject 가능한 Key : {str}path, {milliseconds}timeout, {str}body, {object}something ...
+   * @returns {Promise}
+   * @example
+   * const result = await mux.Server.patch({path: '/patch', target:'something', change:'new'});
+   */
+  async patch(pathOrObject) {
+    
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await this.request(pathOrObject, 'patch');
+        resolve(response.data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  /**
+   * REST Api DELETE 요청
+   * @param {string | Object} pathOrObject 가능한 Key : {str}path, {milliseconds}timeout, {str}body, {object}something ...
+   * @returns {Promise}
+   * @example
+   * const result = await mux.Server.delete({path: '/delete', target: 'something'});
+   */
+  async delete(pathOrObject) {
+    
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await this.request(pathOrObject, 'delete');
+        resolve(response.data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  /**
+   * 파일 업로드
+   * @param {Object} reqObj 
+   * 필수 key: path, (folder, file) | {obj}files : {folder,file}
+   * 선택 key: timeout, ...
+   */
+  async uploadFile(reqObj) {
+    new Promise(async (resolve, reject) => {
+      try {
+
+        if (!reqObj.files && (!reqObj.folder || !reqObj.file)){
+          reject('upload file error: 폴더명, 파일 정보와 함께 요청해야 합니다.');
+        }
+
+        if (!reqObj.path) {
+          reject('upload file error: path 정보와 함께 요청해야 합니다.');
+        }
+
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
+        if (reqObj.timeout){
+          this.axiosInstance.defaults.timeout = reqObj.timeout;
+        }
+
+        let formData = new FormData();
+        if (reqObj.files && Array.isArray(reqObj.files)){
+          reqObj.files.forEach((file, index) => {
+            if (file.folder){
+              formData.append('folder'+index, file.folder);
+            }else {
+              if (reqObj.folder){
+                formData.append('folder'+index, reqObj.folder);
+              }else {
+                reject('upload file error: 폴더명, 파일 정보와 함께 요청해야 합니다.');
+              }
+            }
+            formData.append('fileName_'+index, file.name);
+            formData.append('fileType_'+index, file.type);
+            formData.append('file_'+index, file.file);
+          });
+        }else if (reqObj.file && reqObj.folder) {
+          formData.append('folder_0', reqObj.folder);
+          formData.append('fileName_0', reqObj.file.name);
+          formData.append('fileType_0', reqObj.file.type);
+          formData.append('file_0', reqObj.file);
+        }else {
+          reject('upload file error: 업로드 대상이 없습니다.');
+        }
+
+        Object.keys(reqObj).forEach(key => {
+          if (key !== 'files' && key !== 'file' && key !== 'folder' && key !== 'path' && key !== 'timeout'){
+            formData.append(key, reqObj[key]);
+          }
+        });
+
+
+        const response = await this.axiosInstance.post(reqObj.path, formData);
+  
+        resolve(response);
+      } catch (error) {
+        reject(error)
+      }
+    });
+  },
+
+  /**
+   * 파일 다운로드
+   * @param {Object} reqObj 
+   * 필수 key: path, folder, fileName
+   * 선택 key: timeout, ...
+   */
+  async downloadFile(reqObj) {
+    new Promise(async (resolve, reject) => {
+      try {
+        let sendData = {};
+        sendData.path = reqObj.path;
+        if(reqObj.folder && reqObj.fileName){
+          sendData.path += '/' + reqObj.folder;
+          sendData.path += '/' + reqObj.fileName;
+        }else {
+          reject('download file error: 폴더명, 파일 정보와 함께 요청해야 합니다.');
+        }
+        Object.keys(reqObj).forEach(key => {
+          if (key !== 'path' && key !== 'folder' && key !== 'fileName'){
+            sendData[key] = reqObj[key];
+          }
+        });
+        const result = await mux.Server.get(sendData);
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  
   /**
    * REST Api 요청 함수
    * @param {string | Object} pathOrObject 가능한 Key : {str}path, {str}method, {milliseconds}timeout, {str}body, {object}something ...
@@ -79,7 +272,7 @@ mux.Server = {
     const defaultObj = {
       timeout: this.defaultTimeout
     };
-    // eslint-disable-next-line no-async-promise-executor
+    
     return new Promise(async (resolve, reject) => {
       try {
         this.setObjFromPathOrObject(defaultObj, pathOrObject);
@@ -126,101 +319,6 @@ mux.Server = {
           console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Request error:', error.message); // 기타 에러
         }
         this.axiosInstance = axios.create();
-        reject(error);
-      }
-    });
-  },
-
-  /**
-   * REST Api GET 요청 함수
-   * @param {string | Object} pathOrObject 가능한 Key : {str}path, {milliseconds}timeout, {str}body, {object}something ...
-   * @returns {Promise}
-   * @example
-   * const result = await mux.Server.get({path:'/list', number:1});
-   */
-  async get(pathOrObject) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      try {
-        const response = await this.request(pathOrObject, 'get');
-        resolve(response.data);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  },
-
-  /**
-   * REST Api POST 요청
-   * @param {string | Object} pathOrObject 가능한 Key : {str}path, {milliseconds}timeout, {str}body, {object}something ...
-   * @returns {Promise}
-   * @example
-   * const result = await mux.Server.post({path: '/list', target: 'something'});
-   */
-  async post(pathOrObject) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      try {
-        const response = await this.request(pathOrObject, 'post');
-        resolve(response.data);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  },
-
-  /**
-   * REST Api PUT 요청
-   * @param {string | Object} pathOrObject 가능한 Key : {str}path, {milliseconds}timeout, {str}body, {object}something ...
-   * @returns {Promise}
-   * @example
-   * const result = await mux.Server.put({path: '/update', target:'something', change:'new'});
-   */
-  async put(pathOrObject) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      try {
-        const response = await this.request(pathOrObject, 'put');
-        resolve(response.data);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  },
-
-  /**
-   * REST Api PATCH 요청
-   * @param {string | Object} pathOrObject 가능한 Key : {str}path, {milliseconds}timeout, {str}body, {object}something ...
-   * @returns {Promise}
-   * @example
-   * const result = await mux.Server.patch({path: '/patch', target:'something', change:'new'});
-   */
-  async patch(pathOrObject) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      try {
-        const response = await this.request(pathOrObject, 'patch');
-        resolve(response.data);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  },
-
-  /**
-   * REST Api DELETE 요청
-   * @param {string | Object} pathOrObject 가능한 Key : {str}path, {milliseconds}timeout, {str}body, {object}something ...
-   * @returns {Promise}
-   * @example
-   * const result = await mux.Server.delete({path: '/delete', target: 'something'});
-   */
-  async delete(pathOrObject) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      try {
-        const response = await this.request(pathOrObject, 'delete');
-        resolve(response.data);
-      } catch (error) {
         reject(error);
       }
     });
@@ -371,20 +469,6 @@ mux.Util = {
     // }, 500)
     
   }
-}
-
-/**
- * 파일 관련 유틸리티 함수 그룹
- * @namespace File
- */
-mux.File = {
-  open() {
-
-  },
-
-  download() {
-
-  },
 }
 
 /**

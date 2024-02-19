@@ -103,7 +103,7 @@
                         <v-icon >mdi-email</v-icon>
                       </v-btn>
                     </template>
-                    <MailFormComponent>
+                    <MailFormComponent v-model="files">
                       <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn
@@ -116,7 +116,7 @@
                         <v-btn
                           color="blue darken-1"
                           text
-                          @click="mailDialog = false"
+                          @click="test(), mailDialog = false"
                         >
                           발송
                         </v-btn>
@@ -143,12 +143,20 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import MailFormComponent from "@/components/MailFormComponent";
+import mux from "@/mux";
 
 export default {
   components: {
                 NavComponent,
                 MailFormComponent,
               },
+  methods:{
+    test(){
+      console.log('test');
+      // mux.Server.uploadFile({path: '/', folder:'somefolder', file: this.files[0]});
+      mux.Server.uploadFile({path: '/', folder:'somefolder', files: this.files});
+    }
+  },
   data(){
     return{
       files: [],

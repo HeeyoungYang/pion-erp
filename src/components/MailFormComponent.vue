@@ -39,7 +39,7 @@
         </v-col>
         <v-col cols="12">
           <v-file-input
-            v-model="files"
+            @change="fileChanged"
             placeholder="파일 선택"
             hide-details
             dense
@@ -67,6 +67,12 @@
 <script>
 
 export default {
+  methods: {
+    fileChanged(file) {
+      // 파일이 변경되면 부모 컴포넌트로 파일 정보를 전달
+      this.$emit('input', file);
+    }
+  },
   components: {
   },
   data(){
