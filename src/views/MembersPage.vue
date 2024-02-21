@@ -6,237 +6,178 @@
     <!-- ▼ 본문 영역 -->
     <v-main>
       <v-row justify="center">
-        <v-col
-          cols="12"
-          sm="8"
-        >
-          <v-card
-          elevation="1"
-          >
-          <v-card-title style="width:100%;">
-            <v-row>
-              <v-col cols="12">
-                <p class="float-left text-h6 font-weight-black mb-0">Members</p>
-                <!-- ▼ 계정 추가 버튼 혹은 수정 아이콘(연필모양) 클릭 시 노출되는 Dialog(모달) -->
-                <v-dialog
-                  v-model="dialog"
-                  max-width="500px"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <!-- ▼ 계정 추가 버튼 -->
-                    <v-btn
-                      color="primary"
-                      outlined
-                      class="mb-2 float-right"
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      계정 추가
-                    </v-btn>
-                  </template>
-                  <!-- ▼ 버튼 혹은 아이콘 클릭 시 노출되는 모달 창 -->
-                  <v-card>
-                    <v-card-title>
-                      <!-- ▼ editedIndex의 값에 따라 계정 등록인지 계정 수정인지 파악하여 텍스트 노출 : formTitle -->
-                      <span class="text-h6">{{ formTitle }}</span>
-                    </v-card-title>
+        <v-col cols="12" sm="8">
+          <v-card elevation="1">
+            <v-card-title style="width:100%;">
+              <v-row>
+                <v-col cols="12">
+                  <p class="float-left text-h6 font-weight-black mb-0">Members</p>
+                  <!-- ▼ 계정 추가 버튼 혹은 수정 아이콘(연필모양) 클릭 시 노출되는 Dialog(모달) -->
+                  <ModalDialog
+                    :dialog-value="dialog"
+                    max-width="500px"
+                    :title="formTitle"
+                    closeText="취소"
+                    saveText="저장"
+                    persistent="true"
+                    @close="close"
+                    @save="save"
+                  >
+                    <template v-slot:activator>
+                      <!-- ▼ 계정 추가 버튼 -->
+                      <v-btn color="primary" outlined class="mb-2 float-right" @click="dialog = true">계정 추가</v-btn>
+                    </template>
+                    <!-- ▼ 버튼 혹은 아이콘 클릭 시 노출되는 모달 창 내용 -->
+                    <v-container>
+                      <!-- 모달 내용 구성 -->
+                      <v-row>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6"
+                        >
+                          <!-- ▼ editedIndex의 값에 따라 계정 등록인지 계정 수정인지 파악하여 ID inputbox는 disabled 처리 : formDisabled -->
+                          <v-text-field
+                            v-model="editedItem.user_id"
+                            label="ID"
+                            :disabled=formDisabled
+                          ></v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6"
+                        >
+                          <v-text-field
+                            v-model="editedItem.name"
+                            label="이름"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6"
+                        >
+                          <v-text-field
+                            v-model="editedItem.department"
+                            label="부서"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6"
+                        >
+                          <v-text-field
+                            v-model="editedItem.position"
+                            label="직책"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6"
+                        >
+                          <v-text-field
+                            v-model="editedItem.phone"
+                            label="전화번호"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6"
+                        >
+                          <v-text-field
+                            v-model="editedItem.extension"
+                            label="내선"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6"
+                        >
+                          <v-text-field
+                            v-model="editedItem.email"
+                            label="이메일"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6"
+                        >
+                          <v-text-field
+                            v-model="editedItem.mobile"
+                            label="모바일"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </ModalDialog>
+                </v-col>
+              </v-row>
+            </v-card-title>
 
-                    <v-card-text>
-                      <v-container>
-                        <v-row>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="6"
-                          >
-                            <!-- ▼ editedIndex의 값에 따라 계정 등록인지 계정 수정인지 파악하여 ID inputbox는 disabled 처리 : formDisabled -->
-                            <v-text-field
-                              v-model="editedItem.user_id"
-                              label="ID"
-                              :disabled=formDisabled
-                            ></v-text-field>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="6"
-                          >
-                            <v-text-field
-                              v-model="editedItem.name"
-                              label="이름"
-                            ></v-text-field>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="6"
-                          >
-                            <v-text-field
-                              v-model="editedItem.department"
-                              label="부서"
-                            ></v-text-field>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="6"
-                          >
-                            <v-text-field
-                              v-model="editedItem.position"
-                              label="직책"
-                            ></v-text-field>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="6"
-                          >
-                            <v-text-field
-                              v-model="editedItem.phone"
-                              label="전화번호"
-                            ></v-text-field>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="6"
-                          >
-                            <v-text-field
-                              v-model="editedItem.extension"
-                              label="내선"
-                            ></v-text-field>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="6"
-                          >
-                            <v-text-field
-                              v-model="editedItem.email"
-                              label="이메일"
-                            ></v-text-field>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="6"
-                          >
-                            <v-text-field
-                              v-model="editedItem.mobile"
-                              label="모바일"
-                            ></v-text-field>
-                          </v-col>
-                        </v-row>
-                      </v-container>
-                    </v-card-text>
+            <!-- ▼ 구분선 -->
+            <v-divider></v-divider>
 
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="save"
-                      >
-                        저장
-                      </v-btn>
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="close"
-                      >
-                        취소
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-col>
-            </v-row>
-          </v-card-title>
+            <!-- ▼ 키워드 검색 영역 (Vuetify Datatable 기능 사용)-->
+            <!-- 이 부분은 원래 코드와 동일하게 유지됩니다 -->
 
-          <!-- ▼ 구분선 -->
-          <v-divider></v-divider>
-
-          <!-- ▼ 키워드 검색 영역 (Vuetify Datatable 기능 사용)-->
-          <v-card-text class="pb-0">
-            <v-row>
-              <v-col
-              cols="12"
-              md="3"
-              >
-                <v-text-field
-                  v-model="search"
-                  append-icon="mdi-magnify"
-                  label="Search"
-                  single-line
-                  hide-details
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-card-text>
-
-          <!-- ▼ 시스템 전체 계정(임직원) 테이블 (Vuetify Datatable 사용)-->
-          <v-card-text class=" pt-3">
-            <v-data-table
+            <!-- ▼ 시스템 전체 계정(임직원) 테이블 (Vuetify Datatable 사용)-->
+            <DataTable
               :headers="headers"
               :items="members"
               :search="search"
-              sort-by="calories"
-              class="elevation-1"
+              actionsSlotName="actions"
+              :edited-item="editedItem"
             >
-              <!-- ▼ 편집 Field에 들어가는 아이콘 설정 -->
-              <template v-slot:[`item.actions`]="{ item }">
+              <template v-slot:actions="{ item }">
                 <!-- ▼ 수정 아이콘(연필) -->
-                <v-icon
-                  small
-                  class="mr-2"
-                  @click="editItem(item)"
-                >
-                  mdi-pencil
-                </v-icon>
+                <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
                 <!-- ▼ 삭제 아이콘(휴지통) -->
-                <v-icon
-                  small
-                  @click="deleteItem(item)"
-                >
-                  mdi-delete
-                </v-icon>
+                <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
               </template>
-              <!-- ▼ 삭제 아이콘(휴지통) 클릭 시 노출되는 Dialog(모달)-->
-              <template v-slot:top>
-                <v-dialog v-model="dialogDelete" max-width="300px">
-                  <v-card>
-                    <v-card-title class="text-body-1 font-weight-black ">
-                      <p class="mb-0">{{editedItem.name}}님의</p>
-                      <p class="red--text">계정을 삭제하시겠습니까?</p>
-                    </v-card-title>
-                    <v-card-text class="text-body-2">삭제된 계정은 복구가 불가능합니다.</v-card-text>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="deleteItemConfirm">삭제</v-btn>
-                      <v-btn color="blue darken-1" text @click="closeDelete">취소</v-btn>
-                      <v-spacer></v-spacer>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
+            </DataTable>
+            <ModalDialog
+              :dialog-value="dialogDelete"
+              max-width="300px"
+              title-class="text-body-1 font-weight-black"
+              text-class="text-body-2"
+              save-text="삭제"
+              close-text="취소"
+              @save="deleteItemConfirm"
+              @close="closeDelete"
+            >
+              <template v-slot:titleHTML>
+                <p class="mb-0">{{ editedItem.name }}님의</p>
+                <p class="red--text">계정을 삭제하시겠습니까?</p>
               </template>
-            </v-data-table>
-          </v-card-text>
+              삭제된 계정은 복구가 불가능합니다.
+            </ModalDialog>
           </v-card>
         </v-col>
       </v-row>
     </v-main>
   </div>
 </template>
+
 <script>
 import NavComponent from "@/components/NavComponent";
+import ModalDialog from "@/components/ModalDialog";
+import DataTable from "@/components/DataTable";
 
 export default {
   components: {
-                NavComponent,
-              },
-  data(){
-    return{
-      search:'',
+    NavComponent,
+    ModalDialog,
+    DataTable,
+  },
+  data() {
+    return {
+      search: '',
       dialog: false,
       dialogDelete: false,
       headers: [
@@ -368,6 +309,7 @@ export default {
   },
 }
 </script>
+
 <style lang="">
 
 </style>
