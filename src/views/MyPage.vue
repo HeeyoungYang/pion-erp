@@ -62,8 +62,24 @@
                             >mdi-pencil</v-icon>
                           </v-btn>
                           <!-- ▼ 비밀번호 변경 관련 Dialog(모달) -->
-                          <FormDialogComponent :formDialogInfo = "findPasswordDialog">
-                            <v-row>
+                          <ModalDialogComponent
+                            :dialog-value="dialog"
+                            max-width="300px"
+                            title="비밀번호 변경"
+                            closeText="취소"
+                            saveText="저장"
+                            persistent="true"
+                            @close="dialog=false"
+                            @save="save"
+                          >
+                            <template v-slot:activator>
+                              <!-- ▼ 계정 추가 버튼 -->
+                              <v-btn color="default" x-small fab class="mr-2 float-right" elevation="0" @click="dialog = true">
+                                <v-icon>mdi-lock-alert</v-icon>
+                              </v-btn>
+                            </template>
+
+                            <v-row class="mt-3">
                               <v-col cols="12">
                                 <v-text-field
                                   v-model="passwords.currentPassword"
@@ -89,7 +105,7 @@
                                 ></v-text-field>
                               </v-col>
                             </v-row>
-                          </FormDialogComponent>
+                          </ModalDialogComponent>
                         </v-col>
                       </v-row>
                     </v-banner>
@@ -125,12 +141,12 @@
 </style>
 <script>
 import NavComponent from "@/components/NavComponent";
-import FormDialogComponent from "@/components/FormDialogComponent";
+import ModalDialogComponent from "@/components/ModalDialogComponent";
 
 export default {
   components: {
                 NavComponent,
-                FormDialogComponent,
+                ModalDialogComponent,
               },
   data(){
     return{
@@ -139,14 +155,8 @@ export default {
       showEditButton: true,
       // ▼ 정보 수정 후 저장 버튼
       showSaveButton: false,
-      //modal
-      findPasswordDialog: {
-        dialog: false,
-        dialogButton: {buttonName:'', buttonColor:'default', buttonXsmall:true, buttonClass:'mr-2 float-right', buttonFab:true, buttonIcon:'mdi-lock-alert', buttonElevation:'0'}, //필수
-        dialogTitle: '비밀번호 변경',  //필수
-        dialogWidth: '300px', //선택. 미 입력시 600px
-        modalTitleClass: 'blue lighten-5 text-h6 font-weight-black' // 선택. 미 입력 시 blue lighten-5 text-h5 font-weight-black
-      },
+      //▼ 비밀번호 변경 Modal
+      dialog: false,
       // ▼ 계정 기본 정보
       userInfo: {name: '윤준수', password:'test1234'},
       userInput: [
@@ -190,6 +200,9 @@ export default {
       this.disabledInput = true;
       this.showEditButton = true;
       this.showSaveButton = false;
+    },
+    save(){
+      this.dialog = false;
     }
   },
 }

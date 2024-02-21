@@ -8,8 +8,8 @@
       <slot name="activator" v-bind="attrs" v-on="on"></slot>
     </template>
     <v-card ref="card">
-      <v-card-title :class="titleClass ? titleClass : ''">
-        <span v-if="title" class="text-h6">{{ title }}</span>
+      <v-card-title :class="titleClass ? titleClass : 'blue lighten-5 text-h6 font-weight-black'">
+        <span v-if="title">{{ title }}</span>
         <slot name="titleHTML"></slot>
       </v-card-title>
       <v-card-text :class="textClass ? textClass : ''">
