@@ -13,7 +13,7 @@
                 <v-col cols="12">
                   <p class="float-left text-h6 font-weight-black mb-0">Members</p>
                   <!-- ▼ 계정 추가 버튼 혹은 수정 아이콘(연필모양) 클릭 시 노출되는 Dialog(모달) -->
-                  <ModalDialog
+                  <ModalDialogComponent
                     :dialog-value="dialog"
                     max-width="500px"
                     :title="formTitle"
@@ -115,7 +115,7 @@
                         </v-col>
                       </v-row>
                     </v-container>
-                  </ModalDialog>
+                  </ModalDialogComponent>
                 </v-col>
               </v-row>
             </v-card-title>
@@ -141,7 +141,7 @@
                 <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
               </template>
             </DataTable>
-            <ModalDialog
+            <ModalDialogComponent
               :dialog-value="dialogDelete"
               max-width="300px"
               title-class="text-body-1 font-weight-black"
@@ -156,7 +156,7 @@
                 <p class="red--text">계정을 삭제하시겠습니까?</p>
               </template>
               삭제된 계정은 복구가 불가능합니다.
-            </ModalDialog>
+            </ModalDialogComponent>
           </v-card>
         </v-col>
       </v-row>
@@ -166,13 +166,13 @@
 
 <script>
 import NavComponent from "@/components/NavComponent";
-import ModalDialog from "@/components/ModalDialog";
+import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTable from "@/components/DataTable";
 
 export default {
   components: {
     NavComponent,
-    ModalDialog,
+    ModalDialogComponent,
     DataTable,
   },
   data() {

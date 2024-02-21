@@ -35,7 +35,7 @@
           ></v-text-field>
         </v-col>
         <v-col cols="12">
-          <vue-editor v-model="content" :editor-toolbar="customToolbar"/>
+          <vue-editor v-model="content" :editor-toolbar="customToolbar" id="email_editor"/>
         </v-col>
         <v-col cols="12">
           <v-file-input
@@ -107,6 +107,8 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
   },
 }
 </script>
-<style lang="">
-
+<style>
+#email_editor {
+    height: 400px;
+  }
 </style>

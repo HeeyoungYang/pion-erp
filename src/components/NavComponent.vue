@@ -25,7 +25,7 @@
 
       <!-- 2차 메뉴형 -->
         <v-list-group
-          :value="stockMenu"
+          :value="productMenu"
           prepend-icon="mdi-archive-search"
         >
           <template v-slot:activator>
@@ -33,7 +33,7 @@
           </template>
 
           <v-list-item
-              v-for="([title, icon, to], i) in stockPages"
+              v-for="([title, icon, to], i) in productPages"
               :key="i"
               link
               :to="to"
@@ -51,7 +51,7 @@
           prepend-icon="mdi-invoice-list"
         >
           <template v-slot:activator>
-            <v-list-item-title>견적 관리</v-list-item-title>
+            <v-list-item-title>입찰/견적 관리</v-list-item-title>
           </template>
 
           <v-list-item
@@ -148,7 +148,7 @@
 </style>
 <script>
   export default {
-    props: ['userMenu', 'stockMenu', 'estimateMenu'],
+    props: ['userMenu', 'productMenu', 'estimateMenu'],
     data: () => ({
       drawer: null,
       menuList: [
@@ -161,8 +161,9 @@
       ],
         right: null,
 
-      stockPages: [
-        ['자재 조회', '', '/stock-search'],
+      productPages: [
+        ['자재 현황', '', '/product-search'],
+        ['제품별 부자재', '', '/product-subsidiary'],
       ],
 
       estimatePages: [

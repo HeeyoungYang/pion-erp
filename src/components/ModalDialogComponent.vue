@@ -1,8 +1,8 @@
 <template>
-  <v-dialog 
-  v-model="dialog" 
-  :max-width="maxWidth ? maxWidth : '500px'" 
-  :persistent="persistent ? persistent : false" 
+  <v-dialog
+  v-model="dialog"
+  :max-width="maxWidth ? maxWidth : '500px'"
+  :persistent="persistent ? persistent : false"
   @click:outside="persistent ? null : close()">
     <template v-slot:activator="{ on, attrs }">
       <slot name="activator" v-bind="attrs" v-on="on"></slot>
@@ -28,9 +28,9 @@
 
 <script>
 /**
- * @file ModalDialog.vue
+ * @file ModalDialogComponent.vue
  * @description 모달 다이얼로그 컴포넌트
- * 
+ *
  * @typedef {Object} props
  * @property {Boolean} dialogValue - 모달 오픈 여부
  * @property {Boolean} [persistent] - 외부 클릭 방지 여부(default:false)
@@ -41,10 +41,10 @@
  * @property {String} [saveText] - 저장 버튼 텍스트
  * @property {String} [confirmText] - 확인 버튼 텍스트
  * @property {String} [closeText] - 취소 버튼 텍스트
- * 
- * @emits ModalDialog#save
- * @emits ModalDialog#confirm
- * @emits ModalDialog#close
+ *
+ * @emits ModalDialogComponent#save
+ * @emits ModalDialogComponent#confirm
+ * @emits ModalDialogComponent#close
  */
 export default {
   props: {

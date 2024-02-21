@@ -3,7 +3,8 @@ import VueRouter from 'vue-router'
 import LoginPage from '@/views/LoginPage'
 import MainPage from '@/views/MainPage'
 import MembersPage from '@/views/MembersPage'
-import StockSearchPage from '@/views/StockSearchPage'
+import ProductSearchPage from '@/views/ProductSearchPage'
+import ProductSubsidiaryPage from '@/views/ProductSubsidiaryPage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
 import MyPage from '@/views/MyPage'
 import CalendarPage from '@/views/CalendarPage'
@@ -24,9 +25,14 @@ const routes = [
     component: LoginPage
   },
   {
-    path: '/stock-search',
-    name: 'StockSearchPage',
-    component: StockSearchPage
+    path: '/product-search',
+    name: 'ProductSearchPage',
+    component: ProductSearchPage
+  },
+  {
+    path: '/product-subsidiary',
+    name: 'ProductSubsidiaryPage',
+    component: ProductSubsidiaryPage
   },
   {
     path: '/estimate-search',
