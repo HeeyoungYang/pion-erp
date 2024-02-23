@@ -3,13 +3,17 @@
   v-model="dialog"
   :max-width="maxWidth ? maxWidth : '500px'"
   :persistent="persistent ? persistent : false"
+  :transition="dialogTransition ? dialogTransition : ''"
+  :content-class="dialogCustom ? dialogCustom : ''"
   @click:outside="persistent ? null : close()">
     <template v-slot:activator="{ on, attrs }">
       <slot name="activator" v-bind="attrs" v-on="on"></slot>
     </template>
-    <v-card ref="card">
-      <v-card-title :class="titleClass ? titleClass : 'blue lighten-5 text-h6 font-weight-black'">
-        <span v-if="title">{{ title }}</span>
+    <v-card ref="card"
+      :elevation="cardElevation ? cardElevation : '2'"
+    >
+      <v-card-title  :class="titleClass ? titleClass : 'blue lighten-5 text-h6 font-weight-black'">
+        <span v-if="title" >{{ title }}</span>
         <slot name="titleHTML"></slot>
       </v-card-title>
       <v-card-text :class="textClass ? textClass : ''">
@@ -34,7 +38,12 @@
  * @typedef {Object} props
  * @property {Boolean} dialogValue - 모달 오픈 여부
  * @property {Boolean} [persistent] - 외부 클릭 방지 여부(default:false)
+ * @property {Boolean} [fullscreen] - 외부 클릭 방지 여부(default:false)
+ * @property {Boolean} [hideOverlay] - 외부 클릭 방지 여부(default:false)
  * @property {String} [maxWidth] - 최대 가로 길이(defalt:500px)
+ * @property {String} [dialogTransition] - 모달 오픈 방식 (슬라이드 등) (defalt:'')
+ * @property {String} [dialogCustom] - 모달 커스텀 css (defalt:'')
+ * @property {String} [cardElevation] - 카드 그림자 설정 (defalt:'2')
  * @property {String} [title] - 제목 텍스트
  * @property {String} [titleClass] - 제목 클래스
  * @property {String} [textClass] - 본문 클래스
@@ -50,7 +59,12 @@ export default {
   props: {
     dialogValue: Boolean,
     persistent: Boolean,
+    fullscreen: Boolean,
+    hideOverlay: Boolean,
     maxWidth: String,
+    dialogTransition: String,
+    cardElevation: String,
+    dialogCustom: String,
     title: String,
     titleClass: String,
     textClass: String,

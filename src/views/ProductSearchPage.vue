@@ -229,19 +229,6 @@
                 <v-col
                   cols="12"
                 >
-                  <v-btn
-                    color="default"
-                    small
-                    elevation="1"
-                  >
-                    상태변경
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col
-                  cols="12"
-                >
                   <v-data-table
                     dense
                     :headers="headers"

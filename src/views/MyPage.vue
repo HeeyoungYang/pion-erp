@@ -68,7 +68,7 @@
                             title="비밀번호 변경"
                             closeText="취소"
                             saveText="저장"
-                            persistent="true"
+                            :persistent="true"
                             @close="dialog=false"
                             @save="save"
                           >

@@ -11,7 +11,16 @@
             <v-card-title style="width:100%;">
               <v-row>
                 <v-col cols="12">
-                  <p class="float-left text-h6 font-weight-black mb-0">Members</p>
+                  <p class="float-left text-h6 font-weight-black mb-0">
+                    <v-text-field
+                      v-model="search"
+                      append-icon="mdi-magnify"
+                      label="Search"
+                      dense
+                      single-line
+                      hide-details
+                    ></v-text-field>
+                  </p>
                   <!-- ▼ 계정 추가 버튼 혹은 수정 아이콘(연필모양) 클릭 시 노출되는 Dialog(모달) -->
                   <ModalDialogComponent
                     :dialog-value="dialog"
@@ -19,7 +28,7 @@
                     :title="formTitle"
                     closeText="취소"
                     saveText="저장"
-                    persistent="true"
+                    :persistent="true"
                     @close="close"
                     @save="save"
                   >
@@ -58,20 +67,22 @@
                           sm="6"
                           md="6"
                         >
-                          <v-text-field
-                            v-model="editedItem.department"
+                          <v-select
+                            :items="department_list"
                             label="부서"
-                          ></v-text-field>
+                            :value="editedItem.department"
+                          ></v-select>
                         </v-col>
                         <v-col
                           cols="12"
                           sm="6"
                           md="6"
                         >
-                          <v-text-field
-                            v-model="editedItem.position"
+                          <v-select
+                            :items="position_list"
                             label="직책"
-                          ></v-text-field>
+                            :value="editedItem.position"
+                          ></v-select>
                         </v-col>
                         <v-col
                           cols="12"
@@ -180,6 +191,8 @@ export default {
       search: '',
       dialog: false,
       dialogDelete: false,
+      department_list: ['기획관리', '영업팀'],
+      position_list: ['사원', '주임', '대리', '매니저'],
       headers: [
         {text: 'ID', align: 'center', value: 'user_id'},
         {text: '이름', align: 'center', value: 'name'},
@@ -191,7 +204,6 @@ export default {
         {text: '모바일', align: 'center', value: 'mobile'},
         { text: '편집', value: 'actions', sortable: false },
       ],
-      departments:['전체', '기획관리부',' 영업팀'],
       members: [],
       editedIndex: -1,
       editedItem: {
