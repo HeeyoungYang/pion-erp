@@ -138,7 +138,7 @@
             <!-- 이 부분은 원래 코드와 동일하게 유지됩니다 -->
 
             <!-- ▼ 시스템 전체 계정(임직원) 테이블 (Vuetify Datatable 사용)-->
-            <DataTable
+            <DataTableComponent
               :headers="headers"
               :items="members"
               :search="search"
@@ -151,7 +151,7 @@
                 <!-- ▼ 삭제 아이콘(휴지통) -->
                 <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
               </template>
-            </DataTable>
+            </DataTableComponent>
             <ModalDialogComponent
               :dialog-value="dialogDelete"
               max-width="300px"
@@ -178,13 +178,13 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
-import DataTable from "@/components/DataTable";
+import DataTableComponent from "@/components/DataTableComponent";
 
 export default {
   components: {
     NavComponent,
     ModalDialogComponent,
-    DataTable,
+    DataTableComponent,
   },
   data() {
     return {
