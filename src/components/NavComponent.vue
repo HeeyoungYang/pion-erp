@@ -29,7 +29,7 @@
           prepend-icon="mdi-archive-search"
         >
           <template v-slot:activator>
-            <v-list-item-title>자재 관리</v-list-item-title>
+            <v-list-item-title>재고/자재 관리</v-list-item-title>
           </template>
 
           <v-list-item
@@ -162,8 +162,8 @@
         right: null,
 
       productPages: [
-        ['자재 현황', '', '/product-search'],
-        ['제품별 부자재', '', '/product-subsidiary'],
+        ['재고 현황', '', '/product-search'],
+        ['제품 리스트', '', '/product-subsidiary'],
       ],
 
       estimatePages: [
@@ -173,6 +173,7 @@
 
       adminPages: [
         ['계정 목록', '', '/member-list'],
+        ['권한 설정', '', '/member-authorization'],
       ],
     }),
   }
