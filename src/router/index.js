@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import LoginPage from '@/views/LoginPage'
 import MainPage from '@/views/MainPage'
 import MembersPage from '@/views/MembersPage'
+import AuthorizationPage from '@/views/AuthorizationPage'
 import ProductSearchPage from '@/views/ProductSearchPage'
 import ProductSubsidiaryPage from '@/views/ProductSubsidiaryPage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
@@ -43,6 +44,11 @@ const routes = [
     path: '/member-list',
     name: 'MembersPage',
     component: MembersPage
+  },
+  {
+    path: '/member-authorization',
+    name: 'AuthorizationPage',
+    component: AuthorizationPage
   },
   {
     path: '/my-page',
