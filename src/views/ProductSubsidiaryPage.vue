@@ -65,6 +65,14 @@
                   >
                     <v-icon>mdi-plus</v-icon>등록
                   </v-btn>
+                  <v-btn
+                    color="teal darken-1"
+                    class="white--text ml-2"
+                    elevation="2"
+                    v-if="register_product_subsidiary == true"
+                  >
+                    <v-icon>mdi-content-save</v-icon>저장
+                  </v-btn>
                 </v-col>
               </v-row>
 
@@ -110,6 +118,7 @@
                     elevation="1"
                     small
                     class="mr-2 "
+                    @click="addSubProduct()"
                   >
                     부제품 추가
                   </v-btn>
@@ -125,7 +134,11 @@
                 </v-col>
               </v-row>
             </v-card-title>
-            <v-card-text>
+            <v-card-text
+              v-for="(sub, i) in sub_product"
+              :key="i"
+              :id="'sub_product'+i"
+            >
              <v-divider class="mb-4"></v-divider>
               <v-row>
                 <v-col
@@ -137,7 +150,7 @@
                     clearable
                     filled
                     hide-details
-                    label="부자재명 설정"
+                    label="부제품명 설정"
                   ></v-text-field>
                 </v-col>
                 <v-col
@@ -157,6 +170,32 @@
                   >
                     <template v-slot:activator>
                       <v-btn
+                        color="blue-grey darken-1"
+                        elevation="1"
+                        small
+                        class="mr-2 white--text"
+                        @click="deleteSelectedData"
+                      >
+                        선택 삭제
+                      </v-btn>
+                      <v-btn
+                        color="default"
+                        elevation="1"
+                        small
+                        class="mr-2 "
+                        @click="deleteSubProduct(i)"
+                      >
+                        취소
+                      </v-btn>
+                      <v-btn
+                        color="default"
+                        elevation="1"
+                        small
+                        class="mr-2 "
+                      >
+                        직접 입력
+                      </v-btn>
+                      <v-btn
                         color="primary"
                         elevation="1"
                         small
@@ -165,15 +204,7 @@
                       >
                         자재 불러오기
                       </v-btn>
-                      <v-btn
-                        color="default"
-                        elevation="1"
-                        small
-                        class="mr-2 "
-                        @click="dialog = true"
-                      >
-                        부제품 취소
-                      </v-btn>
+
                     </template>
 
                     <v-container>
@@ -307,25 +338,6 @@
                     </v-container>
                   </ModalDialogComponent>
                 </v-col>
-                <v-col cols="12" class="pb-0">
-                  <v-btn
-                    color="blue-grey darken-1"
-                    elevation="1"
-                    small
-                    class="mr-2 white--text"
-                  >
-                    직접입력
-                  </v-btn>
-                  <v-btn
-                    color="blue-grey darken-1"
-                    elevation="1"
-                    small
-                    class="mr-2 white--text"
-                    @click="deleteSelectedData"
-                  >
-                    선택 삭제
-                  </v-btn>
-                </v-col>
                 <v-col cols="12">
                   <v-data-table
                     dense
@@ -345,8 +357,26 @@
                       hide-details
                       v-model="item.product_num"
                       type="number"
-                      style="padding: 10px; width: 100px;"
+                      style="padding: 5px;"
                     ></v-text-field>
+                  </template>
+                  <template v-slot:[`item.addition`]="{ item }">
+                    <v-btn
+                      v-model="item.addition"
+                        color="primary"
+                        elevation="1"
+                        small
+                        class="mr-2 "
+                        @click="dialog = true"
+                      >자재</v-btn>
+                    <v-btn
+                      v-model="item.addition"
+                        color="default"
+                        elevation="1"
+                        small
+                        class="mr-2 "
+                        @click="dialog = true"
+                      >입력</v-btn>
                   </template>
                   </v-data-table>
                 </v-col>
@@ -367,9 +397,12 @@
               v-for="(product, index) in product_data "
               :key="index"
               >
-                <v-expansion-panel-header class="font-weight-black primary--text text-h6">{{ product.product_capacity }}</v-expansion-panel-header>
+                <v-expansion-panel-header class="font-weight-black primary--text text-h6">
+                  {{ product.product_capacity }}
+                </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <v-row>
+                  <v-divider class="mb-4"></v-divider>
+                  <!-- <v-row>
                     <v-col
                       cols="12"
                       sm="6"
@@ -390,9 +423,205 @@
                         class="mr-2 "
                         @click="openAll()"
                       >부제품 펼치기</v-btn>
+
+
                     </v-col>
-                  </v-row>
+                  </v-row> -->
                   <v-row>
+                    <v-col cols="12">
+                      <v-btn
+                        color="blue-grey darken-1"
+                        fab
+                        x-small
+                        class="mr-3 float-right white--text"
+                        elevation="0"
+                        @click="dialogDelete = true"
+                      >
+                        <v-icon
+                          small
+                        >mdi-delete</v-icon>
+                      </v-btn>
+                      <ModalDialogComponent
+                        :dialog-value="dialogDelete"
+                        max-width="300px"
+                        title-class="text-body-1 font-weight-black"
+                        text-class="text-body-2"
+                        save-text="삭제"
+                        close-text="취소"
+                        @close="dialogDelete=false"
+                      >
+                        <template v-slot:titleHTML>
+                          <p class="mb-0">{{ product.product_capacity }}</p>
+                          <p class="red--text">데이터를 삭제하시겠습니까?</p>
+                        </template>
+                        삭제 후 복구는 불가능합니다.
+                      </ModalDialogComponent>
+                      <ModalDialogComponent
+                        :dialog-value="dialog_edit"
+                        max-width="1300px"
+                        title-class=" "
+                        :dialog-transition="'slide-x-transition'"
+                        :dialog-custom="'custom-dialog elevation-0 white'"
+                        :card-elevation="'0'"
+                        :hide-overlay="true"
+                        :persistent="true"
+                      >
+                        <template v-slot:activator>
+
+                          <v-btn
+                            color="primary"
+                            fab
+                            x-small
+                            class="mr-3 float-right"
+                            elevation="0"
+                            @click="dialog_edit = true"
+                          >
+                            <v-icon
+                              small
+                            >mdi-pencil</v-icon>
+                          </v-btn>
+
+                        </template>
+
+                        <v-container>
+                          <!-- 모달 내용 구성 -->
+                          <v-row>
+                            <v-col
+                              cols="12"
+                            ><p class="font-weight-black primary--text text-h6 mr-4">{{ product.product_capacity }}</p>
+
+                              <v-btn
+                                color="primary"
+                                elevation="1"
+                                small
+                                class="mr-2 "
+                                @click="dialog = true"
+                              >
+                                자재 불러오기
+                              </v-btn>
+                              <v-btn
+                                color="primary"
+                                small
+                                class="mr-2"
+                                elevation="2"
+                              >
+                                직접 입력
+                              </v-btn>
+                              <v-btn
+                                color="primary"
+                                small
+                                class="mr-2"
+                                elevation="2"
+                              >
+                                하위 추가
+                              </v-btn>
+                              <v-btn
+                                color="success"
+                                small
+                                class="mr-2"
+                                elevation="2"
+                              >
+                                저장
+                              </v-btn>
+                              <v-btn
+                                color="blue-grey darken-1"
+                                small
+                                class="mr-2 white--text"
+                                elevation="2"
+                                @click="dialog_edit =false"
+                              >
+                                삭제
+                              </v-btn>
+                              <v-btn
+                                color="default"
+                                small
+                                class="mr-2"
+                                elevation="2"
+                                @click="dialog_edit =false"
+                              >
+                                닫기
+                              </v-btn>
+                            </v-col>
+                            <v-col
+                              cols="12"
+                              sm="4"
+                              lg="3"
+                            >
+                            </v-col>
+                          </v-row>
+
+                          <v-row>
+                            <v-col cols="12">
+                              <v-data-table
+                                dense
+                                :headers="dialog_edit_headers"
+                                :items="product.product_info"
+                                item-key="product_code"
+                                class="elevation-1"
+                                show-select
+                              >
+                              <!-- <template v-slot:item="{ item, expand, isExpanded }">
+                                  <tr @click="expand(!isExpanded)">
+                                    <td class="text-right">
+                                      <v-btn small icon color="default" v-if="item.belong_data">
+                                        <v-icon> {{ isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                                      </v-btn>
+                                    </td>
+                                    <td class="text-center">
+                                      {{item.product_type}}
+                                    </td>
+                                    <td class="text-center">
+                                      {{item.product_code}}
+                                    </td>
+                                    <td class="text-center">
+                                      {{item.product_name}}
+                                    </td>
+                                    <td class="text-center">
+                                      {{item.product_model}}
+                                    </td>
+                                    <td class="text-center">
+                                      {{item.product_spec}}
+                                    </td>
+                                    <td class="text-center">
+                                      {{item.manufacturer}}
+                                    </td>
+                                    <td class="text-center">
+                                      {{item.product_num}}
+                                    </td>
+                                    <td class="text-center">
+                                      {{item.stock_num}}
+                                    </td>
+                                    <td class="text-center">
+                                      {{item.unit_price}}
+                                    </td>
+                                    <td class="text-center">
+                                      {{item.product_price}}
+                                    </td>
+                                  </tr>
+                                </template>
+
+                                <template v-slot:expanded-item = "{item}">
+                                  <tr v-for="(belong_data,index) in item.belong_data" :key="index" style="background-color: #efefef;">
+                                    <td></td>
+                                    <td></td>
+                                    <td class="text-center">{{belong_data.product_code}}</td>
+                                    <td class="text-center">{{belong_data.product_name}}</td>
+                                    <td class="text-center">{{belong_data.product_model}}</td>
+                                    <td class="text-center">{{belong_data.product_spec}}</td>
+                                    <td class="text-center">{{belong_data.manufacturer}}</td>
+                                    <td class="text-center">{{belong_data.product_num}}</td>
+                                    <td class="text-center">{{belong_data.stock_num}}</td>
+                                    <td class="text-center">{{belong_data.unit_price}}</td>
+                                    <td class="text-center">{{belong_data.product_price}}</td>
+                                  </tr>
+                                </template> -->
+
+                              </v-data-table>
+                            </v-col>
+                          </v-row>
+                        </v-container>
+                      </ModalDialogComponent>
+                    </v-col>
                     <v-col
                       cols="12"
                     >
@@ -503,9 +732,12 @@ export default {
   data(){
     return{
       search_finished_product_name:'',
+      sub_product:1,
       search_product_capacity: '',
       menu: false,
       dialog: false,
+      dialog_edit: false,
+      dialogDelete: false,
       dialog_product_code:'',
       dialog_product_name:'',
       dialog_product_model:'',
@@ -518,7 +750,7 @@ export default {
       checked_register_data: [],
       headers: [
         { text: '부제품', align: 'center', value: '', },
-        { text: '분류', align: 'center', value: 'product_type', },
+        { text: '부제품', align: 'center', value: 'product_type', },
         { text: '관리코드', align: 'center', value: 'product_code', },
         { text: '제품명', align: 'center', value: 'product_name', },
         { text: '모델명', align: 'center', value: 'product_model', },
@@ -538,6 +770,18 @@ export default {
         { text: '사양', align: 'center', value: 'product_spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: '단가', align: 'center', value: 'unit_price', },
+      ],
+      dialog_edit_headers:[
+        { text: '부제품', align: 'center', value: 'product_type', },
+        { text: '관리코드', align: 'center', value: 'product_code', },
+        { text: '제품명', align: 'center', value: 'product_name', },
+        { text: '모델명', align: 'center', value: 'product_model', },
+        { text: '사양', align: 'center', value: 'product_spec', },
+        { text: '제조사', align: 'center', value: 'manufacturer', },
+        { text: '필요수량', align: 'center', value: 'product_num', },
+        { text: '재고', align: 'center', value: 'stock_num', },
+        { text: '단가', align: 'center', value: 'unit_price', },
+        { text: '총액', align: 'center', value: 'product_price', },
       ],
       dialog_searched_data:[
         {
@@ -581,9 +825,11 @@ export default {
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '필요수량', align: 'center',value: 'product_num',  sortable: false},
+        { text: '하위 추가', align: 'center',value: 'addition',  sortable: false},
       ],
       product_data: [
         {
+          finished_product_name: '제품명AAA',
           product_capacity: '390VAC 500kW',
           id:'300vac_500kW',
           button_toggle:true,
@@ -666,6 +912,7 @@ export default {
           ],
         },
         {
+          finished_product_name: '제품명AAA',
           product_capacity: '690VAC 500kW',
           id:'690vac_500kW',
           product_info: [
@@ -752,6 +999,9 @@ export default {
     deleteSelectedData(){
       this.dialog_selected_data = this.dialog_selected_data.filter( x => !this.checked_register_data.includes(x));
       this.checked_register_data = [];
+    },
+    addSubProduct(){
+      this.sub_product++;
     },
     // show_card(id){
     //   let set_id = document.querySelector('#'+id);
