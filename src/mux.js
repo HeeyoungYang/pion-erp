@@ -2,7 +2,11 @@
 import * as XLSX from "xlsx"; // npm install xlsx
 import axios from 'axios'; // npm install axios
 import router from '@/router/index'; // npm install vue-router
-import config from '@/mux.json';
+import configJson from '@/mux.json';
+import Vue from 'vue';
+import VueCookies from 'vue-cookies';
+
+Vue.use(VueCookies);
 
 // @ts-check
 
@@ -20,16 +24,16 @@ mux.Server = {
 
   /**
    * @private
-   * Axios 인스턴스
-   * 타임아웃 : 5분
+   *
    * @constant
    * @type {import('axios').AxiosInstance}
    * @memberof mux.Server
    */
 
-  defaultTimeout: config.defaultTimeout, // 기본 타임아웃
+  defaultTimeout: configJson.defaultTimeout, // 기본 타임아웃
+  // Axios 인스턴스
   axiosInstance : axios.create({
-    // baseURL: 'https://Blabla/api/'
+    // baseURL: configJson.baseURL
   }),
   
   /**
@@ -46,15 +50,26 @@ mux.Server = {
     };
     try {
       this.setObjFromPathOrObject(defaultObj, pathOrObject);
-      this.axiosInstance.defaults.timeout = defaultObj.timeout;
 
       const sendData = {};
       Object.keys(defaultObj).forEach(key => {
-        if (key !== 'timeout'){
-          sendData[key] = defaultObj[key];
-        }
+        sendData[key] = defaultObj[key];
       });
-      router.push(sendData);
+      if (sendData.path !== '/'){
+        try {
+          let result = await this.get(sendData); // 페이지 이동 전 path 로 Get 요청을 통해 토큰 및 권한 인증
+          if (result){
+            router.push(sendData.path);
+          }else {
+            this.logOut();
+          }
+        } catch (error) {
+          this.logOut();  
+        }
+      }else {
+        this.logOut();
+      }
+
     } catch (error) {
       if (axios.isCancel(error)) {
         console.error(defaultObj.path+' Move canceled:', error.message); // 요청이 취소된 경우
@@ -67,6 +82,7 @@ mux.Server = {
         console.error(defaultObj.path+' Move error:', error.message); // 기타 에러
       }
     }
+    this.axiosInstance.defaults.timeout = this.defaultTimeout;
   },
 
 
@@ -222,8 +238,10 @@ mux.Server = {
 
         const response = await this.axiosInstance.post(reqObj.path, formData);
   
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
         resolve(response);
       } catch (error) {
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
         reject(error)
       }
     });
@@ -305,7 +323,17 @@ mux.Server = {
             response = await this.axiosInstance.get(defaultObj.path, sendData);
             break;
         }
-        this.axiosInstance = axios.create();
+
+        // 응답에 accessToken 이 있으면 localStorage 에, refreshToken 이 있으면 쿠키에 저장
+        if (response.data){
+          if (response.data.accessToken){
+            localStorage.setItem('accessToken', response.data.accessToken)
+          }
+          if (response.data.refreshToken){
+            Vue.$cookies.set('refreshToken', response.data.refreshToken, configJson.refreshTokenCookieExpiration);
+          }
+        }
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
         resolve(response);
       } catch (error) {
         if (axios.isCancel(error)) {
@@ -318,10 +346,24 @@ mux.Server = {
         } else {
           console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Request error:', error.message); // 기타 에러
         }
-        this.axiosInstance = axios.create();
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
         reject(error);
       }
     });
+
+  },
+
+  /**
+   * 로그아웃 함수 - 로컬 스토리지와 쿠키 clear + 로그인 페이지('/')로 이동
+   * @example
+   * mux.Server.logOut();
+   */
+  logOut() {
+    localStorage.clear();
+    Vue.$cookies.keys().forEach(key =>{
+      Vue.$cookies.remove(key);
+    });
+    router.push('/');
   },
 
   setObjFromPathOrObject(defaultObj, pathOrObject) {
@@ -337,6 +379,50 @@ mux.Server = {
   },
 
 }
+// Axios인스턴스 설정: 요청 시마다 헤더에 토큰을 추가
+mux.Server.axiosInstance.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
+
+// Axios인스턴스 설정: 백엔드 토큰 만료 응답에 대해 토큰 새로고침 후 재시도
+mux.Server.axiosInstance.interceptors.response.use(
+  response => {
+    return response;
+  },
+  async error => {
+    const originalRequest = error.config;
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const refreshToken = Vue.$cookies.get('refreshToken');
+      if (refreshToken) {
+        try {
+          // RefreshToken을 사용하여 새로운 AccessToken을 요청합니다.
+          const response = await axios.post('/token-refresh', { refreshToken });
+          const newAccessToken = response.data.accessToken;
+          localStorage.setItem('accessToken', newAccessToken);
+          // 기존 요청을 재시도합니다.
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return axios(originalRequest);
+        } catch (refreshError) {
+          // RefreshToken을 사용하여 AccessToken을 갱신하는데 실패한 경우 로그아웃 처리 등을 수행할 수 있습니다.
+          console.error('AccessToken 갱신 실패:', refreshError);
+          // 로그아웃
+          mux.Server.logOut();
+        }
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 /**
  * Get 관련 유틸리티 함수 그룹

@@ -1,3 +1,5 @@
 {
-  "defaultTimeout": 300000
+  "defaultTimeout": 300000,
+  "refreshTokenCookieExpiration": "7d",
+  "baseURL": "https://pion-bla-bla.com"
 }
