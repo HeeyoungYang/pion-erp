@@ -33,10 +33,13 @@
             md="9"
           >
             <v-text-field
+              id="idField"
               label="아이디"
               filled
+              :value="idValue"
             ></v-text-field>
             <v-text-field
+              id="pwField"
               label="비밀번호"
               type="password"
               filled
@@ -49,16 +52,17 @@
             style="padding-top: 0px"
           >
 
-            <router-link to="/home">
+            <!-- <router-link to="/home"> -->
               <v-btn
                 block
                 style="padding: 25px 0px;"
                 color="primary"
                 class="text-h6 font-weight-black"
+                @click="login"
               >
                 로그인
               </v-btn>
-            </router-link>
+            <!-- </router-link> -->
           </v-col>
           <v-col
             cols="12"
@@ -139,11 +143,17 @@
   </v-row>
 </template>
 <script>
+import mux from '@/mux';
+import Vue from 'vue';
 export default {
+  mounted(){
+    console.log('Vue.$cookies.keys() :>> ', Vue.$cookies.keys());
+  },
   data(){
     return{
         dialog: false,
-        checkbox: true,
+        checkbox: Vue.$cookies.keys().includes(this.$configJson.cookies.id),
+        idValue: Vue.$cookies.keys().includes(this.$configJson.cookies.id) ? Vue.$cookies.get(this.$configJson.cookies.id) : ''
     }
   },
   methods: {
@@ -151,6 +161,46 @@ export default {
     reissuePasswordFunc(){
       this.dialog = false;
     },
+    async login(){
+      const id = document.getElementById('idField').value;
+      const pw = document.getElementById('pwField').value;
+      if (process.env.NODE_ENV === 'production'){
+
+        mux.Server.post({
+          path:'/login', id, pw
+        }).then(result => {
+          alert(result)
+          console.log('result :>> ', result);
+          if (this.checkbox){
+            Vue.$cookies.set(this.$configJson.cookies.id, id);
+          }else {
+            Vue.$cookies.remove(this.$configJson.cookies.id);
+          }
+        }).catch(err => {
+          console.error('err :>> ', err);
+          switch (err.message) {
+            case 'password':
+              alert('비밀번호 오류');
+              break;
+            case 'id':
+              alert('존재하지 않는 아이디');
+              break;
+          
+            default:
+              alert(err.message);
+              break;
+          }
+        });
+
+      }else {
+        if (this.checkbox){
+          Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');
+        }else {
+          Vue.$cookies.remove(this.$configJson.cookies.id);
+        }
+        mux.Server.move({path:'/home'});
+      }
+    }
   },
 
 }

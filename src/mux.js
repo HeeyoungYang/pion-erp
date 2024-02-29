@@ -55,19 +55,25 @@ mux.Server = {
       Object.keys(defaultObj).forEach(key => {
         sendData[key] = defaultObj[key];
       });
-      if (sendData.path !== '/'){
-        try {
-          let result = await this.get(sendData); // 페이지 이동 전 path 로 Get 요청을 통해 토큰 및 권한 인증
-          if (result){
-            router.push(sendData.path);
-          }else {
-            this.logOut();
+      if (process.env.NODE_ENV === 'production'){
+
+        if (sendData.path !== '/'){
+          try {
+            let result = await this.get(sendData); // 페이지 이동 전 path 로 Get 요청을 통해 토큰 및 권한 인증
+            if (result){
+              router.push(sendData.path);
+            }else {
+              this.logOut();
+            }
+          } catch (error) {
+            this.logOut();  
           }
-        } catch (error) {
-          this.logOut();  
+        }else {
+          this.logOut();
         }
+
       }else {
-        this.logOut();
+        router.push(sendData.path);
       }
 
     } catch (error) {
@@ -330,7 +336,7 @@ mux.Server = {
             localStorage.setItem('accessToken', response.data.accessToken)
           }
           if (response.data.refreshToken){
-            Vue.$cookies.set('refreshToken', response.data.refreshToken, configJson.refreshTokenCookieExpiration);
+            Vue.$cookies.set(configJson.$cookies.refreshToken, response.data.refreshToken, configJson.refreshTokenCookieExpiration);
           }
         }
         this.axiosInstance.defaults.timeout = this.defaultTimeout;
@@ -361,6 +367,7 @@ mux.Server = {
   logOut() {
     localStorage.clear();
     Vue.$cookies.keys().forEach(key =>{
+      if (key !== configJson.cookies.id)
       Vue.$cookies.remove(key);
     });
     router.push('/');
@@ -402,7 +409,7 @@ mux.Server.axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      const refreshToken = Vue.$cookies.get('refreshToken');
+      const refreshToken = Vue.$cookies.get(configJson.$cookies.refreshToken);
       if (refreshToken) {
         try {
           // RefreshToken을 사용하여 새로운 AccessToken을 요청합니다.

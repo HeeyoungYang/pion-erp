@@ -1,5 +1,9 @@
 {
   "defaultTimeout": 300000,
   "refreshTokenCookieExpiration": "7d",
-  "baseURL": "https://pion-bla-bla.com"
+  "baseURL": "https://pion-bla-bla.com",
+  "cookies": {
+    "id": "savedID",
+    "refreshToken": "refreshToken"
+  }
 }
