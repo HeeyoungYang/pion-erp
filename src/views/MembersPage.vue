@@ -142,15 +142,11 @@
               :headers="headers"
               :items="members"
               :search="search"
-              actionsSlotName="actions"
-              :edited-item="editedItem"
+              editable
+              deletable
+              @edit="editItem"
+              @delete="deleteItem"
             >
-              <template v-slot:actions="{ item }">
-                <!-- ▼ 수정 아이콘(연필) -->
-                <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-                <!-- ▼ 삭제 아이콘(휴지통) -->
-                <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-              </template>
             </DataTableComponent>
             <ModalDialogComponent
               :dialog-value="dialogDelete"
@@ -202,7 +198,7 @@ export default {
         {text: '내선', align: 'center', value: 'extension'},
         {text: '이메일', align: 'center', value: 'email'},
         {text: '모바일', align: 'center', value: 'mobile'},
-        { text: '편집', value: 'actions', sortable: false },
+        // { text: '편집', value: 'actions', sortable: false },
       ],
       members: [],
       editedIndex: -1,
