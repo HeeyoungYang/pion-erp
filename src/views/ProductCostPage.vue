@@ -445,7 +445,7 @@
                         :items="labor_cost_data"
                         hide-default-footer
                         disable-pagination
-                        class="elevation-1"
+                        class="elevation-1 labor_cost_list"
                         disable-sort
                       >
                       </v-data-table>
@@ -1000,7 +1000,7 @@
                 :items="labor_cost_data"
                 hide-default-footer
                 disable-pagination
-                class="elevation-1 labor_cost_list"
+                class="elevation-1"
                 disable-sort
               >
                 <template v-slot:item="{ item }">
