@@ -139,7 +139,7 @@
               :key="i"
               :id="'sub_product'+i"
             >
-             <v-divider class="mb-4"></v-divider>
+              <v-divider class="mb-4"></v-divider>
               <v-row>
                 <v-col
                   cols="12" sm="6" lg="3"
@@ -560,62 +560,6 @@
                                 class="elevation-1"
                                 show-select
                               >
-                              <!-- <template v-slot:item="{ item, expand, isExpanded }">
-                                  <tr @click="expand(!isExpanded)">
-                                    <td class="text-right">
-                                      <v-btn small icon color="default" v-if="item.belong_data">
-                                        <v-icon> {{ isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-                                      </v-btn>
-                                    </td>
-                                    <td class="text-center">
-                                      {{item.product_type}}
-                                    </td>
-                                    <td class="text-center">
-                                      {{item.product_code}}
-                                    </td>
-                                    <td class="text-center">
-                                      {{item.product_name}}
-                                    </td>
-                                    <td class="text-center">
-                                      {{item.product_model}}
-                                    </td>
-                                    <td class="text-center">
-                                      {{item.product_spec}}
-                                    </td>
-                                    <td class="text-center">
-                                      {{item.manufacturer}}
-                                    </td>
-                                    <td class="text-center">
-                                      {{item.product_num}}
-                                    </td>
-                                    <td class="text-center">
-                                      {{item.stock_num}}
-                                    </td>
-                                    <td class="text-center">
-                                      {{item.unit_price}}
-                                    </td>
-                                    <td class="text-center">
-                                      {{item.product_price}}
-                                    </td>
-                                  </tr>
-                                </template>
-
-                                <template v-slot:expanded-item = "{item}">
-                                  <tr v-for="(belong_data,index) in item.belong_data" :key="index" style="background-color: #efefef;">
-                                    <td></td>
-                                    <td></td>
-                                    <td class="text-center">{{belong_data.product_code}}</td>
-                                    <td class="text-center">{{belong_data.product_name}}</td>
-                                    <td class="text-center">{{belong_data.product_model}}</td>
-                                    <td class="text-center">{{belong_data.product_spec}}</td>
-                                    <td class="text-center">{{belong_data.manufacturer}}</td>
-                                    <td class="text-center">{{belong_data.product_num}}</td>
-                                    <td class="text-center">{{belong_data.stock_num}}</td>
-                                    <td class="text-center">{{belong_data.unit_price}}</td>
-                                    <td class="text-center">{{belong_data.product_price}}</td>
-                                  </tr>
-                                </template> -->
-
                               </v-data-table>
                             </v-col>
                           </v-row>
@@ -959,7 +903,7 @@ export default {
               pe_number: 'PE240207-004',
               inbound_date: '2024-02-07',
               unit_price: '100,000',
-              stock_price: '100,000',
+              product_price: '100,000',
             },
           ]
         }

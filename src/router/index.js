@@ -6,6 +6,7 @@ import MembersPage from '@/views/MembersPage'
 import AuthorizationPage from '@/views/AuthorizationPage'
 import ProductSearchPage from '@/views/ProductSearchPage'
 import ProductSubsidiaryPage from '@/views/ProductSubsidiaryPage'
+import ProductCostPage from '@/views/ProductCostPage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
 import MyPage from '@/views/MyPage'
 import CalendarPage from '@/views/CalendarPage'
@@ -34,6 +35,11 @@ const routes = [
     path: '/product-subsidiary',
     name: 'ProductSubsidiaryPage',
     component: ProductSubsidiaryPage
+  },
+  {
+    path: '/product-cost',
+    name: 'ProductCostPage',
+    component: ProductCostPage
   },
   {
     path: '/estimate-search',

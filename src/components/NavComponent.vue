@@ -46,7 +46,7 @@
             </v-list-item-icon>
           </v-list-item>
         </v-list-group>
-        <v-list-group
+        <!-- <v-list-group
           :value="estimateMenu"
           prepend-icon="mdi-invoice-list"
         >
@@ -56,6 +56,28 @@
 
           <v-list-item
               v-for="([title, icon, to], i) in estimatePages"
+              :key="i"
+              link
+              :to="to"
+              class="pl-6 grey lighten-3"
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group> -->
+        <v-list-group
+          :value="backDataMenu"
+          prepend-icon="mdi-file-cog"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>B`Data</v-list-item-title>
+          </template>
+
+          <v-list-item
+              v-for="([title, icon, to], i) in backDataPages"
               :key="i"
               link
               :to="to"
@@ -148,7 +170,7 @@
 </style>
 <script>
   export default {
-    props: ['userMenu', 'productMenu', 'estimateMenu'],
+    props: ['userMenu', 'productMenu', 'estimateMenu', 'backDataMenu'],
     data: () => ({
       drawer: null,
       menuList: [
@@ -164,11 +186,17 @@
       productPages: [
         ['재고 현황', '', '/product-search'],
         ['제품 리스트', '', '/product-subsidiary'],
+        ['원가', '', '/product-cost'],
       ],
 
       estimatePages: [
         ['견적 작성', '', '/home'],
         ['견적 조회', '', '/estimate-search'],
+      ],
+
+      backDataPages: [
+        ['재고/자재 정보', '', '/home'],
+        // ['시중 노임단가', '', '/home'],
       ],
 
       adminPages: [
