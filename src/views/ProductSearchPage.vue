@@ -229,6 +229,20 @@
                 <v-col
                   cols="12"
                 >
+                  <v-chip
+                      class="ma-2"
+                      color="indigo"
+                      text-color="white"
+                    >
+                      총 재고 : 11
+                  </v-chip>
+                  <v-chip
+                    class="ma-2"
+                    color="indigo"
+                    text-color="white"
+                  >
+                    총 금액 : 105,700
+                  </v-chip>
                   <v-data-table
                     dense
                     :headers="headers"
@@ -294,7 +308,7 @@ export default {
           product_name: '제품1',
           product_model: '모델A',
           product_spec: '690V 100A',
-          manufacturer: '제조사AA',
+          manufacturer: '파이온일렉트릭',
           product_num: '3',
           product_condition: 'G',
           pe_number: 'PE240207-001',
@@ -308,7 +322,7 @@ export default {
           product_name: '제품2',
           product_model: '모델B',
           product_spec: '480V 100A',
-          manufacturer: '제조사AA',
+          manufacturer: '파이온일렉트릭',
           product_num: '2',
           product_condition: 'G',
           pe_number: 'PE240207-002',
@@ -322,7 +336,7 @@ export default {
           product_name: '제품3',
           product_model: '모델C',
           product_spec: '690V 100A',
-          manufacturer: '제조사AA',
+          manufacturer: '파이온일렉트릭',
           product_num: '5',
           product_condition: 'G',
           pe_number: 'PE240207-003',
@@ -336,7 +350,7 @@ export default {
           product_name: '제품4',
           product_model: '모델D',
           product_spec: '480V 100A',
-          manufacturer: '제조사AA',
+          manufacturer: '파이온일렉트릭',
           product_num: '1',
           product_condition: 'G',
           pe_number: 'PE240207-004',

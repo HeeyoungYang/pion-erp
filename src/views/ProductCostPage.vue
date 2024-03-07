@@ -520,6 +520,12 @@
                       <tr class="font-weight-black info_title">
                         <td>2</td>
                         <td colspan="4">노무비
+                        </td>
+                        <td>000</td>
+                      </tr>
+                      <tr>
+                        <td></td>
+                        <td colspan="4">가. 직접 노무비
                           <v-btn
                             color="primary"
                             x-small
@@ -531,15 +537,18 @@
                         </td>
                         <td>000</td>
                       </tr>
-                      <tr>
-                        <td></td>
-                        <td colspan="4">가. 직접 노무비</td>
-                        <td>000</td>
-                      </tr>
-                      <tr v-for="(labor, idx) in item.direct_labor_calculation" :key="idx">
+                      <!-- <tr v-for="(labor, idx) in item.direct_labor_calculation" :key="idx">
                         <td></td>
                         <td style="padding-left:40px;">{{ labor.labor_name }}</td>
                         <td>식</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr> -->
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -967,6 +976,15 @@
             ><span class="font-weight-black primary--text text-h6 mr-4">노무비 산출</span>
 
               <v-btn
+                color="primary"
+                small
+                class="mr-2"
+                elevation="2"
+                @click="rowAddDialogLaborCostData"
+              >
+                행 추가
+              </v-btn>
+              <v-btn
                 color="success"
                 small
                 class="mr-2"
@@ -994,6 +1012,80 @@
 
           <v-row>
             <v-col cols="12">
+              <v-data-table
+                :headers="dialog_labor_cost_headers"
+                :items="dialog_labor_cost_data"
+                hide-default-footer
+                hide-default-item
+                disable-pagination
+                class="elevation-1"
+                disable-sort
+              >
+                <template v-slot:item="{ item }">
+                  <tr>
+                    <td align="center">
+                      <v-select
+                        v-model="item.no"
+                        :items="labor_no_list"
+                        dense
+                        hide-details
+                        filled
+                        style="width:100px"
+                        @change="selectLaborNo(item.no, item.idx)"
+                      ></v-select>
+                    </td>
+                    <td align="center">
+                      {{ item.contract_name }}
+                    </td>
+                    <td align="center">
+                      <v-select
+                        v-if="item.contract_type == ''"
+                        v-model="item.contract_type"
+                        :items="labor_contract_type_list"
+                        dense
+                        hide-details
+                        filled
+                        style="width:200px"
+                        @change="selectLaborContractType(item.contract_type, item.idx)"
+                      ></v-select>
+                      {{ item.contract_type }}
+                    </td>
+                    <td align="center">
+                      <v-select
+                        v-if="item.occupation == ''"
+                        v-model="item.occupation"
+                        :items="labor_occupation_list"
+                        dense
+                        hide-details
+                        filled
+                        style="width:200px"
+                        @change="selectLaborOccupation(item.occupation, item.idx)"
+                      ></v-select>
+                      {{ item.occupation }}
+                    </td>
+                    <td align="center">{{ item.man_day }}</td>
+                    <td align="center">{{ item.surcharge_rate }}</td>
+                    <td align="center">{{ item.design_adjustment_rate }}</td>
+                    <td align="center">{{ item.man_hour }}</td>
+                    <td align="center">{{ item.man_day_unit_price }}</td>
+                    <td align="center">
+                      <v-text-field
+                        v-model="item.quantity"
+                        dense
+                        hide-details
+                        filled
+                        style="width:100px"
+                        type="number"
+                        @keyup="caculateTotalAmount(item.man_hour, item.man_day_unit_price, item.quantity, item.idx)"
+                      ></v-text-field>
+                    </td>
+                    <td align="center">{{ item.total_amount }}</td>
+                    <td align="center">{{ item.no_total_amount }}</td>
+                  </tr>
+                </template>
+              </v-data-table>
+            </v-col>
+            <v-col>
               <v-data-table
                 dense
                 :headers="labor_cost_headers"
@@ -1049,6 +1141,9 @@ export default {
         dialog_search_product: false,
         dialog_calculate_labor: false,
         product_name:'',
+        labor_no_list:['품-1','품-2','품-3','품-4','품-5','품-6','품-7',],
+        labor_contract_type_list:[],
+        labor_occupation_list:['비계공', '변전전공', '보통인부'],
         tab_main_items: [
           '조회', '계산',
         ],
@@ -1099,8 +1194,40 @@ export default {
           { text: '단가', align: 'center', value: 'unit_price', },
           { text: '총액', align: 'center', value: 'product_price', },
         ],
+
+        dialog_labor_cost_headers: [
+          { text: '품번', align: 'center', value: 'no'},
+          { text: '공종', align: 'center', value: 'contract_name', },
+          { text: '규격', align: 'center', value: 'contract_type', },
+          { text: '직종', align: 'center', value: 'occupation', },
+          { text: '공량(M/D)', align: 'center', value: 'man_day', },
+          { text: '할증율', align: 'center', value: 'surcharge_rate', },
+          { text: '설계조정률', align: 'center', value: 'design_adjustment_rate', },
+          { text: '공량(M/H)', align: 'center', value: 'man_hour', },
+          { text: '단가(M/D)', align: 'center', value: 'man_day_unit_price', },
+          { text: '수량', align: 'center', value: 'quantity', },
+          { text: '금액', align: 'center', value: 'total_amount', },
+          { text: '삭제', align: 'center', value: 'actions', },
+        ],
         dialog_search_product_data:[
           {finished_product_name:'제품A',product_type:'a',product_code:'a',product_name:'a',product_model:'a',product_spec:'a',manufacturer:'a',product_num:'a',unit_price:'a',product_price:'a'},
+        ],
+        dialog_labor_cost_data:[
+          {
+            idx:0,
+            no:'',
+            contract_name:'',
+            contract_type:'',
+            occupation:'',
+            man_day:'',
+            surcharge_rate:'',
+            design_adjustment_rate:'',
+            man_hour:'',
+            man_day_unit_price:'',
+            quantity:'',
+            total_amount:'',
+            no_total_amount:'',
+          },
         ],
         search_cost_data: [
           {
@@ -1384,6 +1511,125 @@ export default {
   methods: {
     addCostList(){
       this.dialog_search_product = false;
+    },
+    selectLaborNo(no, idx){
+      if(no == '품-1'){
+        this.dialog_labor_cost_data[idx].contract_name = '고압케이블 포설'
+        this.dialog_labor_cost_data[idx].contract_type = '240㎟, 1C'
+        this.dialog_labor_cost_data[idx].occupation = '고압 케이블전공'
+        this.dialog_labor_cost_data[idx].man_day = '0.136'
+        this.dialog_labor_cost_data[idx].surcharge_rate = '115%'
+        this.dialog_labor_cost_data[idx].design_adjustment_rate = '1.0000'
+        this.dialog_labor_cost_data[idx].man_hour = '0.156'
+        this.dialog_labor_cost_data[idx].man_day_unit_price = '290333'
+      }else if(no == '품-2'){
+        this.dialog_labor_cost_data[idx].contract_name = '저압케이블 포설'
+        this.dialog_labor_cost_data[idx].contract_type = ''
+        this.labor_contract_type_list = []
+        this.labor_contract_type_list.push('6㎟, 2C', '2.5㎟, 6C')
+        this.dialog_labor_cost_data[idx].occupation = '저압 케이블전공'
+        this.dialog_labor_cost_data[idx].surcharge_rate = '120%'
+        this.dialog_labor_cost_data[idx].design_adjustment_rate = '1.0000'
+        this.dialog_labor_cost_data[idx].man_day_unit_price = '290333'
+      }else if(no == '품-3'){
+        this.dialog_labor_cost_data[idx].contract_name = '전력케이블 단말처리'
+        this.dialog_labor_cost_data[idx].contract_type = '240㎟, 1C'
+        this.dialog_labor_cost_data[idx].occupation = '고압 케이블전공'
+        this.dialog_labor_cost_data[idx].man_day = '1.170'
+        this.dialog_labor_cost_data[idx].surcharge_rate = '120%'
+        this.dialog_labor_cost_data[idx].design_adjustment_rate = '1.0000'
+        this.dialog_labor_cost_data[idx].man_hour = '1.404'
+        this.dialog_labor_cost_data[idx].man_day_unit_price = '353395'
+      }else if(no == '품-4'){
+        this.dialog_labor_cost_data[idx].contract_name = 'Cubicle 설치'
+        this.dialog_labor_cost_data[idx].contract_type = ''
+        this.labor_contract_type_list = []
+        this.labor_contract_type_list.push('6㎥, 1.5 Ton이하', '10㎥, 3 Ton이하')
+        this.dialog_labor_cost_data[idx].occupation = ''
+        this.dialog_labor_cost_data[idx].surcharge_rate = '100%'
+        this.dialog_labor_cost_data[idx].design_adjustment_rate = '1.0000'
+      }else if(no == '품-5'){
+        this.dialog_labor_cost_data[idx].contract_name = '전기실 전원 케이블 포설'
+        this.dialog_labor_cost_data[idx].contract_type = '50sq, 3C'
+        this.dialog_labor_cost_data[idx].occupation = '저압 케이블전공'
+        this.dialog_labor_cost_data[idx].surcharge_rate = '200%'
+        this.dialog_labor_cost_data[idx].design_adjustment_rate = '1.0000'
+      }else if(no == '품-6'){
+        this.dialog_labor_cost_data[idx].contract_name = '케이블 트레이'
+        this.dialog_labor_cost_data[idx].contract_type = ''
+        this.labor_contract_type_list = []
+        this.labor_contract_type_list.push('단면적 50,000㎟ 이하', '단면적 30,000㎟ 이하')
+        this.dialog_labor_cost_data[idx].occupation = '내선전공'
+        this.dialog_labor_cost_data[idx].surcharge_rate = '144%'
+        this.dialog_labor_cost_data[idx].design_adjustment_rate = '1.0000'
+      }else if(no == '품-7'){
+        this.dialog_labor_cost_data[idx].contract_name = '통신케이블 포설'
+        this.dialog_labor_cost_data[idx].contract_type = '지중 인력견인 포설'
+        this.dialog_labor_cost_data[idx].occupation = '보통인부'
+        this.dialog_labor_cost_data[idx].surcharge_rate = '100%'
+        this.dialog_labor_cost_data[idx].design_adjustment_rate = '1.0000'
+      }
+
+    },
+    selectLaborContractType(type, idx){
+      if(type == '6㎟, 2C'){
+        this.dialog_labor_cost_data[idx].man_day = '0.018'
+        this.dialog_labor_cost_data[idx].man_hour = '0.022'
+      } else if(type == '2.5㎟, 6C') {
+          this.dialog_labor_cost_data[idx].man_day = '0.035'
+          this.dialog_labor_cost_data[idx].man_hour = '0.042'
+      }
+    },
+    selectLaborOccupation(occ, idx){
+      if(occ == '비계공'){
+        this.dialog_labor_cost_data[idx].man_day_unit_price = '281721'
+        if(this.dialog_labor_cost_data[idx].contract_type == '6㎥, 1.5 Ton이하'){
+          this.dialog_labor_cost_data[idx].man_day = '2.00'
+          this.dialog_labor_cost_data[idx].man_hour = '2.000'
+        }else if(this.dialog_labor_cost_data[idx].contract_type == '10㎥, 3 Ton 이하'){
+          this.dialog_labor_cost_data[idx].man_day = '4.00'
+          this.dialog_labor_cost_data[idx].man_hour = '4.000'
+        }
+      }else if(occ == '변전전공'){
+        this.dialog_labor_cost_data[idx].man_day_unit_price = '451145'
+        if(this.dialog_labor_cost_data[idx].contract_type == '6㎥, 1.5 Ton이하'){
+          this.dialog_labor_cost_data[idx].man_day = '4.05'
+          this.dialog_labor_cost_data[idx].man_hour = '4.050'
+        }else if(this.dialog_labor_cost_data[idx].contract_type == '10㎥, 3 Ton 이하'){
+          this.dialog_labor_cost_data[idx].man_day = '7.05'
+          this.dialog_labor_cost_data[idx].man_hour = '7.050'
+        }
+      }else if(occ == '보통인부'){
+        this.dialog_labor_cost_data[idx].man_day_unit_price = '161858'
+        if(this.dialog_labor_cost_data[idx].contract_type == '6㎥, 1.5 Ton이하'){
+          this.dialog_labor_cost_data[idx].man_day = '3.30'
+          this.dialog_labor_cost_data[idx].man_hour = '3.300'
+        }else if(this.dialog_labor_cost_data[idx].contract_type == '10㎥, 3 Ton 이하'){
+          this.dialog_labor_cost_data[idx].man_day = '5.60'
+          this.dialog_labor_cost_data[idx].man_hour = '5.600'
+        }
+      }
+    },
+    caculateTotalAmount(man_hour, unit_price, quantity, idx){
+      this.dialog_labor_cost_data[idx].total_amount = man_hour*unit_price*quantity;
+    },
+    rowAddDialogLaborCostData(){
+      let index = this.dialog_labor_cost_data.length;
+      this.dialog_labor_cost_data.push({
+                                        idx: index,
+                                        no:'',
+                                        contract_name:'',
+                                        contract_type:'',
+                                        occupation:'',
+                                        man_day:'',
+                                        surcharge_rate:'',
+                                        design_adjustment_rate:'',
+                                        man_hour:'',
+                                        man_day_unit_price:'',
+                                        quantity:'',
+                                        total_amount:'',
+                                        no_total_amount:'',
+                                      });
     },
   },
 

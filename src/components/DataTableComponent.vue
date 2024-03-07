@@ -39,6 +39,9 @@
             :sort-by="sortBy"
             :group-by="groupBy"
             v-model="selected_data"
+            :style="tableStyle ? tableStyle : ''"
+            :hide-default-footer="hideDefaultFooter"
+            :disable-pagination="disablePagination"
           >
             <template v-slot:[`group.header`]="{ group, headers, toggle, isOpen }">
               <td :colspan="headers.length" @click="toggle"  style="cursor: pointer;">
@@ -161,6 +164,9 @@
  * @property {Boolean} [deletable] - 항목 삭제 버튼 여부(default:false)
  * @property {Boolean} [editableBelong] - 내부 항목 편집 버튼 여부(default:false)
  * @property {Boolean} [deletableBelong] - 내부 항목 삭제 버튼 여부(default:false)
+ * @property {String} [tableStyle] - 테이블 style(default:'')
+ * @property {Boolean} [hideDefaultFooter] - 기본 footer 숨기기 여부(default:false)
+ * @property {Boolean} [disablePagination] - 페이징 방지 여부(default:false)
  *
  * @emits input
  * @emits deleteGroup
@@ -193,6 +199,9 @@ export default {
     deletable: Boolean,
     editableBelong: Boolean,
     deletableBelong: Boolean,
+    tableStyle: String,
+    hideDefaultFooter: Boolean,
+    disablePagination: Boolean,
     value: {
       type: null,
       default: () => []
