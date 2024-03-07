@@ -398,7 +398,7 @@
               :key="index"
               >
                 <v-expansion-panel-header class="font-weight-black primary--text text-h6">
-                  {{ product.product_capacity }}
+                  {{ product.finished_product_name }} ({{ product.product_capacity }})
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-divider class="mb-4"></v-divider>
@@ -429,6 +429,12 @@
                   </v-row> -->
                   <v-row>
                     <v-col cols="12">
+                      <v-chip
+                        color="indigo"
+                        text-color="white"
+                      >
+                        총 금액 :
+                      </v-chip>
                       <v-btn
                         color="blue-grey darken-1"
                         fab
@@ -573,7 +579,10 @@
                         :headers="headers"
                         :items="product.product_info"
                         :item-key="product.product_info.product_code"
+                        hide-default-footer
+                        disable-pagination
                         group-by="product_type"
+                        style="border-bottom: 3px solid #c5c5c5"
                       >
                         <template v-slot:[`group.header`]="{ group, headers, toggle, isOpen }">
                           <td :colspan="headers.length" @click="toggle"  style="cursor: pointer;">
@@ -599,56 +608,56 @@
                           </td> -->
                         </template>
                         <template v-slot:item="{ item, expand, isExpanded }">
-                            <tr @click="expand(!isExpanded)">
-                              <td class="text-right">
-                                <v-btn small icon color="default" v-if="item.belong_data">
-                                  <v-icon> {{ isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-                                </v-btn>
-                              </td>
-                              <td class="text-center">
-                                {{item.product_code}}
-                              </td>
-                              <td class="text-center">
-                                {{item.product_name}}
-                              </td>
-                              <td class="text-center">
-                                {{item.product_model}}
-                              </td>
-                              <td class="text-center">
-                                {{item.product_spec}}
-                              </td>
-                              <td class="text-center">
-                                {{item.manufacturer}}
-                              </td>
-                              <td class="text-center">
-                                {{item.product_num}}
-                              </td>
-                              <td class="text-center">
-                                {{item.stock_num}}
-                              </td>
-                              <td class="text-center">
-                                {{item.unit_price}}
-                              </td>
-                              <td class="text-center">
-                                {{item.product_price}}
-                              </td>
-                            </tr>
-                          </template>
+                          <tr @click="expand(!isExpanded)">
+                            <td class="text-right">
+                              <v-btn small icon color="default" v-if="item.belong_data">
+                                <v-icon> {{ isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                              </v-btn>
+                            </td>
+                            <td class="text-center">
+                              {{item.product_code}}
+                            </td>
+                            <td class="text-center">
+                              {{item.product_name}}
+                            </td>
+                            <td class="text-center">
+                              {{item.product_model}}
+                            </td>
+                            <td class="text-center">
+                              {{item.product_spec}}
+                            </td>
+                            <td class="text-center">
+                              {{item.manufacturer}}
+                            </td>
+                            <td class="text-center">
+                              {{item.product_num}}
+                            </td>
+                            <td class="text-center">
+                              {{item.stock_num}}
+                            </td>
+                            <td class="text-center">
+                              {{item.unit_price}}
+                            </td>
+                            <td class="text-center">
+                              {{item.product_price}}
+                            </td>
+                          </tr>
+                        </template>
 
-                          <template v-slot:expanded-item = "{item}">
-                            <tr v-for="(belong_data,index) in item.belong_data" :key="index" style="background-color: #efefef;">
-                              <td></td>
-                              <td class="text-center">{{belong_data.product_code}}</td>
-                              <td class="text-center">{{belong_data.product_name}}</td>
-                              <td class="text-center">{{belong_data.product_model}}</td>
-                              <td class="text-center">{{belong_data.product_spec}}</td>
-                              <td class="text-center">{{belong_data.manufacturer}}</td>
-                              <td class="text-center">{{belong_data.product_num}}</td>
-                              <td class="text-center">{{belong_data.stock_num}}</td>
-                              <td class="text-center">{{belong_data.unit_price}}</td>
-                              <td class="text-center">{{belong_data.product_price}}</td>
-                            </tr>
-                          </template>
+                        <template v-slot:expanded-item = "{item}">
+                          <tr v-for="(belong_data,index) in item.belong_data" :key="index" style="background-color: #efefef;">
+                            <td></td>
+                            <td class="text-center">{{belong_data.product_code}}</td>
+                            <td class="text-center">{{belong_data.product_name}}</td>
+                            <td class="text-center">{{belong_data.product_model}}</td>
+                            <td class="text-center">{{belong_data.product_spec}}</td>
+                            <td class="text-center">{{belong_data.manufacturer}}</td>
+                            <td class="text-center">{{belong_data.product_num}}</td>
+                            <td class="text-center">{{belong_data.stock_num}}</td>
+                            <td class="text-center">{{belong_data.unit_price}}</td>
+                            <td class="text-center">{{belong_data.product_price}}</td>
+                          </tr>
+                        </template>
                       </v-data-table>
                     </v-col>
                   </v-row>
@@ -773,140 +782,335 @@ export default {
       ],
       product_data: [
         {
-          finished_product_name: '제품명AAA',
-          product_capacity: '390VAC 500kW',
-          id:'300vac_500kW',
+          finished_product_name: 'ESS GFM용 PCS',
+          product_capacity: '380VAC 500kW',
+          id:'380vac_500kW',
           button_toggle:true,
           product_info: [
             {
               product_type:'PCS Ass`Y',
-              product_code: '공장2F_E-09-02_PN-AF_SVG-001',
-              product_name: '원자재1',
-              product_model: '모델A',
-              product_spec: '690V 100A',
-              manufacturer: '제조사AA',
-              product_num: '3',
-              stock_num: '2',
-              product_condition: 'G',
-              pe_number: 'PE240207-001',
-              inbound_date: '2024-02-07',
-              unit_price: '100',
-              product_price: '300',
+              product_code: '공장2F_E-09-02',
+              product_name: 'IGBT & SMPS',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
               belong_data:[
                 {
-                  product_code: '공장2F_E-09-02_PN-AF_SVG-001',
+                  product_code: '공장2F_E-09-02',
                   product_name: '부자재1-1',
-                  product_model: '모델A',
-                  product_spec: '690V 100A',
-                  manufacturer: '제조사AA',
-                  product_num: '3',
-                  stock_num: '2',
-                  product_condition: 'G',
-                  pe_number: 'PE240207-001',
-                  inbound_date: '2024-02-07',
-                  unit_price: '100',
-                  product_price: '300',
+                  product_model: '',
+                  product_spec: '',
+                  manufacturer: '파이온일렉트릭',
+                  product_num: '1',
+                  stock_num: '',
+                  product_condition: '',
+                  pe_number: '',
+                  inbound_date: '',
+                  unit_price: '',
+                  product_price: '',
                 },
                 {
-                  product_code: '공장2F_E-09-02_PN-AF_SVG-001',
+                  product_code: '공장2F_E-09-02',
                   product_name: '부자재1-2',
-                  product_model: '모델A',
-                  product_spec: '690V 100A',
-                  manufacturer: '제조사AA',
-                  product_num: '3',
-                  stock_num: '2',
-                  product_condition: 'G',
-                  pe_number: 'PE240207-001',
-                  inbound_date: '2024-02-07',
-                  unit_price: '100',
-                  product_price: '300',
+                  product_model: '',
+                  product_spec: '',
+                  manufacturer: '파이온일렉트릭',
+                  product_num: '1',
+                  stock_num: '',
+                  product_condition: '',
+                  pe_number: '',
+                  inbound_date: '',
+                  unit_price: '',
+                  product_price: '',
                 }
               ]
             },
             {
               product_type:'PCS Ass`Y',
-              product_code: '공장2F_E-09-02_PN-AF_SVG-002',
-              product_name: '부자재2',
-              product_model: '모델B',
-              product_spec: '480V 100A',
-              manufacturer: '제조사AA',
-              product_num: '2',
-              stock_num: '2',
-              product_condition: 'G',
-              pe_number: 'PE240207-002',
-              inbound_date: '2024-02-07',
-              unit_price: '200',
-              product_price: '400',
+              product_code: '공장2F_E-09-02',
+              product_name: 'SPD, 퓨즈',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'PCS Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: '쿨링팬',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'PCS Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: '보호회로',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'PCS Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: '리액터',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'PCS Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: 'MCCB',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'PCS Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: 'EMC',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'PCS Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: 'DC Capacitor',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'PCS Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: '외함 및 기구',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
             },
             {
               product_type:'제어기 Ass`Y',
-              product_code: '공장2F_E-09-02_PN-AF_SVG-003',
-              product_name: '부자재3',
-              product_model: '모델C',
-              product_spec: '690V 100A',
-              manufacturer: '제조사AA',
-              product_num: '5',
-              stock_num: '2',
-              product_condition: 'G',
-              pe_number: 'PE240207-003',
-              inbound_date: '2024-02-07',
-              unit_price: '1,000',
-              product_price: '5,000',
+              product_code: '공장2F_E-09-02',
+              product_name: '제어기(LK11)',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'제어기 Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: '인터페이스보드',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'제어기 Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: 'SMPS(15VDC)',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'제어기 Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: 'SMPS Bracket',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'제어기 Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: 'HMI PC',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'제어기 Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: 'PLC',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              product_type:'제어기 Ass`Y',
+              product_code: '공장2F_E-09-02',
+              product_name: '통신케이블',
+              product_model: '',
+              product_spec: '',
+              manufacturer: '파이온일렉트릭',
+              product_num: '1',
+              stock_num: '',
+              product_condition: '',
+              pe_number: '',
+              inbound_date: '',
+              unit_price: '',
+              product_price: '',
             },
           ],
         },
-        {
-          finished_product_name: '제품명AAA',
-          product_capacity: '690VAC 500kW',
-          id:'690vac_500kW',
-          product_info: [
-            {
-              product_type:'PCS Ass`Y',
-              product_code: '공장2F_E-09-02_PN-AF_SVG-002',
-              product_name: '부자재2',
-              product_model: '모델B',
-              product_spec: '480V 100A',
-              manufacturer: '제조사AA',
-              product_num: '2',
-              stock_num: '2',
-              product_condition: 'G',
-              pe_number: 'PE240207-002',
-              inbound_date: '2024-02-07',
-              unit_price: '200',
-              product_price: '400',
-            },
-            {
-              product_type:'제어기 Ass`Y',
-              product_code: '공장2F_E-09-02_PN-AF_SVG-003',
-              product_name: '부자재3',
-              product_model: '모델C',
-              product_spec: '690V 100A',
-              manufacturer: '제조사AA',
-              product_num: '5',
-              stock_num: '2',
-              product_condition: 'G',
-              pe_number: 'PE240207-003',
-              inbound_date: '2024-02-07',
-              unit_price: '1,000',
-              product_price: '5,000',
-            },
-            {
-              product_type:'제어기 Ass`Y',
-              product_code: '공장2F_E-09-02_PN-AF_SVG-004',
-              product_name: '부자재4',
-              product_model: '모델D',
-              product_spec: '480V 100A',
-              manufacturer: '제조사AA',
-              product_num: '1',
-              stock_num: '2',
-              product_condition: 'G',
-              pe_number: 'PE240207-004',
-              inbound_date: '2024-02-07',
-              unit_price: '100,000',
-              product_price: '100,000',
-            },
-          ]
-        }
+        // {
+        //   finished_product_name: '제품명AAA',
+        //   product_capacity: '690VAC 500kW',
+        //   id:'690vac_500kW',
+        //   product_info: [
+        //     {
+        //       product_type:'PCS Ass`Y',
+        //       product_code: '공장2F_E-09-02_PN-AF_SVG-002',
+        //       product_name: '부자재2',
+        //       product_model: '모델B',
+        //       product_spec: '480V 100A',
+        //       manufacturer: '제조사AA',
+        //       product_num: '2',
+        //       stock_num: '2',
+        //       product_condition: 'G',
+        //       pe_number: 'PE240207-002',
+        //       inbound_date: '2024-02-07',
+        //       unit_price: '200',
+        //       product_price: '400',
+        //     },
+        //     {
+        //       product_type:'제어기 Ass`Y',
+        //       product_code: '공장2F_E-09-02_PN-AF_SVG-003',
+        //       product_name: '부자재3',
+        //       product_model: '모델C',
+        //       product_spec: '690V 100A',
+        //       manufacturer: '제조사AA',
+        //       product_num: '5',
+        //       stock_num: '2',
+        //       product_condition: 'G',
+        //       pe_number: 'PE240207-003',
+        //       inbound_date: '2024-02-07',
+        //       unit_price: '1,000',
+        //       product_price: '5,000',
+        //     },
+        //     {
+        //       product_type:'제어기 Ass`Y',
+        //       product_code: '공장2F_E-09-02_PN-AF_SVG-004',
+        //       product_name: '부자재4',
+        //       product_model: '모델D',
+        //       product_spec: '480V 100A',
+        //       manufacturer: '제조사AA',
+        //       product_num: '1',
+        //       stock_num: '2',
+        //       product_condition: 'G',
+        //       pe_number: 'PE240207-004',
+        //       inbound_date: '2024-02-07',
+        //       unit_price: '100,000',
+        //       product_price: '100,000',
+        //     },
+        //   ]
+        // }
       ],
     }
   },

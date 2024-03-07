@@ -8,6 +8,7 @@ import ProductSearchPage from '@/views/ProductSearchPage'
 import ProductSubsidiaryPage from '@/views/ProductSubsidiaryPage'
 import ProductCostPage from '@/views/ProductCostPage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
+import ProductBackdataPage from '@/views/ProductBackdataPage'
 import MyPage from '@/views/MyPage'
 import CalendarPage from '@/views/CalendarPage'
 import Vue2Editor from "vue2-editor"
@@ -45,6 +46,11 @@ const routes = [
     path: '/estimate-search',
     name: 'EstimateSearchPage',
     component: EstimateSearchPage
+  },
+  {
+    path: '/product-backdata',
+    name: 'ProductBackdataPage',
+    component: ProductBackdataPage
   },
   {
     path: '/member-list',
