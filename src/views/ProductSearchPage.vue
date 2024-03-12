@@ -10,11 +10,17 @@
           cols="12"
           sm="11"
         >
-          <v-card
+          <InputsCardComponent
           elevation="1"
+          text-class=" pt-3"
+          dense
+          clearable
+          filled
+          hide-details
+          :inputs="searchCardInputs"
           >
 
-            <v-card-text class=" pt-3">
+            <!-- <v-card-text class=" pt-3">
               <v-row>
                 <v-col
                   cols="12"
@@ -115,8 +121,8 @@
                     hide-details
                     label="상태"
                   ></v-autocomplete>
-                </v-col>
-                <v-col
+                </v-col> -->
+                <!-- <v-col
                   cols="12"
                   sm="4"
                   lg="3"
@@ -166,7 +172,7 @@
                       </v-btn>
                     </v-date-picker>
                   </v-menu>
-                </v-col>
+                </v-col> -->
                 <v-col
                   cols="12"
                   sm="4"
@@ -193,6 +199,7 @@
                       <v-btn
                         color="primary"
                         elevation="2"
+                        @click="searchButton"
                       >
                         <v-icon>mdi-magnify</v-icon>검색
                       </v-btn>
@@ -212,13 +219,13 @@
                     <v-icon>mdi-magnify</v-icon>검색
                   </v-btn>
                 </v-col> -->
-              </v-row>
+              <!-- </v-row>
 
               <v-row>
 
               </v-row>
-            </v-card-text>
-          </v-card>
+            </v-card-text> -->
+          </InputsCardComponent>
 
           <v-card
           elevation="1"
@@ -264,14 +271,26 @@
   </div>
 </template>
 <script>
+import InputsCardComponent from "@/components/InputsCardComponent.vue";
 import NavComponent from "@/components/NavComponent";
 
 export default {
   components: {
                 NavComponent,
+                InputsCardComponent
               },
   data(){
     return{
+      searchCardInputs:[
+        {label:'분류', type:'auto', list:this.product_type_list, value:'All', col:'12', sm:'4', lg:'3'},
+        {label:'관리코드', col:'12', sm:'4', lg:'3'},
+        {label:'제품명', col:'12', sm:'4', lg:'3'},
+        {label:'모델명', col:'12', sm:'4', lg:'3'},
+        {label:'사양', col:'12', sm:'4', lg:'3'},
+        {label:'제조사', col:'12', sm:'4', lg:'3'},
+        {label:'상태', type:'auto', col:'12', sm:'4', lg:'3', value:'All', list:this.product_condition_list},
+        {label:'일자', type:'date', range:true, list:this.product_type_list, value:[], col:'12', sm:'4', lg:'3'}
+      ],
       product_type:'All',
       product_code: '',
       product_name: '',
@@ -367,6 +386,11 @@ export default {
       return this.dates.join(' ~ ')
     },
   },
+  methods: {
+    searchButton() {
+      alert(this.searchCardInputs.find(x=>x.label === '일자').value.sort());
+    }
+  }
 }
 </script>
 <style lang="">

@@ -42,6 +42,7 @@
             :style="tableStyle ? tableStyle : ''"
             :hide-default-footer="hideDefaultFooter"
             :disable-pagination="disablePagination"
+            :disable-sort="disableSort"
           >
             <template v-slot:[`group.header`]="{ group, headers, toggle, isOpen }">
               <td :colspan="headers.length" @click="toggle"  style="cursor: pointer;">
@@ -167,6 +168,7 @@
  * @property {String} [tableStyle] - 테이블 style(default:'')
  * @property {Boolean} [hideDefaultFooter] - 기본 footer 숨기기 여부(default:false)
  * @property {Boolean} [disablePagination] - 페이징 방지 여부(default:false)
+ * @property {Boolean} [disableSort] - 정렬 방지 여부(default:false)
  *
  * @emits input
  * @emits deleteGroup
@@ -202,6 +204,7 @@ export default {
     tableStyle: String,
     hideDefaultFooter: Boolean,
     disablePagination: Boolean,
+    disableSort: Boolean,
     value: {
       type: null,
       default: () => []

@@ -10,77 +10,47 @@
           cols="12"
           sm="11"
         >
-          <v-card
-          elevation="1"
+          <InputsCardComponent
+            elevation="1"
+            text-class=" pt-3"
+            dense
+            clearable
+            filled
+            hide-details
+            :inputs="searchCardInputs"
           >
-
-            <v-card-text class=" pt-3">
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="search_finished_product_name"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="제품명"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="search_product_capacity"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="용량"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="6"
-                  sm="4"
-                  lg="3"
-                  align-self="center"
-                >
-                  <v-btn
-                    color="primary"
-                    elevation="2"
-                  >
-                    <v-icon>mdi-magnify</v-icon>검색
-                  </v-btn>
-                  <v-btn
-                    color="teal darken-1"
-                    class="white--text ml-2"
-                    elevation="2"
-                    @click="registerOpenButton()"
-                    v-if="register_product_subsidiary == false"
-                  >
-                    <v-icon>mdi-plus</v-icon>등록
-                  </v-btn>
-                  <v-btn
-                    color="teal darken-1"
-                    class="white--text ml-2"
-                    elevation="2"
-                    v-if="register_product_subsidiary == true"
-                  >
-                    <v-icon>mdi-content-save</v-icon>저장
-                  </v-btn>
-                </v-col>
-              </v-row>
-
-              <v-row>
-
-              </v-row>
-            </v-card-text>
-          </v-card>
+            <v-col
+              cols="6"
+              sm="4"
+              lg="3"
+              align-self="center"
+            >
+              <v-btn
+                color="primary"
+                elevation="2"
+                @click="searchButton()"
+              >
+                <v-icon>mdi-magnify</v-icon>검색
+              </v-btn>
+              <v-btn
+                color="teal darken-1"
+                class="white--text ml-2"
+                elevation="2"
+                @click="registerOpenButton()"
+                v-if="register_product_subsidiary == false"
+              >
+                <v-icon>mdi-plus</v-icon>등록
+              </v-btn>
+              <v-btn
+                color="teal darken-1"
+                class="white--text ml-2"
+                elevation="2"
+                v-if="register_product_subsidiary == true"
+              >
+                <v-icon>mdi-content-save</v-icon>저장
+              </v-btn>
+            </v-col>
+          </InputsCardComponent>
 
           <v-card
             v-if="register_product_subsidiary"
@@ -565,22 +535,26 @@ import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent.vue";
 import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
+import InputsCardComponent from "@/components/InputsCardComponent.vue";
 
 export default {
   components: {
                 NavComponent,
                 ModalDialogComponent,
                 DataTableComponent,
-                ExpansionPanelComponent
+                ExpansionPanelComponent,
+                InputsCardComponent
               },
   mounted(){
     // this.closeAll()
   },
   data(){
     return{
-      search_finished_product_name:'',
       sub_product:1,
-      search_product_capacity: '',
+      searchCardInputs: [
+        {label:'제품명', col:'12', sm:'4', lg:'3'},
+        {label:'용량', col:'12', sm:'4', lg:'3'}
+      ],
       menu: false,
       dialog: false,
       dialog_edit: false,
@@ -1029,7 +1003,10 @@ export default {
         }
       }
     },
-    
+    searchButton(){
+      this.searchCardInputs.find(x=>x.label === '제품명').value += '+';
+      alert(this.searchCardInputs.find(x=>x.label === '제품명').value);
+    },
     registerOpenButton(){
       this.register_product_subsidiary = true;
     },
