@@ -254,7 +254,7 @@
 
       backDataPages: [
         ['재고 정보', '', '/product-backdata'],
-        // ['시중 노임단가', '', '/home'],
+        ['노무비 정보', '', '/labor-cost-backdata'],
       ],
 
       adminPages: [

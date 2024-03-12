@@ -15,6 +15,7 @@ import ShipSearchPage from '@/views/ShipSearchPage'
 import ShipRegisterPage from '@/views/ShipRegisterPage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
 import ProductBackdataPage from '@/views/ProductBackdataPage'
+import LaborCostBackdataPage from '@/views/LaborCostBackdataPage'
 import MyPage from '@/views/MyPage'
 import CalendarPage from '@/views/CalendarPage'
 import Vue2Editor from "vue2-editor"
@@ -87,6 +88,11 @@ const routes = [
     path: '/product-backdata',
     name: 'ProductBackdataPage',
     component: ProductBackdataPage
+  },
+  {
+    path: '/labor-cost-backdata',
+    name: 'LaborCostBackdataPage',
+    component: LaborCostBackdataPage
   },
   {
     path: '/member-list',
