@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :productMenu="true"></NavComponent>
+    <NavComponent :inboundMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -16,6 +16,21 @@
 
             <v-card-text class=" pt-3">
               <v-row>
+                <v-col
+                  cols="12"
+                  sm="4"
+                  lg="2"
+                >
+                  <v-autocomplete
+                    v-model="inbound_approval"
+                    :items="inbound_approval_list"
+                    dense
+                    clearable
+                    filled
+                    hide-details
+                    label="승인"
+                  ></v-autocomplete>
+                </v-col>
                 <v-col
                   cols="12"
                   sm="4"
@@ -44,21 +59,6 @@
                     filled
                     hide-details
                     label="분류"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="2"
-                >
-                  <v-autocomplete
-                    v-model="product_condition"
-                    :items="product_condition_list"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="상태"
                   ></v-autocomplete>
                 </v-col>
                 <v-col
@@ -193,16 +193,6 @@
                       cols="6"
                       sm="6"
                       lg="6"
-                    >
-                      <v-checkbox
-                        v-model="stock_more_0"
-                        label="재고 > 0"
-                      ></v-checkbox>
-                    </v-col>
-                    <v-col
-                      cols="6"
-                      sm="6"
-                      lg="6"
                       align-self="center"
                     >
                       <v-btn
@@ -249,14 +239,14 @@
                     color="indigo"
                     text-color="white"
                   >
-                    총 재고 : 9
+                    총 수량 :
                   </v-chip>
                   <v-chip
                     class="ma-2"
                     color="indigo"
                     text-color="white"
                   >
-                    총 금액 : 
+                    총 금액 :
                   </v-chip>
                   <v-data-table
                     dense
@@ -264,7 +254,157 @@
                     :items="product_data"
                     item-key="product_code"
                     class="elevation-1"
-                  ></v-data-table>
+                  >
+                    <template v-slot:item="{ item }">
+                      <tr>
+                        <td align="center">
+
+
+                          <v-menu
+                            v-if="item.inbound_approval == '미승인'"
+                            v-model="inbound_approval_notapproved"
+                            :close-on-content-click="false"
+                            :nudge-width="200"
+                            offset-x
+                          >
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-chip
+                                class="ma-2"
+                                small
+                                color="default"
+                                v-bind="attrs"
+                                v-on="on"
+                                @click="dialog_approval(item)"
+                              >
+                                {{ item.inbound_approval }}
+                              </v-chip>
+                            </template>
+
+                            <v-card class="pa-0">
+                              <v-list class="pa-0">
+                                <v-list-item class="pa-0">
+                                  <v-list-item-content class="pa-3">
+                                    <v-radio-group
+                                      v-model="approve_radio"
+                                      dense
+                                      hide-details
+                                      row
+                                    >
+                                      <v-radio
+                                        label="승인"
+                                        value="승인"
+                                      ></v-radio>
+                                      <v-radio
+                                        label="반려"
+                                        value="반려"
+                                      ></v-radio>
+                                    </v-radio-group>
+                                    <v-text-field
+                                      v-if="approve_radio == '반려'"
+                                      dense
+                                      hide-details
+                                      filled
+                                      label="사유"
+                                    ></v-text-field>
+                                    <v-list-item-title class="mt-4 font-weight-bold ">
+                                      {{ approve_radio }} 하시겠습니까?
+                                      <v-btn
+                                        small
+                                        :color="approve_radio == '승인' ? 'primary' : 'error' "
+                                      >
+                                        {{ approve_radio }}
+                                      </v-btn>
+                                      <v-btn
+                                        @click="inbound_approval_notapproved = false"
+                                        small
+                                        color="grey lighten-2"
+                                        class="ml-2"
+                                      >취소</v-btn>
+                                    </v-list-item-title>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list>
+                            </v-card>
+                          </v-menu>
+                          <v-menu
+                            v-else-if="item.inbound_approval == '승인'"
+                            open-on-hover
+                            v-model="inbound_approval_approved"
+                            :close-on-content-click="false"
+                            :nudge-width="200"
+                            offset-x
+                          >
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-chip
+                                class="ma-2"
+                                small
+                                color="primary"
+                                v-bind="attrs"
+                                v-on="on"
+                                @click="dialog_approval(item)"
+                              >
+                                {{ item.inbound_approval }}
+                              </v-chip>
+                            </template>
+
+                            <v-card class="pa-0">
+                              <v-list class="pa-0">
+                                <v-list-item class="pa-0">
+                                  <v-list-item-content class="pa-3">
+                                    <v-list-item-subtitle>승인일 : 2024-03-12</v-list-item-subtitle>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list>
+                            </v-card>
+                          </v-menu>
+                          <v-menu
+                            v-else-if="item.inbound_approval == '반려'"
+                            v-model="inbound_approval_return"
+                            open-on-hover
+                            :close-on-content-click="false"
+                            :nudge-width="200"
+                            offset-x
+                          >
+                            <template v-slot:activator="{ on, attrs }">
+
+                              <v-chip
+                                class="ma-2"
+                                small
+                                color="error"
+                                v-bind="attrs"
+                                v-on="on"
+                              >
+                                {{ item.inbound_approval }}
+                              </v-chip>
+                            </template>
+
+                            <v-card class="pa-0">
+                              <v-list class="pa-0">
+                                <v-list-item class="pa-0">
+                                  <v-list-item-content class="pa-3">
+                                    <v-list-item-subtitle class="error--text font-weight-black">반려사유 :  </v-list-item-subtitle>
+                                    <v-list-item-title>반려사유 노출 영역</v-list-item-title>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list>
+                            </v-card>
+                          </v-menu>
+                        </td>
+                        <td align="center">{{ item.product_type }}</td>
+                        <td align="center">{{ item.product_classification }}</td>
+                        <td align="center">{{ item.product_code }}</td>
+                        <td align="center">{{ item.product_name }}</td>
+                        <td align="center">{{ item.product_model }}</td>
+                        <td align="center">{{ item.product_spec }}</td>
+                        <td align="center">{{ item.manufacturer }}</td>
+                        <td align="center">{{ item.inbound_num }}</td>
+                        <td align="center">{{ item.pe_number }}</td>
+                        <td align="center">{{ item.inbound_date }}</td>
+                        <td align="center">{{ item.unit_price }}</td>
+                        <td align="center">{{ item.product_price }}</td>
+                      </tr>
+                    </template>
+                  </v-data-table>
                 </v-col>
               </v-row>
 
@@ -287,6 +427,7 @@ export default {
               },
   data(){
     return{
+      approve_radio:'승인',
       product_type:'All',
       product_classification:'All',
       product_code: '',
@@ -294,16 +435,19 @@ export default {
       product_model: '',
       product_spec: '',
       product_manufacturer: '',
-      product_condition: 'All',
+      inbound_approval: 'All',
       product_inbound_date: '2024-03-11',
       stock_more_0: true,
       product_type_list: ['All', '원부자재', '반제품', '완제품'],
       product_classification_list: ['All', '일반', 'GFM', '전력변환기'],
-      product_condition_list: ['All', 'G', 'B'],
+      inbound_approval_list: ['All', '승인', '미승인', '반려'],
       dates: [],
-      menu: false,
+      inbound_approval_return: false,
+      inbound_approval_approved: false,
+      inbound_approval_notapproved: false,
 
       headers: [
+        { text: '승인', align: 'center', value: 'inbound_approval', },
         { text: '종류', align: 'center', value: 'product_type', },
         { text: '분류', align: 'center', value: 'product_classification', },
         { text: '관리코드', align: 'center', value: 'product_code', },
@@ -311,8 +455,7 @@ export default {
         { text: '모델명', align: 'center', value: 'product_model', },
         { text: '사양', align: 'center', value: 'product_spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '재고', align: 'center', value: 'product_num', },
-        { text: '상태', align: 'center', value: 'product_condition', },
+        { text: '입고수량', align: 'center', value: 'inbound_num', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
         { text: '입고일자', align: 'center', value: 'inbound_date', },
         { text: '단가', align: 'center', value: 'unit_price', },
@@ -328,113 +471,23 @@ export default {
           product_model: '',
           product_spec: '',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
+          inbound_num: '1',
+          inbound_approval: '승인',
           pe_number: '',
           inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
         },
         {
-          product_type:'원부자재',
+          product_type:'반제품',
           product_classification:'일반',
           product_code: '공장2F_E-09-02',
           product_name: 'SPD, 퓨즈',
           product_model: '',
           product_spec: '',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
-        },
-        {
-          product_type:'원부자재',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-03',
-          product_name: '쿨링팬',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
-        },
-        {
-          product_type:'원부자재',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-04',
-          product_name: '보호회로',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
-        },
-        {
-          product_type:'원부자재',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-04',
-          product_name: '리액터',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
-        },
-        {
-          product_type:'원부자재',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-04',
-          product_name: 'MCCB',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
-        },
-        {
-          product_type:'반제품',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-06',
-          product_name: 'PCS Ass`Y',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
-        },
-        {
-          product_type:'반제품',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-06',
-          product_name: '제어기 Ass`Y',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
+          inbound_num: '1',
+          inbound_approval: '미승인',
           pe_number: '',
           inbound_date: '2024-03-11',
           unit_price: '',
@@ -443,13 +496,13 @@ export default {
         {
           product_type:'완제품',
           product_classification:'일반',
-          product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-          product_name: 'ESS GFM용 PCS',
+          product_code: '공장2F_E-09-03',
+          product_name: '쿨링팬',
           product_model: '',
-          product_spec: '380VAC 500kW',
+          product_spec: '',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
+          inbound_num: '1',
+          inbound_approval: '반려',
           pe_number: '',
           inbound_date: '2024-03-11',
           unit_price: '',

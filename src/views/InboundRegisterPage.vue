@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :productMenu="true"></NavComponent>
+    <NavComponent :inboundMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -135,7 +135,43 @@
                   cols="12"
                   sm="4"
                   lg="3"
+                  align-self="center"
                 >
+                  <v-btn
+                    color="primary"
+                    elevation="2"
+                  >
+                    <v-icon>mdi-magnify</v-icon>검색
+                  </v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                >
+                  <v-data-table
+                    dense
+                    v-model="product_inbound_data"
+                    :headers="product_search_headers"
+                    :items="product_search_data"
+                    item-key="product_code"
+                    class="elevation-1"
+                    show-select
+                  ></v-data-table>
+                </v-col>
+              </v-row>
+
+              <v-row>
+
+              </v-row>
+            </v-card-text>
+          </v-card>
+
+          <v-card
+          elevation="1"
+          class="mt-5"
+          >
+            <v-card-text class=" pt-3">
+              <v-row>
+                <v-col cols="12" sm="3">
                   <v-menu
                     ref="menu"
                     v-model="menu"
@@ -182,89 +218,50 @@
                     </v-date-picker>
                   </v-menu>
                 </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                  offset-lg="9"
-                >
-                  <v-row>
-                    <v-col
-                      cols="6"
-                      sm="6"
-                      lg="6"
-                    >
-                      <v-checkbox
-                        v-model="stock_more_0"
-                        label="재고 > 0"
-                      ></v-checkbox>
-                    </v-col>
-                    <v-col
-                      cols="6"
-                      sm="6"
-                      lg="6"
-                      align-self="center"
-                    >
-                      <v-btn
-                        color="primary"
-                        elevation="2"
-                      >
-                        <v-icon>mdi-magnify</v-icon>검색
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </v-col>
-                <!-- <v-col
-                  cols="6"
-                  sm="4"
-                  lg="3"
-                  align-self="center"
-                >
+                <v-col cols="12" sm="9" align-self="center">
                   <v-btn
-                    color="primary"
-                    elevation="2"
+                    small
+                    color="success"
                   >
-                    <v-icon>mdi-magnify</v-icon>검색
+                    입고 승인 요청
                   </v-btn>
-                </v-col> -->
-              </v-row>
-
-              <v-row>
-
-              </v-row>
-            </v-card-text>
-          </v-card>
-
-          <v-card
-          elevation="1"
-          class="mt-5"
-          >
-            <v-card-text class=" pt-3">
-              <v-row>
+                </v-col>
                 <v-col
                   cols="12"
                 >
-                  <v-chip
-                    class="ma-2"
-                    color="indigo"
-                    text-color="white"
-                  >
-                    총 재고 : 9
-                  </v-chip>
-                  <v-chip
-                    class="ma-2"
-                    color="indigo"
-                    text-color="white"
-                  >
-                    총 금액 : 
-                  </v-chip>
                   <v-data-table
                     dense
-                    :headers="headers"
-                    :items="product_data"
+                    :headers="product_inbound_headers"
+                    :items="product_inbound_data"
                     item-key="product_code"
                     class="elevation-1"
-                  ></v-data-table>
+                  >
+                    <template v-slot:item="{ item }">
+                      <tr>
+                        <td align="center">{{  item.product_type }}</td>
+                        <td align="center">{{  item.product_classification }}</td>
+                        <td align="center">{{  item.product_code }}</td>
+                        <td align="center">{{  item.product_name }}</td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            type="number"
+                            style="max-width:150px"
+                          >
+
+                          </v-text-field>
+                        </td>
+                        <td align="center">{{  item.product_model }}</td>
+                        <td align="center">{{  item.product_spec }}</td>
+                        <td align="center">{{  item.manufacturer }}</td>
+                        <td align="center">{{  item.pe_number }}</td>
+                        <td align="center">{{  item.unit_price }}</td>
+                        <td align="center">{{  item.product_price }}</td>
+                      </tr>
+                    </template>
+                  </v-data-table>
                 </v-col>
               </v-row>
 
@@ -296,14 +293,30 @@ export default {
       product_manufacturer: '',
       product_condition: 'All',
       product_inbound_date: '2024-03-11',
-      stock_more_0: true,
       product_type_list: ['All', '원부자재', '반제품', '완제품'],
       product_classification_list: ['All', '일반', 'GFM', '전력변환기'],
       product_condition_list: ['All', 'G', 'B'],
       dates: [],
       menu: false,
 
-      headers: [
+
+      product_inbound_headers: [
+        { text: '종류', align: 'center', value: 'product_type', },
+        { text: '분류', align: 'center', value: 'product_classification', },
+        { text: '관리코드', align: 'center', value: 'product_code', },
+        { text: '제품명', align: 'center', value: 'product_name', },
+        { text: '입고수량', align: 'center', value: 'product_inbound_num', },
+        { text: '모델명', align: 'center', value: 'product_model', },
+        { text: '사양', align: 'center', value: 'product_spec', },
+        { text: '제조사', align: 'center', value: 'manufacturer', },
+        { text: 'PE No.', align: 'center', value: 'pe_number', },
+        { text: '단가', align: 'center', value: 'unit_price', },
+        { text: '총액', align: 'center', value: 'stock_price', },
+      ],
+
+      product_inbound_data: [],
+
+      product_search_headers: [
         { text: '종류', align: 'center', value: 'product_type', },
         { text: '분류', align: 'center', value: 'product_classification', },
         { text: '관리코드', align: 'center', value: 'product_code', },
@@ -311,15 +324,12 @@ export default {
         { text: '모델명', align: 'center', value: 'product_model', },
         { text: '사양', align: 'center', value: 'product_spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '재고', align: 'center', value: 'product_num', },
-        { text: '상태', align: 'center', value: 'product_condition', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
-        { text: '입고일자', align: 'center', value: 'inbound_date', },
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '총액', align: 'center', value: 'stock_price', },
       ],
 
-      product_data: [
+      product_search_data: [
         {
           product_type:'원부자재',
           product_classification:'일반',
@@ -328,10 +338,7 @@ export default {
           product_model: '',
           product_spec: '',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
           pe_number: '',
-          inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
         },
@@ -343,10 +350,7 @@ export default {
           product_model: '',
           product_spec: '',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
           pe_number: '',
-          inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
         },
@@ -358,10 +362,7 @@ export default {
           product_model: '',
           product_spec: '',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
           pe_number: '',
-          inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
         },
@@ -373,10 +374,7 @@ export default {
           product_model: '',
           product_spec: '',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
           pe_number: '',
-          inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
         },
@@ -388,10 +386,7 @@ export default {
           product_model: '',
           product_spec: '',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
           pe_number: '',
-          inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
         },
@@ -403,10 +398,7 @@ export default {
           product_model: '',
           product_spec: '',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
           pe_number: '',
-          inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
         },
@@ -418,10 +410,7 @@ export default {
           product_model: '',
           product_spec: '',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
           pe_number: '',
-          inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
         },
@@ -433,10 +422,7 @@ export default {
           product_model: '',
           product_spec: '',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
           pe_number: '',
-          inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
         },
@@ -448,10 +434,7 @@ export default {
           product_model: '',
           product_spec: '380VAC 500kW',
           manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
           pe_number: '',
-          inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
         },

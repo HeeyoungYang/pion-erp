@@ -5,8 +5,14 @@ import MainPage from '@/views/MainPage'
 import MembersPage from '@/views/MembersPage'
 import AuthorizationPage from '@/views/AuthorizationPage'
 import ProductSearchPage from '@/views/ProductSearchPage'
-import ProductSubsidiaryPage from '@/views/ProductSubsidiaryPage'
+import ProductMaterialPage from '@/views/ProductMaterialPage'
+import ProductModulePage from '@/views/ProductModulePage'
+import ProductCompletedPage from '@/views/ProductCompletedPage'
 import ProductCostPage from '@/views/ProductCostPage'
+import InboundSearchPage from '@/views/InboundSearchPage'
+import InboundRegisterPage from '@/views/InboundRegisterPage'
+import ShipSearchPage from '@/views/ShipSearchPage'
+import ShipRegisterPage from '@/views/ShipRegisterPage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
 import ProductBackdataPage from '@/views/ProductBackdataPage'
 import MyPage from '@/views/MyPage'
@@ -33,14 +39,44 @@ const routes = [
     component: ProductSearchPage
   },
   {
-    path: '/product-subsidiary',
-    name: 'ProductSubsidiaryPage',
-    component: ProductSubsidiaryPage
+    path: '/product-material',
+    name: 'ProductMaterialPage',
+    component: ProductMaterialPage
+  },
+  {
+    path: '/product-module',
+    name: 'ProductModulePage',
+    component: ProductModulePage
+  },
+  {
+    path: '/product-completed',
+    name: 'ProductCompletedPage',
+    component: ProductCompletedPage
   },
   {
     path: '/product-cost',
     name: 'ProductCostPage',
     component: ProductCostPage
+  },
+  {
+    path: '/inbound-search',
+    name: 'InboundSearchPage',
+    component: InboundSearchPage
+  },
+  {
+    path: '/inbound-register',
+    name: 'InboundRegisterPage',
+    component: InboundRegisterPage
+  },
+  {
+    path: '/ship-search',
+    name: 'ShipSearchPage',
+    component: ShipSearchPage
+  },
+  {
+    path: '/ship-register',
+    name: 'ShipRegisterPage',
+    component: ShipRegisterPage
   },
   {
     path: '/estimate-search',

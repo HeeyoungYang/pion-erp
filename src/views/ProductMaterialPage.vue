@@ -19,22 +19,7 @@
                 <v-col
                   cols="12"
                   sm="4"
-                  lg="2"
-                >
-                  <v-autocomplete
-                    v-model="product_type"
-                    :items="product_type_list"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="종류"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="2"
+                  lg="3"
                 >
                   <v-autocomplete
                     v-model="product_classification"
@@ -49,7 +34,7 @@
                 <v-col
                   cols="12"
                   sm="4"
-                  lg="2"
+                  lg="3"
                 >
                   <v-autocomplete
                     v-model="product_condition"
@@ -208,6 +193,7 @@
                       <v-btn
                         color="primary"
                         elevation="2"
+                        style="float:right"
                       >
                         <v-icon>mdi-magnify</v-icon>검색
                       </v-btn>
@@ -256,7 +242,7 @@
                     color="indigo"
                     text-color="white"
                   >
-                    총 금액 : 
+                    총 금액 :
                   </v-chip>
                   <v-data-table
                     dense
@@ -287,7 +273,6 @@ export default {
               },
   data(){
     return{
-      product_type:'All',
       product_classification:'All',
       product_code: '',
       product_name: '',
@@ -297,14 +282,12 @@ export default {
       product_condition: 'All',
       product_inbound_date: '2024-03-11',
       stock_more_0: true,
-      product_type_list: ['All', '원부자재', '반제품', '완제품'],
       product_classification_list: ['All', '일반', 'GFM', '전력변환기'],
       product_condition_list: ['All', 'G', 'B'],
       dates: [],
       menu: false,
 
       headers: [
-        { text: '종류', align: 'center', value: 'product_type', },
         { text: '분류', align: 'center', value: 'product_classification', },
         { text: '관리코드', align: 'center', value: 'product_code', },
         { text: '제품명', align: 'center', value: 'product_name', },
@@ -321,7 +304,6 @@ export default {
 
       product_data: [
         {
-          product_type:'원부자재',
           product_classification:'일반',
           product_code: '공장2F_E-09-01',
           product_name: 'IGBT & SMPS',
@@ -336,7 +318,6 @@ export default {
           product_price: '',
         },
         {
-          product_type:'원부자재',
           product_classification:'일반',
           product_code: '공장2F_E-09-02',
           product_name: 'SPD, 퓨즈',
@@ -351,7 +332,6 @@ export default {
           product_price: '',
         },
         {
-          product_type:'원부자재',
           product_classification:'일반',
           product_code: '공장2F_E-09-03',
           product_name: '쿨링팬',
@@ -366,9 +346,8 @@ export default {
           product_price: '',
         },
         {
-          product_type:'원부자재',
           product_classification:'일반',
-          product_code: '공장2F_E-09-04',
+          product_code: '공장2F_E-09-05',
           product_name: '보호회로',
           product_model: '',
           product_spec: '',
@@ -381,9 +360,8 @@ export default {
           product_price: '',
         },
         {
-          product_type:'원부자재',
           product_classification:'일반',
-          product_code: '공장2F_E-09-04',
+          product_code: '공장2F_E-09-06',
           product_name: '리액터',
           product_model: '',
           product_spec: '',
@@ -396,57 +374,11 @@ export default {
           product_price: '',
         },
         {
-          product_type:'원부자재',
           product_classification:'일반',
-          product_code: '공장2F_E-09-04',
+          product_code: '공장2F_E-09-07',
           product_name: 'MCCB',
           product_model: '',
           product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
-        },
-        {
-          product_type:'반제품',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-06',
-          product_name: 'PCS Ass`Y',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
-        },
-        {
-          product_type:'반제품',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-06',
-          product_name: '제어기 Ass`Y',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          product_num: '1',
-          product_condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
-        },
-        {
-          product_type:'완제품',
-          product_classification:'일반',
-          product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-          product_name: 'ESS GFM용 PCS',
-          product_model: '',
-          product_spec: '380VAC 500kW',
           manufacturer: '파이온일렉트릭',
           product_num: '1',
           product_condition: 'G',
