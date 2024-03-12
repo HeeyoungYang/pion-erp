@@ -85,10 +85,11 @@
                   </v-btn>
                   {{ Object.keys(item).includes(header.value) && (!groupBy || header.value !== groupBy) ? item[header.value] : '' }}
                 </td>
-                <td v-if="editable || deletable">
+                <td v-if="editable || deletable" align="center">
                   <v-icon v-if="editable"
                     small
                     @click="editItem(item)"
+                    class="mr-2"
                   >
                     mdi-pencil
                   </v-icon>
@@ -233,7 +234,7 @@ export default {
     if (this.editableGroup || this.deletableGroup
     || this.editable || this.deletable
     || this.editableBelong || this.deletableBelong){
-      this.addedHeaders.push({ text: '편집', align: 'center', value: 'edit' });
+      this.addedHeaders.push({ text: '편집', align: 'center', value: 'edit', sortable: false });
     }
     if (this.groupBy){
       this.addedHeaders.unshift({ text: this.headers.find(x=>x.value === this.groupBy).text, align: 'center', value: ''});
