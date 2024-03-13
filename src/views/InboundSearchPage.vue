@@ -248,159 +248,14 @@
                   >
                     총 금액 :
                   </v-chip>
-                  <v-data-table
-                    dense
+
+                  <DataTableComponent
                     :headers="headers"
                     :items="product_data"
-                    item-key="product_code"
-                    class="elevation-1"
-                  >
-                    <template v-slot:item="{ item }">
-                      <tr>
-                        <td align="center">
-                          <v-menu
-                            v-if="item.inbound_approval == '미승인'"
-                            v-model="inbound_approval_notapproved"
-                            :close-on-content-click="false"
-                            :nudge-width="200"
-                            offset-x
-                          >
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-chip
-                                class="ma-2"
-                                small
-                                color="default"
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                {{ item.inbound_approval }}
-                              </v-chip>
-                            </template>
-
-                            <v-card class="pa-0">
-                              <v-list class="pa-0">
-                                <v-list-item class="pa-0">
-                                  <v-list-item-content class="pa-3">
-                                    <v-radio-group
-                                      v-model="approve_radio"
-                                      dense
-                                      hide-details
-                                      row
-                                    >
-                                      <v-radio
-                                        label="승인"
-                                        value="승인"
-                                      ></v-radio>
-                                      <v-radio
-                                        label="반려"
-                                        value="반려"
-                                      ></v-radio>
-                                    </v-radio-group>
-                                    <v-text-field
-                                      v-if="approve_radio == '반려'"
-                                      dense
-                                      hide-details
-                                      filled
-                                      label="사유"
-                                    ></v-text-field>
-                                    <v-list-item-title class="mt-4 font-weight-bold ">
-                                      {{ approve_radio }} 하시겠습니까?
-                                      <v-btn
-                                        small
-                                        :color="approve_radio == '승인' ? 'primary' : 'error' "
-                                      >
-                                        {{ approve_radio }}
-                                      </v-btn>
-                                      <v-btn
-                                        @click="inbound_approval_notapproved = false"
-                                        small
-                                        color="grey lighten-2"
-                                        class="ml-2"
-                                      >취소</v-btn>
-                                    </v-list-item-title>
-                                  </v-list-item-content>
-                                </v-list-item>
-                              </v-list>
-                            </v-card>
-                          </v-menu>
-                          <v-menu
-                            v-else-if="item.inbound_approval == '승인'"
-                            open-on-hover
-                            v-model="inbound_approval_approved"
-                            :close-on-content-click="false"
-                            :nudge-width="200"
-                            offset-x
-                          >
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-chip
-                                class="ma-2"
-                                small
-                                color="primary"
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                {{ item.inbound_approval }}
-                              </v-chip>
-                            </template>
-
-                            <v-card class="pa-0">
-                              <v-list class="pa-0">
-                                <v-list-item class="pa-0">
-                                  <v-list-item-content class="pa-3">
-                                    <v-list-item-subtitle>승인일 : 2024-03-12</v-list-item-subtitle>
-                                  </v-list-item-content>
-                                </v-list-item>
-                              </v-list>
-                            </v-card>
-                          </v-menu>
-                          <v-menu
-                            v-else-if="item.inbound_approval == '반려'"
-                            v-model="inbound_approval_return"
-                            open-on-hover
-                            :close-on-content-click="false"
-                            :nudge-width="200"
-                            offset-x
-                          >
-                            <template v-slot:activator="{ on, attrs }">
-
-                              <v-chip
-                                class="ma-2"
-                                small
-                                color="error"
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                {{ item.inbound_approval }}
-                              </v-chip>
-                            </template>
-
-                            <v-card class="pa-0">
-                              <v-list class="pa-0">
-                                <v-list-item class="pa-0">
-                                  <v-list-item-content class="pa-3">
-                                    <v-list-item-subtitle class="error--text font-weight-black">반려사유 :  </v-list-item-subtitle>
-                                    <v-list-item-title>반려사유 노출 영역</v-list-item-title>
-                                  </v-list-item-content>
-                                </v-list-item>
-                              </v-list>
-                            </v-card>
-                          </v-menu>
-                        </td>
-                        <td align="center">{{ item.product_type }}</td>
-                        <td align="center">{{ item.product_classification }}</td>
-                        <td align="center">{{ item.product_code }}</td>
-                        <td align="center">{{ item.product_name }}</td>
-                        <td align="center">{{ item.product_model }}</td>
-                        <td align="center">{{ item.product_spec }}</td>
-                        <td align="center">{{ item.manufacturer }}</td>
-                        <td align="center">{{ item.inbound_num }}</td>
-                        <td align="center">{{ item.pe_number }}</td>
-                        <td align="center">{{ item.inbound_date }}</td>
-                        <td align="center">{{ item.unit_price }}</td>
-                        <td align="center">{{ item.product_price }}</td>
-                      </tr>
-                    </template>
-                  </v-data-table>
+                    :item-key="product_code"
+                    show-photo
+                    approval
+                  />
                 </v-col>
               </v-row>
 
@@ -416,14 +271,15 @@
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
+import DataTableComponent from "@/components/DataTableComponent";
 
 export default {
   components: {
                 NavComponent,
+                DataTableComponent,
               },
   data(){
     return{
-      approve_radio:'승인',
       product_type:'All',
       product_classification:'All',
       product_code: '',
@@ -443,7 +299,6 @@ export default {
       inbound_approval_notapproved: false,
 
       headers: [
-        { text: '승인', align: 'center', value: 'inbound_approval', },
         { text: '종류', align: 'center', value: 'product_type', },
         { text: '분류', align: 'center', value: 'product_classification', },
         { text: '관리코드', align: 'center', value: 'product_code', },
@@ -468,11 +323,13 @@ export default {
           product_spec: '',
           manufacturer: '파이온일렉트릭',
           inbound_num: '1',
-          inbound_approval: '승인',
+          approval: '승인',
           pe_number: '',
           inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
+          approve_date:'2024-03-12',
+          return_reason:'',
         },
         {
           product_type:'반제품',
@@ -483,11 +340,13 @@ export default {
           product_spec: '',
           manufacturer: '파이온일렉트릭',
           inbound_num: '1',
-          inbound_approval: '미승인',
+          approval: '미승인',
           pe_number: '',
           inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
+          approve_date:'',
+          return_reason:'',
         },
         {
           product_type:'완제품',
@@ -498,11 +357,13 @@ export default {
           product_spec: '',
           manufacturer: '파이온일렉트릭',
           inbound_num: '1',
-          inbound_approval: '반려',
+          approval: '반려',
           pe_number: '',
           inbound_date: '2024-03-11',
           unit_price: '',
           product_price: '',
+          approve_date:'',
+          return_reason:'반려사유노출영역',
         },
       ],
     }

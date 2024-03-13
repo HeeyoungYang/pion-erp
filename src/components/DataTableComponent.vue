@@ -69,6 +69,135 @@
 
             <template v-slot:item="{ index, item, select, isSelected, expand }">
               <tr>
+                <td v-if="approval" align="center">
+                  <v-menu
+                    v-if="item.approval == '미승인'"
+                    v-model="approval_notapproved"
+                    :close-on-content-click="false"
+                    :nudge-width="200"
+                    offset-x
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-chip
+                        class="ma-2"
+                        small
+                        color="default"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        {{ item.approval }}
+                      </v-chip>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-0">
+                        <v-list-item class="pa-0">
+                          <v-list-item-content class="pa-3">
+                            <v-radio-group
+                              v-model="approve_radio"
+                              dense
+                              hide-details
+                              row
+                            >
+                              <v-radio
+                                label="승인"
+                                :value=true
+                              ></v-radio>
+                              <v-radio
+                                label="반려"
+                                :value=false
+                              ></v-radio>
+                            </v-radio-group>
+                            <v-text-field
+                              v-if="!approve_radio"
+                              dense
+                              hide-details
+                              filled
+                              label="사유"
+                            ></v-text-field>
+                            <v-list-item-title class="mt-4 font-weight-bold ">
+                              {{ approve_radio ? '승인' : '반려' }} 하시겠습니까?
+                              <v-btn
+                                small
+                                :color="approve_radio ? 'primary' : 'error' "
+                              >
+                                {{ approve_radio ? '승인' : '반려' }}
+                              </v-btn>
+                              <v-btn
+                                @click="approval_notapproved = false"
+                                small
+                                color="grey lighten-2"
+                                class="ml-2"
+                              >취소</v-btn>
+                            </v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                  <v-menu
+                    v-else-if="item.approval == '승인'"
+                    open-on-hover
+                    v-model="approval_approved"
+                    :close-on-content-click="false"
+                    :nudge-width="200"
+                    offset-x
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-chip
+                        class="ma-2"
+                        small
+                        color="primary"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        {{ item.approval }}
+                      </v-chip>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-0">
+                        <v-list-item class="pa-0">
+                          <v-list-item-content class="pa-3">
+                            <v-list-item-subtitle>승인일 : {{ item.approve_date }}</v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                  <v-menu
+                    v-else-if="item.approval == '반려'"
+                    v-model="approval_return"
+                    open-on-hover
+                    :close-on-content-click="false"
+                    :nudge-width="150"
+                    offset-x
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+
+                      <v-chip
+                        class="ma-2"
+                        small
+                        color="error"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        {{ item.approval }}
+                      </v-chip>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-0">
+                        <v-list-item class="pa-0">
+                          <v-list-item-content class="pa-3">
+                            <v-list-item-subtitle class="error--text font-weight-black">반려사유 :  </v-list-item-subtitle>
+                            <v-list-item-title>{{ item.return_reason }}</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                </td>
                 <td v-if="!showSelect && showSelectChildren"></td>
                 <td v-if="showSelect">
                   <v-checkbox dense hide-details class="mt-0 pt-0"
@@ -104,7 +233,7 @@
                 <td v-if="showPhoto" align="center">
                   <v-menu
                     open-on-hover
-                    v-model="inbound_approval_approved"
+                    v-model="approval_approved"
                     :close-on-content-click="false"
                     :nudge-width="100"
                     offset-x
@@ -172,7 +301,7 @@
                 <td v-if="showPhoto" align="center">
                   <v-menu
                     open-on-hover
-                    v-model="inbound_approval_approved"
+                    v-model="approval_approved"
                     :close-on-content-click="false"
                     :nudge-width="100"
                     offset-x
@@ -251,6 +380,7 @@
  * @property {Boolean} [deletableBelong] - 내부 항목 삭제 버튼 여부(default:false)
  * @property {Boolean} [notEditableBelong] - 편집 및 삭제 컬럼 여부(default:false)
  * @property {Boolean} [showPhoto] - 자재 사진 노출 여부(default:false)
+ * @property {Boolean} [approval] - 승인 노출 여부(default:false)
  * @property {String} [tableStyle] - 테이블 style(default:'')
  * @property {Boolean} [hideDefaultFooter] - 기본 footer 숨기기 여부(default:false)
  * @property {Boolean} [disablePagination] - 페이징 방지 여부(default:false)
@@ -294,6 +424,7 @@ export default {
     deletableBelong: Boolean,
     notEditableBelong: Boolean,
     showPhoto: Boolean,
+    approval: Boolean,
     tableStyle: String,
     hideDefaultFooter: Boolean,
     disablePagination: Boolean,
@@ -309,6 +440,7 @@ export default {
       selected_data: this.value.slice(),
       addedHeaders: [],
       expanded: [],
+      approve_radio: true,
     };
   },
   mounted() {
@@ -322,6 +454,9 @@ export default {
     }
     if (this.showPhoto){
       this.addedHeaders.push({ text: '사진', align: 'center', value: 'product_photo', sortable: false });
+    }
+    if (this.approval){
+      this.addedHeaders.unshift({ text: '승인', align: 'center', value: 'approval', sortable: false });
     }
     if (this.groupBy){
       this.addedHeaders.unshift({ text: this.headers.find(x=>x.value === this.groupBy).text, align: 'center', value: ''});
