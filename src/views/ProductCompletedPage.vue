@@ -93,6 +93,43 @@
                   >
                     : {{ data.complete_product_code }}
                   </span>
+                  <v-menu
+                    open-on-hover
+                    v-model="inbound_approval_approved"
+                    :close-on-content-click="false"
+                    :nudge-width="100"
+                    offset-x
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon
+                        small
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        mdi-image
+                      </v-icon>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-0">
+                        <v-list-item class="pa-0">
+                          <v-list-item-content class="pa-3">
+                            <v-list-item-subtitle>
+                              제품이미지영역
+                              <v-img
+                                alt="Pionelectric Logo"
+                                class="shrink mr-2"
+                                contain
+                                src="../assets/img/pion_logo.png"
+                                transition="scale-transition"
+                                width="150"
+                              />
+                            </v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
                 </p>
 
               </template>
@@ -110,6 +147,7 @@
                       disable-pagination
                       children-key="belong_data"
                       table-style=""
+                      show-photo
                     />
                   </v-col>
                 </v-row>

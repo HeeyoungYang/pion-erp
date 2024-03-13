@@ -55,7 +55,7 @@ export default {
               },
   data(){
     return {
-      first_login_dialog:true,
+      first_login_dialog:false,
       // ▼ 비밀번호 변경
       passwords:{
         currentPassword:'',

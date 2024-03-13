@@ -75,15 +75,14 @@
                     color="indigo"
                     text-color="white"
                   >
-                    총 금액 : 
+                    총 금액 :
                   </v-chip>
-                  <v-data-table
-                    dense
+                  <DataTableComponent
                     :headers="headers"
                     :items="product_data"
                     :item-key="product_data.product_code"
-                    class="elevation-1"
-                  ></v-data-table>
+                    show-photo
+                  />
                 </v-col>
               </v-row>
 
@@ -100,11 +99,13 @@
 <script>
 import InputsCardComponent from "@/components/InputsCardComponent.vue";
 import NavComponent from "@/components/NavComponent";
+import DataTableComponent from "@/components/DataTableComponent";
 
 export default {
   components: {
                 NavComponent,
-                InputsCardComponent
+                InputsCardComponent,
+                DataTableComponent,
               },
   data(){
     return{

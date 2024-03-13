@@ -244,13 +244,12 @@
                   >
                     총 금액 :
                   </v-chip>
-                  <v-data-table
-                    dense
+                  <DataTableComponent
                     :headers="headers"
                     :items="product_data"
-                    item-key="product_code"
-                    class="elevation-1"
-                  ></v-data-table>
+                    :item-key="product_data.product_code"
+                    show-photo
+                  />
                 </v-col>
               </v-row>
 
@@ -266,10 +265,12 @@
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
+import DataTableComponent from "@/components/DataTableComponent";
 
 export default {
   components: {
                 NavComponent,
+                DataTableComponent,
               },
   data(){
     return{

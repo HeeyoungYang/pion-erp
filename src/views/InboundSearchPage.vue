@@ -258,8 +258,6 @@
                     <template v-slot:item="{ item }">
                       <tr>
                         <td align="center">
-
-
                           <v-menu
                             v-if="item.inbound_approval == '미승인'"
                             v-model="inbound_approval_notapproved"
@@ -274,7 +272,6 @@
                                 color="default"
                                 v-bind="attrs"
                                 v-on="on"
-                                @click="dialog_approval(item)"
                               >
                                 {{ item.inbound_approval }}
                               </v-chip>
@@ -341,7 +338,6 @@
                                 color="primary"
                                 v-bind="attrs"
                                 v-on="on"
-                                @click="dialog_approval(item)"
                               >
                                 {{ item.inbound_approval }}
                               </v-chip>

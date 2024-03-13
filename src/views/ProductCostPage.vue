@@ -55,13 +55,30 @@
                   <v-col
                     cols="12"
                   >
-                    <v-data-table
+                    <DataTableComponent
                       dense
                       :headers="search_cost_headers"
                       :items="search_cost_data"
-                      item-key="product_code"
-                      class="elevation-1"
-                    ></v-data-table>
+                      :item-key="product_code"
+                      deletable
+                      @delete="deleteItem"
+                    />
+                    <ModalDialogComponent
+                      :dialog-value="dialogDelete"
+                      max-width="300px"
+                      title-class="text-body-1 font-weight-black"
+                      text-class="text-body-2"
+                      save-text="삭제"
+                      close-text="취소"
+                      @save="deleteItemConfirm"
+                      @close="closeDelete"
+                    >
+                      <template v-slot:titleHTML>
+                        <p class="mb-0">{{ search_cost_data.product_name }}</p>
+                        <p class="red--text">원가를 삭제하시겠습니까?</p>
+                      </template>
+                      삭제된 계정은 복구가 불가능합니다.
+                    </ModalDialogComponent>
                   </v-col>
                 </v-row>
               </v-card>
@@ -79,10 +96,10 @@
                   {{ sub_item }}
                 </v-tab>
               </v-tabs>
-
               <v-tabs-items v-model="tab_search" class="pb-1">
                 <!-- 원가 계산서 -->
                 <v-tab-item>
+              <div style="position:absolute">test</div>
                   <v-card>
                     <v-card-title>
                       <v-row>
@@ -192,20 +209,63 @@
                   <v-card>
                     <v-card-title>
                       <v-row>
-                        <v-col cols="12" sm="11">
+                        <v-col cols="12" sm="10">
                           <p class="text-h5 font-weight-black black--text mb-0">ESS GFM용 PCS (380VAC 500kW) 산출내역서</p>
                         </v-col>
-                        <v-col cols="12" sm="1">
+
+                        <v-col cols="12" sm="2">
+                          <v-menu offset-y>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-btn
+                                color="success"
+                                fab
+                                x-small
+                                class="float-right"
+                                elevation="0"
+                                v-bind="attrs"
+                                v-on="on"
+                              >
+                                <v-icon
+                                  small
+                                >mdi-content-save</v-icon>
+                              </v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-item
+                                v-for="(item, index) in content_save_items"
+                                :key="index"
+                                dense
+                              >
+                                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                              </v-list-item>
+                            </v-list>
+                          </v-menu>
+
                           <v-btn
+                            v-if="edit_survey_cost_data"
                             color="primary"
                             fab
                             x-small
                             class="mr-3 float-right"
                             elevation="0"
+                            @click="edit_survey_cost_data = false"
                           >
                             <v-icon
                               small
                             >mdi-pencil</v-icon>
+                          </v-btn>
+                          <v-btn
+                            v-if="!edit_survey_cost_data"
+                            color="primary"
+                            fab
+                            x-small
+                            class="mr-3 float-right"
+                            elevation="0"
+                            @click="edit_survey_cost_data = true"
+                          >
+                            <v-icon
+                              small
+                            >mdi-check</v-icon>
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -276,7 +336,16 @@
                             <td></td>
                             <td>가. 고용보험료</td>
                             <td>식</td>
-                            <td>1</td>
+                            <td>
+                              <v-text-field
+                                dense
+                                style="max-width: 50px;"
+                                :rules="expensesNumRules"
+                                :disabled="edit_survey_cost_data"
+                                type="number"
+                                value="1"
+                              ></v-text-field>
+                            </td>
                             <td></td>
                             <td>{{ item.employment_insurance_amount }}</td>
                           </tr>
@@ -288,7 +357,16 @@
                             <td></td>
                             <td>나. 공구손료</td>
                             <td>식</td>
-                            <td>1</td>
+                            <td>
+                              <v-text-field
+                                dense
+                                style="max-width: 50px;"
+                                :rules="expensesNumRules"
+                                :disabled="edit_survey_cost_data"
+                                type="number"
+                                value="1"
+                              ></v-text-field>
+                            </td>
                             <td></td>
                             <td>{{ item.tool_rent_fee_amount }}</td>
                           </tr>
@@ -300,7 +378,16 @@
                             <td></td>
                             <td>다. 여비교통 통신비</td>
                             <td>식</td>
-                            <td>1</td>
+                            <td>
+                              <v-text-field
+                                dense
+                                style="max-width: 50px;"
+                                :rules="expensesNumRules"
+                                :disabled="edit_survey_cost_data"
+                                type="number"
+                                value="1"
+                              ></v-text-field>
+                            </td>
                             <td></td>
                             <td>{{ item.transportation_fee_amount }}</td>
                           </tr>
@@ -312,7 +399,16 @@
                             <td></td>
                             <td>라. 산재보험료</td>
                             <td>식</td>
-                            <td>1</td>
+                            <td>
+                              <v-text-field
+                                dense
+                                style="max-width: 50px;"
+                                :rules="expensesNumRules"
+                                :disabled="edit_survey_cost_data"
+                                type="number"
+                                value="1"
+                              ></v-text-field>
+                            </td>
                             <td></td>
                             <td>{{ item.industrial_accident_amount }}</td>
                           </tr>
@@ -324,7 +420,16 @@
                             <td></td>
                             <td>마. 세금과공과</td>
                             <td>식</td>
-                            <td>1</td>
+                                                        <td>
+                              <v-text-field
+                                dense
+                                style="max-width: 50px;"
+                                :rules="expensesNumRules"
+                                :disabled="edit_survey_cost_data"
+                                type="number"
+                                value="1"
+                              ></v-text-field>
+                            </td>
                             <td></td>
                             <td>{{ item.taxes_dues_amount }}</td>
                           </tr>
@@ -336,7 +441,16 @@
                             <td></td>
                             <td>바. 복리후생비</td>
                             <td>식</td>
-                            <td>1</td>
+                                                        <td>
+                              <v-text-field
+                                dense
+                                style="max-width: 50px;"
+                                :rules="expensesNumRules"
+                                :disabled="edit_survey_cost_data"
+                                type="number"
+                                value="1"
+                              ></v-text-field>
+                            </td>
                             <td></td>
                             <td>{{ item.welfare_benefits_amount }}</td>
                           </tr>
@@ -348,7 +462,16 @@
                             <td></td>
                             <td>사. 퇴직공제 부금비</td>
                             <td>식</td>
-                            <td>1</td>
+                                                        <td>
+                              <v-text-field
+                                dense
+                                style="max-width: 50px;"
+                                :rules="expensesNumRules"
+                                :disabled="edit_survey_cost_data"
+                                type="number"
+                                value="1"
+                              ></v-text-field>
+                            </td>
                             <td></td>
                             <td>{{ item.retirement_amount }}</td>
                           </tr>
@@ -360,7 +483,16 @@
                             <td></td>
                             <td>아. 소모품비</td>
                             <td>식</td>
-                            <td>1</td>
+                                                        <td>
+                              <v-text-field
+                                dense
+                                style="max-width: 50px;"
+                                :rules="expensesNumRules"
+                                :disabled="edit_survey_cost_data"
+                                type="number"
+                                value="1"
+                              ></v-text-field>
+                            </td>
                             <td></td>
                             <td>{{ item.expendables_amount }}</td>
                           </tr>
@@ -372,7 +504,16 @@
                             <td></td>
                             <td>자. 산업안전보건관리비</td>
                             <td>식</td>
-                            <td>1</td>
+                                                        <td>
+                              <v-text-field
+                                dense
+                                style="max-width: 50px;"
+                                :rules="expensesNumRules"
+                                :disabled="edit_survey_cost_data"
+                                type="number"
+                                value="1"
+                              ></v-text-field>
+                            </td>
                             <td></td>
                             <td>{{ item.industrial_safety_amount }}</td>
                           </tr>
@@ -384,7 +525,16 @@
                             <td></td>
                             <td>일반관리비</td>
                             <td>식</td>
-                            <td>1</td>
+                                                        <td>
+                              <v-text-field
+                                dense
+                                style="max-width: 50px;"
+                                :rules="expensesNumRules"
+                                :disabled="edit_survey_cost_data"
+                                type="number"
+                                value="1"
+                              ></v-text-field>
+                            </td>
                             <td></td>
                             <td>{{ item.normal_maintenance_fee_amount }}</td>
                           </tr>
@@ -396,7 +546,16 @@
                             <td></td>
                             <td>이윤</td>
                             <td>식</td>
-                            <td>1</td>
+                                                        <td>
+                              <v-text-field
+                                dense
+                                style="max-width: 50px;"
+                                :rules="expensesNumRules"
+                                :disabled="edit_survey_cost_data"
+                                type="number"
+                                value="1"
+                              ></v-text-field>
+                            </td>
                             <td></td>
                             <td>{{ item.profite_amount }}</td>
                           </tr>
@@ -419,20 +578,62 @@
                   <v-card>
                     <v-card-title>
                       <v-row>
-                        <v-col cols="12" sm="11">
+                        <v-col cols="12" sm="10">
                           <p class="text-h5 font-weight-black black--text mb-0">ESS GFM용 PCS (380VAC 500kW) 노무비 산출</p>
                         </v-col>
-                        <v-col cols="12" sm="1">
+                        <v-col cols="12" sm="2">
+                          <v-menu offset-y>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-btn
+                                color="success"
+                                fab
+                                x-small
+                                class="float-right"
+                                elevation="0"
+                                v-bind="attrs"
+                                v-on="on"
+                              >
+                                <v-icon
+                                  small
+                                >mdi-content-save</v-icon>
+                              </v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-item
+                                v-for="(item, index) in content_save_items"
+                                :key="index"
+                                dense
+                              >
+                                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                              </v-list-item>
+                            </v-list>
+                          </v-menu>
+
                           <v-btn
+                            v-if="edit_labor_cost_data"
                             color="primary"
                             fab
                             x-small
                             class="mr-3 float-right"
                             elevation="0"
+                            @click="edit_labor_cost_data = false"
                           >
                             <v-icon
                               small
                             >mdi-pencil</v-icon>
+                          </v-btn>
+                          <v-btn
+                            v-if="!edit_labor_cost_data"
+                            color="primary"
+                            fab
+                            x-small
+                            class="mr-3 float-right"
+                            elevation="0"
+                            @click="edit_labor_cost_data = true"
+                          >
+                            <v-icon
+                              small
+                            >mdi-check</v-icon>
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -448,6 +649,52 @@
                         class="elevation-1 labor_cost_list"
                         disable-sort
                       >
+                        <template v-slot:item="{ item, index }">
+                          <tr>
+                            <td align="center">{{ item.no }}</td>
+                            <td align="center">{{ item.contract_name }}</td>
+                            <td align="center">{{ item.contract_type }}</td>
+                            <td align="center">
+                              <v-select
+                                :items="labor_occupation_list"
+                                dense
+                                hide-details
+                                v-model="item.occupation"
+                                label=""
+                                style="max-width:200px"
+                                @change="selectOccupationFunc(item.occupation, index)"
+                                :disabled="edit_labor_cost_data"
+                              ></v-select>
+                            </td>
+                            <td align="center">{{ item.man_day }}</td>
+                            <td align="center">{{ item.surcharge_rate }}</td>
+                            <td align="center">{{ item.adjustment_rate }}</td>
+                            <td align="center">{{ item.man_hour }}</td>
+                            <td align="center">{{ item.man_day_unit_price }}</td>
+                            <td align="center">
+                              <v-text-field
+                                dense
+                                hide-details
+                                style="max-width:200px"
+                                :disabled="edit_labor_cost_data"
+                              ></v-text-field>
+                            </td>
+                            <td align="center"></td>
+                            <td align="center"></td>
+                            <td align="center">
+                              <v-icon
+                                color="primary"
+                                small
+                                @click="addLaborCostList(item, index)"
+                              >mdi-plus-thick</v-icon>
+                              <v-icon
+                                color="grey"
+                                small
+                                class="ml-3"
+                              >mdi-minus-thick</v-icon>
+                            </td>
+                          </tr>
+                        </template>
                       </v-data-table>
                     </v-card-text>
                   </v-card>
@@ -577,7 +824,7 @@
                         <td>
                           <v-text-field
                             dense
-                            style="max-width: 100px;"
+                            style="max-width: 50px;"
                             :rules="expensesNumRules"
                             type="number"
                           ></v-text-field>
@@ -596,7 +843,7 @@
                         <td>
                           <v-text-field
                             dense
-                            style="max-width: 100px;"
+                            style="max-width: 50px;"
                             :rules="expensesNumRules"
                             type="number"
                           ></v-text-field>
@@ -615,7 +862,7 @@
                         <td>
                           <v-text-field
                             dense
-                            style="max-width: 100px;"
+                            style="max-width: 50px;"
                             :rules="expensesNumRules"
                             type="number"
                           ></v-text-field>
@@ -634,7 +881,7 @@
                         <td>
                           <v-text-field
                             dense
-                            style="max-width: 100px;"
+                            style="max-width: 50px;"
                             :rules="expensesNumRules"
                             type="number"
                           ></v-text-field>
@@ -653,7 +900,7 @@
                         <td>
                           <v-text-field
                             dense
-                            style="max-width: 100px;"
+                            style="max-width: 50px;"
                             :rules="expensesNumRules"
                             type="number"
                           ></v-text-field>
@@ -672,7 +919,7 @@
                         <td>
                           <v-text-field
                             dense
-                            style="max-width: 100px;"
+                            style="max-width: 50px;"
                             :rules="expensesNumRules"
                             type="number"
                           ></v-text-field>
@@ -691,7 +938,7 @@
                         <td>
                           <v-text-field
                             dense
-                            style="max-width: 100px;"
+                            style="max-width: 50px;"
                             :rules="expensesNumRules"
                             type="number"
                           ></v-text-field>
@@ -710,7 +957,7 @@
                         <td>
                           <v-text-field
                             dense
-                            style="max-width: 100px;"
+                            style="max-width: 50px;"
                             :rules="expensesNumRules"
                             type="number"
                           ></v-text-field>
@@ -729,7 +976,7 @@
                         <td>
                           <v-text-field
                             dense
-                            style="max-width: 100px;"
+                            style="max-width: 50px;"
                             :rules="expensesNumRules"
                             type="number"
                           ></v-text-field>
@@ -748,7 +995,7 @@
                         <td>
                           <v-text-field
                             dense
-                            style="max-width: 100px;"
+                            style="max-width: 50px;"
                             :rules="profiteMaintenanceFeeNumRules"
                             type="number"
                           ></v-text-field>
@@ -767,7 +1014,7 @@
                         <td>
                           <v-text-field
                             dense
-                            style="max-width: 100px;"
+                            style="max-width: 50px;"
                             :rules="profiteMaintenanceFeeNumRules"
                             type="number"
                           ></v-text-field>
@@ -1063,7 +1310,6 @@
                     <td align="center">{{ item.no }}</td>
                     <td align="center">{{ item.contract_name }}</td>
                     <td align="center">{{ item.contract_type }}</td>
-                    <!-- <td align="center">{{ item.occupation }}</td> -->
                     <td align="center">
                       <v-select
                         :items="labor_occupation_list"
@@ -1096,6 +1342,11 @@
                         small
                         @click="addLaborCostList(item, index)"
                       >mdi-plus-thick</v-icon>
+                      <v-icon
+                        color="grey"
+                        small
+                        class="ml-3"
+                      >mdi-minus-thick</v-icon>
                     </td>
                   </tr>
                 </template>
@@ -1109,11 +1360,13 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
+import DataTableComponent from "@/components/DataTableComponent";
 
 export default {
   components: {
                 NavComponent,
                 ModalDialogComponent,
+                DataTableComponent,
               },
   data(){
     return{
@@ -1125,7 +1378,16 @@ export default {
         search_product_capacity: '',
         dialog_search_product: false,
         dialog_calculate_labor: false,
+        dialogDelete: false,
+        edit_labor_cost_data: true,
+        edit_survey_cost_data: true,
+        editedIndex: -1,
         product_name:'',
+        content_save_items: [
+          {title:'출력', click:''},
+          {title:'엑셀', click:''},
+          {title:'PDF', click:''},
+        ],
         labor_occupation_list:['저압 케이블전공', '고압 케이블전공', '비계공', '변전전공', '보통인부', '내선전공'],
         tab_main_items: [
           '조회', '계산',
@@ -1675,6 +1937,16 @@ export default {
     addLaborCostList(item, idx){
       this.labor_cost_list.splice(idx, 0, item)
     },
+    deleteItem () {
+      this.dialogDelete = true;
+    },
+    deleteItemConfirm () {
+      this.search_cost_data.splice(this.editedIndex, 1)
+      this.closeDelete()
+    },
+    closeDelete(){
+      this.dialogDelete = false;
+    },
   },
 
   computed: {
@@ -1698,5 +1970,5 @@ export default {
 .survey_cost_list td,
 .labor_cost_list td{border-right: 1px solid #b6b6b6; }
 .labor_cost_list{text-align: center;}
-.labor_cost_list table{min-width: 90rem!important;}
+.labor_cost_list table{min-width: 100rem!important;}
 </style>

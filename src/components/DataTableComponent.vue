@@ -101,6 +101,45 @@
                     mdi-delete
                   </v-icon>
                 </td>
+                <td v-if="showPhoto" align="center">
+                  <v-menu
+                    open-on-hover
+                    v-model="inbound_approval_approved"
+                    :close-on-content-click="false"
+                    :nudge-width="100"
+                    offset-x
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon
+                        small
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        mdi-image
+                      </v-icon>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-0">
+                        <v-list-item class="pa-0">
+                          <v-list-item-content class="pa-3">
+                            <v-list-item-subtitle>
+                              제품이미지영역
+                              <v-img
+                                alt="Pionelectric Logo"
+                                class="shrink mr-2"
+                                contain
+                                src="../assets/img/pion_logo.png"
+                                transition="scale-transition"
+                                width="150"
+                              />
+                            </v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                </td>
               </tr>
             </template>
 
@@ -130,6 +169,45 @@
                   </v-icon>
                 </td>
                 <td v-if="notEditableBelong"></td>
+                <td v-if="showPhoto" align="center">
+                  <v-menu
+                    open-on-hover
+                    v-model="inbound_approval_approved"
+                    :close-on-content-click="false"
+                    :nudge-width="100"
+                    offset-x
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon
+                        small
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        mdi-image
+                      </v-icon>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-0">
+                        <v-list-item class="pa-0">
+                          <v-list-item-content class="pa-3">
+                            <v-list-item-subtitle>
+                              제품이미지영역
+                              <v-img
+                                alt="Pionelectric Logo"
+                                class="shrink mr-2"
+                                contain
+                                src="../assets/img/pion_logo.png"
+                                transition="scale-transition"
+                                width="150"
+                              />
+                            </v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                </td>
               </tr>
             </template>
 
@@ -172,6 +250,7 @@
  * @property {Boolean} [editableBelong] - 내부 항목 편집 버튼 여부(default:false)
  * @property {Boolean} [deletableBelong] - 내부 항목 삭제 버튼 여부(default:false)
  * @property {Boolean} [notEditableBelong] - 편집 및 삭제 컬럼 여부(default:false)
+ * @property {Boolean} [showPhoto] - 자재 사진 노출 여부(default:false)
  * @property {String} [tableStyle] - 테이블 style(default:'')
  * @property {Boolean} [hideDefaultFooter] - 기본 footer 숨기기 여부(default:false)
  * @property {Boolean} [disablePagination] - 페이징 방지 여부(default:false)
@@ -214,6 +293,7 @@ export default {
     editableBelong: Boolean,
     deletableBelong: Boolean,
     notEditableBelong: Boolean,
+    showPhoto: Boolean,
     tableStyle: String,
     hideDefaultFooter: Boolean,
     disablePagination: Boolean,
@@ -238,6 +318,9 @@ export default {
     || this.editable || this.deletable
     || this.editableBelong || this.deletableBelong){
       this.addedHeaders.push({ text: '편집', align: 'center', value: 'edit', sortable: false });
+    }
+    if (this.showPhoto){
+      this.addedHeaders.push({ text: '사진', align: 'center', value: 'product_photo', sortable: false });
     }
     if (this.groupBy){
       this.addedHeaders.unshift({ text: this.headers.find(x=>x.value === this.groupBy).text, align: 'center', value: ''});

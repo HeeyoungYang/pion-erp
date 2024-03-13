@@ -29,7 +29,7 @@
           prepend-icon="mdi-archive-search"
         >
           <template v-slot:activator>
-            <v-list-item-title>재고</v-list-item-title>
+            <v-list-item-title>생산용 재고</v-list-item-title>
           </template>
 
           <v-list-item
@@ -37,7 +37,7 @@
               :key="i"
               link
               :to="to"
-              class="pl-6 grey lighten-3"
+              class="pl-6"
           >
             <v-list-item-title v-text="title"></v-list-item-title>
 
@@ -45,53 +45,59 @@
               <v-icon v-text="icon"></v-icon>
             </v-list-item-icon>
           </v-list-item>
-        </v-list-group>
 
-        <v-list-group
-          :value="inboundMenu"
-          prepend-icon="mdi-package-variant-plus"
-        >
-          <template v-slot:activator>
-            <v-list-item-title>입고</v-list-item-title>
-          </template>
+          <v-list-group
+            no-action
+            sub-group
+          >
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title>입고</v-list-item-title>
+              </v-list-item-content>
+            </template>
 
-          <v-list-item
+            <v-list-item
               v-for="([title, icon, to], i) in inboundPages"
               :key="i"
               link
               :to="to"
-              class="pl-6 grey lighten-3"
+              class="pl-6 grey lighten-3 ml-6"
+            >
+              <v-list-item-title v-text="title"></v-list-item-title>
+
+              <v-list-item-icon>
+                <v-icon v-text="icon"></v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-group>
+
+          <v-list-group
+            no-action
+            sub-group
           >
-            <v-list-item-title v-text="title"></v-list-item-title>
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title>출고</v-list-item-title>
+              </v-list-item-content>
+            </template>
 
-            <v-list-item-icon>
-              <v-icon v-text="icon"></v-icon>
-            </v-list-item-icon>
-          </v-list-item>
-        </v-list-group>
-
-        <v-list-group
-          :value="shipMenu"
-          prepend-icon="mdi-package-variant-minus"
-        >
-          <template v-slot:activator>
-            <v-list-item-title>출고</v-list-item-title>
-          </template>
-
-          <v-list-item
+            <v-list-item
               v-for="([title, icon, to], i) in shipPages"
               :key="i"
               link
               :to="to"
-              class="pl-6 grey lighten-3"
-          >
-            <v-list-item-title v-text="title"></v-list-item-title>
+              class="pl-6 grey lighten-3 ml-6"
+            >
+              <v-list-item-title v-text="title"></v-list-item-title>
 
-            <v-list-item-icon>
-              <v-icon v-text="icon"></v-icon>
-            </v-list-item-icon>
-          </v-list-item>
+              <v-list-item-icon>
+                <v-icon v-text="icon"></v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-group>
         </v-list-group>
+
+
         <!-- <v-list-group
           :value="estimateMenu"
           prepend-icon="mdi-invoice-list"
@@ -239,12 +245,12 @@
 
       inboundPages: [
         ['입고 현황', '', '/inbound-search'],
-        ['입고 등록', '', '/inbound-register'],
+        ['입고 신청', '', '/inbound-register'],
       ],
 
       shipPages: [
         ['출고 현황', '', '/ship-search'],
-        ['출고 등록', '', '/ship-register'],
+        ['출고 신청', '', '/ship-register'],
       ],
 
       estimatePages: [
@@ -264,6 +270,7 @@
     }),
   }
 </script>
-<style lang="">
+<style>
+.v-list-group__items{background-color: #efefef;}
 
 </style>

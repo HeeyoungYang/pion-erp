@@ -452,19 +452,16 @@
                     </v-card-title>
 
                     <v-divider></v-divider>
-                    <v-data-table
+
+                    <DataTableComponent
                       :headers="material_headers"
                       :items="material_data"
-                      actionsSlotName="actions"
-                      :edited-item="editedMaterialItem"
-                    >
-                      <template v-slot:[`item.actions`]="{ item }">
-                        <!-- ▼ 수정 아이콘(연필) -->
-                        <v-icon small class="mr-2" @click="editItem(item, 'product')">mdi-pencil</v-icon>
-                        <!-- ▼ 삭제 아이콘(휴지통) -->
-                        <v-icon small @click="deleteItem(item, 'product')">mdi-delete</v-icon>
-                      </template>
-                    </v-data-table>
+                      show-photo
+                      editable
+                      deletable
+                      @edit="editItem"
+                      @delete="deleteItem"
+                    />
                     <ModalDialogComponent
                       :dialog-value="material_dialog_delete"
                       max-width="350px"
@@ -472,7 +469,7 @@
                       text-class="text-body-2"
                       save-text="삭제"
                       close-text="취소"
-                      @save="deleteItemConfirm('product')"
+                      @save="deleteItemConfirm"
                       @close="closeDelete"
                     >
                       <template v-slot:titleHTML>
@@ -963,6 +960,7 @@
                               notEditableBelong
                               @edit="module_dialog = true"
                               @delete="deleteItem"
+                              show-photo
                           />
                         </v-col>
                       </v-row>
@@ -1062,6 +1060,43 @@
                         >
                           : {{ data.complete_product_code }}
                         </span>
+                        <v-menu
+                          open-on-hover
+                          v-model="inbound_approval_approved"
+                          :close-on-content-click="false"
+                          :nudge-width="100"
+                          offset-x
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-icon
+                              small
+                              v-bind="attrs"
+                              v-on="on"
+                            >
+                              mdi-image
+                            </v-icon>
+                          </template>
+
+                          <v-card class="pa-0">
+                            <v-list class="pa-0">
+                              <v-list-item class="pa-0">
+                                <v-list-item-content class="pa-3">
+                                  <v-list-item-subtitle>
+                                    제품이미지영역
+                                    <v-img
+                                      alt="Pionelectric Logo"
+                                      class="shrink mr-2"
+                                      contain
+                                      src="../assets/img/pion_logo.png"
+                                      transition="scale-transition"
+                                      width="150"
+                                    />
+                                  </v-list-item-subtitle>
+                                </v-list-item-content>
+                              </v-list-item>
+                            </v-list>
+                          </v-card>
+                        </v-menu>
                       </p>
 
                     </template>
@@ -1334,7 +1369,7 @@
                             text-class="text-body-2"
                             save-text="삭제"
                             close-text="취소"
-                            @save="deleteItemConfirm('product')"
+                            @save="deleteItemConfirm"
                             @close="closeDelete"
                           >
                             <template v-slot:titleHTML>
@@ -1355,6 +1390,7 @@
                             disable-pagination
                             children-key="belong_data"
                             table-style=""
+                            show-photo
                           />
                         </v-col>
                       </v-row>
@@ -1441,7 +1477,6 @@ export default {
         { text: '입고일자', align: 'center', value: 'inbound_date', },
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '총액', align: 'center', value: 'stock_price', },
-        { text: '', align: 'center', value: 'actions', },
       ],
       material_data: [],
       editedMaterialIndex: -1,
@@ -2198,26 +2233,20 @@ export default {
       ]
     },
 
-    editItem (item, type) {
-      if(type == 'product'){
+    editItem (item) {
         this.editedMaterialIndex = this.material_data.indexOf(item)
         this.editedMaterialItem = Object.assign({}, item)
-      }
       this.material_dialog = true
     },
 
-    deleteItem (item, type) {
-      if(type == 'product'){
+    deleteItem (item) {
         this.editedMaterialIndex = this.material_data.indexOf(item)
         this.editedMaterialItem = Object.assign({}, item)
-      }
       this.material_dialog_delete = true
     },
 
-    deleteItemConfirm (type) {
-      if(type == 'product'){
+    deleteItemConfirm () {
         this.material_data.splice(this.editedMaterialIndex, 1)
-      }
       this.closeDelete()
     },
 
