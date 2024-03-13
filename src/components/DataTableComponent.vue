@@ -67,7 +67,7 @@
               </td>
             </template>
 
-            <template v-slot:item="{ item, expand, isExpanded, select, isSelected }">
+            <template v-slot:item="{ index, item, select, isSelected, expand }">
               <tr>
                 <td v-if="!showSelect && showSelectChildren"></td>
                 <td v-if="showSelect">
@@ -75,14 +75,14 @@
                     v-model="selected_data" :value="item" @input="select(!isSelected)"
                   ></v-checkbox>
                 </td>
-                <td v-for="(header,id) in headers" :class="Object.keys(item).includes(header.value) && (!groupBy || header.value !== groupBy) ? 'text-center' : 'text-right'" :key="id"
-                @click="childrenKey && item[childrenKey] && item[childrenKey].length > 0 ? expand(!isExpanded) : null">
+                <td v-for="(header,id) in headers" :class="Object.keys(item).includes(header.value) && (!groupBy || header.value !== groupBy) ? 'text-center' : 'text-right'" :key="index+'_'+id"
+                @click="childrenKey && item[childrenKey] && item[childrenKey].length > 0 ? toggleExpanded(item, expand) : null">
                   <v-btn small icon color="default"
                     v-if="item[childrenKey] && item[childrenKey].length > 0
                           && !Object.keys(item[childrenKey][0]).includes(header.value)
                           && id+1 < headers.length
                           && Object.keys(item[childrenKey][0]).includes(headers[id+1].value)">
-                    <v-icon> {{ isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                    <v-icon> {{ expanded.includes(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
                   </v-btn>
                   {{ Object.keys(item).includes(header.value) && (!groupBy || header.value !== groupBy) ? item[header.value] : '' }}
                 </td>
@@ -104,15 +104,15 @@
               </tr>
             </template>
 
-            <template v-if="childrenKey" v-slot:expanded-item = "{ item, select, isSelected }">
-              <tr v-for="(data,index) in item[childrenKey]" :key="index" style="background-color: #efefef;">
+            <template v-if="childrenKey" v-slot:expanded-item = "{ index, item, select, isSelected }">
+              <tr v-for="(data,idx) in item[childrenKey]" :key="index+'_'+idx" style="background-color: #efefef;" v-show="expanded.includes(item)">
                 <td v-if="showSelect && !showSelectChildren"></td>
                 <td v-if="showSelectChildren">
                   <v-checkbox dense hide-details class="mt-0 pt-0"
                     v-model="selected_data" :value="data" @input="select(!isSelected)"
                   ></v-checkbox>
                 </td>
-                <td v-for="(header,id) in headers" class="text-center" :key="id">
+                <td v-for="(header,id) in headers" class="text-center" :key="index+'_'+idx+'_'+id">
                   {{ Object.keys(data).includes(header.value) ? data[header.value] : '' }}
                 </td>
                 <td v-if="editableBelong || deletableBelong">
@@ -228,6 +228,7 @@ export default {
       button_toggle: false,
       selected_data: this.value.slice(),
       addedHeaders: [],
+      expanded: [],
     };
   },
   mounted() {
@@ -292,6 +293,16 @@ export default {
         })
         this.button_toggle = true;
     },
+
+    toggleExpanded(item, expand) {
+      expand(true);
+      if (this.expanded.includes(item)){
+        const index = this.expanded.indexOf(item);
+        this.expanded.splice(index, 1);
+      } else {
+        this.expanded.push(item);
+      }
+    }
   }
 };
 </script>
