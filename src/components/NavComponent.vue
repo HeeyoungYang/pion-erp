@@ -46,6 +46,52 @@
             </v-list-item-icon>
           </v-list-item>
         </v-list-group>
+
+        <v-list-group
+          :value="inboundMenu"
+          prepend-icon="mdi-package-variant-plus"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>입고</v-list-item-title>
+          </template>
+
+          <v-list-item
+              v-for="([title, icon, to], i) in inboundPages"
+              :key="i"
+              link
+              :to="to"
+              class="pl-6 grey lighten-3"
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
+
+        <v-list-group
+          :value="shipMenu"
+          prepend-icon="mdi-package-variant-minus"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>출고</v-list-item-title>
+          </template>
+
+          <v-list-item
+              v-for="([title, icon, to], i) in shipPages"
+              :key="i"
+              link
+              :to="to"
+              class="pl-6 grey lighten-3"
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
         <!-- <v-list-group
           :value="estimateMenu"
           prepend-icon="mdi-invoice-list"
@@ -170,7 +216,7 @@
 </style>
 <script>
   export default {
-    props: ['userMenu', 'productMenu', 'estimateMenu', 'backDataMenu'],
+    props: ['userMenu', 'productMenu', 'inboundMenu', 'shipMenu', 'estimateMenu', 'backDataMenu'],
     data: () => ({
       drawer: null,
       menuList: [
@@ -185,10 +231,20 @@
 
       productPages: [
         ['재고 현황', '', '/product-search'],
-        ['원부자재', '', '/product-search'],
-        ['반제품', '', '/product-search'],
-        ['완제품', '', '/product-subsidiary'],
+        ['원부자재', '', '/product-material'],
+        ['반제품', '', '/product-module'],
+        ['완제품', '', '/product-completed'],
         ['원가', '', '/product-cost'],
+      ],
+
+      inboundPages: [
+        ['입고 현황', '', '/inbound-search'],
+        ['입고 등록', '', '/inbound-register'],
+      ],
+
+      shipPages: [
+        ['출고 현황', '', '/ship-search'],
+        ['출고 등록', '', '/ship-register'],
       ],
 
       estimatePages: [
@@ -198,7 +254,7 @@
 
       backDataPages: [
         ['재고 정보', '', '/product-backdata'],
-        // ['시중 노임단가', '', '/home'],
+        ['노무비 정보', '', '/labor-cost-backdata'],
       ],
 
       adminPages: [

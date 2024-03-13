@@ -86,10 +86,11 @@
                   </v-btn>
                   {{ Object.keys(item).includes(header.value) && (!groupBy || header.value !== groupBy) ? item[header.value] : '' }}
                 </td>
-                <td v-if="editable || deletable">
+                <td v-if="editable || deletable" align="center">
                   <v-icon v-if="editable"
                     small
                     @click="editItem(item)"
+                    class="mr-2"
                   >
                     mdi-pencil
                   </v-icon>
@@ -128,9 +129,10 @@
                     mdi-delete
                   </v-icon>
                 </td>
+                <td v-if="notEditableBelong"></td>
               </tr>
             </template>
-            
+
           </v-data-table>
         </v-col>
       </v-row>
@@ -163,12 +165,18 @@
  * @property {Boolean} [deletableGroup] - 그룹 삭제 버튼 여부(default:false)
  * @property {Boolean} [editable] - 항목 편집 버튼 여부(default:false)
  * @property {Boolean} [deletable] - 항목 삭제 버튼 여부(default:false)
+ * @property {Boolean} [editableDialog] - 항목 편집 버튼 여부(default:false)
+ * @property {Boolean} [deletableDialog] - 항목 삭제 버튼 여부(default:false)
+ * @property {Function} editableDialogClick - 항목 편집 버튼 여부(default:false)
+ * @property {Function} deletableDialogClick - 항목 삭제 버튼 여부(default:false)
  * @property {Boolean} [editableBelong] - 내부 항목 편집 버튼 여부(default:false)
  * @property {Boolean} [deletableBelong] - 내부 항목 삭제 버튼 여부(default:false)
+ * @property {Boolean} [notEditableBelong] - 편집 및 삭제 컬럼 여부(default:false)
  * @property {String} [tableStyle] - 테이블 style(default:'')
  * @property {Boolean} [hideDefaultFooter] - 기본 footer 숨기기 여부(default:false)
  * @property {Boolean} [disablePagination] - 페이징 방지 여부(default:false)
  * @property {Boolean} [disableSort] - 정렬 방지 여부(default:false)
+ *
  *
  * @emits input
  * @emits deleteGroup
@@ -199,8 +207,13 @@ export default {
     deletableGroup: Boolean,
     editable: Boolean,
     deletable: Boolean,
+    editableDialog: Boolean,
+    deletableDialog: Boolean,
+    editableDialogClick: Function,
+    deletableDialogClick: Function,
     editableBelong: Boolean,
     deletableBelong: Boolean,
+    notEditableBelong: Boolean,
     tableStyle: String,
     hideDefaultFooter: Boolean,
     disablePagination: Boolean,
@@ -224,7 +237,7 @@ export default {
     if (this.editableGroup || this.deletableGroup
     || this.editable || this.deletable
     || this.editableBelong || this.deletableBelong){
-      this.addedHeaders.push({ text: '편집', align: 'center', value: 'edit' });
+      this.addedHeaders.push({ text: '편집', align: 'center', value: 'edit', sortable: false });
     }
     if (this.groupBy){
       this.addedHeaders.unshift({ text: this.headers.find(x=>x.value === this.groupBy).text, align: 'center', value: ''});

@@ -19,212 +19,39 @@
           hide-details
           :inputs="searchCardInputs"
           >
-
-            <!-- <v-card-text class=" pt-3">
+            <v-col
+              cols="12"
+              sm="4"
+              lg="3"
+              offset-lg="9"
+            >
               <v-row>
                 <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-autocomplete
-                    v-model="product_type"
-                    :items="product_type_list"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="분류"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_code"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="관리코드"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_name"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="제품명"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_model"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="모델명"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_spec"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="사양"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_manufacturer"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="제조사"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-autocomplete
-                    v-model="product_condition"
-                    :items="product_condition_list"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="상태"
-                  ></v-autocomplete>
-                </v-col> -->
-                <!-- <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-menu
-                    ref="menu"
-                    v-model="menu"
-                    :close-on-content-click="false"
-                    :return-value.sync="dates"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
-                        v-model="dateRangeText"
-                        dense
-                        clearable
-                        filled
-                        hide-details
-                        label="일자"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="dates"
-                      no-title
-                      scrollable
-                      range
-                    >
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        text
-                        color="primary"
-                        @click="menu = false"
-                      >
-                        Cancel
-                      </v-btn>
-                      <v-btn
-                        text
-                        color="primary"
-                        @click="$refs.menu.save(dates)"
-                      >
-                        OK
-                      </v-btn>
-                    </v-date-picker>
-                  </v-menu>
-                </v-col> -->
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                  offset-lg="9"
-                >
-                  <v-row>
-                    <v-col
-                      cols="6"
-                      sm="6"
-                      lg="6"
-                    >
-                      <v-checkbox
-                        v-model="stock_more_0"
-                        label="재고 > 0"
-                      ></v-checkbox>
-                    </v-col>
-                    <v-col
-                      cols="6"
-                      sm="6"
-                      lg="6"
-                      align-self="center"
-                    >
-                      <v-btn
-                        color="primary"
-                        elevation="2"
-                        @click="searchButton"
-                      >
-                        <v-icon>mdi-magnify</v-icon>검색
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </v-col>
-                <!-- <v-col
                   cols="6"
-                  sm="4"
-                  lg="3"
+                  sm="6"
+                  lg="6"
+                >
+                  <v-checkbox
+                    v-model="stock_more_0"
+                    label="재고 > 0"
+                  ></v-checkbox>
+                </v-col>
+                <v-col
+                  cols="6"
+                  sm="6"
+                  lg="6"
                   align-self="center"
                 >
                   <v-btn
                     color="primary"
                     elevation="2"
+                    @click="searchButton"
                   >
                     <v-icon>mdi-magnify</v-icon>검색
                   </v-btn>
-                </v-col> -->
-              <!-- </v-row>
-
-              <v-row>
-
+                </v-col>
               </v-row>
-            </v-card-text> -->
+            </v-col>
           </InputsCardComponent>
 
           <v-card
@@ -237,24 +64,24 @@
                   cols="12"
                 >
                   <v-chip
-                      class="ma-2"
-                      color="indigo"
-                      text-color="white"
-                    >
-                      총 재고 : 11
+                    class="ma-2"
+                    color="indigo"
+                    text-color="white"
+                  >
+                    총 재고 : 9
                   </v-chip>
                   <v-chip
                     class="ma-2"
                     color="indigo"
                     text-color="white"
                   >
-                    총 금액 : 105,700
+                    총 금액 : 
                   </v-chip>
                   <v-data-table
                     dense
                     :headers="headers"
                     :items="product_data"
-                    item-key="product_code"
+                    :item-key="product_data.product_code"
                     class="elevation-1"
                   ></v-data-table>
                 </v-col>
@@ -281,32 +108,22 @@ export default {
               },
   data(){
     return{
+      stock_more_0: true,
+
       searchCardInputs:[
-        {label:'분류', type:'auto', list:this.product_type_list, value:'All', col:'12', sm:'4', lg:'3'},
+        {label:'종류', type:'auto', col:'12', sm:'4', lg:'2', value:'All', list:['All', '원부자재', '반제품', '완제품']},
+        {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'2'},
+        {label:'상태', type:'auto', col:'12', sm:'4', lg:'2', value:'All', list:['All', 'G', 'B']},
         {label:'관리코드', col:'12', sm:'4', lg:'3'},
         {label:'제품명', col:'12', sm:'4', lg:'3'},
         {label:'모델명', col:'12', sm:'4', lg:'3'},
         {label:'사양', col:'12', sm:'4', lg:'3'},
         {label:'제조사', col:'12', sm:'4', lg:'3'},
-        {label:'상태', type:'auto', col:'12', sm:'4', lg:'3', value:'All', list:this.product_condition_list},
-        {label:'일자', type:'date', range:true, list:this.product_type_list, value:[], col:'12', sm:'4', lg:'3'}
+        {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
       ],
-      product_type:'All',
-      product_code: '',
-      product_name: '',
-      product_model: '',
-      product_spec: '',
-      product_manufacturer: '',
-      product_condition: 'All',
-      product_inbound_date: '',
-      stock_more_0: true,
-      product_type_list: ['All', '일반', 'GFM', '전력변환기'],
-      product_condition_list: ['All', 'G', 'B'],
-      dates: [],
-      menu: false,
-
       headers: [
-        { text: '분류', align: 'center', value: 'product_type', },
+        { text: '종류', align: 'center', value: 'product_type', },
+        { text: '분류', align: 'center', value: 'product_classification', },
         { text: '관리코드', align: 'center', value: 'product_code', },
         { text: '제품명', align: 'center', value: 'product_name', },
         { text: '모델명', align: 'center', value: 'product_model', },
@@ -322,69 +139,146 @@ export default {
 
       product_data: [
         {
-          product_type:'일반',
-          product_code: '공장2F_E-09-02_PN-AF_SVG-001',
-          product_name: '제품1',
-          product_model: '모델A',
-          product_spec: '690V 100A',
-          manufacturer: '파이온일렉트릭',
-          product_num: '3',
-          product_condition: 'G',
-          pe_number: 'PE240207-001',
-          inbound_date: '2024-02-07',
-          unit_price: '100',
-          stock_price: '300',
-        },
-        {
-          product_type:'GFM',
-          product_code: '공장2F_E-09-02_PN-AF_SVG-002',
-          product_name: '제품2',
-          product_model: '모델B',
-          product_spec: '480V 100A',
-          manufacturer: '파이온일렉트릭',
-          product_num: '2',
-          product_condition: 'G',
-          pe_number: 'PE240207-002',
-          inbound_date: '2024-02-07',
-          unit_price: '200',
-          stock_price: '400',
-        },
-        {
-          product_type:'전력변환기',
-          product_code: '공장2F_E-09-02_PN-AF_SVG-003',
-          product_name: '제품3',
-          product_model: '모델C',
-          product_spec: '690V 100A',
-          manufacturer: '파이온일렉트릭',
-          product_num: '5',
-          product_condition: 'G',
-          pe_number: 'PE240207-003',
-          inbound_date: '2024-02-07',
-          unit_price: '1,000',
-          stock_price: '5,000',
-        },
-        {
-          product_type:'일반',
-          product_code: '공장2F_E-09-02_PN-AF_SVG-004',
-          product_name: '제품4',
-          product_model: '모델D',
-          product_spec: '480V 100A',
+          product_type:'원부자재',
+          product_classification:'일반',
+          product_code: '공장2F_E-09-01',
+          product_name: 'IGBT & SMPS',
+          product_model: '',
+          product_spec: '',
           manufacturer: '파이온일렉트릭',
           product_num: '1',
           product_condition: 'G',
-          pe_number: 'PE240207-004',
-          inbound_date: '2024-02-07',
-          unit_price: '100,000',
-          stock_price: '100,000',
+          pe_number: '',
+          inbound_date: '2024-03-11',
+          unit_price: '',
+          product_price: '',
+        },
+        {
+          product_type:'원부자재',
+          product_classification:'일반',
+          product_code: '공장2F_E-09-02',
+          product_name: 'SPD, 퓨즈',
+          product_model: '',
+          product_spec: '',
+          manufacturer: '파이온일렉트릭',
+          product_num: '1',
+          product_condition: 'G',
+          pe_number: '',
+          inbound_date: '2024-03-11',
+          unit_price: '',
+          product_price: '',
+        },
+        {
+          product_type:'원부자재',
+          product_classification:'일반',
+          product_code: '공장2F_E-09-03',
+          product_name: '쿨링팬',
+          product_model: '',
+          product_spec: '',
+          manufacturer: '파이온일렉트릭',
+          product_num: '1',
+          product_condition: 'G',
+          pe_number: '',
+          inbound_date: '2024-03-11',
+          unit_price: '',
+          product_price: '',
+        },
+        {
+          product_type:'원부자재',
+          product_classification:'일반',
+          product_code: '공장2F_E-09-04',
+          product_name: '보호회로',
+          product_model: '',
+          product_spec: '',
+          manufacturer: '파이온일렉트릭',
+          product_num: '1',
+          product_condition: 'G',
+          pe_number: '',
+          inbound_date: '2024-03-11',
+          unit_price: '',
+          product_price: '',
+        },
+        {
+          product_type:'원부자재',
+          product_classification:'일반',
+          product_code: '공장2F_E-09-04',
+          product_name: '리액터',
+          product_model: '',
+          product_spec: '',
+          manufacturer: '파이온일렉트릭',
+          product_num: '1',
+          product_condition: 'G',
+          pe_number: '',
+          inbound_date: '2024-03-11',
+          unit_price: '',
+          product_price: '',
+        },
+        {
+          product_type:'원부자재',
+          product_classification:'일반',
+          product_code: '공장2F_E-09-04',
+          product_name: 'MCCB',
+          product_model: '',
+          product_spec: '',
+          manufacturer: '파이온일렉트릭',
+          product_num: '1',
+          product_condition: 'G',
+          pe_number: '',
+          inbound_date: '2024-03-11',
+          unit_price: '',
+          product_price: '',
+        },
+        {
+          product_type:'반제품',
+          product_classification:'일반',
+          product_code: '공장2F_E-09-06',
+          product_name: 'PCS Ass`Y',
+          product_model: '',
+          product_spec: '',
+          manufacturer: '파이온일렉트릭',
+          product_num: '1',
+          product_condition: 'G',
+          pe_number: '',
+          inbound_date: '2024-03-11',
+          unit_price: '',
+          product_price: '',
+        },
+        {
+          product_type:'반제품',
+          product_classification:'일반',
+          product_code: '공장2F_E-09-06',
+          product_name: '제어기 Ass`Y',
+          product_model: '',
+          product_spec: '',
+          manufacturer: '파이온일렉트릭',
+          product_num: '1',
+          product_condition: 'G',
+          pe_number: '',
+          inbound_date: '2024-03-11',
+          unit_price: '',
+          product_price: '',
+        },
+        {
+          product_type:'완제품',
+          product_classification:'일반',
+          product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
+          product_name: 'ESS GFM용 PCS',
+          product_model: '',
+          product_spec: '380VAC 500kW',
+          manufacturer: '파이온일렉트릭',
+          product_num: '1',
+          product_condition: 'G',
+          pe_number: '',
+          inbound_date: '2024-03-11',
+          unit_price: '',
+          product_price: '',
         },
       ],
     }
   },
 
   computed: {
-    dateRangeText () {
-      return this.dates.join(' ~ ')
-    },
+
   },
   methods: {
     searchButton() {
