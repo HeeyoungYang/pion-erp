@@ -26,7 +26,7 @@
             :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
             :prepend-icon="input.icon"
             :disabled="input.disabled"
-            label="분류"
+            :label="input.label"
           ></v-autocomplete>
           <v-menu v-else-if="input.type === 'date' || input.type === 'date-picker' || input.type === 'datepicker'"
             :ref="'menu'+index"
