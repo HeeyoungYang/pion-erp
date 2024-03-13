@@ -1256,7 +1256,7 @@ mux.Table = {
  */
 mux.Excel = {
   /**
-   * 엑셀 파일 업로드로 테이블에 출력
+   * input 태그 엑셀 파일 업로드로 테이블에 출력
    * @param {File} file - 업로드할 엑셀 파일
    * @param {Array} headers - 테이블 헤더 정보 배열
    * @param {Array} items - 테이블 내용 정보 배열
@@ -1275,17 +1275,64 @@ mux.Excel = {
    * }
    */
   open(file, headers, items) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-      this.updateTableData(headers, items, jsonData);
-    };
+    const self = this;
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        self.updateTableData(headers, items, jsonData);
+      };
 
-    reader.readAsArrayBuffer(file);
+      reader.readAsArrayBuffer(file);
+    } catch (error) {
+      console.error(error);
+    }
+  },
+
+  /**
+   * 엑셀 파일 업로드로 테이블에 출력
+   * @param {Array} headers - 테이블 헤더 정보 배열
+   * @param {Array} items - 테이블 내용 정보 배열
+   * @example
+   * <button @click="openExcel" />
+   * <table ref="myTable">
+   * </table>
+   * 
+   * methods: {
+   *   openExcel() {
+   *     const headers = this.headers; // 헤더 정보
+   *     const items = this.items; // 테이블 내용 정보
+   *     mux.Excel.openExcelFile(headers, items);
+   *   }
+   * }
+   */
+  openExcelFile(headers, items){
+    const self = this;
+    try {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.xlsx'; // 확장자가 xxx, yyy 일때, ".xxx, .yyy"
+      input.onchange = function () {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0]; // 첫 번째 시트를 사용한다고 가정
+          const worksheet = workbook.Sheets[sheetName];
+          const excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          self.updateTableData(headers, items, excelData);
+        };
+        reader.readAsArrayBuffer(this.files[0]);
+      };
+      input.click();
+      
+    } catch (error) {
+      console.error(error);
+    }
   },
 
   /**
@@ -1316,19 +1363,25 @@ mux.Excel = {
 
   /**
    * 테이블 데이터 업데이트 함수
+   * @private
    * @param {Array} headers - 테이블 헤더 정보 배열
    * @param {Array} items - 테이블 내용 정보 배열
    * @param {Array} jsonData - 엑셀에서 읽어온 데이터 배열
    */
   updateTableData(headers, items, jsonData) {
-    // 테이블 헤더 업데이트
-    headers.splice(0, headers.length, ...jsonData[0].map((header) => ({ text: header, value: header })));
+    let arrExcelColIndex = [];
+    jsonData[0].forEach(excelColName => {
+      const index = headers.findIndex(h=>h.text === excelColName);
+      if(index >= 0){
+        arrExcelColIndex.push(index);
+      }
+    });
 
     // 테이블 내용 업데이트
     items.splice(0, items.length, ...jsonData.slice(1).map((row) => {
       const newRow = {};
-      headers.forEach((header) => {
-        newRow[header.value] = row[header.text];
+      headers.forEach((header, index) => {
+        newRow[header.value] = row[arrExcelColIndex[index]];
       });
       return newRow;
     }));
