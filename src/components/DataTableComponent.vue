@@ -563,3 +563,8 @@ export default {
   }
 };
 </script>
+<style>
+  td, th {
+    white-space: nowrap;
+  }
+</style>
