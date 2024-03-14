@@ -72,7 +72,6 @@
                 <td v-if="approval" align="center">
                   <v-menu
                     v-if="item.approval == '미승인'"
-                    v-model="approval_notapproved"
                     :close-on-content-click="false"
                     :nudge-width="200"
                     offset-x
@@ -124,7 +123,6 @@
                                 {{ approve_radio ? '승인' : '반려' }}
                               </v-btn>
                               <v-btn
-                                @click="approval_notapproved = false"
                                 small
                                 color="grey lighten-2"
                                 class="ml-2"
@@ -138,9 +136,8 @@
                   <v-menu
                     v-else-if="item.approval == '승인'"
                     open-on-hover
-                    v-model="approval_approved"
                     :close-on-content-click="false"
-                    :nudge-width="200"
+                    :max-width="160"
                     offset-x
                   >
                     <template v-slot:activator="{ on, attrs }">
@@ -160,6 +157,11 @@
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-3">
                             <v-list-item-subtitle>승인일 : {{ item.approve_date }}</v-list-item-subtitle>
+                            <v-btn
+                              small
+                              color="success"
+                              @click="confirmationDialog = true"
+                            >확인서</v-btn>
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
@@ -167,7 +169,6 @@
                   </v-menu>
                   <v-menu
                     v-else-if="item.approval == '반려'"
-                    v-model="approval_return"
                     open-on-hover
                     :close-on-content-click="false"
                     :nudge-width="150"
@@ -233,7 +234,6 @@
                 <td v-if="showPhoto" align="center">
                   <v-menu
                     open-on-hover
-                    v-model="approval_approved"
                     :close-on-content-click="false"
                     :nudge-width="100"
                     offset-x
@@ -252,19 +252,51 @@
                       <v-list class="pa-0">
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-3">
-                            <v-list-item-subtitle>
-                              제품이미지영역
                               <v-img
                                 alt="Pionelectric Logo"
                                 class="shrink mr-2"
                                 contain
-                                src="../assets/img/pion_logo.png"
+                                src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
                                 transition="scale-transition"
-                                width="150"
+                                width="350"
                               />
-                            </v-list-item-subtitle>
                           </v-list-item-content>
                         </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                </td>
+
+                <td v-if="showFiles" align="center">
+                  <v-menu
+                    :close-on-content-click="false"
+                    :nudge-width="100"
+                    offset-x
+                    v-if="!item.files == ''"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon
+                        small
+                        v-bind="attrs"
+                        v-on="on"
+                        @click="getFileName(item.files)"
+                      >
+                        mdi-download-box
+                      </v-icon>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-0">
+                          <v-chip
+                              v-for="(files, i) in files_list"
+                              :key="i"
+                              class="ma-2"
+                              color="success"
+                              :href="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+files"
+                              :download="files"
+                            >
+                                {{ files }}
+                            </v-chip>
                       </v-list>
                     </v-card>
                   </v-menu>
@@ -301,7 +333,6 @@
                 <td v-if="showPhoto" align="center">
                   <v-menu
                     open-on-hover
-                    v-model="approval_approved"
                     :close-on-content-click="false"
                     :nudge-width="100"
                     offset-x
@@ -320,17 +351,14 @@
                       <v-list class="pa-0">
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-3">
-                            <v-list-item-subtitle>
-                              제품이미지영역
                               <v-img
                                 alt="Pionelectric Logo"
                                 class="shrink mr-2"
                                 contain
-                                src="../assets/img/pion_logo.png"
+                                src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
                                 transition="scale-transition"
                                 width="150"
                               />
-                            </v-list-item-subtitle>
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
@@ -381,6 +409,7 @@
  * @property {Boolean} [notEditableBelong] - 편집 및 삭제 컬럼 여부(default:false)
  * @property {Boolean} [showPhoto] - 자재 사진 노출 여부(default:false)
  * @property {Boolean} [approval] - 승인 노출 여부(default:false)
+ * @property {Boolean} [showFiles] - 첨부파일 노출 여부(default:false)
  * @property {String} [tableStyle] - 테이블 style(default:'')
  * @property {Boolean} [hideDefaultFooter] - 기본 footer 숨기기 여부(default:false)
  * @property {Boolean} [disablePagination] - 페이징 방지 여부(default:false)
@@ -425,6 +454,7 @@ export default {
     notEditableBelong: Boolean,
     showPhoto: Boolean,
     approval: Boolean,
+    showFiles: Boolean,
     tableStyle: String,
     hideDefaultFooter: Boolean,
     disablePagination: Boolean,
@@ -440,7 +470,9 @@ export default {
       selected_data: this.value.slice(),
       addedHeaders: [],
       expanded: [],
+      files_list:[],
       approve_radio: true,
+      confirmationDialog: false,
     };
   },
   mounted() {
@@ -454,6 +486,9 @@ export default {
     }
     if (this.showPhoto){
       this.addedHeaders.push({ text: '사진', align: 'center', value: 'product_photo', sortable: false });
+    }
+    if (this.showFiles){
+      this.addedHeaders.push({ text: '첨부', align: 'center', value: 'files', sortable: false });
     }
     if (this.approval){
       this.addedHeaders.unshift({ text: '승인', align: 'center', value: 'approval', sortable: false });
@@ -520,6 +555,10 @@ export default {
       } else {
         this.expanded.push(item);
       }
+    },
+    getFileName(item){
+      let files_array = item.split(',');
+      this.files_list = files_array;
     }
   }
 };

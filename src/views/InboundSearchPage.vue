@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :inboundMenu="true"></NavComponent>
+    <NavComponent :productMenu="true" :inboundMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -255,6 +255,7 @@
                     :item-key="product_code"
                     show-photo
                     approval
+                    show-files
                   />
                 </v-col>
               </v-row>
@@ -290,16 +291,15 @@ export default {
       inbound_approval: 'All',
       product_inbound_date: '2024-03-11',
       stock_more_0: true,
+      menu: false,
       product_type_list: ['All', '원부자재', '반제품', '완제품'],
       product_classification_list: ['All', '일반', 'GFM', '전력변환기'],
       inbound_approval_list: ['All', '승인', '미승인', '반려'],
       dates: [],
-      inbound_approval_return: false,
-      inbound_approval_approved: false,
-      inbound_approval_notapproved: false,
 
       headers: [
         { text: '종류', align: 'center', value: 'product_type', },
+        { text: '신청자', align: 'center', value: 'inbound_applicant', },
         { text: '분류', align: 'center', value: 'product_classification', },
         { text: '관리코드', align: 'center', value: 'product_code', },
         { text: '제품명', align: 'center', value: 'product_name', },
@@ -315,6 +315,7 @@ export default {
 
       product_data: [
         {
+          inbound_applicant:'윤준수',
           product_type:'원부자재',
           product_classification:'일반',
           product_code: '공장2F_E-09-01',
@@ -330,8 +331,10 @@ export default {
           product_price: '',
           approve_date:'2024-03-12',
           return_reason:'',
+          files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf'
         },
         {
+          inbound_applicant:'윤준수',
           product_type:'반제품',
           product_classification:'일반',
           product_code: '공장2F_E-09-02',
@@ -349,6 +352,7 @@ export default {
           return_reason:'',
         },
         {
+          inbound_applicant:'윤준수',
           product_type:'완제품',
           product_classification:'일반',
           product_code: '공장2F_E-09-03',

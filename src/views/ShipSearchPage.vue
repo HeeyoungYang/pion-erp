@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :shipMenu="true"></NavComponent>
+    <NavComponent :productMenu="true" :shipMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -254,6 +254,7 @@
                     :item-key="product_code"
                     show-photo
                     approval
+                    show-files
                   />
                 </v-col>
               </v-row>
@@ -298,6 +299,7 @@ export default {
       approval_notapproved: false,
 
       headers: [
+        { text: '신청자', align: 'center', value: 'ship_applicant', },
         { text: '종류', align: 'center', value: 'product_type', },
         { text: '분류', align: 'center', value: 'product_classification', },
         { text: '관리코드', align: 'center', value: 'product_code', },
@@ -314,6 +316,7 @@ export default {
 
       product_data: [
         {
+          ship_applicant:'윤준수',
           product_type:'원부자재',
           product_classification:'일반',
           product_code: '공장2F_E-09-01',
@@ -331,6 +334,7 @@ export default {
           return_reason:'',
         },
         {
+          ship_applicant:'윤준수',
           product_type:'반제품',
           product_classification:'일반',
           product_code: '공장2F_E-09-02',
@@ -346,8 +350,10 @@ export default {
           product_price: '',
           approve_date:'',
           return_reason:'',
+          files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf'
         },
         {
+          ship_applicant:'윤준수',
           product_type:'완제품',
           product_classification:'일반',
           product_code: '공장2F_E-09-03',

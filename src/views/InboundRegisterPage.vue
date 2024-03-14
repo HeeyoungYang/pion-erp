@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :inboundMenu="true"></NavComponent>
+    <NavComponent :productMenu="true" :inboundMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -219,6 +219,13 @@
                   </v-menu>
                 </v-col>
                 <v-col cols="12" sm="9" align-self="center">
+                  <v-btn
+                    small
+                    color="default"
+                    class="mr-2"
+                  >
+                    직접 입력
+                  </v-btn>
                   <v-btn
                     small
                     color="success"

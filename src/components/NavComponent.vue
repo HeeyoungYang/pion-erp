@@ -49,6 +49,7 @@
           <v-list-group
             no-action
             sub-group
+            :value="inboundMenu"
           >
             <template v-slot:activator>
               <v-list-item-content>
@@ -74,6 +75,7 @@
           <v-list-group
             no-action
             sub-group
+            :value="shipMenu"
           >
             <template v-slot:activator>
               <v-list-item-content>
