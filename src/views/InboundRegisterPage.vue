@@ -256,6 +256,7 @@
                             filled
                             type="number"
                             style="max-width:150px"
+                            v-model="item.product_inbound_num"
                           >
 
                           </v-text-field>
@@ -388,7 +389,7 @@ export default {
         {
           product_type:'원부자재',
           product_classification:'일반',
-          product_code: '공장2F_E-09-04',
+          product_code: '공장2F_E-09-05',
           product_name: '리액터',
           product_model: '',
           product_spec: '',
@@ -400,7 +401,7 @@ export default {
         {
           product_type:'원부자재',
           product_classification:'일반',
-          product_code: '공장2F_E-09-04',
+          product_code: '공장2F_E-09-06',
           product_name: 'MCCB',
           product_model: '',
           product_spec: '',
@@ -412,7 +413,7 @@ export default {
         {
           product_type:'반제품',
           product_classification:'일반',
-          product_code: '공장2F_E-09-06',
+          product_code: '공장2F_E-09-07',
           product_name: 'PCS Ass`Y',
           product_model: '',
           product_spec: '',
@@ -424,7 +425,7 @@ export default {
         {
           product_type:'반제품',
           product_classification:'일반',
-          product_code: '공장2F_E-09-06',
+          product_code: '공장2F_E-09-08',
           product_name: '제어기 Ass`Y',
           product_model: '',
           product_spec: '',

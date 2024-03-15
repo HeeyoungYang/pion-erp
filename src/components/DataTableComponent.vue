@@ -288,7 +288,7 @@
                     <v-card class="pa-0">
                       <v-list class="pa-0">
                           <v-chip
-                              v-for="(files, i) in files_list"
+                              v-for="(files, i) in item.authority"
                               :key="i"
                               class="ma-2"
                               color="success"
@@ -300,6 +300,61 @@
                       </v-list>
                     </v-card>
                   </v-menu>
+                </td>
+
+                <td v-if="showAuthority" align="left">
+                  <v-menu
+                    :close-on-content-click="false"
+                    :nudge-width="100"
+                    offset-x
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+
+                      <v-chip
+                        class="ma-1"
+                        color="default"
+                        style="display:table"
+                        small
+                          v-bind="attrs"
+                          v-on="on"
+                      >
+                        <v-icon
+                          small
+                        >
+                          mdi-pencil
+                        </v-icon>
+                      </v-chip>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-3">
+                        <v-checkbox
+                          v-for="(select_authority, i) in authority_list"
+                          :key="i"
+                          v-model="item.authority"
+                          dense
+                          hide-details
+                          :label="select_authority"
+                          :value="select_authority"
+                        ></v-checkbox>
+                        <v-btn
+                          small
+                          color="primary"
+                          class="mt-3"
+                        >저장</v-btn>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                  <v-chip
+                    class="ma-1"
+                    color="primary"
+                    style="display:table"
+                    small
+                    v-for="(auth, i) in item.authority"
+                    :key="i"
+                  >
+                      {{ auth }}
+                  </v-chip>
                 </td>
               </tr>
             </template>
@@ -410,6 +465,7 @@
  * @property {Boolean} [showPhoto] - 자재 사진 노출 여부(default:false)
  * @property {Boolean} [approval] - 승인 노출 여부(default:false)
  * @property {Boolean} [showFiles] - 첨부파일 노출 여부(default:false)
+ * @property {Boolean} [showAuthority] - 권한 설정 여부(default:false)
  * @property {String} [tableStyle] - 테이블 style(default:'')
  * @property {Boolean} [hideDefaultFooter] - 기본 footer 숨기기 여부(default:false)
  * @property {Boolean} [disablePagination] - 페이징 방지 여부(default:false)
@@ -455,6 +511,7 @@ export default {
     showPhoto: Boolean,
     approval: Boolean,
     showFiles: Boolean,
+    showAuthority: Boolean,
     tableStyle: String,
     hideDefaultFooter: Boolean,
     disablePagination: Boolean,
@@ -471,6 +528,7 @@ export default {
       addedHeaders: [],
       expanded: [],
       files_list:[],
+      authority_list:['관리자', '노무비정보관리', '원가계산', '입고승인', '출고승인'],
       approve_radio: true,
       confirmationDialog: false,
     };
@@ -489,6 +547,9 @@ export default {
     }
     if (this.showFiles){
       this.addedHeaders.push({ text: '첨부', align: 'center', value: 'files', sortable: false });
+    }
+    if (this.showAuthority){
+      this.addedHeaders.push({ text: '권한', align: 'center', value: 'authority', sortable: false });
     }
     if (this.approval){
       this.addedHeaders.unshift({ text: '승인', align: 'center', value: 'approval', sortable: false });
@@ -559,8 +620,8 @@ export default {
     getFileName(item){
       let files_array = item.split(',');
       this.files_list = files_array;
-    }
-  }
+    },
+  },
 };
 </script>
 <style>

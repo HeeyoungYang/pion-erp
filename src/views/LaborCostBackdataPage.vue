@@ -359,6 +359,13 @@ export default {
             labor_surcharge_rate:'120',
           },
           {
+            labor_no:'품-2',
+            labor_contract_name:'저압케이블 포설',
+            labor_contract_type:'2.5㎟, 6C',
+            labor_man_day:'0.035',
+            labor_surcharge_rate:'120',
+          },
+          {
             labor_no:'품-3',
             labor_contract_name:'전력케이블 단말처리',
             labor_contract_type:'240㎟, 1C',
