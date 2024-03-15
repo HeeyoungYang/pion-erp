@@ -1,34 +1,19 @@
 <template>
   <div>
     <ModalDialogComponent
-      :dialog-value="first_login_dialog"
-      max-width="300px"
-      :persistent="true"
-    >
-      <v-row class="mt-3">
-        <v-col cols="12">
-          <p class="mb-0 error--text">임시 비밀번호로 최초 로그인 시<br>비밀번호 변경이 필요합니다</p>
-        </v-col>
-        <v-col cols="12">
-          <v-text-field
-            v-model="passwords.newPassword"
-            label="새 비밀번호"
-            :rules="passwordRules"
-            type="password"
-            dense
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12">
-          <v-text-field
-            v-model="passwords.newPasswordCheck"
-            label="새 비밀번호 확인"
-            :rules="checkPasswordRules"
-            type="password"
-            dense
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </ModalDialogComponent>
+        :dialog-value="loading_dialog"
+        width="350px"
+        title-class="hide"
+      >
+        <v-progress-circular
+          :size="200"
+          :width="30"
+          color="blue-grey lighten-3"
+          indeterminate
+          style="left: 50%; margin-left: -100px;"
+        ></v-progress-circular>
+        <p class="mt-15 mb-0 text-h4 text-center grey--text text--lighten-1">LOADING...</p>
+      </ModalDialogComponent>
   </div>
 </template>
 <script>
@@ -40,6 +25,7 @@ export default {
               },
   data(){
     return {
+      loading_dialog:false,
     }
   }
 }
