@@ -238,10 +238,10 @@
         right: null,
 
       productPages: [
-        ['재고 현황', '', '/product-search'],
-        ['원부자재', '', '/product-material'],
-        ['반제품', '', '/product-module'],
-        ['완제품', '', '/product-completed'],
+        ['재고 현황', '', '/stock-search'],
+        ['원부자재', '', '/material-search'],
+        ['반제품', '', '/module-search'],
+        ['완제품', '', '/product-search'],
         ['원가', '', '/product-cost'],
       ],
 

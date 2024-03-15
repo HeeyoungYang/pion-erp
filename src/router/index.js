@@ -4,10 +4,10 @@ import LoginPage from '@/views/LoginPage'
 import MainPage from '@/views/MainPage'
 import MembersPage from '@/views/MembersPage'
 import AuthorizationPage from '@/views/AuthorizationPage'
+import StockSearchPage from '@/views/StockSearchPage'
+import MaterialSearchPage from '@/views/MaterialSearchPage'
+import ModuleSearchPage from '@/views/ModuleSearchPage'
 import ProductSearchPage from '@/views/ProductSearchPage'
-import ProductMaterialPage from '@/views/ProductMaterialPage'
-import ProductModulePage from '@/views/ProductModulePage'
-import ProductCompletedPage from '@/views/ProductCompletedPage'
 import ProductCostPage from '@/views/ProductCostPage'
 import InboundSearchPage from '@/views/InboundSearchPage'
 import InboundRegisterPage from '@/views/InboundRegisterPage'
@@ -35,24 +35,24 @@ const routes = [
     component: LoginPage
   },
   {
+    path: '/stock-search',
+    name: 'StockSearchPage',
+    component: StockSearchPage
+  },
+  {
+    path: '/material-search',
+    name: 'MaterialSearchPage',
+    component: MaterialSearchPage
+  },
+  {
+    path: '/module-search',
+    name: 'ModuleSearchPage',
+    component: ModuleSearchPage
+  },
+  {
     path: '/product-search',
     name: 'ProductSearchPage',
     component: ProductSearchPage
-  },
-  {
-    path: '/product-material',
-    name: 'ProductMaterialPage',
-    component: ProductMaterialPage
-  },
-  {
-    path: '/product-module',
-    name: 'ProductModulePage',
-    component: ProductModulePage
-  },
-  {
-    path: '/product-completed',
-    name: 'ProductCompletedPage',
-    component: ProductCompletedPage
   },
   {
     path: '/product-cost',
