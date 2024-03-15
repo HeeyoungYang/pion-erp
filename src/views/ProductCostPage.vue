@@ -129,77 +129,12 @@
                       </v-row>
                     </v-card-title>
                     <v-card-text>
-                      <v-data-table
-                        dense
+                      <CostTableComponent
                         :headers="survey_cost_headers"
                         :items="survey_cost_data"
-                        :hide-default-footer="true"
                         item-key="product_code"
-                        class="elevation-1 survey_cost_list"
-                        disable-sort
-                      >
-
-                        <template v-slot:item="{ item }">
-                          <tr >
-                            <td align="center">1</td>
-                            <td colspan="4">재료비</td>
-                            <td>0,000,000</td>
-                          </tr>
-                          <tr style="background-color:#efefef">
-                            <td></td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                          </tr>
-                          <tr style="background-color:#efefef">
-                            <td></td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                          </tr>
-                          <tr >
-                            <td align="center">2</td>
-                            <td>노무비</td>
-                            <td>식</td>
-                            <td>1</td>
-                            <td>220,290,071</td>
-                            <td>220,290,071</td>
-                          </tr>
-                          <tr >
-                            <td align="center">3</td>
-                            <td>경비</td>
-                            <td>식</td>
-                            <td>1</td>
-                            <td>34,885,831</td>
-                            <td>34,885,831</td>
-                          </tr>
-
-                          <tr >
-                            <td align="center">4</td>
-                            <td>일반관리비</td>
-                            <td>식</td>
-                            <td>1</td>
-                            <td>15,310,554</td>
-                            <td>15,310,554</td>
-                          </tr>
-                          <tr >
-                            <td align="center">5</td>
-                            <td>이윤</td>
-                            <td>식</td>
-                            <td>1</td>
-                            <td>40,572,968</td>
-                            <td>40,572,968</td>
-                          </tr>
-                          <tr class="font-weight-black amber lighten-5">
-                            <td colspan="5" style="font-size: 15px;">합계 (TOTAL)</td>
-                            <td style="font-size: 15px;">311,059,424</td>
-                          </tr>
-                        </template>
-                      </v-data-table>
+                        :childTrStyle="'background-color:#efefef'"
+                      />
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
@@ -272,303 +207,16 @@
 
                     </v-card-title>
                     <v-card-text>
-                      <v-data-table
-                        dense
+                      <CostTableComponent
                         :headers="survey_cost_headers"
-                        :items="calculation_data"
-                        :hide-default-footer="true"
+                        :items="calc_cost_detail_data"
                         item-key="product_code"
-                        class="elevation-1 survey_cost_list"
-                        disable-sort
+                        trStyle="background-color:#efefef"
+                        trClass="font-weight-black info_title"
+                        :cost-num-edit-disabled="edit_survey_cost_data"
                       >
-
-                        <template v-slot:item="{ item }">
-                          <tr class="font-weight-black info_title">
-                            <td>1</td>
-                            <td colspan="4">재료비</td>
-                            <td>0,000,000</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                            <td>{{ item.cost_list }}</td>
-                          </tr>
-                          <tr class="font-weight-black info_title">
-                            <td>2</td>
-                            <td colspan="4">노무비</td>
-                            <td>220,290,071</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td colspan="4">가. 직접 노무비</td>
-                            <td>196,336,962</td>
-                          </tr>
-                          <tr v-for="(labor, idx) in item.direct_labor_calculation" :key="idx">
-                            <td></td>
-                            <td style="padding-left:40px;">{{ labor.labor_name }}</td>
-                            <td>식</td>
-                            <td>{{ labor.labor_num }}</td>
-                            <td>{{ labor.labor_unit_price }}</td>
-                            <td>{{ labor.labor_unit_price }}</td>
-                          </tr>
-
-                          <tr>
-                            <td></td>
-                            <td>나. 간접 노무비</td>
-                            <td>식</td>
-                            <td>1</td>
-                            <td></td>
-                            <td>{{ item.indirect_labor_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- (직접노무비) X {{ item.indirect_labor_rate }}%</td>
-                          </tr>
-                          <tr class="font-weight-black info_title">
-                            <td>3.</td>
-                            <td colspan="4">경비</td>
-                            <td>34,885,831</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td>가. 고용보험료</td>
-                            <td>식</td>
-                            <td>
-                              <v-text-field
-                                dense
-                                style="max-width: 50px;"
-                                :rules="expensesNumRules"
-                                :disabled="edit_survey_cost_data"
-                                type="number"
-                                value="1"
-                              ></v-text-field>
-                            </td>
-                            <td></td>
-                            <td>{{ item.employment_insurance_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.employment_insurance_rate }}%</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td>나. 공구손료</td>
-                            <td>식</td>
-                            <td>
-                              <v-text-field
-                                dense
-                                style="max-width: 50px;"
-                                :rules="expensesNumRules"
-                                :disabled="edit_survey_cost_data"
-                                type="number"
-                                value="1"
-                              ></v-text-field>
-                            </td>
-                            <td></td>
-                            <td>{{ item.tool_rent_fee_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- (직접노무비) X {{ item.tool_rent_fee_rate }}%</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td>다. 여비교통 통신비</td>
-                            <td>식</td>
-                            <td>
-                              <v-text-field
-                                dense
-                                style="max-width: 50px;"
-                                :rules="expensesNumRules"
-                                :disabled="edit_survey_cost_data"
-                                type="number"
-                                value="1"
-                              ></v-text-field>
-                            </td>
-                            <td></td>
-                            <td>{{ item.transportation_fee_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.transportation_fee_rate }}%</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td>라. 산재보험료</td>
-                            <td>식</td>
-                            <td>
-                              <v-text-field
-                                dense
-                                style="max-width: 50px;"
-                                :rules="expensesNumRules"
-                                :disabled="edit_survey_cost_data"
-                                type="number"
-                                value="1"
-                              ></v-text-field>
-                            </td>
-                            <td></td>
-                            <td>{{ item.industrial_accident_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.industrial_accident_rate }}%</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td>마. 세금과공과</td>
-                            <td>식</td>
-                                                        <td>
-                              <v-text-field
-                                dense
-                                style="max-width: 50px;"
-                                :rules="expensesNumRules"
-                                :disabled="edit_survey_cost_data"
-                                type="number"
-                                value="1"
-                              ></v-text-field>
-                            </td>
-                            <td></td>
-                            <td>{{ item.taxes_dues_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.taxes_dues_rate }}%</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td>바. 복리후생비</td>
-                            <td>식</td>
-                                                        <td>
-                              <v-text-field
-                                dense
-                                style="max-width: 50px;"
-                                :rules="expensesNumRules"
-                                :disabled="edit_survey_cost_data"
-                                type="number"
-                                value="1"
-                              ></v-text-field>
-                            </td>
-                            <td></td>
-                            <td>{{ item.welfare_benefits_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.welfare_benefits_rate }}%</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td>사. 퇴직공제 부금비</td>
-                            <td>식</td>
-                                                        <td>
-                              <v-text-field
-                                dense
-                                style="max-width: 50px;"
-                                :rules="expensesNumRules"
-                                :disabled="edit_survey_cost_data"
-                                type="number"
-                                value="1"
-                              ></v-text-field>
-                            </td>
-                            <td></td>
-                            <td>{{ item.retirement_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- (직접노무비) X {{ item.retirement_rate }}%</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td>아. 소모품비</td>
-                            <td>식</td>
-                                                        <td>
-                              <v-text-field
-                                dense
-                                style="max-width: 50px;"
-                                :rules="expensesNumRules"
-                                :disabled="edit_survey_cost_data"
-                                type="number"
-                                value="1"
-                              ></v-text-field>
-                            </td>
-                            <td></td>
-                            <td>{{ item.expendables_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.expendables_rate }}%</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td>자. 산업안전보건관리비</td>
-                            <td>식</td>
-                                                        <td>
-                              <v-text-field
-                                dense
-                                style="max-width: 50px;"
-                                :rules="expensesNumRules"
-                                :disabled="edit_survey_cost_data"
-                                type="number"
-                                value="1"
-                              ></v-text-field>
-                            </td>
-                            <td></td>
-                            <td>{{ item.industrial_safety_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- ((직접 노무비) X {{ item.industrial_safety_rate1 }}% X {{ item.industrial_safety_rate2 }})</td>
-                          </tr>
-                          <tr class="font-weight-black info_title">
-                            <td></td>
-                            <td>일반관리비</td>
-                            <td>식</td>
-                                                        <td>
-                              <v-text-field
-                                dense
-                                style="max-width: 50px;"
-                                :rules="expensesNumRules"
-                                :disabled="edit_survey_cost_data"
-                                type="number"
-                                value="1"
-                              ></v-text-field>
-                            </td>
-                            <td></td>
-                            <td>{{ item.normal_maintenance_fee_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- (재료비+노무비+경비) X {{ item.normal_maintenance_fee_rate }}%</td>
-                          </tr>
-                          <tr class="font-weight-black info_title">
-                            <td></td>
-                            <td>이윤</td>
-                            <td>식</td>
-                                                        <td>
-                              <v-text-field
-                                dense
-                                style="max-width: 50px;"
-                                :rules="expensesNumRules"
-                                :disabled="edit_survey_cost_data"
-                                type="number"
-                                value="1"
-                              ></v-text-field>
-                            </td>
-                            <td></td>
-                            <td>{{ item.profite_amount }}</td>
-                          </tr>
-                          <tr>
-                            <td></td>
-                            <td style="padding-left:40px;" colspan="5">- (노무비+경비+일반관리비) X {{ item.profite_rate }} %</td>
-                          </tr>
-                          <tr class="font-weight-black amber lighten-5">
-                            <td colspan="5" style="font-size: 15px;">합계 (TOTAL)</td>
-                            <td style="font-size: 15px;">311,059,424</td>
-                          </tr>
-                        </template>
-                      </v-data-table>
+                        
+                      </CostTableComponent>
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
@@ -731,307 +379,14 @@
 
                 </v-card-title>
                 <v-card-text>
-                  <v-data-table
-                    dense
+                  <CostTableComponent
                     :headers="survey_cost_headers"
-                    :items="calculation_data"
-                    :hide-default-footer="true"
+                    :items="calc_cost_detail_data2"
                     item-key="product_code"
-                    class="elevation-1 survey_cost_list"
-                    disable-sort
+                    trStyle="background-color:#efefef"
+                    trClass="font-weight-black info_title"
                   >
-
-                    <template v-slot:item="{ item }">
-                      <tr class="font-weight-black info_title">
-                        <td>1</td>
-                        <td colspan="4">재료비
-                          <v-btn
-                            color="primary"
-                            x-small
-                            class="ml-3"
-                            elevation="0"
-                            @click="dialog_search_product = true"
-                          >제품 불러오기
-                          </v-btn>
-                        </td>
-                        <td>000</td>
-                      </tr>
-                      <tr v-for="(sub_product, idx) in dialog_selected_product_data.belong_data" :key="idx">
-                        <td></td>
-                        <td>{{ sub_product.sub_product_name }}</td>
-                        <td>{{ sub_product.sub_product_unit }}</td>
-                        <td>{{ sub_product.sub_product_num }}</td>
-                        <td>{{ sub_product.sub_product_unit_price }}</td>
-                        <td></td>
-                      </tr>
-                      <tr class="font-weight-black info_title">
-                        <td>2</td>
-                        <td colspan="4">노무비
-                        </td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td colspan="4">가. 직접 노무비
-                          <v-btn
-                            color="primary"
-                            x-small
-                            class="ml-3"
-                            elevation="0"
-                            @click="dialog_calculate_labor = true"
-                          >산출
-                          </v-btn>
-                        </td>
-                        <td>000</td>
-                      </tr>
-                      <!-- <tr v-for="(labor, idx) in item.direct_labor_calculation" :key="idx">
-                        <td></td>
-                        <td style="padding-left:40px;">{{ labor.labor_name }}</td>
-                        <td>식</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr> -->
-                      <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td>나. 간접 노무비</td>
-                        <td>식</td>
-                        <td></td>
-                        <td></td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- (직접노무비) X {{ item.indirect_labor_rate }}%</td>
-                      </tr>
-                      <tr class="font-weight-black info_title">
-                        <td>3.</td>
-                        <td colspan="4">경비</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td>가. 고용보험료</td>
-                        <td>식</td>
-                        <td>
-                          <v-text-field
-                            dense
-                            style="max-width: 50px;"
-                            :rules="expensesNumRules"
-                            type="number"
-                          ></v-text-field>
-                        </td>
-                        <td>000</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.employment_insurance_rate }}%</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td>나. 공구손료</td>
-                        <td>식</td>
-                        <td>
-                          <v-text-field
-                            dense
-                            style="max-width: 50px;"
-                            :rules="expensesNumRules"
-                            type="number"
-                          ></v-text-field>
-                        </td>
-                        <td>000</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- (직접노무비) X {{ item.tool_rent_fee_rate }}%</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td>다. 여비교통 통신비</td>
-                        <td>식</td>
-                        <td>
-                          <v-text-field
-                            dense
-                            style="max-width: 50px;"
-                            :rules="expensesNumRules"
-                            type="number"
-                          ></v-text-field>
-                        </td>
-                        <td>000</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.transportation_fee_rate }}%</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td>라. 산재보험료</td>
-                        <td>식</td>
-                        <td>
-                          <v-text-field
-                            dense
-                            style="max-width: 50px;"
-                            :rules="expensesNumRules"
-                            type="number"
-                          ></v-text-field>
-                        </td>
-                        <td>000</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.industrial_accident_rate }}%</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td>마. 세금과공과</td>
-                        <td>식</td>
-                        <td>
-                          <v-text-field
-                            dense
-                            style="max-width: 50px;"
-                            :rules="expensesNumRules"
-                            type="number"
-                          ></v-text-field>
-                        </td>
-                        <td>000</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.taxes_dues_rate }}%</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td>바. 복리후생비</td>
-                        <td>식</td>
-                        <td>
-                          <v-text-field
-                            dense
-                            style="max-width: 50px;"
-                            :rules="expensesNumRules"
-                            type="number"
-                          ></v-text-field>
-                        </td>
-                        <td>000</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.welfare_benefits_rate }}%</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td>사. 퇴직공제 부금비</td>
-                        <td>식</td>
-                        <td>
-                          <v-text-field
-                            dense
-                            style="max-width: 50px;"
-                            :rules="expensesNumRules"
-                            type="number"
-                          ></v-text-field>
-                        </td>
-                        <td>000</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- (직접노무비) X {{ item.retirement_rate }}%</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td>아. 소모품비</td>
-                        <td>식</td>
-                        <td>
-                          <v-text-field
-                            dense
-                            style="max-width: 50px;"
-                            :rules="expensesNumRules"
-                            type="number"
-                          ></v-text-field>
-                        </td>
-                        <td>000</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- (노무비) X {{ item.expendables_rate }}%</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td>자. 산업안전보건관리비</td>
-                        <td>식</td>
-                        <td>
-                          <v-text-field
-                            dense
-                            style="max-width: 50px;"
-                            :rules="expensesNumRules"
-                            type="number"
-                          ></v-text-field>
-                        </td>
-                        <td>000</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- ((직접 노무비) X {{ item.industrial_safety_rate1 }}% X {{ item.industrial_safety_rate2 }})</td>
-                      </tr>
-                      <tr class="font-weight-black info_title">
-                        <td></td>
-                        <td>일반관리비</td>
-                        <td>식</td>
-                        <td>
-                          <v-text-field
-                            dense
-                            style="max-width: 50px;"
-                            :rules="profiteMaintenanceFeeNumRules"
-                            type="number"
-                          ></v-text-field>
-                        </td>
-                        <td>000</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- (재료비+노무비+경비) X {{ item.normal_maintenance_fee_rate }}%</td>
-                      </tr>
-                      <tr class="font-weight-black info_title">
-                        <td></td>
-                        <td>이윤</td>
-                        <td>식</td>
-                        <td>
-                          <v-text-field
-                            dense
-                            style="max-width: 50px;"
-                            :rules="profiteMaintenanceFeeNumRules"
-                            type="number"
-                          ></v-text-field>
-                        </td>
-                        <td>000</td>
-                        <td>000</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td style="padding-left:40px;" colspan="5">- (노무비+경비+일반관리비) X {{ item.profite_rate }} %</td>
-                      </tr>
-                      <tr class="font-weight-black amber lighten-5">
-                        <td colspan="5" style="font-size: 15px;">합계 (TOTAL)</td>
-                        <td style="font-size: 15px;">000</td>
-                      </tr>
-                    </template>
-                  </v-data-table>
+                  </CostTableComponent>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -1066,70 +421,18 @@
                   </v-row>
                 </v-card-title>
                 <v-card-text>
-                  <v-data-table
-                    dense
+                  <CostTableComponent
                     :headers="survey_cost_headers"
-                    :items="survey_cost_data"
-                    :hide-default-footer="true"
+                    :items="calc_cost_detail_data2"
                     item-key="product_code"
-                    class="elevation-1 survey_cost_list"
-                    disable-sort
+                    :childTrStyle="'background-color:#efefef'"
+                    prevent-editable
+                    prevent-button
+                    hide-children
+                    :show-childs-parent-index-arr="[0]"
                   >
-
-                    <template v-slot:item="{ item }">
-                      <tr >
-                        <td align="center">1</td>
-                        <td colspan="4">재료비</td>
-                        <td></td>
-                      </tr>
-
-                      <tr style="background-color:#efefef" v-for="(sub_product, idx) in dialog_selected_product_data.belong_data" :key="idx">
-                        <td></td>
-                        <td>{{ sub_product.sub_product_name }}</td>
-                        <td>{{ sub_product.sub_product_unit }}</td>
-                        <td>{{ sub_product.sub_product_num }}</td>
-                        <td>{{ sub_product.sub_product_unit_price }}</td>
-                        <td></td>
-                      </tr>
-                      <tr >
-                        <td align="center">2</td>
-                        <td>노무비</td>
-                        <td>식</td>
-                        <td></td>
-                        <td></td>
-                        <td>{{  item. test }}</td>
-                      </tr>
-                      <tr >
-                        <td align="center">3</td>
-                        <td>경비</td>
-                        <td>식</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-
-                      <tr >
-                        <td align="center">4</td>
-                        <td>일반관리비</td>
-                        <td>식</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                      <tr >
-                        <td align="center">5</td>
-                        <td>이윤</td>
-                        <td>식</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                      <tr class="font-weight-black amber lighten-5">
-                        <td colspan="5" style="font-size: 15px;">합계 (TOTAL)</td>
-                        <td style="font-size: 15px;">311,059,424</td>
-                      </tr>
-                    </template>
-                  </v-data-table>
+                    
+                  </CostTableComponent>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -1361,12 +664,14 @@
 import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent";
+import CostTableComponent from "@/components/CostTableComponent";
 
 export default {
   components: {
                 NavComponent,
                 ModalDialogComponent,
                 DataTableComponent,
+                CostTableComponent,
               },
   data(){
     return{
@@ -1405,7 +710,7 @@ export default {
           { text: '총액', align: 'center', value: 'cost_total_amount', },
         ],
         survey_cost_headers: [
-          { text: 'No.', align: 'center', value: 'cost_list', },
+          { text: 'No.', align: 'center', value: 'cost_no', },
           { text: '항목', align: 'center', value: 'cost_list', },
           { text: '단위', align: 'center', value: 'cost_unit', },
           { text: '수량', align: 'center', value: 'cost_num', },
@@ -1462,8 +767,8 @@ export default {
             unit_price:'a',
             product_price:'a',
             belong_data:[
-              {sub_product_name : 'PCS Ass`Y', sub_product_unit:'SET', sub_product_num: '1', sub_product_unit_price: '100'},
-              {sub_product_name : '제어기 Ass`Y', sub_product_unit:'SET', sub_product_num: '1', sub_product_unit_price: '100'},
+              {cost_list : 'PCS Ass`Y', cost_unit:'SET', cost_num: 1, cost_unit_price: 100},
+              {cost_list : '제어기 Ass`Y', cost_unit:'SET', cost_num: 1, cost_unit_price: 100},
             ]
           },
         ],
@@ -1497,62 +802,458 @@ export default {
         ],
         survey_cost_data: [
           {
-            cost_list: '제품A',
-            cost_unit: '2024-02-29',
-            cost_num: '김OO',
-            cost_unit_price: '1000,000',
-            cost_total: 'ttttt'
+            cost_no: 1,
+            cost_list: '재료비',
+            cost_list_colspan: 4,
+            
+            belong_data: [
+              {
+                cost_list: '제품A',
+                cost_unit: '제품',
+                cost_num: 1,
+                cost_unit_price: 15000
+              },
+              {
+                cost_list: '제품B',
+                cost_unit: '제품',
+                cost_num: 2,
+                cost_unit_price: 10000
+              }
+            ]
           },
+          {
+            cost_no: 2,
+            cost_list: '노무비',
+            cost_unit: '식',
+            cost_num: 1,
+            cost_unit_price: 220290071
+          },
+          {
+            cost_no: 3,
+            cost_list: '경비',
+            cost_unit: '식',
+            cost_num: 1,
+            cost_unit_price: 34885831
+          },
+          {
+            cost_no: 4,
+            cost_list: '일반관리비',
+            cost_unit: '식',
+            cost_num: 1,
+            cost_unit_price: 15310554
+          },
+          {
+            cost_no: 5,
+            cost_list: '이윤',
+            cost_unit: '식',
+            cost_num: 1,
+            cost_unit_price: 40572968
+          }
+          
         ],
 
-        calculation_data: [
+        calc_cost_detail_data: [
           {
-            direct_labor_calculation:[
-              {labor_name:'고압케이블 포설',labor_num:'1',labor_unit_price:'103,530,425',},
-              {labor_name:'저압케이블 포설',labor_num:'1',labor_unit_price:'20,639,191',},
-              {labor_name:'전력케이블 단말처리', labor_num:'1', labor_unit_price:'5,953,998',},
-              {labor_name:'Cubicle 설치', labor_num:'1', labor_unit_price:'5,953,998',},
-              {labor_name:'전기실 전원 케이블 포설', labor_num:'1', labor_unit_price:'5,992,473',},
-              {labor_name:'케이블 트레이', labor_num:'1', labor_unit_price:'9,096,841',},
-              {labor_name:'통신케이블 포설', labor_num:'1', labor_unit_price:'639,015',},
-            ],
-            indirect_labor_rate:'12.2',
-            indirect_labor_amount:'23,953,109',
-
-            employment_insurance_rate:'1.01',
-            employment_insurance_amount:'2,224,929',
-
-            tool_rent_fee_rate:'3',
-            tool_rent_fee_amount:'5,890,108',
-
-            transportation_fee_rate:'0.418',
-            transportation_fee_amount:'920,812',
-
-            industrial_accident_rate:'3.7',
-            industrial_accident_amount:'8,150,732',
-
-            taxes_dues_rate:'0.13',
-            taxes_dues_amount:'286,377',
-
-            welfare_benefits_rate:'2.397',
-            welfare_benefits_amount:'5,280,353',
-
-            retirement_rate:'2.3',
-            retirement_amount:'4,515,750',
-
-            expendables_rate:'1.479',
-            expendables_amount:'3,258,090',
-
-            industrial_safety_rate1:'1.85',
-            industrial_safety_rate2:'1.2',
-            industrial_safety_amount:'4,358,680',
-
-            normal_maintenance_fee_rate:'6',
-            normal_maintenance_fee_amount:'15,310,554',
-
-            profit_rate:'15',
-            profite_amount:'40,572,968',
+            cost_no: 1,
+            cost_list: '재료비',
+            cost_list_colspan: 4,
+            
+            belong_data: [
+              
+            ]
+          },
+          {
+            cost_no: 2,
+            cost_list: '노무비',
+            cost_list_colspan: 4,
+            belong_data: [
+              {
+                cost_list: '가. 직접 노무비',
+                cost_list_colspan: 4,
+                belong_data: [
+                  {cost_list:'고압케이블 포설', cost_unit: '식',cost_num:'1',cost_unit_price:103530425},
+                  {cost_list:'저압케이블 포설', cost_unit: '식',cost_num:'1',cost_unit_price:20639191},
+                  {cost_list:'전력케이블 단말처리', cost_unit: '식', cost_num:'1', cost_unit_price:5953998},
+                  {cost_list:'Cubicle 설치', cost_unit: '식', cost_num:'1', cost_unit_price:5953998},
+                  {cost_list:'전기실 전원 케이블 포설', cost_unit: '식', cost_num:'1', cost_unit_price:5992473},
+                  {cost_list:'케이블 트레이', cost_unit: '식', cost_num:'1', cost_unit_price:9096841},
+                  {cost_list:'통신케이블 포설', cost_unit: '식', cost_num:'1', cost_unit_price:639015}
+                ]
+              },
+              {
+                cost_list: '나. 간접 노무비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_unit_price: 23953109,
+                belong_data: [
+                  {
+                    cost_list: '- (직접노무비) X 12.2%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            cost_no: 3,
+            cost_list: '경비',
+            cost_list_colspan: 4,
+            belong_data: [
+              {
+                cost_list: '가. 고용보험료',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 2224929,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 1.01%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '나. 공구손료',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 5890108,
+                belong_data: [
+                  {
+                    cost_list: '- (직접노무비) X 3%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '다. 여비교통 통신비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 920812,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 0.418%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '라. 산재보험료',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 8150732,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 3.7%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '마. 세금과공과',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 286377,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 0.13%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '바. 복리후생비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 5280353,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 2.397%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '사. 퇴직공제 부금비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 4515750,
+                belong_data: [
+                  {
+                    cost_list: '- (직접노무비) X 2.3%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '아. 소모품비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 	3258090,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 1.479%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '자. 산업안전보건관리비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 4358680,
+                belong_data: [
+                  {
+                    cost_list: '- ((직접 노무비) X 1.85% X 1.2)',
+                    cost_list_colspan: 5
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            cost_no: 4,
+            cost_list: '일반관리비',
+            cost_unit: '식',
+            cost_num: 1,
+            cost_unit_price: 15310554,
+            cost_num_editable: true,
+            allow_edit_decimal_point: true,
+            belong_data: [
+              {
+                cost_list: '- (재료비+노무비+경비) X 6%',
+                cost_list_colspan: 5
+              }
+            ]
+          },
+          {
+            cost_no: 5,
+            cost_list: '이윤',
+            cost_unit: '식',
+            cost_num: 1,
+            cost_num_editable: true,
+            allow_edit_decimal_point: true,
+            cost_unit_price: 40572968,
+            belong_data: [
+              {
+                cost_list: '- (노무비+경비+일반관리비) X %',
+                cost_list_colspan: 5
+              }
+            ]
           }
+          
+        ],
+
+
+        calc_cost_detail_data2: [
+          {
+            cost_no: 1,
+            cost_list: '재료비',
+            cost_list_colspan: 4,
+            costListBtn: {
+              text: '제품 불러오기',
+              click: ()=>{this.dialog_search_product = true}
+            },
+            belong_data: []
+          },
+          {
+            cost_no: 2,
+            cost_list: '노무비',
+            cost_list_colspan: 4,
+            belong_data: [
+              {
+                cost_list: '가. 직접 노무비',
+                cost_list_colspan: 4,
+                costListBtn: {
+                  text: '산출',
+                  click: ()=>{this.dialog_calculate_labor = true}
+                },
+                belong_data: [
+                  {cost_list:'고압케이블 포설', cost_unit: '식',cost_num:'1',cost_unit_price:103530425},
+                  {cost_list:'저압케이블 포설', cost_unit: '식',cost_num:'1',cost_unit_price:20639191},
+                  {cost_list:'전력케이블 단말처리', cost_unit: '식', cost_num:'1', cost_unit_price:5953998},
+                  {cost_list:'Cubicle 설치', cost_unit: '식', cost_num:'1', cost_unit_price:5953998},
+                  {cost_list:'전기실 전원 케이블 포설', cost_unit: '식', cost_num:'1', cost_unit_price:5992473},
+                  {cost_list:'케이블 트레이', cost_unit: '식', cost_num:'1', cost_unit_price:9096841},
+                  {cost_list:'통신케이블 포설', cost_unit: '식', cost_num:'1', cost_unit_price:639015}
+                ]
+              },
+              {
+                cost_list: '나. 간접 노무비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_unit_price: 23953109,
+                belong_data: [
+                  {
+                    cost_list: '- (직접노무비) X 12.2%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            cost_no: 3,
+            cost_list: '경비',
+            cost_list_colspan: 4,
+            belong_data: [
+              {
+                cost_list: '가. 고용보험료',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 2224929,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 1.01%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '나. 공구손료',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 5890108,
+                belong_data: [
+                  {
+                    cost_list: '- (직접노무비) X 3%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '다. 여비교통 통신비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 920812,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 0.418%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '라. 산재보험료',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 8150732,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 3.7%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '마. 세금과공과',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 286377,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 0.13%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '바. 복리후생비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 5280353,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 2.397%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '사. 퇴직공제 부금비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 4515750,
+                belong_data: [
+                  {
+                    cost_list: '- (직접노무비) X 2.3%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '아. 소모품비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 	3258090,
+                belong_data: [
+                  {
+                    cost_list: '- (노무비) X 1.479%',
+                    cost_list_colspan: 5
+                  }
+                ]
+              },
+              {
+                cost_list: '자. 산업안전보건관리비',
+                cost_unit: '식',
+                cost_num: 1,
+                cost_num_editable: true,
+                cost_unit_price: 4358680,
+                belong_data: [
+                  {
+                    cost_list: '- ((직접 노무비) X 1.85% X 1.2)',
+                    cost_list_colspan: 5
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            cost_no: 4,
+            cost_list: '일반관리비',
+            cost_unit: '식',
+            cost_num: 1,
+            cost_unit_price: 15310554,
+            cost_num_editable: true,
+            allow_edit_decimal_point: true,
+            belong_data: [
+              {
+                cost_list: '- (재료비+노무비+경비) X 6%',
+                cost_list_colspan: 5
+              }
+            ]
+          },
+          {
+            cost_no: 5,
+            cost_list: '이윤',
+            cost_unit: '식',
+            cost_num: 1,
+            cost_num_editable: true,
+            allow_edit_decimal_point: true,
+            cost_unit_price: 40572968,
+            belong_data: [
+              {
+                cost_list: '- (노무비+경비+일반관리비) X %',
+                cost_list_colspan: 5
+              }
+            ]
+          }
+          
         ],
 
         labor_cost_data: [
@@ -1906,17 +1607,6 @@ export default {
           {occupation : '내선전공', man_day_unit_price:'269968', adjustment_rate:'1.0000'},
         ],
 
-
-        profiteMaintenanceFeeNumRules: [
-          v => !!v || '0~1 소수점 네자리',
-          v => v<=1  || '최소0 최대1',
-          v => !!(v && /^(?=.{1,6}$)/.test(v) ) || '최대 소수점 네자리',
-        ],
-        expensesNumRules: [
-          v => !!v || '최소0 최대1',
-          v => v<=1  || '최소0 최대1',
-          v => !!(v && /^(?=.{1,1}$)/.test(v) ) || '최소0 최대1',
-        ],
     }
   },
 
@@ -1924,6 +1614,7 @@ export default {
     addCostList(item){
       this.dialog_search_product = false;
       this.dialog_selected_product_data = item;
+      this.calc_cost_detail_data2[0].belong_data = item.belong_data;
     },
     selectOccupationFunc(data, idx){
       let wage_list = this.wage_unit_price_list
@@ -1960,14 +1651,9 @@ export default {
 .tab_search .v-tab--active{background-color: #1976d2 ; color: white; font-weight: bold;}
 .cost_search_info{border:1px solid #b6b6b6; padding: 5px 15px; font-size: 13px; border-left: 0px;}
 .info_title{background-color: #efefef;}
-.survey_cost_list th,
 .labor_cost_list th{border-right: 1px solid #b6b6b6;}
-.survey_cost_list thead th:first-child{width: 35px;}
-.survey_cost_list thead th:last-child,
-.survey_cost_list tbody td:last-child,
 .labor_cost_list thead th:last-child,
 .labor_cost_list tbody td:last-child{border-right: 0px;}
-.survey_cost_list td,
 .labor_cost_list td{border-right: 1px solid #b6b6b6; }
 .labor_cost_list{text-align: center;}
 .labor_cost_list table{min-width: 100rem!important;}

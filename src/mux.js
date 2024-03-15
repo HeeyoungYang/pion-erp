@@ -1641,6 +1641,8 @@ mux.Number = {
     let valueStr;
     if (typeof value === 'string'){
       valueStr = value.trim();
+    }else if (typeof value === 'undefined'){
+      valueStr = '';
     }else {
       valueStr = value.toString();
     }
@@ -1657,6 +1659,8 @@ mux.Number = {
     let valueStr;
     if (typeof value === 'string'){
       valueStr = value.trim();
+    }else if (typeof value === 'undefined') {
+      valueStr = '';
     }else {
       valueStr = value.toString();
     }
