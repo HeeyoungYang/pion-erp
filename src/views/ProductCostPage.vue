@@ -134,6 +134,7 @@
                         :items="survey_cost_data"
                         item-key="product_code"
                         :childTrStyle="'background-color:#efefef'"
+                        class="cost_table_border"
                       />
                     </v-card-text>
                   </v-card>
@@ -214,8 +215,9 @@
                         trStyle="background-color:#efefef"
                         trClass="font-weight-black info_title"
                         :cost-num-edit-disabled="edit_survey_cost_data"
+                        class="cost_table_border"
                       >
-                        
+
                       </CostTableComponent>
                     </v-card-text>
                   </v-card>
@@ -385,6 +387,7 @@
                     item-key="product_code"
                     trStyle="background-color:#efefef"
                     trClass="font-weight-black info_title"
+                    class="cost_table_border"
                   >
                   </CostTableComponent>
                 </v-card-text>
@@ -430,8 +433,9 @@
                     prevent-button
                     hide-children
                     :show-childs-parent-index-arr="[0]"
+                    class="cost_table_border"
                   >
-                    
+
                   </CostTableComponent>
                 </v-card-text>
               </v-card>
@@ -805,7 +809,7 @@ export default {
             cost_no: 1,
             cost_list: '재료비',
             cost_list_colspan: 4,
-            
+
             belong_data: [
               {
                 cost_list: '제품A',
@@ -849,7 +853,7 @@ export default {
             cost_num: 1,
             cost_unit_price: 40572968
           }
-          
+
         ],
 
         calc_cost_detail_data: [
@@ -857,9 +861,9 @@ export default {
             cost_no: 1,
             cost_list: '재료비',
             cost_list_colspan: 4,
-            
+
             belong_data: [
-              
+
             ]
           },
           {
@@ -1048,7 +1052,7 @@ export default {
               }
             ]
           }
-          
+
         ],
 
 
@@ -1253,7 +1257,7 @@ export default {
               }
             ]
           }
-          
+
         ],
 
         labor_cost_data: [

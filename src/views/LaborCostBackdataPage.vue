@@ -115,6 +115,7 @@
                   :search="search_labor"
                   editable
                   deletable
+                  dense
                   @edit="editLaborItem"
                   @delete="deleteLaborItem"
                 >
@@ -214,6 +215,7 @@
                   :search="search_wage"
                   editable
                   deletable
+                  dense
                   @edit="editWageItem"
                   @delete="deleteWageItem"
                 >

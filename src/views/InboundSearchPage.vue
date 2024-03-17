@@ -256,6 +256,7 @@
                     show-photo
                     approval
                     show-files
+                    dense
                   />
                 </v-col>
               </v-row>

@@ -82,6 +82,7 @@
                     :items="product_data"
                     :item-key="product_data.product_code"
                     show-photo
+                    dense
                   />
                 </v-col>
               </v-row>

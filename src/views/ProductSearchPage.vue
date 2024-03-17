@@ -109,6 +109,7 @@
                       children-key="belong_data"
                       table-style=""
                       show-photo
+                      dense
                     />
                   </v-col>
                 </v-row>
