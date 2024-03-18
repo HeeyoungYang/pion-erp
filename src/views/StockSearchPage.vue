@@ -101,6 +101,7 @@
 import InputsCardComponent from "@/components/InputsCardComponent.vue";
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
+import mux from "@/mux";
 
 export default {
   components: {
@@ -140,141 +141,141 @@ export default {
       ],
 
       product_data: [
-        {
-          type:'원부자재',
-          classification:'일반',
-          product_code: '공장2F_E-09-01',
-          name: 'IGBT & SMPS',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          stock_price: '',
-        },
-        {
-          type:'원부자재',
-          classification:'일반',
-          product_code: '공장2F_E-09-02',
-          name: 'SPD, 퓨즈',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          stock_price: '',
-        },
-        {
-          type:'원부자재',
-          classification:'일반',
-          product_code: '공장2F_E-09-03',
-          name: '쿨링팬',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          stock_price: '',
-        },
-        {
-          type:'원부자재',
-          classification:'일반',
-          product_code: '공장2F_E-09-04',
-          name: '보호회로',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          stock_price: '',
-        },
-        {
-          type:'원부자재',
-          classification:'일반',
-          product_code: '공장2F_E-09-04',
-          name: '리액터',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          stock_price: '',
-        },
-        {
-          type:'원부자재',
-          classification:'일반',
-          product_code: '공장2F_E-09-04',
-          name: 'MCCB',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          stock_price: '',
-        },
-        {
-          type:'반제품',
-          classification:'일반',
-          product_code: '공장2F_E-09-06',
-          name: 'PCS Ass`Y',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          stock_price: '',
-        },
-        {
-          type:'반제품',
-          classification:'일반',
-          product_code: '공장2F_E-09-06',
-          name: '제어기 Ass`Y',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          stock_price: '',
-        },
-        {
-          type:'완제품',
-          classification:'일반',
-          product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-          name: 'ESS GFM용 PCS',
-          model: '',
-          spec: '380VAC 500kW',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          stock_price: '',
-        },
+        // {
+        //   type:'원부자재',
+        //   classification:'일반',
+        //   product_code: '공장2F_E-09-01',
+        //   name: 'IGBT & SMPS',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   stock_price: '',
+        // },
+        // {
+        //   type:'원부자재',
+        //   classification:'일반',
+        //   product_code: '공장2F_E-09-02',
+        //   name: 'SPD, 퓨즈',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   stock_price: '',
+        // },
+        // {
+        //   type:'원부자재',
+        //   classification:'일반',
+        //   product_code: '공장2F_E-09-03',
+        //   name: '쿨링팬',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   stock_price: '',
+        // },
+        // {
+        //   type:'원부자재',
+        //   classification:'일반',
+        //   product_code: '공장2F_E-09-04',
+        //   name: '보호회로',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   stock_price: '',
+        // },
+        // {
+        //   type:'원부자재',
+        //   classification:'일반',
+        //   product_code: '공장2F_E-09-04',
+        //   name: '리액터',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   stock_price: '',
+        // },
+        // {
+        //   type:'원부자재',
+        //   classification:'일반',
+        //   product_code: '공장2F_E-09-04',
+        //   name: 'MCCB',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   stock_price: '',
+        // },
+        // {
+        //   type:'반제품',
+        //   classification:'일반',
+        //   product_code: '공장2F_E-09-06',
+        //   name: 'PCS Ass`Y',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   stock_price: '',
+        // },
+        // {
+        //   type:'반제품',
+        //   classification:'일반',
+        //   product_code: '공장2F_E-09-06',
+        //   name: '제어기 Ass`Y',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   stock_price: '',
+        // },
+        // {
+        //   type:'완제품',
+        //   classification:'일반',
+        //   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
+        //   name: 'ESS GFM용 PCS',
+        //   model: '',
+        //   spec: '380VAC 500kW',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   stock_price: '',
+        // },
       ],
     }
   },
@@ -283,8 +284,51 @@ export default {
 
   },
   methods: {
-    searchButton() {
-      alert(this.searchCardInputs.find(x=>x.label === '일자').value.sort());
+    async searchButton() {
+      // alert(this.searchCardInputs.find(x=>x.label === '일자').value.sort());
+      
+      let searchType = this.searchCardInputs.find(x=>x.label === '종류').value;
+      if (searchType === 'All')
+        searchType = '';
+      let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+      let searchCondition = this.searchCardInputs.find(x=>x.label === '상태').value;
+      if (searchCondition === 'All')
+        searchCondition = '';
+
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "query_info":{
+            "script_file_name": "rooting_stock_table_root_json_2024_03_18_15_49_08.json",
+            "params":[
+              {
+                "key":"type",
+                "type":"string",
+                "value": searchType
+              },
+              {
+                "key":"product_code",
+                "type":"string",
+                "value": searchProductCode
+              }, 
+              {
+                "key":"condition",
+                "type":"string",
+                "value": searchCondition
+              }
+            ]
+          }
+        });
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.product_data = result;
+        
+      } catch (error) {
+        alert(error);
+      }
+
     }
   }
 }
