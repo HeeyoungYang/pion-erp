@@ -59,7 +59,7 @@
                       dense
                       :headers="search_cost_headers"
                       :items="search_cost_data"
-                      :item-key="product_code"
+                      item-key="product_code"
                       deletable
                       @delete="deleteItem"
                     />
@@ -338,12 +338,15 @@
                               <v-icon
                                 color="primary"
                                 small
+                                :disabled="edit_labor_cost_data"
                                 @click="addLaborCostList(item, index)"
                               >mdi-plus-thick</v-icon>
                               <v-icon
                                 color="grey"
                                 small
                                 class="ml-3"
+                                :disabled="edit_labor_cost_data"
+                                @click="deleteLaborCostList(index)"
                               >mdi-minus-thick</v-icon>
                             </td>
                           </tr>
@@ -656,6 +659,7 @@
                         color="grey"
                         small
                         class="ml-3"
+                        @click="deleteLaborCostList(index)"
                       >mdi-minus-thick</v-icon>
                     </td>
                   </tr>
@@ -1637,6 +1641,9 @@ export default {
     addLaborCostList(item, idx){
       const newItem = JSON.parse(JSON.stringify(item));
       this.labor_cost_list.splice(idx, 0, newItem)
+    },
+    deleteLaborCostList(idx){
+      this.labor_cost_list.splice(idx, 1);
     },
     deleteItem () {
       this.dialogDelete = true;
