@@ -1626,7 +1626,8 @@ export default {
       }
     },
     addLaborCostList(item, idx){
-      this.labor_cost_list.splice(idx, 0, item)
+      const newItem = JSON.parse(JSON.stringify(item));
+      this.labor_cost_list.splice(idx, 0, newItem)
     },
     deleteItem () {
       this.dialogDelete = true;
