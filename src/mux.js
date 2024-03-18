@@ -5,6 +5,8 @@ import router from '@/router/index'; // npm install vue-router
 import configJson from '@/mux.json';
 import Vue from 'vue';
 import VueCookies from 'vue-cookies';
+import html2canvas from 'html2canvas'; // npm install html2canvas
+import jsPDF from 'jspdf'; // npm install jspdf
 
 Vue.use(VueCookies);
 
@@ -490,14 +492,20 @@ mux.Util = {
    * 전달 받은 HTML 의 출력 미리보기 팝업창을 띄우며 프린트 도구 시작
    * @param {HTMLElement} element 
    */
-  print(element) {
-
+  async print(element) {
+    let thisElement;
+    if (element.$el){
+      thisElement = element.$el;
+    }else {
+      thisElement = element;
+    }
     const a4Width = 595;
     const a4Height = 842;
 
+    const styleCopy = this.copyStyleToNewWindow();
     // 미리보기 팝업을 띄우기
     const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
-    const previewContent = `<html><head><title>Print Preview</title></head><body>${element.outerHTML}</body></html>`;
+    const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
     previewPopup.document.write(previewContent);
 
     // 포커스를 설정하고 0.5초 뒤에 프린트 도구 시작
@@ -511,57 +519,127 @@ mux.Util = {
         previewPopup.close();
       }, 500);
     }, 500);
-
-
-    // let $container =  $("#idPrint").clone()    // 프린트 할 특정 영역 복사
-    // let cssText = ""                            // 스타일 복사
-    // for (const node of $("style")) {
-    //     cssText += node.innerHTML
-    // }
-    // /** 팝업 */
-    // let innerHtml = $container[0].innerHTML
-    // let popupWindow = window.open("", "_blank", "width=1000,height=900")
-    // popupWindow.document.write("<!DOCTYPE html>"+
-    //   "<html>"+
-    //     "<head>"+
-    //     // "<link>"+cssText+"</link>"+
-    //     "<script src=\"https://code.jquery.com/jquery-latest.js\" type=\"text/javascript\"></script>" +
-    //     "<script src=\"assets/js/config.navbar-vertical.js\"></script>" +
-    //     "<link href=\"assets/lib/dropzone/dropzone.min.css\" rel=\"stylesheet\">" +
-    //     "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com/\">" +
-    //     "<link href=\"assets/lib/perfect-scrollbar/perfect-scrollbar.css\" rel=\"stylesheet\">" +
-    //     "<link href=\"assets/lib/datatables-bs4/dataTables.bootstrap4.min.css\" rel=\"stylesheet\">" +
-    //     "<link href=\"assets/lib/datatables.net-responsive-bs4/responsive.bootstrap4.css\" rel=\"stylesheet\">" +
-    //     "<link href=\"assets/lib/leaflet/leaflet.css\" rel=\"stylesheet\">" +
-    //     "<link href=\"assets/lib/leaflet.markercluster/MarkerCluster.css\" rel=\"stylesheet\">" +
-    //     "<link href=\"assets/lib/leaflet.markercluster/MarkerCluster.Default.css\" rel=\"stylesheet\">" +
-    //     "<link href=\"assets/css/theme.css\" rel=\"stylesheet\">" +
-    //     "<link href=\"assets/lib/flatpickr/flatpickr.min.css\" rel=\"stylesheet\">" +
-    //     "<link rel=\"stylesheet\" href=\"assets/css/mkor_print_portrait_inbound.css\"></link>" +
-    //     "<link rel=\"stylesheet\" href=\"assets/css/mkor_css.css\"></link>" +
-    //     "</head>"+
-    //     "<style>"+
-    //     "#searched_result_table_for_print_wrapper .dataTables_paginate {display: none;}"+
-    //     "#searched_result_table_for_print thead {background-color:black; color:white; font-weight:bold; font-size:18px;}"+
-    //     "#searched_result_table_for_print tbody {font-size: 13px;}"+
-    //     "#searched_result_table_for_print th,#searched_result_table_for_print td {border:1px solid #cdcdcd}"+
-    //     ".dataTables_wrapper .sort:after {display:none!important;}"+
-    //     ".inbound_date_for_print_wrapper{color:#333; font-size:15px}"+
-    //     "#searched_result_table_for_print tbody tr td:nth-child(n+5){font-size:15px; font-weight: bold; color: black;}"+
-    //     "</style>"+
-    //     "<body style=\"padding:20px;\">"+innerHtml+"</body>"+
-    //   "</html>")
-  
-    // popupWindow.document.close()
-    // popupWindow.focus()
-
-    // /** 0.5초 지연 */
-    // setTimeout(() => {
-    //     popupWindow.print()         // 팝업의 프린트 도구 시작
-    //     popupWindow.close()         // 프린트 도구 닫혔을 경우 팝업 닫기
-    // }, 500)
     
-  }
+  },
+
+
+  async downloadPDF(element, fileName = 'data', overflow = false, width, height){
+    try {
+      let thisElement;
+      if (element.$el){
+        thisElement = element.$el;
+      }else {
+        thisElement = element;
+      }
+      const a4Width = 595;
+      const a4Height = 842;
+
+      const styleCopy = this.copyStyleToNewWindow();
+      // 미리보기 팝업을 띄우기
+      const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
+      const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
+      previewPopup.document.write(previewContent);
+
+      // 포커스를 설정하고 1초 뒤에 프린트 도구 시작
+      setTimeout(async() => {
+        previewPopup.focus();
+
+        const pdf = await this.makePDF(previewPopup.document.body, overflow, width, height);
+        pdf.save(fileName +'.pdf');
+
+        // 프린트 도구가 닫히면 팝업도 닫기
+        setTimeout(() => {
+          previewPopup.close();
+        }, 500);
+      }, 1000);
+      
+    } catch (error) {
+      console.warn(error);
+    }
+  },
+
+  makePDF (element, overflow = false, width, height) {
+    return new Promise((resolve, reject) => {
+      try {
+        window.html2canvas = html2canvas; //Vue.js 특성상 window 객체에 직접 할당해야한다.
+        let pdf = new jsPDF('p', 'mm', 'a4');
+        let canvas = pdf.canvas;
+        const pageWidth = 210; //캔버스 너비 mm
+        const pageHeight = 295; //캔버스 높이 mm
+        canvas.width = pageWidth;
+  
+        let thisElement;
+        if (element.$el){
+          thisElement = element.$el;
+        }else {
+          thisElement = element;
+        }
+        let elementWidth = thisElement.offsetWidth; // 셀렉트한 요소의 px 너비
+        if (width){
+          elementWidth = width;
+        }
+        let elementHeight = thisElement.offsetHeight; // 셀렉트한 요소의 px 높이
+        if (height){
+          elementHeight = height;
+        }
+        let imgWidth;
+        let imgHeight;
+        if (elementWidth > pageWidth){
+          imgWidth = pageWidth;
+        }else {
+          imgWidth = elementWidth;
+        }
+        if (overflow){
+          imgHeight = imgWidth * elementHeight/elementWidth; // 이미지 높이값 px to mm 변환
+        }else {
+          if (imgWidth * elementHeight/elementWidth > pageHeight){
+            imgHeight = pageHeight;
+          }else {
+            imgHeight = imgWidth * elementHeight/elementWidth;
+          }
+        }
+  
+        if(!thisElement){
+          console.log('element is not exist.')
+          return false
+        }
+  
+        html2canvas(thisElement).then(canvas => {
+            let position = 0
+            const imgData = canvas.toDataURL('image/png')
+            pdf.addImage(imgData, 'png', 0, position, imgWidth, imgHeight, undefined, 'slow')
+  
+            //Paging 처리
+            let heightLeft = imgHeight //페이징 처리를 위해 남은 페이지 높이 세팅.
+            heightLeft -= pageHeight
+            while (heightLeft > 0) {
+              position = heightLeft - imgHeight
+              pdf.addPage();
+              pdf.addImage(imgData, 'png', 0, position, imgWidth, imgHeight)
+              heightLeft -= pageHeight
+            }
+  
+            resolve(pdf);
+          },
+  
+        );	
+      } catch (error) {
+        reject(error);
+      }
+    });
+
+  },
+
+    
+  copyStyleToNewWindow() {
+    var styles = '';
+    var styleElements = document.querySelectorAll('style, link[rel="stylesheet"]');
+    styleElements.forEach(function(styleElement) {
+      styles += styleElement.outerHTML;
+    });
+  
+    return styles;
+  },
 }
 
 /**

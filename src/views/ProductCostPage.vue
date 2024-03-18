@@ -142,7 +142,7 @@
 
                 <!-- 산출내역서 -->
                 <v-tab-item>
-                  <v-card>
+                  <v-card ref="calcDetailCard">
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
@@ -171,6 +171,9 @@
                                 v-for="(item, index) in content_save_items"
                                 :key="index"
                                 dense
+                                @click="item.click === 'print' ? mux.Util.print($refs.calcDetailCard) 
+                                        : item.click === 'excel' ? mux.Excel.downloadTable(survey_cost_headers, calc_cost_detail_data, '산출내역서')
+                                        : item.click === 'pdf' ? mux.Util.downloadPDF($refs.calcDetailCard, 'test') : ''"
                               >
                                 <v-list-item-title>{{ item.title }}</v-list-item-title>
                               </v-list-item>
@@ -669,6 +672,7 @@ import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import CostTableComponent from "@/components/CostTableComponent";
+import mux from "@/mux";
 
 export default {
   components: {
@@ -679,6 +683,7 @@ export default {
               },
   data(){
     return{
+        mux: mux,
         tab_main: null,
         tab_search: null,
         tab_calculate: null,
@@ -693,9 +698,9 @@ export default {
         editedIndex: -1,
         product_name:'',
         content_save_items: [
-          {title:'출력', click:''},
-          {title:'엑셀', click:''},
-          {title:'PDF', click:''},
+          {title:'출력', click:'print'},
+          {title:'엑셀', click:'excel'},
+          {title:'PDF', click:'pdf'},
         ],
         labor_occupation_list:['저압 케이블전공', '고압 케이블전공', '비계공', '변전전공', '보통인부', '내선전공'],
         tab_main_items: [
