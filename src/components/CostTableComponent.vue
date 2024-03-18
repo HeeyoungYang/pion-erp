@@ -24,16 +24,16 @@
           </v-btn>
         </td>
         <td v-if="!item.cost_list_colspan || item.cost_list_colspan < 2 || (hideChildren && (!showChildsParentIndexArr || !showChildsParentIndexArr.includes(index)))">
-          {{ 
-            item.cost_unit ? item.cost_unit 
-              : (item.belong_data && item.belong_data.length > 0 ? 
-                  (item.belong_data[0].cost_unit ? item.belong_data[0].cost_unit 
-                  : (item.belong_data[0].belong_data && item.belong_data[0].belong_data.length > 0 ? 
+          {{
+            item.cost_unit ? item.cost_unit
+              : (item.belong_data && item.belong_data.length > 0 ?
+                  (item.belong_data[0].cost_unit ? item.belong_data[0].cost_unit
+                  : (item.belong_data[0].belong_data && item.belong_data[0].belong_data.length > 0 ?
                       (item.belong_data[0].belong_data[0].cost_unit ? item.belong_data[0].belong_data[0].cost_unit
-                      : '') 
+                      : '')
                     : '')
-                  ) 
-                : '') 
+                  )
+                : '')
           }}
         </td>
         <td v-if="!item.cost_list_colspan || item.cost_list_colspan < 3 || (hideChildren && (!showChildsParentIndexArr || !showChildsParentIndexArr.includes(index)))">
@@ -45,21 +45,21 @@
             type="number"
             v-model="item.cost_num"
           ></v-text-field>
-          {{ 
-            !preventEditable && item.cost_num_editable ? '' 
-              : item.cost_num ? item.cost_num 
-                : (item.belong_data && item.belong_data.length > 0 ? 
+          {{
+            !preventEditable && item.cost_num_editable ? ''
+              : item.cost_num ? item.cost_num
+                : (item.belong_data && item.belong_data.length > 0 ?
                     (item.belong_data.findIndex(x=>x.cost_num) >= 0 ? 1
-                    : (item.belong_data.findIndex(x=>x.belong_data && x.belong_data.length > 0) >= 0 ? 
+                    : (item.belong_data.findIndex(x=>x.belong_data && x.belong_data.length > 0) >= 0 ?
                         (item.belong_data.find(x=>x.belong_data && x.belong_data.length > 0).belong_data[0].cost_num ? item.belong_data.find(x=>x.belong_data && x.belong_data.length > 0).belong_data[0].cost_num
-                        : 0) 
+                        : 0)
                       : 0)
-                    ) 
+                    )
                   : 0)
           }}
         </td>
         <td v-if="!item.cost_list_colspan || item.cost_list_colspan < 4 || (hideChildren && (!showChildsParentIndexArr || !showChildsParentIndexArr.includes(index)))">
-          {{ mux.Number.withComma(item.cost_unit_price ? item.cost_unit_price : item.cost_total ? item.cost_total : 
+          {{ mux.Number.withComma(item.cost_unit_price ? item.cost_unit_price : item.cost_total ? item.cost_total :
             (item.belong_data ? (item.belong_data.reduce((prev, cur)=>{
               return (prev += cur.cost_total ? cur.cost_total : cur.cost_num * cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price :
               cur.belong_data ? cur.belong_data.reduce((prevB, curB)=>{
@@ -69,9 +69,9 @@
           ) }}
         </td>
         <td v-if="!item.cost_list_colspan || item.cost_list_colspan < 5 || (hideChildren && (!showChildsParentIndexArr || !showChildsParentIndexArr.includes(index)))">
-          {{ mux.Number.withComma(Math.round(item.cost_total ? item.cost_total : item.cost_num * item.cost_unit_price ? item.cost_num * item.cost_unit_price : 
+          {{ mux.Number.withComma(Math.round(item.cost_total ? item.cost_total : item.cost_num * item.cost_unit_price ? item.cost_num * item.cost_unit_price :
             (item.belong_data ? (item.belong_data.reduce((prev, cur)=>{
-              return (prev += cur.cost_total ? cur.cost_total : cur.cost_num * cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price : 
+              return (prev += cur.cost_total ? cur.cost_total : cur.cost_num * cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price :
               cur.belong_data ? cur.belong_data.reduce((prevB, curB)=>{
                 return (prevB += curB.cost_total ? curB.cost_total : curB.cost_num && curB.cost_unit_price ? curB.cost_num * curB.cost_unit_price : 0);
               }, 0) : 0 );
@@ -80,9 +80,9 @@
         </td>
       </tr>
       <template v-for="(innerItem, idx) in item.belong_data">
-        <tr :class="childTrClass ? childTrClass : ''" 
-          :style="childTrStyle ? childTrStyle : ''" 
-          :key="'surveycost_'+index+'_'+idx" 
+        <tr :class="childTrClass ? childTrClass : ''"
+          :style="childTrStyle ? childTrStyle : ''"
+          :key="'surveycost_'+index+'_'+idx"
           v-show="!hideChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index))">
           <td>{{ innerItem.cost_no }}</td>
           <td :colspan="!hideChildren && !hideGrandChildren || (showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx)) ? innerItem.cost_list_colspan : ''">
@@ -97,16 +97,16 @@
             </v-btn>
           </td>
           <td v-if="!innerItem.cost_list_colspan || innerItem.cost_list_colspan < 2 || (hideGrandChildren && (!showGrandChildsParentIndexArr || !showGrandChildsParentIndexArr.includes(index)))">
-            {{ 
-              innerItem.cost_unit ? innerItem.cost_unit 
-                : (innerItem.belong_data && innerItem.belong_data.length > 0 ? 
-                    (innerItem.belong_data[0].cost_unit ? innerItem.belong_data[0].cost_unit 
-                    : (innerItem.belong_data[0].belong_data && innerItem.belong_data[0].belong_data.length > 0 ? 
+            {{
+              innerItem.cost_unit ? innerItem.cost_unit
+                : (innerItem.belong_data && innerItem.belong_data.length > 0 ?
+                    (innerItem.belong_data[0].cost_unit ? innerItem.belong_data[0].cost_unit
+                    : (innerItem.belong_data[0].belong_data && innerItem.belong_data[0].belong_data.length > 0 ?
                         (innerItem.belong_data[0].belong_data[0].cost_unit ? innerItem.belong_data[0].belong_data[0].cost_unit
-                        : '') 
+                        : '')
                       : '')
-                    ) 
-                  : '') 
+                    )
+                  : '')
             }}
           </td>
           <td v-if="!innerItem.cost_list_colspan || innerItem.cost_list_colspan < 3 || (hideGrandChildren && (!showGrandChildsParentIndexArr || !showGrandChildsParentIndexArr.includes(index)))">
@@ -118,34 +118,34 @@
               type="number"
               v-model="innerItem.cost_num"
             ></v-text-field>
-            {{ 
-              !preventEditable && innerItem.cost_num_editable ? '' 
-                : innerItem.cost_num ? innerItem.cost_num 
-                  : (innerItem.belong_data && innerItem.belong_data.length > 0 ? 
+            {{
+              !preventEditable && innerItem.cost_num_editable ? ''
+                : innerItem.cost_num ? innerItem.cost_num
+                  : (innerItem.belong_data && innerItem.belong_data.length > 0 ?
                       (innerItem.belong_data.findIndex(x=>x.cost_num) >= 0 ? 1
-                      : (innerItem.belong_data.findIndex(x=>x.belong_data && x.belong_data.length > 0) >= 0 ? 
+                      : (innerItem.belong_data.findIndex(x=>x.belong_data && x.belong_data.length > 0) >= 0 ?
                           (innerItem.belong_data.find(x=>x.belong_data && x.belong_data.length > 0).belong_data[0].cost_num ? innerItem.belong_data.find(x=>x.belong_data && x.belong_data.length > 0).belong_data[0].cost_num
-                          : 0) 
+                          : 0)
                         : 0)
-                      ) 
+                      )
                     : 0)
             }}
           </td>
           <td v-if="!innerItem.cost_list_colspan || innerItem.cost_list_colspan < 4 || (hideGrandChildren && (!showGrandChildsParentIndexArr || !showGrandChildsParentIndexArr.includes(index)))">{{ mux.Number.withComma(innerItem.cost_unit_price ? innerItem.cost_unit_price : innerItem.cost_num * innerItem.cost_unit_price ? innerItem.cost_num * innerItem.cost_unit_price :
             innerItem.belong_data ? innerItem.belong_data.reduce((prev, cur)=>{
               return (prev += cur.cost_total ? cur.cost_total : cur.cost_num && cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price : 0);
-            }, 0) : 0 
+            }, 0) : 0
           ) }}</td>
           <td v-if="!innerItem.cost_list_colspan || innerItem.cost_list_colspan < 5 || (hideGrandChildren && (!showGrandChildsParentIndexArr || !showGrandChildsParentIndexArr.includes(index)))">{{ mux.Number.withComma(Math.round(innerItem.cost_total ? innerItem.cost_total : innerItem.cost_num * innerItem.cost_unit_price ? innerItem.cost_num * innerItem.cost_unit_price :
             innerItem.belong_data ? innerItem.belong_data.reduce((prev, cur)=>{
               return (prev += cur.cost_total ? cur.cost_total : cur.cost_num && cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price : 0);
-            }, 0) : 0 
+            }, 0) : 0
           )) }}</td>
         </tr>
-        <tr v-for="(innerBelongItem, inIdx) in innerItem.belong_data" 
-          :class="grandChildTrClass ? grandChildTrClass : ''" 
-          :style="grandChildTrStyle ? grandChildTrStyle : ''" 
-          :key="'surveycost_'+index+'_'+idx+'_'+inIdx" 
+        <tr v-for="(innerBelongItem, inIdx) in innerItem.belong_data"
+          :class="grandChildTrClass ? grandChildTrClass : ''"
+          :style="grandChildTrStyle ? grandChildTrStyle : ''"
+          :key="'surveycost_'+index+'_'+idx+'_'+inIdx"
           v-show="!hideChildren && !hideGrandChildren || (showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx))">
           <td>{{ innerBelongItem.cost_no }}</td>
           <td style="padding-left:40px;" :colspan="innerBelongItem.cost_list_colspan">
@@ -201,13 +201,13 @@ import mux from "@/mux";
  * @typedef {Object} props
  * @property {Array} headers - 테이블 헤더 배열 ex) [ {text: '부제품', align: 'center', value: 'product_type'}, {text: '관리코드', align: 'center', value: 'product_code'} ]
  * @property {Array} items - 테이블 아이템 데이터 배열
- * ex ) 
+ * ex )
  * items: [
           {
             cost_no: 1,
             cost_list: '재료비',
             cost_list_colspan: 4,
-            
+
             belong_data: [
               {
                 cost_list: '제품A',
@@ -288,9 +288,9 @@ export default {
 };
 </script>
 <style>
-  th{border-right: 1px solid #b6b6b6;}
-  thead th:first-child{width: 35px;}
-  thead th:last-child,
-  tbody td:last-child{border-right: 0px;}
-  td{border-right: 1px solid #b6b6b6; }
+  .cost_table_border th{border-right: 1px solid #b6b6b6;}
+  .cost_table_border thead th:first-child{width: 35px;}
+  .cost_table_border thead th:last-child,
+  .cost_table_border tbody td:last-child{border-right: 0px;}
+  .cost_table_border td{border-right: 1px solid #b6b6b6; }
 </style>

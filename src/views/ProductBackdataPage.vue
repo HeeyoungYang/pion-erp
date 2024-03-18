@@ -305,6 +305,7 @@
                       show-photo
                       editable
                       deletable
+                      dense
                       @edit="editItem"
                       @delete="deleteItem"
                     />
@@ -623,6 +624,7 @@
                                     :items="module_set_material_data"
                                     :search="material_search"
                                     show-select
+                                    dense
                                   />
                                 </v-col>
                               </v-row>
@@ -635,6 +637,7 @@
                                   <DataTableComponent
                                     :headers="module_set_material_headers"
                                     :items="module_set_material_data"
+                                    dense
                                   />
                                 </v-col>
                               </v-row>
@@ -654,6 +657,7 @@
                               table-style=""
                               editable
                               deletable
+                              dense
                               notEditableBelong
                               @edit="module_dialog = true"
                               @delete="deleteItem"
@@ -999,6 +1003,7 @@
                                     :items="module_set_material_data"
                                     :search="material_search"
                                     show-select
+                                    dense
                                   />
                                 </v-col>
                               </v-row>
@@ -1011,6 +1016,7 @@
                                   <DataTableComponent
                                     :headers="module_set_material_headers"
                                     :items="module_set_material_data"
+                                    dense
                                   />
                                 </v-col>
                               </v-row>
@@ -1047,6 +1053,7 @@
                             children-key="belong_data"
                             table-style=""
                             show-photo
+                            dense
                           />
                         </v-col>
                       </v-row>

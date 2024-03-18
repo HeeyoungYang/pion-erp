@@ -146,6 +146,7 @@
               deletable
               @edit="editItem"
               @delete="deleteItem"
+              dense
             >
             </DataTableComponent>
             <ModalDialogComponent
