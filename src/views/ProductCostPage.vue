@@ -188,8 +188,8 @@
                             x-small
                             class="mr-3 float-right dont_print"
                             elevation="0"
-                            @click="edit_survey_cost_data = false"
                             data-html2canvas-ignore="true"
+                            @click="edit_survey_cost_data = false"
                           >
                             <v-icon
                               small
@@ -200,8 +200,9 @@
                             color="primary"
                             fab
                             x-small
-                            class="mr-3 float-right"
+                            class="mr-3 float-right dont_print"
                             elevation="0"
+                            data-html2canvas-ignore="true"
                             @click="edit_survey_cost_data = true"
                           >
                             <v-icon
