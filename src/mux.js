@@ -947,6 +947,45 @@ mux.Table = {
   },
 
   /**
+   * 그룹, 확장테이블 데이터 가져오기 함수
+   * @param {Array} headers - 테이블 헤더 정보 배열
+   * @param {Array} items - 테이블 내용 정보 배열
+   * @returns {Array} - 테이블 데이터 배열
+   */
+  getGroupTableData(headers, items) {
+    const rows = [];
+
+    // 테이블 내용 가져오기
+    items.forEach((rowData) => {
+      var row = {};
+      headers.forEach((header) => {
+        row[header.text] = rowData[header.value];
+      });
+      rows.push(row);
+      if (rowData.belong_data){
+        rowData.belong_data.forEach((innerData) => {
+          var row = {};
+          headers.forEach((header) => {
+            row[header.text] = innerData[header.value];
+          });
+          rows.push(row);
+          if (innerData.belong_data){
+            innerData.belong_data.forEach((innerBelongData) => {
+              var row = {};
+              headers.forEach((header) => {
+                row[header.text] = innerBelongData[header.value];
+              });
+              rows.push(row);
+            });
+          }
+        });
+      }
+    });
+
+    return rows;
+  },
+
+  /**
    * 테이블에 행 추가 및 추가되는 셀들의 데이터 입력
    * @param {Array} headers
    * @param {Array} items
@@ -1405,7 +1444,7 @@ mux.Excel = {
    * }
    */
   downloadTable(headers, items, fileName = 'data') {
-    const tableData = mux.Table.getTableData(headers, items);
+    const tableData = mux.Table.getGroupTableData(headers, items);
     const ws = XLSX.utils.json_to_sheet(tableData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
