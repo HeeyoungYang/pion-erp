@@ -116,6 +116,7 @@
                                     dense
                                     hide-details
                                     label="엑셀 불러오기"
+                                    @change="loadExcelFile"
                                   ></v-file-input>
                                 </v-col>
                                 <v-col
@@ -130,6 +131,7 @@
                                 <v-col cols="12">
                                   <DataTableComponent
                                     :headers="material_headers"
+                                    :items="material_excel_upload_data"
                                     dense
                                   />
                                 </v-col>
@@ -1088,11 +1090,13 @@ export default {
   },
   data() {
     return {
+      mux: mux,
       tab_main: null,
       tab_items:['원부자재 정보', '반제품 정보', '완제품 정보'],
       dialog_excel: false,
 
       material_search: '',
+      upload_excel_file: '',
 
       material_dialog: false,
       material_dialog_delete: false,
@@ -1150,6 +1154,7 @@ export default {
         { text: '총액', align: 'center', value: 'stock_price', },
       ],
       material_data: [],
+      material_excel_upload_data: [],
       editedMaterialIndex: -1,
       editedMaterialItem: {
         classification:'',
@@ -1910,7 +1915,6 @@ export default {
         this.editedMaterialIndex = -1
       })
     },
-
     closeDelete () {
       this.material_dialog_delete = false
       this.module_dialog_delete = false
@@ -1929,6 +1933,14 @@ export default {
         this.material_data.push(this.editedMaterialItem)
       }
       this.close()
+    },
+    loadExcelFile(event) {
+      if(event){
+        const file = event;
+        const headers = this.material_headers; // 헤더 정보
+        const items = this.material_excel_upload_data; // 테이블 내용 정보
+        mux.Excel.open(file, headers, items);
+      }
     },
 
 
@@ -2001,7 +2013,7 @@ export default {
         alert(error);
       }
 
-    }
+    },
   },
 }
 </script>
