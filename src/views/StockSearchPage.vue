@@ -286,14 +286,14 @@ export default {
   methods: {
     async searchButton() {
       // alert(this.searchCardInputs.find(x=>x.label === '일자').value.sort());
-      
+
       let searchType = this.searchCardInputs.find(x=>x.label === '종류').value;
       if (searchType === 'All')
-        searchType = '';
+        searchType = '%';
       let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
       let searchCondition = this.searchCardInputs.find(x=>x.label === '상태').value;
       if (searchCondition === 'All')
-        searchCondition = '';
+        searchCondition = '%';
 
       try {
         let result = await mux.Server.post({
@@ -310,7 +310,7 @@ export default {
                 "key":"product_code",
                 "type":"string",
                 "value": searchProductCode
-              }, 
+              },
               {
                 "key":"condition",
                 "type":"string",
@@ -324,7 +324,7 @@ export default {
           result = JSON.parse(result);
         }
         this.product_data = result;
-        
+
       } catch (error) {
         alert(error);
       }
