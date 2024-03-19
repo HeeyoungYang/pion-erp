@@ -37,8 +37,8 @@
                   lg="2"
                 >
                   <v-autocomplete
-                    v-model="product_type"
-                    :items="product_type_list"
+                    v-model="type"
+                    :items="type_list"
                     dense
                     clearable
                     filled
@@ -52,8 +52,8 @@
                   lg="2"
                 >
                   <v-autocomplete
-                    v-model="product_classification"
-                    :items="product_classification_list"
+                    v-model="classification"
+                    :items="classification_list"
                     dense
                     clearable
                     filled
@@ -81,7 +81,7 @@
                   lg="3"
                 >
                   <v-text-field
-                    v-model="product_name"
+                    v-model="name"
                     dense
                     clearable
                     filled
@@ -95,7 +95,7 @@
                   lg="3"
                 >
                   <v-text-field
-                    v-model="product_model"
+                    v-model="model"
                     dense
                     clearable
                     filled
@@ -109,7 +109,7 @@
                   lg="3"
                 >
                   <v-text-field
-                    v-model="product_spec"
+                    v-model="spec"
                     dense
                     clearable
                     filled
@@ -282,47 +282,50 @@ export default {
               },
   data(){
     return{
-      product_type:'All',
-      product_classification:'All',
+      type:'All',
+      classification:'All',
       product_code: '',
-      product_name: '',
-      product_model: '',
-      product_spec: '',
+      name: '',
+      model: '',
+      spec: '',
       product_manufacturer: '',
       inbound_approval: 'All',
       product_inbound_date: '2024-03-11',
       stock_more_0: true,
       menu: false,
-      product_type_list: ['All', '원부자재', '반제품', '완제품'],
-      product_classification_list: ['All', '일반', 'GFM', '전력변환기'],
+      type_list: ['All', '원부자재', '반제품', '완제품'],
+      classification_list: ['All', '일반', 'GFM', '전력변환기'],
       inbound_approval_list: ['All', '승인', '미승인', '반려'],
       dates: [],
 
       headers: [
-        { text: '종류', align: 'center', value: 'product_type', },
-        { text: '신청자', align: 'center', value: 'inbound_applicant', },
-        { text: '분류', align: 'center', value: 'product_classification', },
+        { text: '종류', align: 'center', value: 'type', },
+        { text: '신청자', align: 'center', value: 'creater', },
+        { text: '입력방식', align: 'center', value: 'add_data', },
+        { text: '분류', align: 'center', value: 'classification', },
         { text: '관리코드', align: 'center', value: 'product_code', },
-        { text: '제품명', align: 'center', value: 'product_name', },
-        { text: '모델명', align: 'center', value: 'product_model', },
-        { text: '사양', align: 'center', value: 'product_spec', },
+        { text: '제품명', align: 'center', value: 'name', },
+        { text: '모델명', align: 'center', value: 'model', },
+        { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: '입고수량', align: 'center', value: 'inbound_num', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
         { text: '입고일자', align: 'center', value: 'inbound_date', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
+        { text: '총액', align: 'center', value: 'product_price', },
       ],
 
       product_data: [
         {
-          inbound_applicant:'윤준수',
-          product_type:'원부자재',
-          product_classification:'일반',
+          creater:'윤준수',
+          created_time:'2024-03-07',
+          add_data: '자재선택',
+          type:'원부자재',
+          classification:'일반',
           product_code: '공장2F_E-09-01',
-          product_name: 'IGBT & SMPS',
-          product_model: '',
-          product_spec: '',
+          name: 'IGBT & SMPS',
+          model: '',
+          spec: '',
           manufacturer: '파이온일렉트릭',
           inbound_num: '1',
           approval: '승인',
@@ -331,17 +334,20 @@ export default {
           unit_price: '',
           product_price: '',
           approve_date:'2024-03-12',
+          approver:'윤광희',
           return_reason:'',
           files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf'
         },
         {
-          inbound_applicant:'윤준수',
-          product_type:'반제품',
-          product_classification:'일반',
+          creater:'윤준수',
+          created_time:'2024-03-07',
+          add_data: '직접입력',
+          type:'반제품',
+          classification:'일반',
           product_code: '공장2F_E-09-02',
-          product_name: 'SPD, 퓨즈',
-          product_model: '',
-          product_spec: '',
+          name: 'SPD, 퓨즈',
+          model: '',
+          spec: '',
           manufacturer: '파이온일렉트릭',
           inbound_num: '1',
           approval: '미승인',
@@ -350,16 +356,19 @@ export default {
           unit_price: '',
           product_price: '',
           approve_date:'',
+          approver:'',
           return_reason:'',
         },
         {
-          inbound_applicant:'윤준수',
-          product_type:'완제품',
-          product_classification:'일반',
+          creater:'윤준수',
+          created_time:'2024-03-07',
+          add_data: '자재선택',
+          type:'완제품',
+          classification:'일반',
           product_code: '공장2F_E-09-03',
-          product_name: '쿨링팬',
-          product_model: '',
-          product_spec: '',
+          name: '쿨링팬',
+          model: '',
+          spec: '',
           manufacturer: '파이온일렉트릭',
           inbound_num: '1',
           approval: '반려',
@@ -368,6 +377,7 @@ export default {
           unit_price: '',
           product_price: '',
           approve_date:'',
+          approver:'윤광희',
           return_reason:'반려사유노출영역',
         },
       ],

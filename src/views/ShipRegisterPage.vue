@@ -147,15 +147,15 @@
                 <v-col
                   cols="12"
                 >
-                  <v-data-table
+                  <DataTableComponent
                     dense
                     v-model="product_ship_data"
                     :headers="product_search_headers"
                     :items="product_search_data"
                     item-key="product_code"
-                    class="elevation-1"
                     show-select
-                  ></v-data-table>
+                    show-photo
+                  />
                 </v-col>
               </v-row>
 
@@ -258,7 +258,6 @@
                         <td align="center">{{  item.manufacturer }}</td>
                         <td align="center">{{  item.pe_number }}</td>
                         <td align="center">{{  item.unit_price }}</td>
-                        <td align="center">{{  item.product_price }}</td>
                       </tr>
                     </template>
                   </v-data-table>
@@ -277,10 +276,12 @@
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
+import DataTableComponent from "@/components/DataTableComponent";
 
 export default {
   components: {
                 NavComponent,
+                DataTableComponent,
               },
   data(){
     return{
@@ -311,7 +312,6 @@ export default {
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
       ],
 
       product_ship_data: [],
@@ -326,7 +326,6 @@ export default {
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
       ],
 
       product_search_data: [
@@ -340,7 +339,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'원부자재',
@@ -352,7 +351,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'원부자재',
@@ -364,7 +363,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'원부자재',
@@ -376,7 +375,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'원부자재',
@@ -388,7 +387,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'원부자재',
@@ -400,7 +399,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'반제품',
@@ -412,7 +411,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'반제품',
@@ -424,7 +423,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'완제품',
@@ -436,7 +435,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
       ],
     }

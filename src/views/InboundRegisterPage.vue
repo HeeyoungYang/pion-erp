@@ -147,15 +147,15 @@
                 <v-col
                   cols="12"
                 >
-                  <v-data-table
+                  <DataTableComponent
                     dense
                     v-model="product_inbound_data"
                     :headers="product_search_headers"
                     :items="product_search_data"
                     item-key="product_code"
-                    class="elevation-1"
                     show-select
-                  ></v-data-table>
+                    show-photo
+                  />
                 </v-col>
               </v-row>
 
@@ -171,7 +171,7 @@
           >
             <v-card-text class=" pt-3">
               <v-row>
-                <v-col cols="12" sm="3">
+                <v-col cols="12" sm="2">
                   <v-menu
                     ref="menu"
                     v-model="menu"
@@ -218,13 +218,59 @@
                     </v-date-picker>
                   </v-menu>
                 </v-col>
-                <v-col cols="12" sm="9" align-self="center">
+
+                <v-col cols="12" sm="2">
+                  <v-file-input
+                    small-chips
+                    filled
+                    dense
+                    hide-details
+                    prepend-icon=""
+                    append-icon="mdi-paperclip"
+                    label="수입검사서"
+                  ></v-file-input>
+                </v-col>
+
+                <v-col cols="12" sm="2">
+                  <v-file-input
+                    small-chips
+                    filled
+                    dense
+                    hide-details
+                    prepend-icon=""
+                    append-icon="mdi-paperclip"
+                    label="시험성적서"
+                  ></v-file-input>
+                </v-col>
+
+                <v-col cols="12" sm="2">
+                  <v-file-input
+                    small-chips
+                    filled
+                    dense
+                    hide-details
+                    prepend-icon=""
+                    append-icon="mdi-paperclip"
+                    label="기타"
+                  ></v-file-input>
+                </v-col>
+                <v-col cols="12" sm="2" align-self="center">
                   <v-btn
                     small
                     color="default"
                     class="mr-2"
+                    @click="addProductInboundData"
                   >
-                    직접 입력
+                    {{ add_self ? '행 추가' : '직접 입력형'}}
+                  </v-btn>
+                  <v-btn
+                    v-if="add_self"
+                    small
+                    color="default"
+                    class="mr-2"
+                    @click="addProductInboundDataCancle"
+                  >
+                    직접 입력형 취소
                   </v-btn>
                   <v-btn
                     small
@@ -244,7 +290,7 @@
                     class="elevation-1"
                   >
                     <template v-slot:item="{ item }">
-                      <tr>
+                      <tr v-if="!add_self">
                         <td align="center">{{  item.product_type }}</td>
                         <td align="center">{{  item.product_classification }}</td>
                         <td align="center">{{  item.product_code }}</td>
@@ -266,15 +312,178 @@
                         <td align="center">{{  item.manufacturer }}</td>
                         <td align="center">{{  item.pe_number }}</td>
                         <td align="center">{{  item.unit_price }}</td>
-                        <td align="center">{{  item.product_price }}</td>
+                        <td align="center">{{  item.photo }}</td>
                       </tr>
+                      <tr v-else-if="add_self">
+                        <td align="center">
+                          <v-autocomplete
+                            v-model="item.product_classification"
+                            :items="product_type_list.slice(1)"
+                            dense
+                            filled
+                            hide-details
+                            style="width:150px"
+                          ></v-autocomplete>
+                        </td>
+                        <td align="center">
+                          <v-autocomplete
+                            v-model="item.product_type"
+                            :items="product_classification_list.slice(1)"
+                            dense
+                            filled
+                            hide-details
+                            style="width:150px"
+                          ></v-autocomplete>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.product_code"
+                            style="width:200px"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.product_name"
+                            style="width:150px"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            type="number"
+                            v-model="item.product_inbound_num"
+                            style="width:150px"
+                          >
+
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.product_model"
+                            style="width:150px"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.product_spec"
+                            style="width:150px"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.manufacturer"
+                            style="width:150px"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.pe_number"
+                            style="width:150px"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            type="number"
+                            v-model="item.unit_price"
+                            style="width:150px"
+                          >
+
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-file-input
+                            small-chips
+                            filled
+                            dense
+                            hide-details
+                            v-model="item.photo"
+                          ></v-file-input>
+                        </td>
+                      </tr>
+                      <!-- <tr v-if="item.product_code">
+                        <td align="center">{{  item.product_type }}</td>
+                        <td align="center">{{  item.product_classification }}</td>
+                        <td align="center">{{  item.product_code }}</td>
+                        <td align="center">{{  item.product_name }}</td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            type="number"
+                            style="max-width:150px"
+                            v-model="item.product_inbound_num"
+                          >
+
+                          </v-text-field>
+                        </td>
+                        <td align="center">{{  item.product_model }}</td>
+                        <td align="center">{{  item.product_spec }}</td>
+                        <td align="center">{{  item.manufacturer }}</td>
+                        <td align="center">{{  item.pe_number }}</td>
+                        <td align="center">{{  item.unit_price }}</td>
+                      </tr>
+                      <tr v-if="!item.product_code">
+                        <td align="center">{{  item.product_type }}</td>
+                        <td align="center">{{  item.product_classification }}</td>
+                        <td align="center">{{  item.product_code }}</td>
+                        <td align="center">{{  item.product_name }}</td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            type="number"
+                            style="max-width:150px"
+                            v-model="item.product_inbound_num"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">{{  item.product_model }}</td>
+                        <td align="center">{{  item.product_spec }}</td>
+                        <td align="center">{{  item.manufacturer }}</td>
+                        <td align="center">{{  item.pe_number }}</td>
+                        <td align="center">{{  item.unit_price }}</td>
+                      </tr> -->
                     </template>
+                    <!-- <template v-slot:body>
+                      <tr>
+                        <td>testttt</td>
+                        <td>testttt</td>
+                        <td>testttt</td>
+                      </tr>
+                    </template> -->
                   </v-data-table>
                 </v-col>
-              </v-row>
-
-              <v-row>
-
               </v-row>
             </v-card-text>
           </v-card>
@@ -285,13 +494,16 @@
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
+import DataTableComponent from "@/components/DataTableComponent";
 
 export default {
   components: {
                 NavComponent,
+                DataTableComponent,
               },
   data(){
     return{
+      add_self: false,
       product_type:'All',
       product_classification:'All',
       product_code: '',
@@ -319,10 +531,11 @@ export default {
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
+        { text: '사진', align: 'center', value: 'photo', },
       ],
 
       product_inbound_data: [],
+      product_inbound_data_added: [],
 
       product_search_headers: [
         { text: '종류', align: 'center', value: 'product_type', },
@@ -334,7 +547,6 @@ export default {
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
       ],
 
       product_search_data: [
@@ -348,7 +560,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'원부자재',
@@ -360,7 +572,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'원부자재',
@@ -372,7 +584,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'원부자재',
@@ -384,7 +596,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'원부자재',
@@ -396,7 +608,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'원부자재',
@@ -408,7 +620,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'반제품',
@@ -420,7 +632,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'반제품',
@@ -432,7 +644,7 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
         {
           product_type:'완제품',
@@ -444,10 +656,40 @@ export default {
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
-          product_price: '',
+          photo:'',
         },
       ],
     }
+  },
+
+  methods: {
+    addProductInboundData(){
+      if(this.add_self == false){
+        alert('직접 입력형으로 전환되며 위에서 선택한 자재는 선택 해제됩니다. ');
+        this.product_inbound_data = [];
+      }
+      this.add_self = true;
+      this.product_inbound_data.push({
+          product_type:'',
+          product_classification:'',
+          product_code: '',
+          product_name: '',
+          product_model: '',
+          product_spec: '',
+          manufacturer: '',
+          pe_number: '',
+          unit_price: '',
+          product_price: '',
+          registe_type: '직접입력',
+        });
+    },
+    addProductInboundDataCancle(){
+      if(this.add_self == true){
+        alert('자재 선택형으로 전환되며 아래 작성된 내용은 초기화됩니다.');
+        this.product_inbound_data = [];
+      }
+      this.add_self = false;
+    },
   },
 
   computed: {
