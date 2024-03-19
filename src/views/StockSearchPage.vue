@@ -23,8 +23,13 @@
               cols="12"
               sm="4"
               lg="3"
-              offset-lg="9"
             >
+            <!-- <v-col
+              cols="12"
+              sm="4"
+              lg="3"
+              offset-lg="9"
+            > -->
               <v-row>
                 <v-col
                   cols="6"
@@ -122,7 +127,7 @@ export default {
         {label:'모델명', col:'12', sm:'4', lg:'3', value: ''},
         {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
         {label:'제조사', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
+        // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
       ],
       headers: [
         { text: '종류', align: 'center', value: 'type', },
