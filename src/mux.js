@@ -524,38 +524,42 @@ mux.Util = {
 
 
   async downloadPDF(element, fileName = 'data', overflow = false, width, height){
-    try {
-      let thisElement;
-      if (element.$el){
-        thisElement = element.$el;
-      }else {
-        thisElement = element;
+    return new Promise((resolve, reject) => {
+      try {
+        let thisElement;
+        if (element.$el){
+          thisElement = element.$el;
+        }else {
+          thisElement = element;
+        }
+        const a4Width = 595;
+        const a4Height = 842;
+
+        const styleCopy = this.copyStyleToNewWindow();
+        // 미리보기 팝업을 띄우기
+        const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
+        const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
+        previewPopup.document.write(previewContent);
+
+        // 포커스를 설정하고 1초 뒤에 프린트 도구 시작
+        setTimeout(async() => {
+          previewPopup.focus();
+
+          const pdf = await this.makePDF(previewPopup.document.body, overflow, width, height);
+          pdf.save(fileName +'.pdf');
+
+          // 프린트 도구가 닫히면 팝업도 닫기
+          setTimeout(() => {
+            previewPopup.close();
+            resolve();
+          }, 500);
+        }, 1000);
+        
+      } catch (error) {
+        console.warn(error);
+        reject(error);
       }
-      const a4Width = 595;
-      const a4Height = 842;
-
-      const styleCopy = this.copyStyleToNewWindow();
-      // 미리보기 팝업을 띄우기
-      const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
-      const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
-      previewPopup.document.write(previewContent);
-
-      // 포커스를 설정하고 1초 뒤에 프린트 도구 시작
-      setTimeout(async() => {
-        previewPopup.focus();
-
-        const pdf = await this.makePDF(previewPopup.document.body, overflow, width, height);
-        pdf.save(fileName +'.pdf');
-
-        // 프린트 도구가 닫히면 팝업도 닫기
-        setTimeout(() => {
-          previewPopup.close();
-        }, 500);
-      }, 1000);
-      
-    } catch (error) {
-      console.warn(error);
-    }
+    });
   },
 
   makePDF (element, overflow = false, width, height) {
