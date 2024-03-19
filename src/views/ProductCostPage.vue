@@ -172,9 +172,9 @@
                                 v-for="(item, index) in content_save_items"
                                 :key="index"
                                 dense
-                                @click="item.click === 'print' ? mux.Util.print($refs.calcDetailCard)
+                                @click="item.click === 'print' ? printOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data')
                                         : item.click === 'excel' ? mux.Excel.downloadTable(survey_cost_headers, calc_cost_detail_data, '산출내역서')
-                                        : item.click === 'pdf' ? mux.Util.downloadPDF($refs.calcDetailCard, '산출내역서') : ''"
+                                        : item.click === 'pdf' ? printOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data', '산출내역서') : ''"
                               >
                                 <v-list-item-title>{{ item.title }}</v-list-item-title>
                               </v-list-item>
@@ -188,8 +188,8 @@
                             x-small
                             class="mr-3 float-right dont_print"
                             elevation="0"
-                            @click="edit_survey_cost_data = false"
                             data-html2canvas-ignore="true"
+                            @click="edit_survey_cost_data = false"
                           >
                             <v-icon
                               small
@@ -200,8 +200,9 @@
                             color="primary"
                             fab
                             x-small
-                            class="mr-3 float-right"
+                            class="mr-3 float-right dont_print"
                             elevation="0"
+                            data-html2canvas-ignore="true"
                             @click="edit_survey_cost_data = true"
                           >
                             <v-icon
@@ -1662,6 +1663,65 @@ export default {
     closeDelete(){
       this.dialogDelete = false;
     },
+
+    // 파일명 인자 있을 경우 PDF download, 없을 경우 print
+    async printOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
+      let items = this[itemsThisKeyStr];
+      const originItems = JSON.parse(JSON.stringify(items));
+      items = items.map(item => {
+        for (let i = Object.keys(item).length - 1; i >= 0; i--) {
+          const key = Object.keys(item)[i];
+          if (key.includes('editable')){
+            delete item[key];
+          }
+          if (key === 'belong_data'){
+            for (let j = 0; j < item.belong_data.length; j++) {
+              const innerItem = item.belong_data[j];
+              for (let ii = Object.keys(innerItem).length - 1; ii >= 0; ii--) {
+                const innerKey = Object.keys(innerItem)[ii];
+                if (innerKey.includes('editable')){
+                  delete innerItem[innerKey];
+                }
+                if (innerKey === 'belong_data'){
+                  for (let j = 0; j < innerItem.belong_data.length; j++) {
+                    const belongInnerItem = innerItem.belong_data[j];
+                    for (let ii = Object.keys(belongInnerItem).length - 1; ii >= 0; ii--) {
+                      const belongInnerKey = Object.keys(belongInnerItem)[ii];
+                      if (belongInnerKey.includes('editable')){
+                        delete belongInnerItem[belongInnerKey];
+                      }
+                      // if (belongInnerKey === 'belong_data'){
+                        
+                      // }
+                    }
+                    
+                  }
+                }
+              }
+              
+            }
+          }
+        }
+        return item;
+
+      });
+
+      this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+      
+      // UI 적용을 위한 editable = false 1초 후 작동
+      setTimeout(async () => {
+        if (fileName){
+          await mux.Util.downloadPDF(element, fileName);
+        }else {
+          await mux.Util.print(element);
+        }
+        this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+        this[itemsThisKeyStr] = originItems;
+      }, 1000);
+
+
+    }
   },
 
   computed: {

@@ -5,8 +5,7 @@ import router from '@/router/index'; // npm install vue-router
 import configJson from '@/mux.json';
 import Vue from 'vue';
 import VueCookies from 'vue-cookies';
-import html2canvas from 'html2canvas'; // npm install html2canvas
-import jsPDF from 'jspdf'; // npm install jspdf
+import html2pdf from 'html2pdf.js' // npm install html2pdf.js
 
 Vue.use(VueCookies);
 
@@ -503,7 +502,7 @@ mux.Util = {
     const a4Width = 1240;
     const a4Height = 1754;
 
-    const styleCopy = this.copyStyleToNewWindow();
+    const styleCopy = this.copyStyleToNewWindowWithoutHover();
     // 미리보기 팝업을 띄우기
     const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
     const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
@@ -524,119 +523,92 @@ mux.Util = {
   },
 
 
-  async downloadPDF(element, fileName = 'data', overflow = false, width, height){
-    try {
-      let thisElement;
-      if (element.$el){
-        thisElement = element.$el;
-      }else {
-        thisElement = element;
-      }
-      const a4Width = 1240;
-      const a4Height = 1754;
-
-      const styleCopy = this.copyStyleToNewWindow();
-      // 미리보기 팝업을 띄우기
-      const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
-      const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
-      previewPopup.document.write(previewContent);
-
-      // 포커스를 설정하고 1초 뒤에 프린트 도구 시작
-      setTimeout(async() => {
-        previewPopup.focus();
-
-        const pdf = await this.makePDF(previewPopup.document.body, overflow, width, height);
-        pdf.save(fileName +'.pdf');
-
-        // 프린트 도구가 닫히면 팝업도 닫기
-        setTimeout(() => {
-          previewPopup.close();
-        }, 500);
-      }, 1000);
-
-    } catch (error) {
-      console.warn(error);
-    }
-  },
-
-  makePDF (element, overflow = false, width, height) {
+  async downloadPDF(element, fileName = 'data'){
     return new Promise((resolve, reject) => {
       try {
-        window.html2canvas = html2canvas; //Vue.js 특성상 window 객체에 직접 할당해야한다.
-        let pdf = new jsPDF('p', 'mm', 'a4');
-        let canvas = pdf.canvas;
-        const pageWidth = 210; //캔버스 너비 mm
-        const pageHeight = 295; //캔버스 높이 mm
-        canvas.width = pageWidth;
-
         let thisElement;
         if (element.$el){
           thisElement = element.$el;
         }else {
           thisElement = element;
         }
-        let elementWidth = thisElement.offsetWidth; // 셀렉트한 요소의 px 너비
-        if (width){
-          elementWidth = width;
-        }
-        let elementHeight = thisElement.offsetHeight; // 셀렉트한 요소의 px 높이
-        if (height){
-          elementHeight = height;
-        }
-        let imgWidth;
-        let imgHeight;
-        if (elementWidth > pageWidth){
-          imgWidth = pageWidth;
-        }else {
-          imgWidth = elementWidth;
-        }
-        if (overflow){
-          imgHeight = imgWidth * elementHeight/elementWidth; // 이미지 높이값 px to mm 변환
-        }else {
-          if (imgWidth * elementHeight/elementWidth > pageHeight){
-            imgHeight = pageHeight;
-          }else {
-            imgHeight = imgWidth * elementHeight/elementWidth;
-          }
-        }
+        const a4Width = 1240;
+        const a4Height = 1754;
 
-        if(!thisElement){
-          console.log('element is not exist.')
-          return false
-        }
+        const styleCopy = this.copyStyleToNewWindowWithoutHover();
+        // 미리보기 팝업을 띄우기
+        const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
+        const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
+        previewPopup.document.write(previewContent);
 
-        html2canvas(thisElement).then(canvas => {
-            let position = 0
-            const imgData = canvas.toDataURL('image/png')
-            pdf.addImage(imgData, 'png', 0, position, imgWidth, imgHeight, undefined, 'slow')
+        // 포커스를 설정하고 1초 뒤에 프린트 도구 시작
+        setTimeout(async() => {
+          previewPopup.focus();
+      
+          // PDF 생성 옵션 설정
+          const options = {
+            // margin: [15, 0, 15, 0], // top, right, bottom, left 마진 여백
+            margin: 10,
+            filename: fileName+'.pdf', // Pdf 파일 명
+            pagebreak: { mode: 'avoid-all' }, // pagebreak 옵션
+            // image: { type: 'pdf', quality: 1 },
+            image: { type: 'jpeg', quality: 1 }, // 이미지 퀄리티 (pdf 들어갈 영역을 사진을 찍어 변환 하기 때문에 이미지 퀄리티 = pdf 퀄리티
+            html2canvas: { // html2canvas 옵션
+              useCORS: true, // 영역 안에 로컬 이미지를 삽입 할 때 옵션 필요
+              scrollY: 0, // 스크롤 이슈 때문에 필수 
+              scale: 2, // browsers device pixel ratio !! 1로 하면 부분적으로 회색 영역 생겨서 2로 해야 함
+              dpi: 300,
+              letterRendering: true,
+              allowTaint: false, //useCORS를 true로 설정 시 반드시 allowTaint를 false처리 해주어야함
+            },
+            // jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' }
+            jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
+          };
+    
+          // HTML을 PDF로 변환하여 다운로드
+          html2pdf().set(options).from(previewPopup.document.body).save();
 
-            //Paging 처리
-            let heightLeft = imgHeight //페이징 처리를 위해 남은 페이지 높이 세팅.
-            heightLeft -= pageHeight
-            while (heightLeft > 0) {
-              position = heightLeft - imgHeight
-              pdf.addPage();
-              pdf.addImage(imgData, 'png', 0, position, imgWidth, imgHeight)
-              heightLeft -= pageHeight
-            }
+          // 프린트 도구가 닫히면 팝업도 닫기
+          setTimeout(() => {
+            previewPopup.close();
+            resolve();
+          }, 500);
+        }, 1000);
 
-            resolve(pdf);
-          },
-
-        );
       } catch (error) {
+        console.warn(error);
         reject(error);
       }
     });
-
   },
-
 
   copyStyleToNewWindow() {
     var styles = '';
     var styleElements = document.querySelectorAll('style, link[rel="stylesheet"]');
     styleElements.forEach(function(styleElement) {
       styles += styleElement.outerHTML;
+    });
+
+    return styles;
+  },
+  copyStyleToNewWindowWithoutHover() {
+    var styles = '';
+    var styleElements = document.querySelectorAll('style, link[rel="stylesheet"]');
+    styleElements.forEach(function(styleElement) {
+        var clonedElement = styleElement.cloneNode(true); // 복제본 생성
+        var styleText = clonedElement.textContent || clonedElement.innerText; // 스타일 텍스트 추출
+
+        // hover와 관련된 스타일 제거
+        styleText = styleText.replace(/(?:^|\})([^{]*):hover([^{]*)\{/g, '');
+
+        // 수정된 스타일을 다시 요소에 설정
+        if ('textContent' in clonedElement) {
+            clonedElement.textContent = styleText;
+        } else {
+            clonedElement.innerText = styleText;
+        }
+
+        styles += clonedElement.outerHTML;
     });
 
     return styles;
@@ -969,6 +941,45 @@ mux.Table = {
         row[header.text] = rowData[header.value];
       });
       rows.push(row);
+    });
+
+    return rows;
+  },
+
+  /**
+   * 그룹, 확장테이블 데이터 가져오기 함수
+   * @param {Array} headers - 테이블 헤더 정보 배열
+   * @param {Array} items - 테이블 내용 정보 배열
+   * @returns {Array} - 테이블 데이터 배열
+   */
+  getGroupTableData(headers, items) {
+    const rows = [];
+
+    // 테이블 내용 가져오기
+    items.forEach((rowData) => {
+      var row = {};
+      headers.forEach((header) => {
+        row[header.text] = rowData[header.value];
+      });
+      rows.push(row);
+      if (rowData.belong_data){
+        rowData.belong_data.forEach((innerData) => {
+          var row = {};
+          headers.forEach((header) => {
+            row[header.text] = innerData[header.value];
+          });
+          rows.push(row);
+          if (innerData.belong_data){
+            innerData.belong_data.forEach((innerBelongData) => {
+              var row = {};
+              headers.forEach((header) => {
+                row[header.text] = innerBelongData[header.value];
+              });
+              rows.push(row);
+            });
+          }
+        });
+      }
     });
 
     return rows;
@@ -1433,7 +1444,7 @@ mux.Excel = {
    * }
    */
   downloadTable(headers, items, fileName = 'data') {
-    const tableData = mux.Table.getTableData(headers, items);
+    const tableData = mux.Table.getGroupTableData(headers, items);
     const ws = XLSX.utils.json_to_sheet(tableData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
