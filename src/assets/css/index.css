@@ -18,6 +18,11 @@
 
 /* 테이블 */
 .v-data-table-header{background-color: #E3F2FD;}
+* {-webkit-print-color-adjust:exact;}
 .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td{
   font-size: 0.775rem!important;
+}
+
+@media print{
+  .dont_print{display: none;}
 }
