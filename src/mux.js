@@ -37,7 +37,7 @@ mux.Server = {
   axiosInstance : axios.create({
     // baseURL: configJson.baseURL
   }),
-  
+
   /**
    * 페이지 이동 함수
    * @param {string | Object} pathOrObject 가능한 Key : {str}path, {milliseconds}timeout, {str}name, {object}params ...
@@ -68,7 +68,7 @@ mux.Server = {
               this.logOut();
             }
           } catch (error) {
-            this.logOut();  
+            this.logOut();
           }
         }else {
           this.logOut();
@@ -102,7 +102,7 @@ mux.Server = {
    * const result = await mux.Server.get({path:'/list', number:1});
    */
   async get(pathOrObject) {
-    
+
     return new Promise(async (resolve, reject) => {
       try {
         const response = await this.request(pathOrObject, 'get');
@@ -121,7 +121,7 @@ mux.Server = {
    * const result = await mux.Server.post({path: '/list', target: 'something'});
    */
   async post(pathOrObject) {
-    
+
     return new Promise(async (resolve, reject) => {
       try {
         const response = await this.request(pathOrObject, 'post');
@@ -140,7 +140,7 @@ mux.Server = {
    * const result = await mux.Server.put({path: '/update', target:'something', change:'new'});
    */
   async put(pathOrObject) {
-    
+
     return new Promise(async (resolve, reject) => {
       try {
         const response = await this.request(pathOrObject, 'put');
@@ -159,7 +159,7 @@ mux.Server = {
    * const result = await mux.Server.patch({path: '/patch', target:'something', change:'new'});
    */
   async patch(pathOrObject) {
-    
+
     return new Promise(async (resolve, reject) => {
       try {
         const response = await this.request(pathOrObject, 'patch');
@@ -178,7 +178,7 @@ mux.Server = {
    * const result = await mux.Server.delete({path: '/delete', target: 'something'});
    */
   async delete(pathOrObject) {
-    
+
     return new Promise(async (resolve, reject) => {
       try {
         const response = await this.request(pathOrObject, 'delete');
@@ -191,7 +191,7 @@ mux.Server = {
 
   /**
    * 파일 업로드
-   * @param {Object} reqObj 
+   * @param {Object} reqObj
    * 필수 key: path, (folder, file) | {obj}files : {folder,file}
    * 선택 key: timeout, ...
    */
@@ -245,7 +245,7 @@ mux.Server = {
 
 
         const response = await this.axiosInstance.post(reqObj.path, formData);
-  
+
         this.axiosInstance.defaults.timeout = this.defaultTimeout;
         resolve(response);
       } catch (error) {
@@ -257,7 +257,7 @@ mux.Server = {
 
   /**
    * 파일 다운로드
-   * @param {Object} reqObj 
+   * @param {Object} reqObj
    * 필수 key: path, folder, fileName
    * 선택 key: timeout, ...
    */
@@ -285,7 +285,7 @@ mux.Server = {
     });
   },
 
-  
+
   /**
    * REST Api 요청 함수
    * @param {string | Object} pathOrObject 가능한 Key : {str}path, {str}method, {milliseconds}timeout, {str}body, {object}something ...
@@ -298,7 +298,7 @@ mux.Server = {
     const defaultObj = {
       timeout: this.defaultTimeout
     };
-    
+
     return new Promise(async (resolve, reject) => {
       try {
         this.setObjFromPathOrObject(defaultObj, pathOrObject);
@@ -325,7 +325,7 @@ mux.Server = {
           case 'delete':
             response = await this.axiosInstance.delete(defaultObj.path, sendData);
             break;
-        
+
           default:
             method = 'get';
             response = await this.axiosInstance.get(defaultObj.path, sendData);
@@ -441,7 +441,7 @@ mux.Get = {
 
   /**
    * 특정 HTML Element 에서 값 가져오기
-   * @param {HTMLElement | number | string} source 
+   * @param {HTMLElement | number | string} source
    * @returns {string | number}
    */
   getValueAt(source){
@@ -468,8 +468,8 @@ mux.Set = {
 
   /**
    * 특정 HTML Element 에 값 표시
-   * @param {HTMLElement | number | string} source 
-   * @param {HTMLElement} target 
+   * @param {HTMLElement | number | string} source
+   * @param {HTMLElement} target
    */
   setValueAt(source, target) {
     let value = mux.Get.getValueAt(source);
@@ -490,7 +490,7 @@ mux.Util = {
 
   /**
    * 전달 받은 HTML 의 출력 미리보기 팝업창을 띄우며 프린트 도구 시작
-   * @param {HTMLElement} element 
+   * @param {HTMLElement} element
    */
   async print(element) {
     let thisElement;
@@ -499,8 +499,9 @@ mux.Util = {
     }else {
       thisElement = element;
     }
-    const a4Width = 595;
-    const a4Height = 842;
+
+    const a4Width = 1240;
+    const a4Height = 1754;
 
     const styleCopy = this.copyStyleToNewWindow();
     // 미리보기 팝업을 띄우기
@@ -519,7 +520,7 @@ mux.Util = {
         previewPopup.close();
       }, 500);
     }, 500);
-    
+
   },
 
 
@@ -532,8 +533,8 @@ mux.Util = {
         }else {
           thisElement = element;
         }
-        const a4Width = 595;
-        const a4Height = 842;
+        const a4Width = 1240;
+        const a4Height = 1754;
 
         const styleCopy = this.copyStyleToNewWindow();
         // 미리보기 팝업을 띄우기
@@ -554,7 +555,7 @@ mux.Util = {
             resolve();
           }, 500);
         }, 1000);
-        
+
       } catch (error) {
         console.warn(error);
         reject(error);
@@ -571,7 +572,7 @@ mux.Util = {
         const pageWidth = 210; //캔버스 너비 mm
         const pageHeight = 295; //캔버스 높이 mm
         canvas.width = pageWidth;
-  
+
         let thisElement;
         if (element.$el){
           thisElement = element.$el;
@@ -602,17 +603,17 @@ mux.Util = {
             imgHeight = imgWidth * elementHeight/elementWidth;
           }
         }
-  
+
         if(!thisElement){
           console.log('element is not exist.')
           return false
         }
-  
+
         html2canvas(thisElement).then(canvas => {
             let position = 0
             const imgData = canvas.toDataURL('image/png')
             pdf.addImage(imgData, 'png', 0, position, imgWidth, imgHeight, undefined, 'slow')
-  
+
             //Paging 처리
             let heightLeft = imgHeight //페이징 처리를 위해 남은 페이지 높이 세팅.
             heightLeft -= pageHeight
@@ -622,11 +623,11 @@ mux.Util = {
               pdf.addImage(imgData, 'png', 0, position, imgWidth, imgHeight)
               heightLeft -= pageHeight
             }
-  
+
             resolve(pdf);
           },
-  
-        );	
+
+        );
       } catch (error) {
         reject(error);
       }
@@ -634,14 +635,14 @@ mux.Util = {
 
   },
 
-    
+
   copyStyleToNewWindow() {
     var styles = '';
     var styleElements = document.querySelectorAll('style, link[rel="stylesheet"]');
     styleElements.forEach(function(styleElement) {
       styles += styleElement.outerHTML;
     });
-  
+
     return styles;
   },
 }
@@ -670,7 +671,7 @@ mux.Valid = {
    * // 사용자 정의 정규식을 사용한 검사
    * const customRegex = /^[a-z]+$/;
    * validate('john_doe', customRegex); // true
-   * 
+   *
    * num: 숫자만 허용 (예시: '123')
     str: 알파벳 문자만 허용 (예시: 'aBc')
     date: 날짜 형식 (YYYY-MM-DD) (예시: '2024-02-02')
@@ -713,7 +714,7 @@ mux.Valid = {
         telGlobal: /^\+(?:[0-9] ?){6,14}[0-9]$/, // 국제 전화번호 형식 (예시: '+123 4567 8901')
         email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // 이메일 형식 (예시: 'user@example.com')
         // 비밀번호 형식 (문자, 숫자, 특수문자 2가지 이상 조합. 8자리 이상. (금지 : ' " ` \) ) (예시: 'Passw0rd')
-        password: /^(?:(?=.*[A-Za-z])(?=.*\d)|(?=.*[A-Za-z])(?=.*[~!@#$%^&*()\-_=+[{\]}|;:/?.>,<])|(?=.*\d)(?=.*[~!@#$%^&*()\-_=+[{\]}|;:/?.>,<]))[^' "`\\]{8,}$/, 
+        password: /^(?:(?=.*[A-Za-z])(?=.*\d)|(?=.*[A-Za-z])(?=.*[~!@#$%^&*()\-_=+[{\]}|;:/?.>,<])|(?=.*\d)(?=.*[~!@#$%^&*()\-_=+[{\]}|;:/?.>,<]))[^' "`\\]{8,}$/,
         url: /^(https?|ftp):\/\/[^\s/$.?#]\.[^\s]*$/i, // URL 형식 (예시: 'http://www.example.com')
         zipCode: /^\d{5}(-\d{4})?$/, // 우편번호 형식 (예시: '12345' 또는 '12345-6789')
         username: /^[a-zA-Z0-9_]{3,20}$/, // 사용자 이름 형식 (예시: 'user_123')
@@ -779,7 +780,7 @@ mux.Style = {
    * 주어진 HTMLElement에 대해 주어진 방향에 해당하는 테두리 색상을 변경합니다.
    *
    * @param {HTMLElement} element - 색상을 변경할 HTMLElement.
-   * @param {string} color - 적용할 테두리 색상 (CSS 색상 문자열). 
+   * @param {string} color - 적용할 테두리 색상 (CSS 색상 문자열).
    *                         헥스코드, 색상 이름 등 모든 유효한 CSS 색상 형식이 가능합니다.
    * @param {string} [direction] - 적용할 방향. "top" 또는 "up", "right", "left", "bottom" 또는 "down" 중 하나.
    *                               전달하지 않거나 유효한 값이 아닌 경우 모든 방향에 적용됩니다.
@@ -928,7 +929,7 @@ mux.Style = {
    * 주어진 HTMLElement의 텍스트 색상을 변경합니다.
    *
    * @param {HTMLElement} element - 색상을 변경할 HTMLElement.
-   * @param {string} color - 적용할 텍스트 색상 (CSS 색상 문자열). 
+   * @param {string} color - 적용할 텍스트 색상 (CSS 색상 문자열).
    *                         헥스코드, 색상 이름 등 모든 유효한 CSS 색상 형식이 가능합니다.
    * @example
    * var myElement = document.getElementById("myElement");
@@ -990,7 +991,7 @@ mux.Table = {
    */
   addRow(headers, items, dataArr = [], rowIndex = items.length) {
     const newRowData = {};
-    
+
     headers.forEach((header, index) => {
       // dataArr이 없거나 데이터가 비어있을 경우 빈 문자열을 삽입
       const data = dataArr[index] || '';
@@ -1036,7 +1037,7 @@ mux.Table = {
       items.splice(rowIndex, 1);
     }
   },
-  
+
   /**
    * 테이블의 복수 행 삭제
    * @param {Array} items
@@ -1057,7 +1058,7 @@ mux.Table = {
       this.removeRow(items, rowIndex);
     });
   },
-  
+
   /**
    * 테이블의 행 복제
    * @param {Array} items
@@ -1074,7 +1075,7 @@ mux.Table = {
       items.splice(rowIndex + 1, 0, newRowData);
     }
   },
-  
+
   /**
    * 테이블의 복수 행 복제
    * @param {Array} items
@@ -1095,7 +1096,7 @@ mux.Table = {
       this.copyRow(items, rowIndex);
     });
   },
-  
+
   /**
    * 테이블의 열 추가 및 추가되는 셀들의 데이터 입력
    * @param {Array} headers
@@ -1117,7 +1118,7 @@ mux.Table = {
       rowData[headers[colIndex].value] = data;
     });
   },
-  
+
   /**
    * 테이블의 열 삭제
    * @param {Array} headers
@@ -1134,7 +1135,7 @@ mux.Table = {
     });
     headers.splice(colIndex, 1);
   },
-  
+
   /**
    * 테이블의 앞에 1열 추가 후 추가되는 셀 안에 순서대로 번호를 부여
    * @param {Array} headers
@@ -1153,7 +1154,7 @@ mux.Table = {
       rowData['number'] = index + 1;
     });
   },
-  
+
   /**
    * 테이블의 특정 열을 기준으로 오름차순 또는 내림차순으로 행들을 정렬
    * @param {Array} headers
@@ -1172,7 +1173,7 @@ mux.Table = {
       return upDown === 'up' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
     });
   },
-  
+
   /**
    * 특정 셀의 기존 내용을 value로 가지는 input 태그를 만들어 해당 셀 안에 구성
    * @param {Object} table - v-data-table 객체
@@ -1193,7 +1194,7 @@ mux.Table = {
     const inputElement = document.createElement('input');
     inputElement.type = type;
     inputElement.value = cellData;
-    
+
         const cellToEdit = table.$el.getElementsByTagName('table')[0].rows[rowIndex + 1].cells[colIndex];
         cellToEdit.innerHTML = '';
         cellToEdit.appendChild(inputElement);
@@ -1218,7 +1219,7 @@ mux.Table = {
     //   items[rowIndex][headers[colIndex].value] = inputElement.value;
     // });
   },
-  
+
   /**
    * 특정 셀의 기존 내용을 value로 가지는 select 태그를 만들어 해당 셀 안에 구성
    * @param {Object} table - v-data-table 객체
@@ -1274,25 +1275,25 @@ mux.Table = {
    */
   cellToText(table, headers, items, rowIndex, colIndex) {
     const targetCell = table.$el.getElementsByTagName('table')[0].rows[rowIndex + 1].cells[colIndex];
-  
+
     // 셀 안의 모든 입력 요소를 찾음
     const inputElements = targetCell.querySelectorAll('input, select, textarea');
-  
+
     // 입력 요소가 하나 이상 있는 경우에만 처리
     if (inputElements.length > 0) {
       // 각 입력 요소의 값을 배열로 저장
       const inputValues = Array.from(inputElements).map(inputElement => inputElement.value);
-  
+
       // 배열을 InnerText로 설정
       targetCell.innerHTML = inputValues.join(', ');
-  
+
       // items 배열에 각 입력 요소의 값을 저장
       inputValues.forEach((value, index) => {
         items[rowIndex][headers[colIndex].value + `_element_${index}`] = value;
       });
     }
   },
-  
+
   /**
    * 특정 행의 각 셀 안의 InnerText 혹은 input 태그의 value 를 모아서 Array 로 반환
    * @param {Array} headers
@@ -1308,7 +1309,7 @@ mux.Table = {
     const rowData = headers.map(header => items[rowIndex][header.value]);
     return rowData;
   },
-  
+
   /**
    * Array 로 받은 데이터를 특정 행의 각 셀 안에 입력
    * @param {Array} headers
@@ -1346,7 +1347,7 @@ mux.Excel = {
    * <input type="file" @change="handleFileUpload" />
    * <table ref="myTable">
    * </table>
-   * 
+   *
    * methods: {
    *   handleFileUpload(event) {
    *     const file = event.target.files[0];
@@ -1383,7 +1384,7 @@ mux.Excel = {
    * <button @click="openExcel" />
    * <table ref="myTable">
    * </table>
-   * 
+   *
    * methods: {
    *   openExcel() {
    *     const headers = this.headers; // 헤더 정보
@@ -1411,7 +1412,7 @@ mux.Excel = {
         reader.readAsArrayBuffer(this.files[0]);
       };
       input.click();
-      
+
     } catch (error) {
       console.error(error);
     }
@@ -1426,7 +1427,7 @@ mux.Excel = {
    * <button @click="handleDownloadExcel">Download Excel</button>
    * <table ref="myTable">
    * </table>
-   * 
+   *
    * methods: {
    *   handleDownloadExcel() {
    *     const headers = this.headers; // 헤더 정보
@@ -1478,7 +1479,7 @@ mux.Date = {
 
   /**
    * Date 객체나 날짜 형식의 문자열을 원하는 형태의 문자열로 변환하여 반환
-   * @param {Date | string} date 
+   * @param {Date | string} date
    * @param {string} format - yyyy, yy, y, Y, MM, M, dd, d, D, HH, H, mm, m, ss, s
    * @returns {string}
    * @example mux.Date.format('2024.1-02', 'yy-MM-dd') -> '24-01-02'
@@ -1490,14 +1491,14 @@ mux.Date = {
       // 문자열 형태의 날짜를 Date 객체로 변환
       date = new Date(date);
     }
-  
+
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
     const hours = date.getHours();
     const minutes = date.getMinutes();
     const seconds = date.getSeconds();
-  
+
     const formatTokens = {
       'yyyy': year,
       'yy': year.toString().slice(-2),
@@ -1515,18 +1516,18 @@ mux.Date = {
       'ss': seconds.toString().padStart(2, '0'),
       's': seconds
     };
-  
+
     const regex = new RegExp(Object.keys(formatTokens).join('|'), 'g');
-  
+
     return format.replace(regex, match => formatTokens[match] || match);
   },
 
   /**
    * 두 Date 객체나 날짜 형식의 문자열을 비교하여 기간 차이를 반환(절대값)
-   * @param {Date | string} date1 
-   * @param {Date | string} date2 
-   * @param {string} [년] 
-   * @param {string} [개월] 
+   * @param {Date | string} date1
+   * @param {Date | string} date2
+   * @param {string} [년]
+   * @param {string} [개월]
    * @param {string} [일]
    * @returns {string}
    * @example mux.Date.range('2024.1-02', '2025-01-03') -> '1년 2일'
@@ -1535,12 +1536,12 @@ mux.Date = {
   range(date1, date2, 년, 개월, 일) {
     if (!(date1 instanceof Date)) date1 = new Date(date1);
     if (!(date2 instanceof Date)) date2 = new Date(date2);
-  
+
     const diff = Math.abs(date2 - date1);
     const years = Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000));
     const months = Math.floor((diff % (365.25 * 24 * 60 * 60 * 1000)) / (30.44 * 24 * 60 * 60 * 1000));
     const days = Math.floor((diff % (30.44 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
-  
+
     let result = '';
     if (years > 0) {
       result += `${years}${년 ? 년 : '년'} `;
@@ -1551,14 +1552,14 @@ mux.Date = {
     if (days > 0 || (years === 0 && months === 0 && days === 0)) {
       result += `${days}${일 ? 일 : '일'}`;
     }
-  
+
     return result.trim();
   },
-  
+
   /**
    * 두 Date 객체나 날짜 형식의 문자열을 비교하여 기간과 시간 차이를 반환(절대값)
-   * @param {Date | string} date1 
-   * @param {Date | string} date2 
+   * @param {Date | string} date1
+   * @param {Date | string} date2
    * @param {string} [년] - 미입력시 '년'
    * @param {string} [개월] - 미입력시 '개월'
    * @param {string} [일] - 미입력시 '일'
@@ -1572,7 +1573,7 @@ mux.Date = {
   rangeTime(date1, date2, 년, 개월, 일, 시간, 분, 초) {
     if (!(date1 instanceof Date)) date1 = new Date(date1);
     if (!(date2 instanceof Date)) date2 = new Date(date2);
-  
+
     const diff = Math.abs(date2 - date1);
     const years = Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000));
     const months = Math.floor((diff % (365.25 * 24 * 60 * 60 * 1000)) / (30.44 * 24 * 60 * 60 * 1000));
@@ -1580,7 +1581,7 @@ mux.Date = {
     const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
     const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
     const seconds = Math.floor((diff % (60 * 1000)) / 1000);
-  
+
     let result = '';
     if (years > 0) {
       result += `${years}${년 ? 년 : '년'} `;
@@ -1600,93 +1601,93 @@ mux.Date = {
     if (seconds > 0 || (years === 0 && months === 0 && days === 0 && hours === 0 && minutes === 0)) {
       result += `${seconds}${초 ? 초 : '초'}`;
     }
-  
+
     return result.trim();
   },
-  
+
   /**
    * 두 Date 객체나 날짜 형식의 문자열을 비교하여 연 차이를 반환(절대값)
-   * @param {Date | string} date1 
-   * @param {Date | string} date2 
+   * @param {Date | string} date1
+   * @param {Date | string} date2
    * @returns {number}
    */
   rangeYear(date1, date2) {
     if (!(date1 instanceof Date)) date1 = new Date(date1);
     if (!(date2 instanceof Date)) date2 = new Date(date2);
-  
+
     const diff = Math.abs(date2 - date1);
     return Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000));
   },
-  
+
   /**
    * 두 Date 객체나 날짜 형식의 문자열을 비교하여 월 차이를 반환(절대값)
-   * @param {Date | string} date1 
-   * @param {Date | string} date2 
+   * @param {Date | string} date1
+   * @param {Date | string} date2
    * @returns {number}
    */
   rangeMonth(date1, date2) {
     if (!(date1 instanceof Date)) date1 = new Date(date1);
     if (!(date2 instanceof Date)) date2 = new Date(date2);
-  
+
     const diff = Math.abs(date2 - date1);
     const years = Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000));
     const months = Math.floor((diff % (365.25 * 24 * 60 * 60 * 1000)) / (30.44 * 24 * 60 * 60 * 1000));
-  
+
     return years * 12 + months;
   },
 
   /**
    * 두 Date 객체나 날짜 형식의 문자열을 비교하여 일 차이를 반환(절대값)
-   * @param {Date | string} date1 
-   * @param {Date | string} date2 
+   * @param {Date | string} date1
+   * @param {Date | string} date2
    * @returns {number}
    */
   rangeDate(date1, date2) {
     if (!(date1 instanceof Date)) date1 = new Date(date1);
     if (!(date2 instanceof Date)) date2 = new Date(date2);
-  
+
     const diff = Math.abs(date2 - date1);
     return Math.floor(diff / (24 * 60 * 60 * 1000));
   },
-  
+
   /**
    * 두 Date 객체나 날짜 형식의 문자열을 비교하여 시간 차이를 반환(절대값)
-   * @param {Date | string} date1 
-   * @param {Date | string} date2 
+   * @param {Date | string} date1
+   * @param {Date | string} date2
    * @returns {number}
    */
   rangeHour(date1, date2) {
     if (!(date1 instanceof Date)) date1 = new Date(date1);
     if (!(date2 instanceof Date)) date2 = new Date(date2);
-  
+
     const diff = Math.abs(date2 - date1);
     return Math.floor(diff / (60 * 60 * 1000));
   },
-  
+
   /**
    * 두 Date 객체나 날짜 형식의 문자열을 비교하여 분 차이를 반환(절대값)
-   * @param {Date | string} date1 
-   * @param {Date | string} date2 
+   * @param {Date | string} date1
+   * @param {Date | string} date2
    * @returns {number}
    */
   rangeMinute(date1, date2) {
     if (!(date1 instanceof Date)) date1 = new Date(date1);
     if (!(date2 instanceof Date)) date2 = new Date(date2);
-  
+
     const diff = Math.abs(date2 - date1);
     return Math.floor(diff / (60 * 1000));
   },
-  
+
   /**
    * 두 Date 객체나 날짜 형식의 문자열을 비교하여 초 차이를 반환(절대값)
-   * @param {Date | string} date1 
-   * @param {Date | string} date2 
+   * @param {Date | string} date1
+   * @param {Date | string} date2
    * @returns {number}
    */
   rangeSecond(date1, date2) {
     if (!(date1 instanceof Date)) date1 = new Date(date1);
     if (!(date2 instanceof Date)) date2 = new Date(date2);
-  
+
     const diff = Math.abs(date2 - date1);
     return Math.floor(diff / 1000);
   },
@@ -1696,14 +1697,14 @@ mux.Date = {
    * date1 이 과거 = 양수
    * date2 가 과거 = 음수
    * date1 과 date2 가 동일 = 0
-   * @param {Date | string} date1 
-   * @param {Date | string} date2 
+   * @param {Date | string} date1
+   * @param {Date | string} date2
    * @returns {number}
    */
   twoDateValidate(date1, date2) {
     if (!(date1 instanceof Date)) date1 = new Date(date1);
     if (!(date2 instanceof Date)) date2 = new Date(date2);
-    
+
     return date2 - date1;
   },
 }
@@ -1715,7 +1716,7 @@ mux.Date = {
 mux.Number = {
   /**
    * 콤마가 표기된 문자로 반환
-   * @param {number | string} value 
+   * @param {number | string} value
    * @returns {string}
    * @example mux.Number.withComma(1000000) -> '1,000,000'
    */
@@ -1733,7 +1734,7 @@ mux.Number = {
 
   /**
    * 콤마를 제거하여 숫자로 반환
-   * @param {string} value 
+   * @param {string} value
    * @returns {number}
    * @example mux.Number.noComma('1,000,000') -> 1000000
    */
@@ -1751,34 +1752,34 @@ mux.Number = {
 
   /**
    * 조 단위까지의 숫자를 한글로 변환하고 붙일 문자를 뒤에 표기하여 반환
-   * @param {number | string} val 
-   * @param {string} [붙일문자] 
+   * @param {number | string} val
+   * @param {string} [붙일문자]
    * @returns {string}
    * @example mux.Number.toKorean('78000000',' 달러') -> '칠천팔백만 달러'
    */
   toKorean(val, 붙일문자) {
     var numKor = new Array("", "일", "이", "삼", "사","오","육","칠","팔","구","십");
-    // 숫자 문자 
+    // 숫자 문자
     var danKor = new Array("", "십", "백", "천", "", "십", "백", "천", "", "십", "백", "천", "", "십", "백", "천");
 
     val = this.noComma(val);
     val = parseInt(val);
-    // 만위 문자열 
+    // 만위 문자열
     var result = "";
-    if(val && !isNaN(val)) { 
+    if(val && !isNaN(val)) {
       val = val.toString();
-      // CASE: 금액이 공란/NULL/문자가 포함된 경우가 아닌 경우에만 처리 
-      for(let i=0; i < val.length; i++) { 
+      // CASE: 금액이 공란/NULL/문자가 포함된 경우가 아닌 경우에만 처리
+      for(let i=0; i < val.length; i++) {
         var str = "";
         var num = numKor[val.charAt(val.length - (i+1))];
-        if(num != "") str += num + danKor[i];	// 숫자가 0인 경우 텍스트를 표현하지 않음 
-        switch(i){ 
-          case 4:str += "만"; break;  // 4자리인 경우 '만'을 붙여줌 ex) 10000 -> 일만 
-          case 8:str += "억"; break;  // 8자리인 경우 '억'을 붙여줌 ex) 100000000 -> 일억 
-          case 12:str += "조"; break; // 12자리인 경우 '조'를 붙여줌 ex) 1000000000000 -> 일조 
-        } 
+        if(num != "") str += num + danKor[i];	// 숫자가 0인 경우 텍스트를 표현하지 않음
+        switch(i){
+          case 4:str += "만"; break;  // 4자리인 경우 '만'을 붙여줌 ex) 10000 -> 일만
+          case 8:str += "억"; break;  // 8자리인 경우 '억'을 붙여줌 ex) 100000000 -> 일억
+          case 12:str += "조"; break; // 12자리인 경우 '조'를 붙여줌 ex) 1000000000000 -> 일조
+        }
         result = str + result;
-      } 
+      }
     }else {
       result = "NaN";
     }
@@ -1791,8 +1792,8 @@ mux.Number = {
 
   /**
    * N의 자리까지 반올림
-   * @param {number | string} value 
-   * @param {number} 단위 - ex) 1000, 0.1 
+   * @param {number | string} value
+   * @param {number} 단위 - ex) 1000, 0.1
    * @returns {number} - Math.round(value / 단위) * 단위
    * @example mux.Number.round(123, 10) -> 120
    */
@@ -1803,8 +1804,8 @@ mux.Number = {
 
   /**
    * N의 자리까지만 반올림하여 표시 후 문자 붙이기
-   * @param {number | string} value 
-   * @param {number} 단위 - ex) 1000, 1000000 
+   * @param {number | string} value
+   * @param {number} 단위 - ex) 1000, 1000000
    * @param {string} [붙일문자] - ex) 'M', '원', '백만원'
    * @returns {number} - Math.round(value / 단위) + 붙일문자
    * @example mux.Number.roundCut(12345678, 1000000, 'M') -> 12M
@@ -1819,8 +1820,8 @@ mux.Number = {
 
   /**
    * N의 자리까지 올림
-   * @param {number | string} value 
-   * @param {number} 단위 - ex) 1000, 0.1 
+   * @param {number | string} value
+   * @param {number} 단위 - ex) 1000, 0.1
    * @returns {number} - Math.ceil(value / 단위) * 단위
    * @example mux.Number.ceil(123, 10) -> 130
    */
@@ -1831,8 +1832,8 @@ mux.Number = {
 
   /**
    * N의 자리까지만 올림하여 표시 후 문자 붙이기
-   * @param {number | string} value 
-   * @param {number} 단위 - ex) 1000, 1000000 
+   * @param {number | string} value
+   * @param {number} 단위 - ex) 1000, 1000000
    * @param {string} [붙일문자] - ex) 'M', '원', '백만원'
    * @returns {number} - Math.ceil(value / 단위) + 붙일문자
    * @example mux.Number.ceilCut(12345678, 1000000, 'M') -> 13M
@@ -1847,8 +1848,8 @@ mux.Number = {
 
   /**
    * N의 자리까지 내림
-   * @param {number | string} value 
-   * @param {number} 단위 - ex) 1000, 0.1 
+   * @param {number | string} value
+   * @param {number} 단위 - ex) 1000, 0.1
    * @returns {number} - Math.floor(value / 단위) * 단위
    * @example mux.Number.floor(123, 10) -> 120
   */
@@ -1859,8 +1860,8 @@ mux.Number = {
 
   /**
    * N의 자리까지만 내림하여 표시 후 문자 붙이기
-   * @param {number | string} value 
-   * @param {number} 단위 - ex) 1000, 1000000 
+   * @param {number | string} value
+   * @param {number} 단위 - ex) 1000, 1000000
    * @param {string} [붙일문자] - ex) 'M', '원', '백만원'
    * @returns {number} - Math.floor(value / 단위) + 붙일문자
    * @example mux.Number.floorCut(12345678, 1000000, 'M') -> 12M
@@ -1875,7 +1876,7 @@ mux.Number = {
 
   /**
    * 소수점 자리수 구하기
-   * @param {number | string} value 
+   * @param {number | string} value
    * @returns {number}
    * @example mux.Number.getDecimalPlaces(0.123) -> 3
    */
@@ -1893,7 +1894,7 @@ mux.Number = {
 
   /**
    * 정수 변환 방식 더하기(소수점 계산 오류 방지)
-   * @param {Array<number | string | HTMLElement>} values 
+   * @param {Array<number | string | HTMLElement>} values
    * @returns {number}
    */
   sum(values) {
@@ -1913,7 +1914,7 @@ mux.Number = {
 
   /**
    * 정수 변환 방식 빼기(소수점 계산 오류 방지)
-   * @param {Array<number | string | HTMLElement>} values 
+   * @param {Array<number | string | HTMLElement>} values
    * @returns {number}
    */
   sub(values) {
@@ -1933,7 +1934,7 @@ mux.Number = {
 
   /**
    * 정수 변환 방식 곱하기(소수점 계산 오류 방지)
-   * @param {Array<number | string | HTMLElement>} values 
+   * @param {Array<number | string | HTMLElement>} values
    * @returns {number}
    */
   multiple(values) {
@@ -1953,7 +1954,7 @@ mux.Number = {
 
   /**
    * 정수 변환 방식 나누기(소수점 계산 오류 방지)
-   * @param {Array<number | string | HTMLElement>} values 
+   * @param {Array<number | string | HTMLElement>} values
    * @returns {number}
    */
   divide(values) {

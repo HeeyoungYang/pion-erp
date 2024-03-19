@@ -100,6 +100,7 @@
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import InputsCardComponent from "@/components/InputsCardComponent.vue";
+import mux from "@/mux";
 
 export default {
   components: {
@@ -138,95 +139,168 @@ export default {
       ],
 
       product_data: [
-        {
-          classification:'일반',
-          material_code: '공장2F_E-09-01',
-          name: 'IGBT & SMPS',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          total_price: '',
-        },
-        {
-          classification:'일반',
-          material_code: '공장2F_E-09-02',
-          name: 'SPD, 퓨즈',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          total_price: '',
-        },
-        {
-          classification:'일반',
-          material_code: '공장2F_E-09-03',
-          name: '쿨링팬',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          total_price: '',
-        },
-        {
-          classification:'일반',
-          material_code: '공장2F_E-09-05',
-          name: '보호회로',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          total_price: '',
-        },
-        {
-          classification:'일반',
-          material_code: '공장2F_E-09-06',
-          name: '리액터',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          total_price: '',
-        },
-        {
-          classification:'일반',
-          material_code: '공장2F_E-09-07',
-          name: 'MCCB',
-          model: '',
-          spec: '',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
-          pe_number: '',
-          inbound_date: '2024-03-11',
-          unit_price: '',
-          total_price: '',
-        },
+        // {
+        //   classification:'일반',
+        //   material_code: '공장2F_E-09-01',
+        //   name: 'IGBT & SMPS',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   total_price: '',
+        // },
+        // {
+        //   classification:'일반',
+        //   material_code: '공장2F_E-09-02',
+        //   name: 'SPD, 퓨즈',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   total_price: '',
+        // },
+        // {
+        //   classification:'일반',
+        //   material_code: '공장2F_E-09-03',
+        //   name: '쿨링팬',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   total_price: '',
+        // },
+        // {
+        //   classification:'일반',
+        //   material_code: '공장2F_E-09-05',
+        //   name: '보호회로',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   total_price: '',
+        // },
+        // {
+        //   classification:'일반',
+        //   material_code: '공장2F_E-09-06',
+        //   name: '리액터',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   total_price: '',
+        // },
+        // {
+        //   classification:'일반',
+        //   material_code: '공장2F_E-09-07',
+        //   name: 'MCCB',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   stock_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   total_price: '',
+        // },
       ],
     }
   },
 
   computed: {
+  },
+  methods: {
+    async searchButton() {
+      // alert(this.searchCardInputs.find(x=>x.label === '일자').value.sort());
+
+      let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
+      if (searchClassification === 'All')
+      searchClassification = '%';
+      let searchCondition = this.searchCardInputs.find(x=>x.label === '상태').value;
+      if (searchCondition === 'All')
+        searchCondition = '%';
+      let searchMaterialCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+      let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
+      let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
+      let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
+      let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
+
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "query_info":{
+            "script_file_name":"rooting_material_table_stock_table_root_json_2024_03_18_17_49_52.json",
+            "params": [
+              {
+                  "key": "manufacturer",
+                  "type":"string",
+                  "value": searchManufacturer
+              },
+              {
+                  "key": "spec",
+                  "type":"string",
+                  "value": searchSpec
+              },
+              {
+                  "key": "model",
+                  "type":"string",
+                  "value": searchModel
+              },
+              {
+                  "key": "name",
+                  "type":"string",
+                  "value": searchName
+              },
+              {
+                  "key": "material_code",
+                  "type":"string",
+                  "value": searchMaterialCode
+              },
+              {
+                  "key": "condition",
+                  "type":"string",
+                  "value": searchCondition
+              },
+              {
+                  "key": "classification",
+                  "type":"string",
+                  "value": searchClassification
+              }
+            ]
+          }
+        });
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.product_data = result;
+
+      } catch (error) {
+        alert(error);
+      }
+
+    }
+
   },
 }
 </script>

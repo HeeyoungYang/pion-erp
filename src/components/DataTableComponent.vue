@@ -135,7 +135,6 @@
                   </v-menu>
                   <v-menu
                     v-else-if="item.approval == '승인'"
-                    open-on-hover
                     :close-on-content-click="false"
                     :max-width="160"
                     offset-x
@@ -166,6 +165,20 @@
                         </v-list-item>
                       </v-list>
                     </v-card>
+                    <ModalDialogComponent
+                      :dialog-value="confirmationDialog"
+                      max-width="900px"
+                      title="입고 확인서"
+                      title-class="blue lighten-5 text-center text-h5 font-weight-black"
+                      closeText="취소"
+                      saveText="저장"
+                      :persistent="true"
+                      @close="confirmationDialog=false"
+                    >
+                      <InboundApproveComponent
+                      :inbound-data="item"
+                      />
+                    </ModalDialogComponent>
                   </v-menu>
                   <v-menu
                     v-else-if="item.approval == '반려'"
@@ -191,8 +204,8 @@
                       <v-list class="pa-0">
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-3">
-                            <v-list-item-subtitle class="error--text font-weight-black">반려사유 :  </v-list-item-subtitle>
-                            <v-list-item-title>{{ item.return_reason }}</v-list-item-title>
+                            <v-list-item-subtitle class="error--text font-weight-black">[ 반려사유 ]</v-list-item-subtitle>
+                            <v-list-item-title>{{ item.approver }} : {{ item.return_reason }}</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
@@ -288,7 +301,7 @@
                     <v-card class="pa-0">
                       <v-list class="pa-0">
                           <v-chip
-                              v-for="(files, i) in item.authority"
+                              v-for="(files, i) in files_list"
                               :key="i"
                               class="ma-2"
                               color="success"
@@ -431,6 +444,8 @@
 </template>
 
 <script>
+
+
 /**
  * @file DataTableComponent.vue
  * @description 데이터테이블 컴포넌트
@@ -480,6 +495,11 @@
  * @emits deleteBelong
  * @emits editBelong
  */
+
+
+import ModalDialogComponent from "@/components/ModalDialogComponent";
+import InboundApproveComponent from "@/components/InboundApproveComponent";
+
 export default {
   props: {
     allGroupToggleBtn: Boolean,
@@ -520,6 +540,10 @@ export default {
       type: null,
       default: () => []
     }
+  },
+  components:{
+    ModalDialogComponent,
+    InboundApproveComponent,
   },
   data() {
     return {

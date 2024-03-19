@@ -156,10 +156,11 @@
                                 color="success"
                                 fab
                                 x-small
-                                class="float-right"
+                                class="float-right dont_print"
                                 elevation="0"
                                 v-bind="attrs"
                                 v-on="on"
+                                data-html2canvas-ignore="true"
                               >
                                 <v-icon
                                   small
@@ -173,7 +174,7 @@
                                 dense
                                 @click="item.click === 'print' ? printOrPDF('calc_cost_detail_data', $refs.calcDetailCard)
                                         : item.click === 'excel' ? mux.Excel.downloadTable(survey_cost_headers, calc_cost_detail_data, '산출내역서')
-                                        : item.click === 'pdf' ? printOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'test') : ''"
+                                        : item.click === 'pdf' ? printOrPDF('calc_cost_detail_data', $refs.calcDetailCard, '산출내역서') : ''"
                               >
                                 <v-list-item-title>{{ item.title }}</v-list-item-title>
                               </v-list-item>
@@ -185,9 +186,10 @@
                             color="primary"
                             fab
                             x-small
-                            class="mr-3 float-right"
+                            class="mr-3 float-right dont_print"
                             elevation="0"
                             @click="edit_survey_cost_data = false"
+                            data-html2canvas-ignore="true"
                           >
                             <v-icon
                               small
@@ -215,10 +217,10 @@
                         :headers="survey_cost_headers"
                         :items="calc_cost_detail_data"
                         item-key="product_code"
-                        trStyle="background-color:#efefef"
+                        trStyle="background-color:#efefef; "
                         trClass="font-weight-black info_title"
                         :cost-num-edit-disabled="edit_survey_cost_data"
-                        class="cost_table_border"
+                        class="cost_table_border print_cost_table"
                       >
 
                       </CostTableComponent>
@@ -228,7 +230,7 @@
 
                 <!-- 노무비 산출 -->
                 <v-tab-item>
-                  <v-card>
+                  <v-card ref="calcLaborCard">
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
@@ -241,10 +243,11 @@
                                 color="success"
                                 fab
                                 x-small
-                                class="float-right"
+                                class="float-right dont_print"
                                 elevation="0"
                                 v-bind="attrs"
                                 v-on="on"
+                                data-html2canvas-ignore="true"
                               >
                                 <v-icon
                                   small
@@ -256,6 +259,9 @@
                                 v-for="(item, index) in content_save_items"
                                 :key="index"
                                 dense
+                                @click="item.click === 'print' ? mux.Util.print($refs.calcLaborCard)
+                                        : item.click === 'excel' ? mux.Excel.downloadTable(labor_cost_headers, labor_cost_data, '노무비 산출')
+                                        : item.click === 'pdf' ? mux.Util.downloadPDF($refs.calcLaborCard, '노무비 산출') : ''"
                               >
                                 <v-list-item-title>{{ item.title }}</v-list-item-title>
                               </v-list-item>
@@ -267,9 +273,10 @@
                             color="primary"
                             fab
                             x-small
-                            class="mr-3 float-right"
+                            class="mr-3 float-right dont_print"
                             elevation="0"
                             @click="edit_labor_cost_data = false"
+                            data-html2canvas-ignore="true"
                           >
                             <v-icon
                               small
