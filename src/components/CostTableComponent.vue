@@ -11,7 +11,7 @@
 
     <template v-slot:item="{ item, index }">
       <tr :class="trClass ? trClass : ''" :style="trStyle ? trStyle : ''">
-        <td>{{ item.cost_no }}</td>
+        <td>{{ index+1 }}</td>
         <td :colspan="!hideChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index)) ? item.cost_list_colspan : ''">
           {{ item.cost_list }}
           <v-btn v-if="!preventButton && item.costListBtn"

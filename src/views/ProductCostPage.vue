@@ -313,8 +313,8 @@
                         <template v-slot:item="{ item, index }">
                           <tr>
                             <td align="center">{{ item.no }}</td>
-                            <td align="center">{{ item.contract_name }}</td>
-                            <td align="center">{{ item.contract_type }}</td>
+                            <td align="center">{{ item.name }}</td>
+                            <td align="center">{{ item.type }}</td>
                             <td align="center">
                               <v-select
                                 :items="labor_occupation_list"
@@ -327,11 +327,11 @@
                                 :disabled="edit_labor_cost_data"
                               ></v-select>
                             </td>
-                            <td align="center">{{ item.man_day }}</td>
-                            <td align="center">{{ item.surcharge_rate }}</td>
-                            <td align="center">{{ item.adjustment_rate }}</td>
-                            <td align="center">{{ item.man_hour }}</td>
-                            <td align="center">{{ item.man_day_unit_price }}</td>
+                            <td align="center">{{ item.man_per_day }}</td>
+                            <td align="center">{{ item.surcharge_ratio }}</td>
+                            <td align="center">{{ item.adjustment_ratio }}</td>
+                            <td align="center">{{ item.man_per_hour }}</td>
+                            <td align="center">{{ item.unit_price }}</td>
                             <td align="center">
                               <v-text-field
                                 dense
@@ -629,8 +629,8 @@
                 <template v-slot:item="{ item, index }">
                   <tr>
                     <td align="center">{{ item.no }}</td>
-                    <td align="center">{{ item.contract_name }}</td>
-                    <td align="center">{{ item.contract_type }}</td>
+                    <td align="center">{{ item.name }}</td>
+                    <td align="center">{{ item.type }}</td>
                     <td align="center">
                       <v-select
                         :items="labor_occupation_list"
@@ -643,11 +643,11 @@
                         @change="selectOccupationFunc(item.occupation, index)"
                       ></v-select>
                     </td>
-                    <td align="center">{{ item.man_day }}</td>
-                    <td align="center">{{ item.surcharge_rate }}</td>
-                    <td align="center">{{ item.adjustment_rate }}</td>
-                    <td align="center">{{ item.man_hour }}</td>
-                    <td align="center">{{ item.man_day_unit_price }}</td>
+                    <td align="center">{{ item.man_per_day }}</td>
+                    <td align="center">{{ item.surcharge_ratio }}</td>
+                    <td align="center">{{ item.adjustment_ratio }}</td>
+                    <td align="center">{{ item.man_per_hour }}</td>
+                    <td align="center">{{ item.unit_price }}</td>
                     <td align="center">
                       <v-text-field
                         dense
@@ -731,7 +731,7 @@ export default {
           { text: '총액', align: 'center', value: 'cost_total_amount', },
         ],
         survey_cost_headers: [
-          { text: 'No.', align: 'center', value: 'cost_no', },
+          { text: 'No.', align: 'center', value: '', },
           { text: '항목', align: 'center', value: 'cost_list', },
           { text: '단위', align: 'center', value: 'cost_unit', },
           { text: '수량', align: 'center', value: 'cost_num', },
@@ -740,14 +740,14 @@ export default {
         ],
         labor_cost_headers: [
           { text: '품번', align: 'center', value: 'no'},
-          { text: '공종', align: 'center', value: 'contract_name', },
-          { text: '규격', align: 'center', value: 'contract_type', },
+          { text: '공종', align: 'center', value: 'name', },
+          { text: '규격', align: 'center', value: 'type', },
           { text: '직종', align: 'center', value: 'occupation', },
-          { text: '공량(M/D)', align: 'center', value: 'man_day', },
-          { text: '할증율', align: 'center', value: 'surcharge_rate', },
-          { text: '설계조정률', align: 'center', value: 'adjustment_rate', },
-          { text: '공량(M/H)', align: 'center', value: 'man_hour', },
-          { text: '단가(M/D)', align: 'center', value: 'man_day_unit_price', },
+          { text: '공량(M/D)', align: 'center', value: 'man_per_day', },
+          { text: '할증율', align: 'center', value: 'surcharge_ratio', },
+          { text: '설계조정률', align: 'center', value: 'adjustment_ratio', },
+          { text: '공량(M/H)', align: 'center', value: 'man_per_hour', },
+          { text: '단가(M/D)', align: 'center', value: 'unit_price', },
           { text: '수량', align: 'center', value: 'quantity', },
           { text: '금액', align: 'center', value: 'total_amount', },
           { text: '공정별 금액', align: 'center', value: 'no_total_amount', },
@@ -766,14 +766,14 @@ export default {
 
         dialog_labor_cost_headers: [
           { text: '품번', align: 'center', value: 'no'},
-          { text: '공종', align: 'center', value: 'contract_name', },
-          { text: '규격', align: 'center', value: 'contract_type', },
+          { text: '공종', align: 'center', value: 'name', },
+          { text: '규격', align: 'center', value: 'type', },
           { text: '직종', align: 'center', value: 'occupation', },
-          { text: '공량(M/D)', align: 'center', value: 'man_day', },
-          { text: '할증율', align: 'center', value: 'surcharge_rate', },
-          { text: '설계조정률', align: 'center', value: 'adjustment_rate', },
-          { text: '공량(M/H)', align: 'center', value: 'man_hour', },
-          { text: '단가(M/D)', align: 'center', value: 'man_day_unit_price', },
+          { text: '공량(M/D)', align: 'center', value: 'man_per_day', },
+          { text: '할증율', align: 'center', value: 'surcharge_ratio', },
+          { text: '설계조정률', align: 'center', value: 'adjustment_ratio', },
+          { text: '공량(M/H)', align: 'center', value: 'man_per_hour', },
+          { text: '단가(M/D)', align: 'center', value: 'unit_price', },
           { text: '수량', align: 'center', value: 'quantity', },
           { text: '금액', align: 'center', value: 'total_amount', },
           { text: '삭제', align: 'center', value: 'actions', },
@@ -800,14 +800,14 @@ export default {
           {
             idx:0,
             no:'',
-            contract_name:'',
-            contract_type:'',
+            name:'',
+            type:'',
             occupation:'',
-            man_day:'',
-            surcharge_rate:'',
-            adjustment_rate:'',
-            man_hour:'',
-            man_day_unit_price:'',
+            man_per_day:'',
+            surcharge_ratio:'',
+            adjustment_ratio:'',
+            man_per_hour:'',
+            unit_price:'',
             quantity:'',
             total_amount:'',
             no_total_amount:'',
@@ -823,7 +823,6 @@ export default {
         ],
         survey_cost_data: [
           {
-            cost_no: 1,
             cost_list: '재료비',
             cost_list_colspan: 4,
 
@@ -843,28 +842,24 @@ export default {
             ]
           },
           {
-            cost_no: 2,
             cost_list: '노무비',
             cost_unit: '식',
             cost_num: 1,
             cost_unit_price: 220290071
           },
           {
-            cost_no: 3,
             cost_list: '경비',
             cost_unit: '식',
             cost_num: 1,
             cost_unit_price: 34885831
           },
           {
-            cost_no: 4,
             cost_list: '일반관리비',
             cost_unit: '식',
             cost_num: 1,
             cost_unit_price: 15310554
           },
           {
-            cost_no: 5,
             cost_list: '이윤',
             cost_unit: '식',
             cost_num: 1,
@@ -875,7 +870,6 @@ export default {
 
         calc_cost_detail_data: [
           {
-            cost_no: 1,
             cost_list: '재료비',
             cost_list_colspan: 4,
 
@@ -884,7 +878,6 @@ export default {
             ]
           },
           {
-            cost_no: 2,
             cost_list: '노무비',
             cost_list_colspan: 4,
             belong_data: [
@@ -916,7 +909,6 @@ export default {
             ]
           },
           {
-            cost_no: 3,
             cost_list: '경비',
             cost_list_colspan: 4,
             belong_data: [
@@ -1040,7 +1032,6 @@ export default {
             ]
           },
           {
-            cost_no: 4,
             cost_list: '일반관리비',
             cost_unit: '식',
             cost_num: 1,
@@ -1055,7 +1046,6 @@ export default {
             ]
           },
           {
-            cost_no: 5,
             cost_list: '이윤',
             cost_unit: '식',
             cost_num: 1,
@@ -1075,7 +1065,6 @@ export default {
 
         calc_cost_detail_data2: [
           {
-            cost_no: 1,
             cost_list: '재료비',
             cost_list_colspan: 4,
             costListBtn: {
@@ -1085,7 +1074,6 @@ export default {
             belong_data: []
           },
           {
-            cost_no: 2,
             cost_list: '노무비',
             cost_list_colspan: 4,
             belong_data: [
@@ -1121,7 +1109,6 @@ export default {
             ]
           },
           {
-            cost_no: 3,
             cost_list: '경비',
             cost_list_colspan: 4,
             belong_data: [
@@ -1245,7 +1232,6 @@ export default {
             ]
           },
           {
-            cost_no: 4,
             cost_list: '일반관리비',
             cost_unit: '식',
             cost_num: 1,
@@ -1260,7 +1246,6 @@ export default {
             ]
           },
           {
-            cost_no: 5,
             cost_list: '이윤',
             cost_unit: '식',
             cost_num: 1,
@@ -1280,196 +1265,196 @@ export default {
         labor_cost_data: [
           {
             no:'품-1',
-            contract_name:'고압케이블 포설',
-            contract_type:'240㎟, 1C',
+            name:'고압케이블 포설',
+            type:'240㎟, 1C',
             occupation:'저압 케이블전공',
-            man_day:'0.136',
-            surcharge_rate:'115%',
-            adjustment_rate:'1.0000',
-            man_hour:'0.156',
-            man_day_unit_price:'290,333',
+            man_per_day:'0.136',
+            surcharge_ratio:'115%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'0.156',
+            unit_price:'290,333',
             quantity:'2,280',
             total_amount:'103,530,425',
             no_total_amount:'103,530,425',
           },
           {
             no:'품-2',
-            contract_name:'저압케이블 포설',
-            contract_type:'6㎟, 2C',
+            name:'저압케이블 포설',
+            type:'6㎟, 2C',
             occupation:'저압 케이블전공',
-            man_day:'0.018',
-            surcharge_rate:'120%',
-            adjustment_rate:'1.0000',
-            man_hour:'0.022',
-            man_day_unit_price:'290,333',
+            man_per_day:'0.018',
+            surcharge_ratio:'120%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'0.022',
+            unit_price:'290,333',
             quantity:'880',
             total_amount:'5,518,649',
             no_total_amount:'20,639,191',
           },
           {
             no:'품-2',
-            contract_name:'저압케이블 포설',
-            contract_type:'2.5㎟, 6C',
+            name:'저압케이블 포설',
+            type:'2.5㎟, 6C',
             occupation:'저압 케이블전공',
-            man_day:'0.035',
-            surcharge_rate:'120%',
-            adjustment_rate:'1.0000',
-            man_hour:'0.042',
-            man_day_unit_price:'290,333',
+            man_per_day:'0.035',
+            surcharge_ratio:'120%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'0.042',
+            unit_price:'290,333',
             quantity:'1240',
             total_amount:'15,120,542',
             no_total_amount:'20,639,191',
           },
           {
             no:'품-3',
-            contract_name:'전력케이블 단말처리',
-            contract_type:'240㎟, 1C',
+            name:'전력케이블 단말처리',
+            type:'240㎟, 1C',
             occupation:'고압 케이블전공',
-            man_day:'1.170',
-            surcharge_rate:'120%',
-            adjustment_rate:'1.0000',
-            man_hour:'1.404',
-            man_day_unit_price:'353,395',
+            man_per_day:'1.170',
+            surcharge_ratio:'120%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'1.404',
+            unit_price:'353,395',
             quantity:'12',
             total_amount:'5,953,998',
             no_total_amount:'5,953,998',
           },
           {
             no:'품-4',
-            contract_name:'Cubicle 설치',
-            contract_type:'6㎥, 1.5 Ton이하',
+            name:'Cubicle 설치',
+            type:'6㎥, 1.5 Ton이하',
             occupation:'비계공',
-            man_day:'2.00',
-            surcharge_rate:'100%',
-            adjustment_rate:'1.0000',
-            man_hour:'2.000',
-            man_day_unit_price:'281,721',
+            man_per_day:'2.00',
+            surcharge_ratio:'100%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'2.000',
+            unit_price:'281,721',
             quantity:'3',
             total_amount:'1,690,326',
             no_total_amount:'50,485,019',
           },
           {
             no:'품-4',
-            contract_name:'Cubicle 설치',
-            contract_type:'6㎥, 1.5 Ton이하',
+            name:'Cubicle 설치',
+            type:'6㎥, 1.5 Ton이하',
             occupation:'변전전공',
-            man_day:'4.05',
-            surcharge_rate:'100%',
-            adjustment_rate:'1.0000',
-            man_hour:'4.050',
-            man_day_unit_price:'451,145',
+            man_per_day:'4.05',
+            surcharge_ratio:'100%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'4.050',
+            unit_price:'451,145',
             quantity:'3',
             total_amount:'5,481,411',
             no_total_amount:'50,485,019',
           },
           {
             no:'품-4',
-            contract_name:'Cubicle 설치',
-            contract_type:'6㎥, 1.5 Ton이하',
+            name:'Cubicle 설치',
+            type:'6㎥, 1.5 Ton이하',
             occupation:'보통인부',
-            man_day:'3.30',
-            surcharge_rate:'100%',
-            adjustment_rate:'1.0000',
-            man_hour:'3.300',
-            man_day_unit_price:'161,858',
+            man_per_day:'3.30',
+            surcharge_ratio:'100%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'3.300',
+            unit_price:'161,858',
             quantity:'3',
             total_amount:'1,602,394',
             no_total_amount:'50,485,019',
           },
           {
             no:'품-4',
-            contract_name:'Cubicle 설치',
-            contract_type:'10㎥, 3 Ton 이하',
+            name:'Cubicle 설치',
+            type:'10㎥, 3 Ton 이하',
             occupation:'비계공',
-            man_day:'4.00',
-            surcharge_rate:'100%',
-            adjustment_rate:'1.0000',
-            man_hour:'4.000',
-            man_day_unit_price:'281,721',
+            man_per_day:'4.00',
+            surcharge_ratio:'100%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'4.000',
+            unit_price:'281,721',
             quantity:'8',
             total_amount:'9,015,072',
             no_total_amount:'50,485,019',
           },
           {
             no:'품-4',
-            contract_name:'Cubicle 설치',
-            contract_type:'10㎥, 3 Ton 이하',
+            name:'Cubicle 설치',
+            type:'10㎥, 3 Ton 이하',
             occupation:'변전전공',
-            man_day:'7.05',
-            surcharge_rate:'100%',
-            adjustment_rate:'1.0000',
-            man_hour:'7.050',
-            man_day_unit_price:'451,145',
+            man_per_day:'7.05',
+            surcharge_ratio:'100%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'7.050',
+            unit_price:'451,145',
             quantity:'8',
             total_amount:'25,444,578',
             no_total_amount:'50,485,019',
           },
           {
             no:'품-4',
-            contract_name:'Cubicle 설치',
-            contract_type:'10㎥, 3 Ton 이하',
+            name:'Cubicle 설치',
+            type:'10㎥, 3 Ton 이하',
             occupation:'보통인부',
-            man_day:'5.60',
-            surcharge_rate:'100%',
-            adjustment_rate:'1.0000',
-            man_hour:'5.600',
-            man_day_unit_price:'161,858',
+            man_per_day:'5.60',
+            surcharge_ratio:'100%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'5.600',
+            unit_price:'161,858',
             quantity:'8',
             total_amount:'7,251,238',
             no_total_amount:'50,485,019',
           },
           {
             no:'품-5',
-            contract_name:'전기실  전원 케이블 포설',
-            contract_type:'50sq, 3C',
+            name:'전기실  전원 케이블 포설',
+            type:'50sq, 3C',
             occupation:'저압 케이블전공',
-            man_day:'0.043',
-            surcharge_rate:'200%',
-            adjustment_rate:'1.0000',
-            man_hour:'0.086',
-            man_day_unit_price:'290,333',
+            man_per_day:'0.043',
+            surcharge_ratio:'200%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'0.086',
+            unit_price:'290,333',
             quantity:'240',
             total_amount:'5,992,473',
             no_total_amount:'5,992,473',
           },
           {
             no:'품-6',
-            contract_name:'케이블 트레이',
-            contract_type:'단면적 50,000㎟ 이하',
+            name:'케이블 트레이',
+            type:'단면적 50,000㎟ 이하',
             occupation:'내선전공',
-            man_day:'0.200',
-            surcharge_rate:'144%',
-            adjustment_rate:'1.0000',
-            man_hour:'0.288',
-            man_day_unit_price:'269,968',
+            man_per_day:'0.200',
+            surcharge_ratio:'144%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'0.288',
+            unit_price:'269,968',
             quantity:'105',
             total_amount:'8,163,832',
             no_total_amount:'9,096,841',
           },
           {
             no:'품-6',
-            contract_name:'케이블 트레이',
-            contract_type:'단면적 30,000㎟ 이하',
+            name:'케이블 트레이',
+            type:'단면적 30,000㎟ 이하',
             occupation:'내선전공',
-            man_day:'0.160',
-            surcharge_rate:'144%',
-            adjustment_rate:'1.0000',
-            man_hour:'0.230',
-            man_day_unit_price:'269,968',
+            man_per_day:'0.160',
+            surcharge_ratio:'144%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'0.230',
+            unit_price:'269,968',
             quantity:'15',
             total_amount:'933,009',
             no_total_amount:'9,096,841',
           },
           {
             no:'품-7',
-            contract_name:'통신케이블 포설',
-            contract_type:'지중 인력견인 포설',
+            name:'통신케이블 포설',
+            type:'지중 인력견인 포설',
             occupation:'보통인부',
-            man_day:'1.410',
-            surcharge_rate:'100%',
-            adjustment_rate:'1.0000',
-            man_hour:'1.410',
-            man_day_unit_price:'161,858',
+            man_per_day:'1.410',
+            surcharge_ratio:'100%',
+            adjustment_ratio:'1.0000',
+            man_per_hour:'1.410',
+            unit_price:'161,858',
             quantity:'2.8',
             total_amount:'639,015',
             no_total_amount:'639,015',
@@ -1479,140 +1464,140 @@ export default {
         labor_cost_list: [
           {
             no:'품-1',
-            contract_name:'고압케이블 포설',
-            contract_type:'240㎟, 1C',
+            name:'고압케이블 포설',
+            type:'240㎟, 1C',
             occupation:'',
-            man_day:'0.136',
-            surcharge_rate:'115%',
-            adjustment_rate:'',
-            man_hour:'0.156',
-            man_day_unit_price:'',
+            man_per_day:'0.136',
+            surcharge_ratio:'115%',
+            adjustment_ratio:'',
+            man_per_hour:'0.156',
+            unit_price:'',
             quantity:'2,280',
             total_amount:'103,530,425',
             no_total_amount:'103,530,425',
           },
           {
             no:'품-2',
-            contract_name:'저압케이블 포설',
-            contract_type:'6㎟, 2C',
+            name:'저압케이블 포설',
+            type:'6㎟, 2C',
             occupation:'',
-            man_day:'0.018',
-            surcharge_rate:'120%',
-            adjustment_rate:'',
-            man_hour:'0.022',
-            man_day_unit_price:'',
+            man_per_day:'0.018',
+            surcharge_ratio:'120%',
+            adjustment_ratio:'',
+            man_per_hour:'0.022',
+            unit_price:'',
             quantity:'880',
             total_amount:'5,518,649',
             no_total_amount:'20,639,191',
           },
           {
             no:'품-2',
-            contract_name:'저압케이블 포설',
-            contract_type:'2.5㎟, 6C',
+            name:'저압케이블 포설',
+            type:'2.5㎟, 6C',
             occupation:'',
-            man_day:'0.035',
-            surcharge_rate:'120%',
-            adjustment_rate:'',
-            man_hour:'0.042',
-            man_day_unit_price:'',
+            man_per_day:'0.035',
+            surcharge_ratio:'120%',
+            adjustment_ratio:'',
+            man_per_hour:'0.042',
+            unit_price:'',
             quantity:'1240',
             total_amount:'15,120,542',
             no_total_amount:'20,639,191',
           },
           {
             no:'품-3',
-            contract_name:'전력케이블 단말처리',
-            contract_type:'240㎟, 1C',
+            name:'전력케이블 단말처리',
+            type:'240㎟, 1C',
             occupation:'',
-            man_day:'1.170',
-            surcharge_rate:'120%',
-            adjustment_rate:'',
-            man_hour:'1.404',
-            man_day_unit_price:'',
+            man_per_day:'1.170',
+            surcharge_ratio:'120%',
+            adjustment_ratio:'',
+            man_per_hour:'1.404',
+            unit_price:'',
             quantity:'12',
             total_amount:'5,953,998',
             no_total_amount:'5,953,998',
           },
           {
             no:'품-4',
-            contract_name:'Cubicle 설치',
-            contract_type:'6㎥, 1.5 Ton이하',
+            name:'Cubicle 설치',
+            type:'6㎥, 1.5 Ton이하',
             occupation:'',
-            man_day:'2.00',
-            surcharge_rate:'100%',
-            adjustment_rate:'',
-            man_hour:'2.000',
-            man_day_unit_price:'',
+            man_per_day:'2.00',
+            surcharge_ratio:'100%',
+            adjustment_ratio:'',
+            man_per_hour:'2.000',
+            unit_price:'',
             quantity:'3',
             total_amount:'1,690,326',
             no_total_amount:'50,485,019',
           },
           {
             no:'품-4',
-            contract_name:'Cubicle 설치',
-            contract_type:'10㎥, 3 Ton 이하',
+            name:'Cubicle 설치',
+            type:'10㎥, 3 Ton 이하',
             occupation:'',
-            man_day:'4.00',
-            surcharge_rate:'100%',
-            adjustment_rate:'',
-            man_hour:'4.000',
-            man_day_unit_price:'',
+            man_per_day:'4.00',
+            surcharge_ratio:'100%',
+            adjustment_ratio:'',
+            man_per_hour:'4.000',
+            unit_price:'',
             quantity:'8',
             total_amount:'9,015,072',
             no_total_amount:'50,485,019',
           },
           {
             no:'품-5',
-            contract_name:'전기실  전원 케이블 포설',
-            contract_type:'50sq, 3C',
+            name:'전기실  전원 케이블 포설',
+            type:'50sq, 3C',
             occupation:'',
-            man_day:'0.043',
-            surcharge_rate:'200%',
-            adjustment_rate:'',
-            man_hour:'0.086',
-            man_day_unit_price:'',
+            man_per_day:'0.043',
+            surcharge_ratio:'200%',
+            adjustment_ratio:'',
+            man_per_hour:'0.086',
+            unit_price:'',
             quantity:'240',
             total_amount:'5,992,473',
             no_total_amount:'5,992,473',
           },
           {
             no:'품-6',
-            contract_name:'케이블 트레이',
-            contract_type:'단면적 50,000㎟ 이하',
+            name:'케이블 트레이',
+            type:'단면적 50,000㎟ 이하',
             occupation:'',
-            man_day:'0.200',
-            surcharge_rate:'144%',
-            adjustment_rate:'',
-            man_hour:'0.288',
-            man_day_unit_price:'',
+            man_per_day:'0.200',
+            surcharge_ratio:'144%',
+            adjustment_ratio:'',
+            man_per_hour:'0.288',
+            unit_price:'',
             quantity:'105',
             total_amount:'8,163,832',
             no_total_amount:'9,096,841',
           },
           {
             no:'품-6',
-            contract_name:'케이블 트레이',
-            contract_type:'단면적 30,000㎟ 이하',
+            name:'케이블 트레이',
+            type:'단면적 30,000㎟ 이하',
             occupation:'',
-            man_day:'0.160',
-            surcharge_rate:'144%',
-            adjustment_rate:'',
-            man_hour:'0.230',
-            man_day_unit_price:'',
+            man_per_day:'0.160',
+            surcharge_ratio:'144%',
+            adjustment_ratio:'',
+            man_per_hour:'0.230',
+            unit_price:'',
             quantity:'15',
             total_amount:'933,009',
             no_total_amount:'9,096,841',
           },
           {
             no:'품-7',
-            contract_name:'통신케이블 포설',
-            contract_type:'지중 인력견인 포설',
+            name:'통신케이블 포설',
+            type:'지중 인력견인 포설',
             occupation:'',
-            man_day:'1.410',
-            surcharge_rate:'100%',
-            adjustment_rate:'',
-            man_hour:'1.410',
-            man_day_unit_price:'',
+            man_per_day:'1.410',
+            surcharge_ratio:'100%',
+            adjustment_ratio:'',
+            man_per_hour:'1.410',
+            unit_price:'',
             quantity:'2.8',
             total_amount:'639,015',
             no_total_amount:'639,015',
@@ -1620,12 +1605,12 @@ export default {
         ],
 
         wage_unit_price_list:[
-          {occupation : '저압 케이블전공', man_day_unit_price:'290333', adjustment_rate:'1.0000'},
-          {occupation : '고압 케이블전공', man_day_unit_price:'353395', adjustment_rate:'1.0000'},
-          {occupation : '비계공', man_day_unit_price:'281721', adjustment_rate:'1.0000'},
-          {occupation : '변전전공', man_day_unit_price:'451145', adjustment_rate:'1.0000'},
-          {occupation : '보통인부', man_day_unit_price:'161858', adjustment_rate:'1.0000'},
-          {occupation : '내선전공', man_day_unit_price:'269968', adjustment_rate:'1.0000'},
+          {occupation : '저압 케이블전공', unit_price:'290333', adjustment_ratio:'1.0000'},
+          {occupation : '고압 케이블전공', unit_price:'353395', adjustment_ratio:'1.0000'},
+          {occupation : '비계공', unit_price:'281721', adjustment_ratio:'1.0000'},
+          {occupation : '변전전공', unit_price:'451145', adjustment_ratio:'1.0000'},
+          {occupation : '보통인부', unit_price:'161858', adjustment_ratio:'1.0000'},
+          {occupation : '내선전공', unit_price:'269968', adjustment_ratio:'1.0000'},
         ],
 
     }
@@ -1641,8 +1626,8 @@ export default {
       let wage_list = this.wage_unit_price_list
       for(let i = 0; i < wage_list.length; i++){
         if(data == wage_list[i].occupation){
-          this.labor_cost_list[idx].man_day_unit_price = wage_list[i].man_day_unit_price
-          this.labor_cost_list[idx].adjustment_rate = wage_list[i].adjustment_rate
+          this.labor_cost_list[idx].unit_price = wage_list[i].unit_price
+          this.labor_cost_list[idx].adjustment_ratio = wage_list[i].adjustment_ratio
         }
       }
     },
