@@ -17,7 +17,18 @@
             :label="input.label"
             :disabled="input.disabled">          
           </v-text-field>
-          <v-autocomplete v-else-if="input.type === 'auto' || input.type === 'autocomplete' || input.type === 'combo' || input.type === 'select'"
+          <v-select v-else-if="input.type === 'combo' || input.type === 'select'"
+            v-model="input.value"
+            :dense="dense"
+            :hide-details="hideDetails"
+            :items="input.list"
+            :clearable="input.clearable === undefined ? (clearable ? clearable : false) : input.clearable"
+            :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
+            :prepend-icon="input.icon"
+            :disabled="input.disabled"
+            :label="input.label">
+          </v-select>
+          <v-autocomplete v-else-if="input.type === 'auto' || input.type === 'autocomplete'"
             v-model="input.value"
             :dense="dense"
             :hide-details="hideDetails"
