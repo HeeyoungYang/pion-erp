@@ -582,6 +582,57 @@ mux.Util = {
     });
   },
 
+  
+  binaryToURL(binary){
+    return URL.createObjectURL(new Blob([binary]));
+  },
+
+  resizeImageToBinary(file, maxWidth, maxHeight){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function(event) {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = function() {
+          let width = img.width;
+          let height = img.height;
+
+          // 이미지가 목표치보다 큰 경우에만 리사이징
+          if (width > maxWidth || height > maxHeight) {
+            const scaleFactor = Math.min(maxWidth / width, maxHeight / height);
+            width *= scaleFactor;
+            height *= scaleFactor;
+          }
+          
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // 캔버스의 이미지 데이터를 JPEG 형식의 바이너리로 반환
+          canvas.toBlob((blob) => {
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(blob);
+            reader.onload = function() {
+              const binaryData = new Uint8Array(reader.result);
+              resolve(binaryData);
+            };
+            reader.onerror = function(error) {
+              reject(error);
+            };
+          }, 'image/jpeg');
+        };
+      };
+      reader.onerror = function(error) {
+        reject(error);
+      };
+    });
+  },
+
   copyStyleToNewWindow() {
     var styles = '';
     var styleElements = document.querySelectorAll('style, link[rel="stylesheet"]');
