@@ -1,6 +1,7 @@
 
 <template >
   <v-container>
+    <p class="text-center text-h4 font-weight-bold black--text pb-8 mb-8" style="border-bottom:1px solid #ccc">입고 확인서</p>
     <v-row class="mt-3">
       <v-col cols="6">
         <v-img

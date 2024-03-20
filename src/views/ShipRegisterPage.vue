@@ -10,265 +10,220 @@
           cols="12"
           sm="11"
         >
-          <v-card
-          elevation="1"
+          <InputsCardComponent
+            elevation="1"
+            text-class=" pt-3"
+            dense
+            clearable
+            filled
+            hide-details
+            :inputs="searchCardInputs"
+            v-if="select_product"
           >
+            <v-card-title  slot="cardTitle" style="border-bottom: 1px solid #ccc" class="mb-3 font-weight-black">
+              <span>자재 선택</span>
+            </v-card-title>
+            <v-col
+              cols="12"
+              sm="4"
+              lg="3"
+              align-self="center"
+            >
+              <v-btn
+                color="primary"
+                elevation="2"
+              >
+                <v-icon>mdi-magnify</v-icon>검색
+              </v-btn>
+            </v-col>
+            <v-col cols="12">
+              <DataTableComponent
+                dense
+                v-model="product_ship_data"
+                :headers="product_search_headers"
+                :items="product_search_data"
+                item-key="product_code"
+                show-select
+                show-photo
+                />
+            </v-col>
+          </InputsCardComponent>
 
-            <v-card-text class=" pt-3">
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="2"
-                >
-                  <v-autocomplete
-                    v-model="product_type"
-                    :items="product_type_list"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="종류"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="2"
-                >
-                  <v-autocomplete
-                    v-model="product_classification"
-                    :items="product_classification_list"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="분류"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="2"
-                >
-                  <v-autocomplete
-                    v-model="product_condition"
-                    :items="product_condition_list"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="상태"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_code"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="관리코드"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_name"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="제품명"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_model"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="모델명"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_spec"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="사양"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_manufacturer"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="제조사"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                  align-self="center"
-                >
-                  <v-btn
-                    color="primary"
-                    elevation="2"
-                  >
-                    <v-icon>mdi-magnify</v-icon>검색
-                  </v-btn>
-                </v-col>
-                <v-col
-                  cols="12"
-                >
-                  <DataTableComponent
-                    dense
-                    v-model="product_ship_data"
-                    :headers="product_search_headers"
-                    :items="product_search_data"
-                    item-key="product_code"
-                    show-select
-                    show-photo
-                  />
-                </v-col>
-              </v-row>
 
-              <v-row>
-
-              </v-row>
-            </v-card-text>
-          </v-card>
-
-          <v-card
-          elevation="1"
-          class="mt-5"
+          <InputsCardComponent
+            elevation="1"
+            card-class="mt-5"
+            text-class=" pt-3"
+            dense
+            clearable
+            filled
+            hide-details
+            :inputs="shipCardInputs"
           >
-            <v-card-text class=" pt-3">
-              <v-row>
-                <v-col cols="12" sm="3">
-                  <v-menu
-                    ref="menu"
-                    v-model="menu"
-                    :close-on-content-click="false"
-                    :return-value.sync="dates"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
+            <v-card-title  slot="cardTitle" style="border-bottom: 1px solid #ccc" class="mb-3 font-weight-black">
+              출고 정보 입력
+            </v-card-title>
+            <v-col cols="12" sm="4" lg="4" align-self="center">
+              <v-btn
+                small
+                color="success"
+              >
+                출고 승인 요청
+              </v-btn>
+            </v-col>
+            <v-col
+              cols="12"
+            >
+              <v-data-table
+                dense
+                :headers="product_ship_headers"
+                :items="product_ship_data"
+                item-key="product_code"
+                class="elevation-1"
+              >
+                <template v-slot:item="{ item }">
+                  <tr v-if="!add_self">
+                    <td align="center">{{  item.product_type }}</td>
+                    <td align="center">{{  item.product_classification }}</td>
+                    <td align="center">{{  item.product_code }}</td>
+                    <td align="center">{{  item.product_name }}</td>
+                    <td align="center">
                       <v-text-field
-                        v-model="dateRangeText"
                         dense
-                        clearable
+                        hide-details
+                        filled
+                        type="number"
+                        style="max-width:150px"
+                        v-model="item.product_ship_num"
+                      >
+                      </v-text-field>
+                    </td>
+                    <td align="center">{{  item.product_model }}</td>
+                    <td align="center">{{  item.product_spec }}</td>
+                    <td align="center">{{  item.manufacturer }}</td>
+                    <td align="center">{{  item.pe_number }}</td>
+                    <td align="center">{{  item.unit_price }}</td>
+                    <td align="center">{{  item.photo }}</td>
+                  </tr>
+                  <tr v-else-if="add_self">
+                    <td align="center">
+                      <v-autocomplete
+                        v-model="item.product_classification"
+                        :items="product_type_list.slice(1)"
+                        dense
                         filled
                         hide-details
-                        label="출고일자"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="dates"
-                      no-title
-                      scrollable
-                      range
-                    >
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        text
-                        color="primary"
-                        @click="menu = false"
+                        style="width:150px"
+                      ></v-autocomplete>
+                    </td>
+                    <td align="center">
+                      <v-autocomplete
+                        v-model="item.product_type"
+                        :items="product_classification_list.slice(1)"
+                        dense
+                        filled
+                        hide-details
+                        style="width:150px"
+                      ></v-autocomplete>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        v-model="item.product_code"
+                        style="width:200px"
                       >
-                        Cancel
-                      </v-btn>
-                      <v-btn
-                        text
-                        color="primary"
-                        @click="$refs.menu.save(dates)"
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        v-model="item.product_name"
+                        style="width:150px"
                       >
-                        OK
-                      </v-btn>
-                    </v-date-picker>
-                  </v-menu>
-                </v-col>
-                <v-col cols="12" sm="9" align-self="center">
-                  <v-btn
-                    small
-                    color="success"
-                  >
-                    출고 승인 요청
-                  </v-btn>
-                </v-col>
-                <v-col
-                  cols="12"
-                >
-                  <v-data-table
-                    dense
-                    :headers="product_ship_headers"
-                    :items="product_ship_data"
-                    item-key="product_code"
-                    class="elevation-1"
-                  >
-                    <template v-slot:item="{ item }">
-                      <tr>
-                        <td align="center">{{  item.product_type }}</td>
-                        <td align="center">{{  item.product_classification }}</td>
-                        <td align="center">{{  item.product_code }}</td>
-                        <td align="center">{{  item.product_name }}</td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            type="number"
-                            style="max-width:150px"
-                          >
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        type="number"
+                        v-model="item.product_ship_num"
+                        style="width:150px"
+                      >
 
-                          </v-text-field>
-                        </td>
-                        <td align="center">{{  item.product_model }}</td>
-                        <td align="center">{{  item.product_spec }}</td>
-                        <td align="center">{{  item.manufacturer }}</td>
-                        <td align="center">{{  item.pe_number }}</td>
-                        <td align="center">{{  item.unit_price }}</td>
-                      </tr>
-                    </template>
-                  </v-data-table>
-                </v-col>
-              </v-row>
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        v-model="item.product_model"
+                        style="width:150px"
+                      >
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        v-model="item.product_spec"
+                        style="width:150px"
+                      >
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        v-model="item.manufacturer"
+                        style="width:150px"
+                      >
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        v-model="item.pe_number"
+                        style="width:150px"
+                      >
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        type="number"
+                        v-model="item.unit_price"
+                        style="width:150px"
+                      >
 
-              <v-row>
-
-              </v-row>
-            </v-card-text>
-          </v-card>
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-file-input
+                        small-chips
+                        filled
+                        dense
+                        hide-details
+                        v-model="item.photo"
+                      ></v-file-input>
+                    </td>
+                  </tr>
+                </template>
+              </v-data-table>
+            </v-col>
+          </InputsCardComponent>
         </v-col>
       </v-row>
     </v-main>
@@ -277,14 +232,18 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
+import InputsCardComponent from "@/components/InputsCardComponent.vue";
 
 export default {
   components: {
                 NavComponent,
                 DataTableComponent,
+                InputsCardComponent,
               },
   data(){
     return{
+      add_self: false,
+      select_product: true,
       product_type:'All',
       product_classification:'All',
       product_code: '',
@@ -301,6 +260,31 @@ export default {
       menu: false,
 
 
+      searchCardInputs:[
+        {label:'종류', type:'auto', col:'12', sm:'4', lg:'2', value:'All', list:['All', '원부자재', '반제품', '완제품']},
+        {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'2'},
+        {label:'상태', type:'auto', col:'12', sm:'4', lg:'2', value:'All', list:['All', 'G', 'B']},
+        {label:'관리코드', col:'12', sm:'4', lg:'3', value: ''},
+        {label:'제품명', col:'12', sm:'4', lg:'3', value: ''},
+        {label:'모델명', col:'12', sm:'4', lg:'3', value: ''},
+        {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
+        {label:'제조사', col:'12', sm:'4', lg:'3', value: ''},
+        // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
+      ],
+
+
+
+      shipCardInputs:[
+        {label:'프로젝트', col:'12', sm:'4', lg:'2', value: ''},
+        {label:'출고(반출)요청일', type:'date', range:true, value:[], col:'12', sm:'4', lg:'2'},
+        {label:'출고처', col:'12', sm:'4', lg:'2', value: ''},
+        {label:'출하장소', col:'12', sm:'4', lg:'2', value: ''},
+        {label:'출고목적', col:'12', sm:'4', lg:'4', value: ''},
+        {label:'시험성적서', type:'file', col:'12', sm:'4', lg:'2', value: '', icon:'', appendIcon:'mdi-paperclip', smallChips:true,},
+        {label:'비고', type:'textarea', col:'12', sm:'4', lg:'6', value: ''},
+      ],
+
+
       product_ship_headers: [
         { text: '종류', align: 'center', value: 'product_type', },
         { text: '분류', align: 'center', value: 'product_classification', },
@@ -312,9 +296,11 @@ export default {
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
         { text: '단가', align: 'center', value: 'unit_price', },
+        { text: '사진', align: 'center', value: 'photo', },
       ],
 
       product_ship_data: [],
+      product_ship_data_added: [],
 
       product_search_headers: [
         { text: '종류', align: 'center', value: 'product_type', },
@@ -335,7 +321,7 @@ export default {
           product_code: '공장2F_E-09-01',
           product_name: 'IGBT & SMPS',
           product_model: '',
-          product_spec: '',
+          product_spec: '111',
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
@@ -347,7 +333,7 @@ export default {
           product_code: '공장2F_E-09-02',
           product_name: 'SPD, 퓨즈',
           product_model: '',
-          product_spec: '',
+          product_spec: '2222',
           manufacturer: '파이온일렉트릭',
           pe_number: '',
           unit_price: '',
@@ -380,7 +366,7 @@ export default {
         {
           product_type:'원부자재',
           product_classification:'일반',
-          product_code: '공장2F_E-09-04',
+          product_code: '공장2F_E-09-05',
           product_name: '리액터',
           product_model: '',
           product_spec: '',
@@ -392,7 +378,7 @@ export default {
         {
           product_type:'원부자재',
           product_classification:'일반',
-          product_code: '공장2F_E-09-04',
+          product_code: '공장2F_E-09-06',
           product_name: 'MCCB',
           product_model: '',
           product_spec: '',
@@ -404,7 +390,7 @@ export default {
         {
           product_type:'반제품',
           product_classification:'일반',
-          product_code: '공장2F_E-09-06',
+          product_code: '공장2F_E-09-07',
           product_name: 'PCS Ass`Y',
           product_model: '',
           product_spec: '',
@@ -416,7 +402,7 @@ export default {
         {
           product_type:'반제품',
           product_classification:'일반',
-          product_code: '공장2F_E-09-06',
+          product_code: '공장2F_E-09-08',
           product_name: '제어기 Ass`Y',
           product_model: '',
           product_spec: '',
@@ -439,6 +425,10 @@ export default {
         },
       ],
     }
+  },
+
+  methods: {
+
   },
 
   computed: {

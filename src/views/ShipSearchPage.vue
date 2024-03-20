@@ -10,374 +10,360 @@
           cols="12"
           sm="11"
         >
-          <v-card
-          elevation="1"
+          <InputsCardComponent
+            elevation="1"
+            text-class=" pt-3"
+            dense
+            clearable
+            filled
+            hide-details
+            :inputs="searchCardInputs"
           >
+            <v-col
+              cols="12"
+              sm="4"
+              lg="2"
+              align-self="center"
+            >
+              <v-btn
+                color="primary"
+                elevation="2"
+              >
+                <v-icon>mdi-magnify</v-icon>검색
+              </v-btn>
+            </v-col>
+          </InputsCardComponent>
 
-            <v-card-text class=" pt-3">
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="2"
-                >
-                  <v-autocomplete
-                    v-model="approval"
-                    :items="approval_list"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="승인"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="2"
-                >
-                  <v-autocomplete
-                    v-model="product_type"
-                    :items="product_type_list"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="종류"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="2"
-                >
-                  <v-autocomplete
-                    v-model="product_classification"
-                    :items="product_classification_list"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="분류"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_code"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="관리코드"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_name"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="제품명"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_model"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="모델명"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_spec"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="사양"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="product_manufacturer"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="제조사"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-menu
-                    ref="menu"
-                    v-model="menu"
-                    :close-on-content-click="false"
-                    :return-value.sync="dates"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
-                        v-model="dateRangeText"
-                        dense
-                        clearable
-                        filled
-                        hide-details
-                        label="출고일자"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="dates"
-                      no-title
-                      scrollable
-                      range
-                    >
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        text
-                        color="primary"
-                        @click="menu = false"
-                      >
-                        Cancel
-                      </v-btn>
-                      <v-btn
-                        text
-                        color="primary"
-                        @click="$refs.menu.save(dates)"
-                      >
-                        OK
-                      </v-btn>
-                    </v-date-picker>
-                  </v-menu>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                  offset-lg="9"
-                >
-                  <v-row>
-                    <v-col
-                      cols="6"
-                      sm="6"
-                      lg="6"
-                      align-self="center"
-                    >
-                      <v-btn
-                        color="primary"
-                        elevation="2"
-                      >
-                        <v-icon>mdi-magnify</v-icon>검색
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </v-col>
-                <!-- <v-col
-                  cols="6"
-                  sm="4"
-                  lg="3"
-                  align-self="center"
-                >
-                  <v-btn
-                    color="primary"
-                    elevation="2"
-                  >
-                    <v-icon>mdi-magnify</v-icon>검색
-                  </v-btn>
-                </v-col> -->
-              </v-row>
-
-              <v-row>
-
-              </v-row>
-            </v-card-text>
-          </v-card>
-
-          <v-card
-          elevation="1"
-          class="mt-5"
-          >
-            <v-card-text class=" pt-3">
-              <v-row>
-                <v-col
-                  cols="12"
-                >
-                  <v-chip
-                    class="ma-2"
-                    color="indigo"
-                    text-color="white"
-                  >
-                    총 수량 :
-                  </v-chip>
-                  <v-chip
-                    class="ma-2"
-                    color="indigo"
-                    text-color="white"
-                  >
-                    총 금액 :
-                  </v-chip>
+          <v-row>
+            <v-col
+              cols="12"
+              sm="12"
+            >
+              <v-card
+              elevation="1"
+              class="mt-5"
+              >
+                <v-card-text class=" pt-3">
                   <DataTableComponent
-                    :headers="headers"
-                    :items="product_data"
-                    :item-key="product_code"
-                    show-photo
-                    approval
-                    show-files
+                    :headers="ship_approve_headers"
+                    :items="ship_approve_data"
+                    item-key="product_code"
+                    approval="ship"
                     dense
+                    show-files
+                    @clickTr="clickApproveData"
                   />
-                </v-col>
-              </v-row>
-
-              <v-row>
-
-              </v-row>
-            </v-card-text>
-          </v-card>
+                </v-card-text>
+              </v-card>
+            </v-col>
+            <!-- <v-col
+              cols="12"
+              sm="6"
+            >
+              <v-card
+              elevation="1"
+              class="mt-5"
+              >
+                <v-card-text class=" pt-3">
+                  <DataTableComponent
+                        :headers="ship_product_list_headers"
+                        :items="ship_product_list_data"
+                        :item-key="product_code"
+                        dense
+                        show-photo
+                        show-files
+                  />
+                </v-card-text>
+              </v-card>
+            </v-col> -->
+          </v-row>
         </v-col>
       </v-row>
     </v-main>
+
+    <ModalDialogComponent
+      :dialog-value="ship_product_list_dialog"
+      max-width="70%"
+      title-class=" "
+      :dialog-transition="'slide-x-transition'"
+      :dialog-custom="'custom-dialog elevation-0 white'"
+      :card-elevation="'0'"
+      :hide-overlay="true"
+      :persistent="true"
+    >
+      <v-container>
+        <v-row>
+          <v-col cols="12">
+            <v-btn
+              x-small
+              fab
+              color="blue-grey darken-1"
+              class="float-right elevation-0 white--text"
+              @click="ship_product_list_dialog = false"
+            >
+              <v-icon>mdi-close-thick</v-icon>
+            </v-btn>
+          </v-col>
+          <v-col cols="12">
+            <DataTableComponent
+              :headers="ship_product_list_headers"
+              :items="ship_product_list_data"
+              item-key="product_code"
+              dense
+              show-photo
+            />
+          </v-col>
+        </v-row>
+      </v-container>
+    </ModalDialogComponent>
   </div>
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
+import InputsCardComponent from "@/components/InputsCardComponent.vue";
+import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 
 export default {
   components: {
                 NavComponent,
                 DataTableComponent,
+                InputsCardComponent,
+                ModalDialogComponent,
               },
   data(){
     return{
-      product_type:'All',
-      product_classification:'All',
-      product_code: '',
-      product_name: '',
-      product_model: '',
-      product_spec: '',
-      product_manufacturer: '',
-      approval: 'All',
-      product_ship_date: '2024-03-11',
-      stock_more_0: true,
-      product_type_list: ['All', '원부자재', '반제품', '완제품'],
-      product_classification_list: ['All', '일반', 'GFM', '전력변환기'],
-      approval_list: ['All', '승인', '미승인', '반려'],
+      menu: false,
       dates: [],
-      approval_return: false,
-      approval_approved: false,
-      approval_notapproved: false,
+      ship_product_list_dialog: false,
 
-      headers: [
-        { text: '신청자', align: 'center', value: 'ship_applicant', },
-        { text: '종류', align: 'center', value: 'product_type', },
-        { text: '분류', align: 'center', value: 'product_classification', },
+      searchCardInputs:[
+        {label:'승인', type:'auto', col:'12', sm:'4', lg:'2', value:'All', list:['All', '승인', '미승인', '반려']},
+        {label:'발주번호', col:'12', sm:'4', lg:'2', value: ''},
+        {label:'관리코드', col:'12', sm:'4', lg:'2', value: ''},
+        {label:'제품명', col:'12', sm:'4', lg:'2', value: ''},
+        {label:'제조사', col:'12', sm:'4', lg:'2', value: ''},
+        {label:'입고일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'2'}
+      ],
+
+      ship_approve_headers: [
+        { text: '신청자', align: 'center', value: 'creater', },
+        { text: '작성일', align: 'center', value: 'created_time', },
+        { text: '프로젝트', align: 'center', value: 'project', },
+        { text: '출고요청일', align: 'center', value: 'ship_date', },
+        { text: '출고목적', align: 'center', value: 'purpose', },
+      ],
+      ship_product_list_headers: [
+        { text: '종류', align: 'center', value: 'type', },
+        { text: '분류', align: 'center', value: 'classification', },
         { text: '관리코드', align: 'center', value: 'product_code', },
-        { text: '제품명', align: 'center', value: 'product_name', },
-        { text: '모델명', align: 'center', value: 'product_model', },
-        { text: '사양', align: 'center', value: 'product_spec', },
+        { text: '제품명', align: 'center', value: 'name', },
+        { text: '모델명', align: 'center', value: 'model', },
+        { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: '출고수량', align: 'center', value: 'ship_num', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
-        { text: '출고일자', align: 'center', value: 'ship_date', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
+        { text: '총액', align: 'center', value: 'product_price', },
       ],
-
-      product_data: [
+      ship_approve_data:[
         {
-          ship_applicant:'윤준수',
-          product_type:'원부자재',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-01',
-          product_name: 'IGBT & SMPS',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          ship_num: '1',
+          project: '당진 9호기 PJT',
+          creater: '윤준수',
+          ship_date: '2024-03-12',
+          created_time:'2024-03-07',
           approval: '승인',
-          pe_number: '',
-          ship_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
-          approve_date:'2024-03-12',
+          approve_date:'2024-03-18',
+          approver:'윤광희',
           return_reason:'',
+          receiving_inspection:'',
+          inspection_report:'시험성적서파일명.pdf',
+          note:'비고 작성한 내용 노출',
+          warehouse:'광주공장',
+          ship_place:'',
+          purpose:'TSC밸브 수리',
+          files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
+          belong_data:[
+            {
+              type:'원부자재',
+              classification:'일반',
+              product_code: '공장2F_E-09-01',
+              name: 'IGBT & SMPS',
+              model: '',
+              spec: '',
+              manufacturer: '파이온일렉트릭',
+              ship_num: '1',
+              pe_number: '',
+              unit_price: '',
+              product_price: '',
+              files:''
+            },
+            {
+              type:'원부자재',
+              classification:'일반',
+              product_code: '공장2F_E-09-01',
+              name: 'IGBT & SMPS',
+              model: '',
+              spec: '',
+              manufacturer: '파이온일렉트릭',
+              ship_num: '1',
+              pe_number: '',
+              unit_price: '',
+              product_price: '',
+              files:''
+            },
+            {
+              type:'원부자재',
+              classification:'일반',
+              product_code: '공장2F_E-09-01',
+              name: 'IGBT & SMPS',
+              model: '',
+              spec: '',
+              manufacturer: '파이온일렉트릭',
+              ship_num: '1',
+              pe_number: '',
+              unit_price: '',
+              product_price: '',
+            },
+          ],
         },
         {
-          ship_applicant:'윤준수',
-          product_type:'반제품',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-02',
-          product_name: 'SPD, 퓨즈',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          ship_num: '1',
+          project: '당진 9호기 PJT',
+          creater: '윤준수',
+          ship_date: '2024-03-12',
+          created_time:'2024-03-07',
           approval: '미승인',
-          pe_number: '',
-          ship_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
           approve_date:'',
+          approver:'',
           return_reason:'',
-          files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf'
+          receiving_inspection:'',
+          inspection_report:'시험성적서파일명.pdf',
+          note:'비고 작성한 내용 노출',
+          warehouse:'광주공장',
+          ship_place:'',
+          purpose:'TSC밸브 수리',
+          files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
+          belong_data:[
+            {
+              type:'원부자재',
+              classification:'일반',
+              product_code: '공장2F_E-09-01',
+              name: 'IGBT & SMPS',
+              model: '',
+              spec: '',
+              manufacturer: '파이온일렉트릭',
+              ship_num: '1',
+              pe_number: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              type:'원부자재',
+              classification:'일반',
+              product_code: '공장2F_E-09-01',
+              name: 'IGBT & SMPS',
+              model: '',
+              spec: '',
+              manufacturer: '파이온일렉트릭',
+              ship_num: '1',
+              pe_number: '',
+              unit_price: '',
+              product_price: '',
+              files:''
+            },
+            {
+              type:'원부자재',
+              classification:'일반',
+              product_code: '공장2F_E-09-01',
+              name: 'IGBT & SMPS',
+              model: '',
+              spec: '',
+              manufacturer: '파이온일렉트릭',
+              ship_num: '1',
+              pe_number: '',
+              unit_price: '',
+              product_price: '',
+            },
+          ],
         },
         {
-          ship_applicant:'윤준수',
-          product_type:'완제품',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-03',
-          product_name: '쿨링팬',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          ship_num: '1',
+          project: '당진 9호기 PJT',
+          creater: '윤준수',
+          ship_date: '2024-03-12',
+          created_time:'2024-03-07',
           approval: '반려',
-          pe_number: '',
-          ship_date: '2024-03-11',
-          unit_price: '',
-          product_price: '',
           approve_date:'',
+          approver:'윤광희',
           return_reason:'반려사유노출영역',
+          receiving_inspection:'',
+          inspection_report:'시험성적서파일명.pdf',
+          note:'비고 작성한 내용 노출',
+          warehouse:'광주공장',
+          ship_place:'',
+          purpose:'TSC밸브 수리',
+          files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
+          belong_data:[
+            {
+              type:'원부자재',
+              classification:'일반',
+              product_code: '공장2F_E-09-01',
+              name: 'IGBT & SMPS',
+              model: '',
+              spec: '',
+              manufacturer: '파이온일렉트릭',
+              ship_num: '1',
+              pe_number: '',
+              unit_price: '',
+              product_price: '',
+            },
+            {
+              type:'원부자재',
+              classification:'일반',
+              product_code: '공장2F_E-09-01',
+              name: 'IGBT & SMPS',
+              model: '',
+              spec: '',
+              manufacturer: '파이온일렉트릭',
+              ship_num: '1',
+              pe_number: '',
+              unit_price: '',
+              product_price: '',
+              files:''
+            },
+            {
+              type:'원부자재',
+              classification:'일반',
+              product_code: '공장2F_E-09-01',
+              name: 'IGBT & SMPS',
+              model: '',
+              spec: '',
+              manufacturer: '파이온일렉트릭',
+              ship_num: '1',
+              pe_number: '',
+              unit_price: '',
+              product_price: '',
+              files:''
+            },
+          ],
         },
       ],
+      ship_product_list_data:[],
     }
   },
 
   computed: {
     dateRangeText () {
       return this.dates.join(' ~ ')
+    },
+  },
+  methods:{
+    clickApproveData(item){
+      let belong_datas = item.belong_data
+      this.ship_product_list_data = [];
+      belong_datas.forEach(data =>{
+        this.ship_product_list_data.push(data);
+      })
+      this.ship_product_list_dialog = true;
     },
   },
 }

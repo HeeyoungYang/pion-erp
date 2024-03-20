@@ -48,8 +48,9 @@
                     :headers="inbound_approve_headers"
                     :items="inbound_approve_data"
                     item-key="product_code"
-                    approval
+                    approval="inbound"
                     dense
+                    show-files
                     @clickTr="clickApproveData"
                   />
                 </v-card-text>
@@ -110,7 +111,6 @@
               item-key="product_code"
               dense
               show-photo
-              show-files
             />
           </v-col>
         </v-row>
@@ -187,7 +187,7 @@ export default {
           receiving_inspection:'',
           inspection_report:'시험성적서파일명.pdf',
           note:'비고 작성한 내용 노출',
-          inbound_files:'세금계산서.pdf,거래명세표.pdf',
+          files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
           belong_data:[
             {
               type:'원부자재',
@@ -229,7 +229,6 @@ export default {
               pe_number: '',
               unit_price: '',
               product_price: '',
-              files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf'
             },
           ],
         },
@@ -251,6 +250,7 @@ export default {
           receiving_inspection:'',
           inspection_report:'',
           note:'비고 작성한 내용 노출',
+          files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
           belong_data:[
             {
               type:'원부자재',
@@ -264,7 +264,6 @@ export default {
               pe_number: '',
               unit_price: '',
               product_price: '',
-              files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf'
             },
             {
               type:'원부자재',
@@ -292,7 +291,6 @@ export default {
               pe_number: '',
               unit_price: '',
               product_price: '',
-              files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf'
             },
           ],
         },
@@ -314,6 +312,7 @@ export default {
           receiving_inspection:'',
           inspection_report:'',
           note:'비고 작성한 내용 노출',
+          files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
           belong_data:[
             {
               type:'원부자재',
@@ -327,7 +326,6 @@ export default {
               pe_number: '',
               unit_price: '',
               product_price: '',
-              files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf'
             },
             {
               type:'원부자재',

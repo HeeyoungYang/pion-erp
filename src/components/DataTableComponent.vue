@@ -159,18 +159,18 @@
                             <v-btn
                               small
                               color="success"
-                              @click="inboundApproveDialog(item)"
+                              @click="confirmationDialogOpen(item)"
 
-                            >확인서</v-btn>
+                            >{{ approval == 'inbound' ? '확인서' : '요청서' }}</v-btn>
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
                     </v-card>
                     <ModalDialogComponent
+                      v-if="approval == 'inbound'"
                       :dialog-value="confirmationDialog"
                       max-width="900px"
-                      title="입고 확인서"
-                      title-class="blue lighten-5 text-center text-h5 font-weight-black"
+                      title-class="display-none"
                       closeText="취소"
                       saveText="저장"
                       :persistent="true"
@@ -180,6 +180,22 @@
                       :inbound-data="item"
                       :belong-data="inbound_approve_belong"
                       :belong-files="inbound_approve_files"
+                      />
+                    </ModalDialogComponent>
+                    <ModalDialogComponent
+                      v-else-if="approval == 'ship'"
+                      :dialog-value="confirmationDialog"
+                      max-width="900px"
+                      title-class="display-none"
+                      closeText="취소"
+                      saveText="저장"
+                      :persistent="true"
+                      @close="confirmationDialog=false"
+                    >
+                      <ShipApproveComponent
+                      :ship-data="item"
+                      :belong-data="ship_approve_belong"
+                      :belong-files="ship_approve_files"
                       />
                     </ModalDialogComponent>
                   </v-menu>
@@ -504,6 +520,7 @@
 
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import InboundApproveComponent from "@/components/InboundApproveComponent";
+import ShipApproveComponent from "@/components/ShipApproveComponent";
 
 export default {
   props: {
@@ -550,6 +567,7 @@ export default {
   components:{
     ModalDialogComponent,
     InboundApproveComponent,
+    ShipApproveComponent,
   },
   data() {
     return {
@@ -560,6 +578,7 @@ export default {
       files_list:[],
       inbound_approve_belong: [],
       inbound_approve_files: [],
+      ship_approve_belong: [],
       authority_list:['관리자', '노무비정보관리', '원가계산', '입고승인', '출고승인'],
       approve_radio: true,
       confirmationDialog: false,
@@ -656,13 +675,15 @@ export default {
       let files_array = item.split(',');
       this.files_list = files_array;
     },
-    inboundApproveDialog(item){
+    confirmationDialogOpen(item){
       let belong_datas = item.belong_data
-      let belong_files = item.inbound_files.split(',');
+      let belong_files = item.files ? item.files.split(',') : '';
       this.inbound_approve_belong = [];
+      this.ship_approve_belong = [];
       this.inbound_approve_files = belong_files;
       belong_datas.forEach(data =>{
         this.inbound_approve_belong.push(data);
+        this.ship_approve_belong.push(data);
       })
       this.confirmationDialog = true;
     },
