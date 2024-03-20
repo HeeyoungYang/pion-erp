@@ -77,16 +77,16 @@
                     총 금액 :
                   </v-chip>
                   <DataTableComponent
-                      :headers="headers"
-                      :items="product_data"
-                      :item-key="product_data.module_code"
-                      hide-default-footer
-                      disable-pagination
-                      children-key="belong_data"
-                      table-style=""
-                      show-photo
-                      dense
-                    />
+                    :headers="headers"
+                    :items="product_data"
+                    :item-key="product_data.module_code"
+                    hide-default-footer
+                    disable-pagination
+                    children-key="belong_data"
+                    table-style=""
+                    show-photo
+                    dense
+                  />
                 </v-col>
               </v-row>
 

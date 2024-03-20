@@ -66,7 +66,7 @@
                 :hide-details="hideDetails"
                 :clearable="input.clearable === undefined ? (clearable ? clearable : false) : input.clearable"
                 :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
-                label="일자"
+                :label="input.label"
                 readonly
                 v-bind="attrs"
                 v-on="on"
