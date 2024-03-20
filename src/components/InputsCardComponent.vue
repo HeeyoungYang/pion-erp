@@ -1,9 +1,10 @@
 <template>
-  <v-card :elevation="elevation ? elevation : ''">
+  <v-card :elevation="elevation ? elevation : ''" :class="cardClass ? cardClass : ''" >
+    <slot name="cardTitle"></slot>
     <v-card-text :class="textClass ? textClass : ''">
       <slot name="top"></slot>
       <v-row>
-        <v-col v-for="(input, index) in inputs" 
+        <v-col v-for="(input, index) in inputs"
         :key="input.label ? input.label : index" :cols="input.cols ? (Number(input.cols) > 12 ? '12' : input.cols) : (numInRow ? String(12 / (numInRow > 12 ? 12 : numInRow)) : '')"
         :sm="input.sm ? input.sm : ''"
         :lg="input.lg ? input.lg : ''">
@@ -15,7 +16,7 @@
             :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
             :prepend-icon="input.icon"
             :label="input.label"
-            :disabled="input.disabled">          
+            :disabled="input.disabled">
           </v-text-field>
           <v-select v-else-if="input.type === 'combo' || input.type === 'select'"
             v-model="input.value"
@@ -39,6 +40,27 @@
             :disabled="input.disabled"
             :label="input.label"
           ></v-autocomplete>
+          <v-textarea  v-else-if="input.type === 'textarea'"
+            v-model="input.value"
+            :dense="dense"
+            :hide-details="hideDetails"
+            :clearable="input.clearable === undefined ? (clearable ? clearable : false) : input.clearable"
+            :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
+            :prepend-icon="input.icon"
+            :label="input.label"
+            :disabled="input.disabled"
+            :rows="input.rows ? input.rows : '1'"
+          ></v-textarea>
+          <v-file-input v-else-if="input.type === 'file'"
+            :small-chips="smallChips"
+            :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
+            :dense="dense"
+            :hide-details="hideDetails"
+            :prepend-icon="input.icon"
+            :append-icon="input.appendIcon"
+            :label="input.label"
+            :disabled="input.disabled"
+          ></v-file-input>
           <v-menu v-else-if="input.type === 'date' || input.type === 'date-picker' || input.type === 'datepicker'"
             :ref="'menu'+index"
             v-model="input.menu"
@@ -55,7 +77,7 @@
                 :hide-details="hideDetails"
                 :clearable="input.clearable === undefined ? (clearable ? clearable : false) : input.clearable"
                 :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
-                label="일자"
+                :label="input.label"
                 readonly
                 v-bind="attrs"
                 v-on="on"
@@ -107,10 +129,12 @@
  * @property {Number} [numInRow] - 한 줄 출력 인풋 개수 여부(default:0)
  * @property {String} [elevation] - v-card elevation(default:'')
  * @property {String} [textClass] - v-card-text 클래스(default:'')
+ * @property {String} [cardClass] - v-card 클래스(default:'')
  * @property {Boolean} [dense] - 줄간격 줄임 여부(default:false)
  * @property {Boolean} [hideDetails] - 디테일 숨김 여부(default:false)
  * @property {Boolean} [clearable] - 전역 clearable(default:false)
  * @property {Boolean} [filled] - 전역 filled(default:false)
+ * @property {Boolean} [smallChips] - 파일 선택 시 chip 사용 여부(default:false)
  */
 export default {
   props: {
@@ -118,10 +142,12 @@ export default {
     numInRow: Number,
     elevation: String,
     textClass: String,
+    cardClass: String,
     dense: Boolean,
     hideDetails: Boolean,
     clearable: Boolean,
-    filled: Boolean
+    filled: Boolean,
+    smallChips: Boolean
   },
   computed:{
     dateRangeText () {
@@ -172,7 +198,7 @@ export default {
     // }
   },
   methods: {
-    
+
   }
 };
 </script>

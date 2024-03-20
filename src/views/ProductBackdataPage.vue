@@ -37,7 +37,6 @@
                       cols="12"
                       sm="4"
                       lg="3"
-                      offset-lg="9"
                     >
                       <v-row>
                         <v-col
@@ -108,7 +107,7 @@
                               <v-row>
                                 <v-col
                                   cols="12"
-                                  sm="8"
+                                  sm="4"
                                 >
                                   <v-file-input
                                     small-chips
@@ -116,6 +115,24 @@
                                     dense
                                     hide-details
                                     label="엑셀 불러오기"
+                                    prepend-icon=""
+                                    append-icon="mdi-paperclip"
+                                    @change="loadExcelFile"
+                                  ></v-file-input>
+                                </v-col>
+                                <v-col
+                                  cols="12"
+                                  sm="4"
+                                >
+                                  <v-file-input
+                                    filled
+                                    dense
+                                    hide-details
+                                    multiple
+                                    label="사진 첨부(.jpg, .png, .jpeg)"
+                                    prepend-icon=""
+                                    append-icon="mdi-image"
+                                    accept=".png, .jpg, .jpeg"
                                     @change="loadExcelFile"
                                   ></v-file-input>
                                 </v-col>
@@ -124,7 +141,7 @@
                                   sm="4"
                                   align-self="center"
                                 >
-                                <v-btn color="primary" small class="mr-2" @click="save">양식</v-btn>
+                                <v-btn color="primary" small class="mr-2" href="/forms/원부자재_엑셀업로드_양식.xlsx" download >양식</v-btn>
                                 <v-btn color="success" small class="mr-2" @click="save">등록</v-btn>
                                 <v-btn color="default" small class="mr-2" @click="close">취소</v-btn>
                                 </v-col>
@@ -353,7 +370,6 @@
                       cols="12"
                       sm="4"
                       lg="3"
-                      offset-lg="9"
                     >
                       <v-row>
                         <v-col
@@ -1120,7 +1136,7 @@ export default {
         {label:'모델명', col:'12', sm:'4', lg:'3', value: ''},
         {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
         {label:'제조사', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
+        // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
       ],
       module_stock_more_0: true,
       searchModuleCardInputs:[
@@ -1131,7 +1147,7 @@ export default {
         {label:'모델명', col:'12', sm:'4', lg:'3', value: ''},
         {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
         {label:'제조사', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
+        // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
       ],
       searchProductCardInputs:[
         {label:'제품코드', col:'12', sm:'4', lg:'3', value: ''},

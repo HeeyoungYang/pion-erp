@@ -56,7 +56,7 @@
                               md="6"
                             >
                               <v-text-field
-                                v-model="editedLaborItem.labor_no"
+                                v-model="editedLaborItem.no"
                                 label="품번"
                               ></v-text-field>
                             </v-col>
@@ -66,7 +66,7 @@
                               md="6"
                             >
                               <v-text-field
-                                v-model="editedLaborItem.labor_contract_name"
+                                v-model="editedLaborItem.name"
                                 label="공종"
                               ></v-text-field>
                             </v-col>
@@ -76,7 +76,7 @@
                               md="6"
                             >
                               <v-text-field
-                                v-model="editedLaborItem.labor_contract_type"
+                                v-model="editedLaborItem.type"
                                 label="규격"
                               ></v-text-field>
                             </v-col>
@@ -86,7 +86,7 @@
                               md="6"
                             >
                               <v-text-field
-                                v-model="editedLaborItem.labor_man_day"
+                                v-model="editedLaborItem.man_per_day"
                                 label="공량(M/D)"
                                 type="number"
                               ></v-text-field>
@@ -97,7 +97,7 @@
                               md="6"
                             >
                               <v-text-field
-                                v-model="editedLaborItem.labor_surcharge_rate"
+                                v-model="editedLaborItem.surcharge_ratio"
                                 label="할증율"
                                 type="number"
                                 suffix="%"
@@ -131,7 +131,7 @@
                   @close="closeDelete"
                 >
                   <template v-slot:titleHTML>
-                    <p class="mb-0">{{ editedLaborItem.labor_contract_name }}</p>
+                    <p class="mb-0">{{ editedLaborItem.name }}</p>
                     <p class="red--text">삭제하시겠습니까?</p>
                   </template>
                   삭제된 시 복구 불가능합니다.
@@ -177,7 +177,7 @@
                               md="4"
                             >
                               <v-text-field
-                                v-model="editedWageItem.wage_occupation"
+                                v-model="editedWageItem.occupation"
                                 label="직종"
                               ></v-text-field>
                             </v-col>
@@ -187,7 +187,7 @@
                               md="4"
                             >
                               <v-text-field
-                                v-model="editedWageItem.wage_unit_price"
+                                v-model="editedWageItem.unit_price"
                                 label="단가"
                                 type="number"
                               ></v-text-field>
@@ -198,7 +198,7 @@
                               md="4"
                             >
                               <v-text-field
-                                v-model="editedWageItem.wage_adjustment_rate"
+                                v-model="editedWageItem.adjustment_ratio"
                                 label="설계 조정율"
                                 type="number"
                               ></v-text-field>
@@ -231,7 +231,7 @@
                   @close="closeDelete"
                 >
                   <template v-slot:titleHTML>
-                    <p class="mb-0">{{ editedWageItem.wage_occupation }}</p>
+                    <p class="mb-0">{{ editedWageItem.occupation }}</p>
                     <p class="red--text">삭제하시겠습니까?</p>
                   </template>
                   삭제된 시 복구 불가능합니다.
@@ -267,44 +267,44 @@ export default {
       wageDialog: false,
       wageDialogDelete: false,
       labor_headers: [
-        { text: '품번', align: 'center', value: 'labor_no'},
-        { text: '공종', align: 'center', value: 'labor_contract_name', },
-        { text: '규격', align: 'center', value: 'labor_contract_type', },
-        { text: '공량(M/D)', align: 'center', value: 'labor_man_day', },
-        { text: '할증율', align: 'center', value: 'labor_surcharge_rate', },
+        { text: '품번', align: 'center', value: 'no'},
+        { text: '공종', align: 'center', value: 'name', },
+        { text: '규격', align: 'center', value: 'type', },
+        { text: '공량(M/D)', align: 'center', value: 'man_per_day', },
+        { text: '할증율', align: 'center', value: 'surcharge_ratio', },
       ],
       wage_headers: [
-        { text: '직종', align: 'center', value: 'wage_occupation'},
-        { text: '단가', align: 'center', value: 'wage_unit_price', },
-        { text: '설계 조정률', align: 'center', value: 'wage_adjustment_rate', },
+        { text: '직종', align: 'center', value: 'occupation'},
+        { text: '단가', align: 'center', value: 'unit_price', },
+        { text: '설계 조정률', align: 'center', value: 'adjustment_ratio', },
       ],
       labor_data: [],
       wage_data: [],
       editedLaborIndex: -1,
       editedLaborItem: {
-        labor_no:'',
-        labor_contract_name: '',
-        labor_contract_type: '',
-        labor_man_day: '',
-        labor_surcharge_rate: '',
+        no:'',
+        name: '',
+        type: '',
+        man_per_day: '',
+        surcharge_ratio: '',
       },
       defaultLaborItem: {
-        labor_no:'',
-        labor_contract_name: '',
-        labor_contract_type: '',
-        labor_man_day: '',
-        labor_surcharge_rate: '',
+        no:'',
+        name: '',
+        type: '',
+        man_per_day: '',
+        surcharge_ratio: '',
       },
       editedWageIndex: -1,
       editedWageItem: {
-        wage_occupation:'',
-        wage_unit_price: '',
-        wage_adjustment_rate: '',
+        occupation:'',
+        unit_price: '',
+        adjustment_ratio: '',
       },
       defaultWageItem: {
-        wage_occupation:'',
-        wage_unit_price: '',
-        wage_adjustment_rate: '',
+        occupation:'',
+        unit_price: '',
+        adjustment_ratio: '',
       },
     }
   },
@@ -347,92 +347,92 @@ export default {
     initialize () {
       this.labor_data = [
           {
-            labor_no:'품-1',
-            labor_contract_name:'고압케이블 포설',
-            labor_contract_type:'240㎟, 1C',
-            labor_man_day:'0.136',
-            labor_surcharge_rate:'115',
+            no:'품-1',
+            name:'고압케이블 포설',
+            type:'240㎟, 1C',
+            man_per_day:'0.136',
+            surcharge_ratio:'115',
           },
           {
-            labor_no:'품-2',
-            labor_contract_name:'저압케이블 포설',
-            labor_contract_type:'6㎟, 2C',
-            labor_man_day:'0.018',
-            labor_surcharge_rate:'120',
+            no:'품-2',
+            name:'저압케이블 포설',
+            type:'6㎟, 2C',
+            man_per_day:'0.018',
+            surcharge_ratio:'120',
           },
           {
-            labor_no:'품-2',
-            labor_contract_name:'저압케이블 포설',
-            labor_contract_type:'2.5㎟, 6C',
-            labor_man_day:'0.035',
-            labor_surcharge_rate:'120',
+            no:'품-2',
+            name:'저압케이블 포설',
+            type:'2.5㎟, 6C',
+            man_per_day:'0.035',
+            surcharge_ratio:'120',
           },
           {
-            labor_no:'품-3',
-            labor_contract_name:'전력케이블 단말처리',
-            labor_contract_type:'240㎟, 1C',
-            labor_man_day:'1.170',
-            labor_surcharge_rate:'120',
+            no:'품-3',
+            name:'전력케이블 단말처리',
+            type:'240㎟, 1C',
+            man_per_day:'1.170',
+            surcharge_ratio:'120',
           },
           {
-            labor_no:'품-4',
-            labor_contract_name:'Cubicle 설치',
-            labor_contract_type:'6㎥, 1.5 Ton이하',
-            labor_man_day:'2.00',
-            labor_surcharge_rate:'100',
+            no:'품-4',
+            name:'Cubicle 설치',
+            type:'6㎥, 1.5 Ton이하',
+            man_per_day:'2.00',
+            surcharge_ratio:'100',
           },
           {
-            labor_no:'품-5',
-            labor_contract_name:'전기실  전원 케이블 포설',
-            labor_contract_type:'50sq, 3C',
-            labor_man_day:'0.043',
-            labor_surcharge_rate:'200',
+            no:'품-5',
+            name:'전기실  전원 케이블 포설',
+            type:'50sq, 3C',
+            man_per_day:'0.043',
+            surcharge_ratio:'200',
           },
           {
-            labor_no:'품-6',
-            labor_contract_name:'케이블 트레이',
-            labor_contract_type:'단면적 50,000㎟ 이하',
-            labor_man_day:'0.200',
-            labor_surcharge_rate:'144',
+            no:'품-6',
+            name:'케이블 트레이',
+            type:'단면적 50,000㎟ 이하',
+            man_per_day:'0.200',
+            surcharge_ratio:'144',
           },
           {
-            labor_no:'품-7',
-            labor_contract_name:'통신케이블 포설',
-            labor_contract_type:'지중 인력견인 포설',
-            labor_man_day:'1.410',
-            labor_surcharge_rate:'100',
+            no:'품-7',
+            name:'통신케이블 포설',
+            type:'지중 인력견인 포설',
+            man_per_day:'1.410',
+            surcharge_ratio:'100',
           },
       ]
       this.wage_data = [
           {
-            wage_occupation:'저압 케이블전공',
-            wage_unit_price: '290333',
-            wage_adjustment_rate: '1.0000',
+            occupation:'저압 케이블전공',
+            unit_price: '290333',
+            adjustment_ratio: '1.0000',
           },
           {
-            wage_occupation:'고압 케이블전공',
-            wage_unit_price: '353395',
-            wage_adjustment_rate: '1.0000',
+            occupation:'고압 케이블전공',
+            unit_price: '353395',
+            adjustment_ratio: '1.0000',
           },
           {
-            wage_occupation:'비계공',
-            wage_unit_price: '281721',
-            wage_adjustment_rate: '1.0000',
+            occupation:'비계공',
+            unit_price: '281721',
+            adjustment_ratio: '1.0000',
           },
           {
-            wage_occupation:'변전전공',
-            wage_unit_price: '451145',
-            wage_adjustment_rate: '1.0000',
+            occupation:'변전전공',
+            unit_price: '451145',
+            adjustment_ratio: '1.0000',
           },
           {
-            wage_occupation:'보통인부',
-            wage_unit_price: '161858',
-            wage_adjustment_rate: '1.0000',
+            occupation:'보통인부',
+            unit_price: '161858',
+            adjustment_ratio: '1.0000',
           },
           {
-            wage_occupation:'내선전공',
-            wage_unit_price: '269968',
-            wage_adjustment_rate: '1.0000',
+            occupation:'내선전공',
+            unit_price: '269968',
+            adjustment_ratio: '1.0000',
           },
       ]
     },

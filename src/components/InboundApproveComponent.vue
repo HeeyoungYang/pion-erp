@@ -1,6 +1,7 @@
 
 <template >
   <v-container>
+    <p class="text-center text-h4 font-weight-bold black--text pb-8 mb-8" style="border-bottom:1px solid #ccc">입고 확인서</p>
     <v-row class="mt-3">
       <v-col cols="6">
         <v-img
@@ -63,33 +64,50 @@
           </tr>
           <tr>
             <td class="approve_title" style="width: 130px;">품명</td>
-            <td class="approve_text">{{ inboundData.name}}</td>
+            <td class="approve_text">
+              <p class="mb-0" v-for="(dta, i) in belongData" :key="i">{{ i+1 }}. {{ dta.name }}</p>
+            </td>
           </tr>
           <tr>
-            <td class="approve_title" style="width: 130px;">사양</td>
-            <td class="approve_text">{{ inboundData.spec}}</td>
+            <td class="approve_title" style="width: 130px;">규격(사양)</td>
+            <td class="approve_text">
+              <p class="mb-0" v-for="(dta, i) in belongData" :key="i">{{ i+1 }}. {{ dta.spec }}</p>
+            </td>
           </tr>
           <tr>
             <td class="approve_title" style="width: 130px;">수량</td>
-            <td class="approve_text">{{ inboundData.inbound_num}}</td>
+            <td class="approve_text">
+              <p class="mb-0" v-for="(dta, i) in belongData" :key="i">{{ i+1 }}. {{ dta.name }} - {{ dta.inbound_num }}EA </p>
+            </td>
           </tr>
           <tr>
             <td class="approve_title" style="width: 130px;">품질검사결과</td>
-            <td class="approve_text"></td>
+            <td class="approve_text">
+              <p class="mb-0 font-weight-bold">{{ inboundData.quality_inspection }}</p>
+              <p class="mb-0 error--text" v-if="inboundData.quality_inspection == '이상 있음'">{{ inboundData.quality_inspection_reason }}</p>
+            </td>
           </tr>
           <tr>
             <td class="approve_title" style="width: 130px;">수입검사서</td>
-            <td class="approve_text"></td>
+            <td class="approve_text">
+              {{ inboundData.receiving_inspection ? '■ 유   □무' : '□ 유   ■무' }}
+            </td>
           </tr>
           <tr>
             <td class="approve_title" style="width: 130px;">시험성적서</td>
-            <td class="approve_text"></td>
+            <td class="approve_text">
+              {{ inboundData.inspection_report ? '■ 유   □무' : '□ 유   ■무' }}
+            </td>
           </tr>
           <tr>
             <td class="approve_title" style="width: 130px;">비고</td>
-            <td class="approve_text"></td>
+            <td class="approve_text">{{  inboundData.note }}</td>
           </tr>
         </table>
+        <p class="mb-2 mt-7 text-h6 font-weight-black">붙임</p>
+        <div style="border:1px solid #ccc" class="px-5 py-4">
+              <p class="mb-0" v-for="(file, i) in belongFiles" :key="i">{{ i+1 }}. {{ file }}</p>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -102,10 +120,14 @@
  *
  * @typedef {Object} props
  * @property {Array} inboundData - 데이터 배열
+ * @property {Array} belongData - 데이터 배열
+ * @property {Array} belongFiles - 데이터 배열
 **/
 export default {
   props: {
     inboundData: Array,
+    belongData: Array,
+    belongFiles: Array,
   },
   methods: {
   },

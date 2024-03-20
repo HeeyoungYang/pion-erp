@@ -23,7 +23,6 @@
               cols="12"
               sm="4"
               lg="3"
-              offset-lg="9"
             >
               <v-row>
                 <v-col
@@ -78,16 +77,16 @@
                     총 금액 :
                   </v-chip>
                   <DataTableComponent
-                      :headers="headers"
-                      :items="product_data"
-                      :item-key="product_data.module_code"
-                      hide-default-footer
-                      disable-pagination
-                      children-key="belong_data"
-                      table-style=""
-                      show-photo
-                      dense
-                    />
+                    :headers="headers"
+                    :items="product_data"
+                    :item-key="product_data.module_code"
+                    hide-default-footer
+                    disable-pagination
+                    children-key="belong_data"
+                    table-style=""
+                    show-photo
+                    dense
+                  />
                 </v-col>
               </v-row>
 
@@ -123,7 +122,7 @@ export default {
         {label:'모델명', col:'12', sm:'4', lg:'3', value: ''},
         {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
         {label:'제조사', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
+        // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
       ],
 
       headers: [

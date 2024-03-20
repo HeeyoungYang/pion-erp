@@ -68,7 +68,7 @@
             </template>
 
             <template v-slot:item="{ index, item, select, isSelected, expand }">
-              <tr>
+              <tr  @click="clickTr(item)">
                 <td v-if="approval" align="center">
                   <v-menu
                     v-if="item.approval == '미승인'"
@@ -159,17 +159,18 @@
                             <v-btn
                               small
                               color="success"
-                              @click="confirmationDialog = true"
-                            >확인서</v-btn>
+                              @click="confirmationDialogOpen(item)"
+
+                            >{{ approval == 'inbound' ? '확인서' : '요청서' }}</v-btn>
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
                     </v-card>
                     <ModalDialogComponent
+                      v-if="approval == 'inbound'"
                       :dialog-value="confirmationDialog"
                       max-width="900px"
-                      title="입고 확인서"
-                      title-class="blue lighten-5 text-center text-h5 font-weight-black"
+                      title-class="display-none"
                       closeText="취소"
                       saveText="저장"
                       :persistent="true"
@@ -177,6 +178,24 @@
                     >
                       <InboundApproveComponent
                       :inbound-data="item"
+                      :belong-data="inbound_approve_belong"
+                      :belong-files="inbound_approve_files"
+                      />
+                    </ModalDialogComponent>
+                    <ModalDialogComponent
+                      v-else-if="approval == 'ship'"
+                      :dialog-value="confirmationDialog"
+                      max-width="900px"
+                      title-class="display-none"
+                      closeText="취소"
+                      saveText="저장"
+                      :persistent="true"
+                      @close="confirmationDialog=false"
+                    >
+                      <ShipApproveComponent
+                      :ship-data="item"
+                      :belong-data="ship_approve_belong"
+                      :belong-files="ship_approve_files"
                       />
                     </ModalDialogComponent>
                   </v-menu>
@@ -453,6 +472,7 @@
  * @typedef {Object} props
  * @property {Array} headers - 테이블 헤더 배열 ex) [ {text: '부제품', align: 'center', value: 'product_type'}, {text: '관리코드', align: 'center', value: 'product_code'} ]
  * @property {Array} items - 테이블 아이템 데이터 배열
+ * @property {Array} itemBelong - 하위 데이터 배열
  * @property {String} itemKey - 아이템 키
  * @property {String} [groupBy] - 그룹핑할 헤더 value(default:undefined)
  * @property {String} [childrenKey] - 하위 그룹 객체 key(default:'')
@@ -494,11 +514,13 @@
  * @emits edit
  * @emits deleteBelong
  * @emits editBelong
+ * @emits clickTr
  */
 
 
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import InboundApproveComponent from "@/components/InboundApproveComponent";
+import ShipApproveComponent from "@/components/ShipApproveComponent";
 
 export default {
   props: {
@@ -509,6 +531,7 @@ export default {
     dense: Boolean,
     headers: Array,
     items: Array,
+    itemBelong: Array,
     itemKey: String,
     tableClass: String,
     showSelect: Boolean,
@@ -544,6 +567,7 @@ export default {
   components:{
     ModalDialogComponent,
     InboundApproveComponent,
+    ShipApproveComponent,
   },
   data() {
     return {
@@ -552,6 +576,9 @@ export default {
       addedHeaders: [],
       expanded: [],
       files_list:[],
+      inbound_approve_belong: [],
+      inbound_approve_files: [],
+      ship_approve_belong: [],
       authority_list:['관리자', '노무비정보관리', '원가계산', '입고승인', '출고승인'],
       approve_radio: true,
       confirmationDialog: false,
@@ -615,6 +642,9 @@ export default {
     editBelongItem(item) {
       this.$emit("editBelong", item);
     },
+    clickTr(item){
+      this.$emit("clickTr", item);
+    },
     closeAll () {
         Object.keys(this.$refs).forEach(k => {
             if (this.$refs[k] && this.$refs[k].$attrs['data-open']) {
@@ -644,6 +674,18 @@ export default {
     getFileName(item){
       let files_array = item.split(',');
       this.files_list = files_array;
+    },
+    confirmationDialogOpen(item){
+      let belong_datas = item.belong_data
+      let belong_files = item.files ? item.files.split(',') : '';
+      this.inbound_approve_belong = [];
+      this.ship_approve_belong = [];
+      this.inbound_approve_files = belong_files;
+      belong_datas.forEach(data =>{
+        this.inbound_approve_belong.push(data);
+        this.ship_approve_belong.push(data);
+      })
+      this.confirmationDialog = true;
     },
   },
 };
