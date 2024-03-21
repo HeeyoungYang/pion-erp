@@ -99,7 +99,6 @@
               <v-tabs-items v-model="tab_search" class="pb-1">
                 <!-- 원가 계산서 -->
                 <v-tab-item>
-              <div style="position:absolute">test</div>
                   <v-card>
                     <v-card-title>
                       <v-row>
@@ -146,7 +145,7 @@
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
-                          <p class="text-h5 font-weight-black black--text mb-0">ESS GFM용 PCS (380VAC 500kW) 산출내역서</p>
+                          <p class="text-h5 black--text mb-0 font-weight-black"  style="font-weight: bold;">ESS GFM용 PCS (380VAC 500kW) 산출내역서</p>
                         </v-col>
 
                         <v-col cols="12" sm="2">
@@ -172,9 +171,9 @@
                                 v-for="(item, index) in content_save_items"
                                 :key="index"
                                 dense
-                                @click="item.click === 'print' ? printOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data')
+                                @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data')
                                         : item.click === 'excel' ? mux.Excel.downloadTable(survey_cost_headers, calc_cost_detail_data, '산출내역서')
-                                        : item.click === 'pdf' ? printOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data', '산출내역서') : ''"
+                                        : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data', '산출내역서') : ''"
                               >
                                 <v-list-item-title>{{ item.title }}</v-list-item-title>
                               </v-list-item>
@@ -231,7 +230,7 @@
 
                 <!-- 노무비 산출 -->
                 <v-tab-item>
-                  <v-card ref="calcLaborCard">
+                  <v-card>
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
@@ -260,9 +259,9 @@
                                 v-for="(item, index) in content_save_items"
                                 :key="index"
                                 dense
-                                @click="item.click === 'print' ? mux.Util.print($refs.calcLaborCard)
+                                @click="item.click === 'print' ? printLaborCost()
                                         : item.click === 'excel' ? mux.Excel.downloadTable(labor_cost_headers, labor_cost_data, '노무비 산출')
-                                        : item.click === 'pdf' ? mux.Util.downloadPDF($refs.calcLaborCard, '노무비 산출') : ''"
+                                        : item.click === 'pdf' ? printLaborCost('노무비 산출') : ''"
                               >
                                 <v-list-item-title>{{ item.title }}</v-list-item-title>
                               </v-list-item>
@@ -457,6 +456,19 @@
           </v-row>
         </v-tab-item>
       </v-tabs-items>
+
+      <!-- 노무비 산출 출력 화면 -->
+      <div ref="calcLaborCard" style="background-color: white;" v-show="print_labor_table" id="print_labor_cost">
+        <p class="text-h5 font-weight-black black--text mb-5">ESS GFM용 PCS (380VAC 500kW) 노무비 산출</p>
+          <v-data-table
+            dense
+            :headers="labor_cost_headers"
+            :items="labor_cost_data"
+            hide-default-footer
+            disable-pagination
+            disable-sort
+          />
+      </div>
     </v-main>
 
     <!-- 제품 불러오기 Modal -->
@@ -707,6 +719,7 @@ export default {
         dialogDelete: false,
         edit_labor_cost_data: true,
         edit_survey_cost_data: true,
+        print_labor_table: false,
         editedIndex: -1,
         product_name:'',
         content_save_items: [
@@ -1649,8 +1662,23 @@ export default {
       this.dialogDelete = false;
     },
 
+    printLaborCost(fileName){
+      this.print_labor_table = true;
+
+      setTimeout(async () => {
+        if (fileName){
+          mux.Util.downloadPDF(this.$refs.calcLaborCard, fileName);
+          this.print_labor_table = false;
+        }else {
+          mux.Util.print(this.$refs.calcLaborCard);
+          this.print_labor_table = false;
+        }
+      }, 500);
+
+    },
+
     // 파일명 인자 있을 경우 PDF download, 없을 경우 print
-    async printOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
+    async costDetailPrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
       let items = this[itemsThisKeyStr];
       const originItems = JSON.parse(JSON.stringify(items));
       items = items.map(item => {
@@ -1676,14 +1704,14 @@ export default {
                         delete belongInnerItem[belongInnerKey];
                       }
                       // if (belongInnerKey === 'belong_data'){
-                        
+
                       // }
                     }
-                    
+
                   }
                 }
               }
-              
+
             }
           }
         }
@@ -1692,7 +1720,7 @@ export default {
       });
 
       this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
-      
+
       // UI 적용을 위한 editable = false 1초 후 작동
       setTimeout(async () => {
         if (fileName){
@@ -1726,4 +1754,12 @@ export default {
 .labor_cost_list td{border-right: 1px solid #b6b6b6; }
 .labor_cost_list{text-align: center;}
 .labor_cost_list table{min-width: 100rem!important;}
+#print_labor_cost p {font-weight: bold;}
+#print_labor_cost table{margin-top: 10px;}
+#print_labor_cost table td,
+#print_labor_cost table th{white-space: normal;}
+#print_labor_cost table td,
+#print_labor_cost table th{white-space: normal; padding: 5px 10px; font-size:7px!important}
+#print_labor_cost table th:last-child,
+#print_labor_cost table td:last-child{display: none;}
 </style>
