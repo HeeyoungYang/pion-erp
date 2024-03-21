@@ -213,7 +213,7 @@
                           <ModalDialogComponent
                             :dialog-value="dialogCancelSelected"
                             max-width="350px"
-                            title-class="text-body-1 font-weight-black"
+                            title-class="text-body-1 font-weight-bold"
                             text-class="text-body-2"
                             save-text="예"
                             close-text="아니오"
@@ -371,7 +371,7 @@
                 <v-row>
                   <v-col cols="6">
                     <p
-                      class="text-h6 font-weight-black mb-0"
+                      class="text-h6 font-weight-bold mb-0"
                       item-align-center
                     >
                       {{ data.product_code }}
@@ -393,7 +393,7 @@
                     <ModalDialogComponent
                       :dialog-value="dialogDelete"
                       max-width="300px"
-                      title-class="text-body-1 font-weight-black"
+                      title-class="text-body-1 font-weight-bold"
                       text-class="text-body-2"
                       save-text="삭제"
                       close-text="취소"
@@ -437,7 +437,7 @@
                         <v-row>
                           <v-col
                             cols="12"
-                          ><p class="font-weight-black primary--text text-h6 mr-4">{{ data.product_capacity }}</p>
+                          ><p class="font-weight-bold primary--text text-h6 mr-4">{{ data.product_capacity }}</p>
 
                             <v-btn
                               color="primary"
