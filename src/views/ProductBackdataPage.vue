@@ -325,7 +325,6 @@
                                         <v-list-item class="pa-0">
                                           <v-list-item-content class="pa-3">
                                             <v-list-item-subtitle>
-                                              제품이미지영역
                                               <v-img
                                                 alt="Pionelectric Logo"
                                                 class="shrink mr-2"
@@ -460,7 +459,7 @@
                           sm="6"
                           align-self="center"
                         >
-                          <v-btn color="success" small class="mr-2 float-right" @click="module_dialog = true">등록</v-btn>
+                          <v-btn color="success" small class="mr-2 float-right" @click="registModule">등록</v-btn>
 
                           <!-- 반제품 등록 Modal -->
                           <ModalDialogComponent
@@ -522,7 +521,7 @@
                                     dense
                                     hide-details
                                     filled
-                                    v-model="newModuleItem.material_code"
+                                    v-model="newModuleItem.module_code"
                                     label="관리코드"
                                   ></v-text-field>
                                 </v-col>
@@ -656,7 +655,6 @@
                                         <v-list-item class="pa-0">
                                           <v-list-item-content class="pa-3">
                                             <v-list-item-subtitle>
-                                              제품이미지영역
                                               <v-img
                                                 alt="Pionelectric Logo"
                                                 class="shrink mr-2"
@@ -728,11 +726,40 @@
                                   <p class="text-h6 font-weight-black mb-0">선택 원부자재 <v-btn x-small color="error" class="ml-4" @click="resetData('module')">비우기</v-btn></p>
                                 </v-col>
                                 <v-col cols="12">
-                                  <DataTableComponent
+                                  <!-- <DataTableComponent
                                     :headers="module_set_material_headers"
                                     :items="module_set_material_data"
                                     dense
-                                  />
+                                  /> -->
+                                  <v-data-table
+                                    :headers="module_set_material_headers"
+                                    :items="module_set_material_data"
+                                    item-key="module_code"
+                                    dense
+                                  >
+                                    <template v-slot:item="{ item }">
+                                      <tr>
+                                        <td align="center">{{ item.classification }}</td>
+                                        <td align="center">{{ item.module_code }}</td>
+                                        <td align="center">{{ item.name }}</td>
+                                        <td align="center">{{ item.model }}</td>
+                                        <td align="center">{{ item.spec }}</td>
+                                        <td align="center">{{ item.manufacturer }}</td>
+                                        <td align="center">
+                                          <v-text-field
+                                            dense
+                                            hide-details
+                                            v-model="item.material_num"
+                                            style="width:100px;font-size: 0.775rem !important;"
+                                            type="number"
+                                            filled
+                                          ></v-text-field>
+                                        </td>
+                                        <td align="center">{{ item.unit_price }}</td>
+                                        <td align="center">{{ item.unit_price * item.material_num }}</td>
+                                      </tr>
+                                    </template>
+                                  </v-data-table>
                                 </v-col>
                               </v-row>
                             </v-container>
@@ -753,7 +780,7 @@
                               deletable
                               dense
                               notEditableBelong
-                              @edit="module_dialog = true"
+                              @edit="editModule"
                               @delete="deleteItem"
                               show-photo
                           />
@@ -874,8 +901,8 @@
                           align-self="center"
                         >
                           <v-btn color="blue-grey darken-1" small class="mr-2 float-right white--text" @click="product_dialog_delete = true">완제품 삭제</v-btn>
-                          <v-btn color="primary" small class="mr-2 float-right" @click="product_dialog = true">수정</v-btn>
-                          <v-btn color="success" small class="mr-2 float-right" @click="product_dialog = true">등록</v-btn>
+                          <v-btn color="primary" small class="mr-2 float-right" @click="editProduct(data)">수정</v-btn>
+                          <v-btn color="success" small class="mr-2 float-right" @click="registProduct">등록</v-btn>
 
                           <!-- 완제품 등록 Modal -->
                           <ModalDialogComponent
@@ -937,7 +964,7 @@
                                     dense
                                     hide-details
                                     filled
-                                    v-model="newProductItem.material_code"
+                                    v-model="newProductItem.product_code"
                                     label="완제품 코드"
                                   ></v-text-field>
                                 </v-col>
@@ -1070,7 +1097,6 @@
                                         <v-list-item class="pa-0">
                                           <v-list-item-content class="pa-3">
                                             <v-list-item-subtitle>
-                                              제품이미지영역
                                               <v-img
                                                 alt="Pionelectric Logo"
                                                 class="shrink mr-2"
@@ -1143,11 +1169,41 @@
                                   <p class="text-h6 font-weight-black mb-0">선택 자재 <v-btn x-small color="error" class="ml-4" @click="resetData('product')">비우기</v-btn></p>
                                 </v-col>
                                 <v-col cols="12">
-                                  <DataTableComponent
+                                  <!-- <DataTableComponent
                                     :headers="product_set_material_headers"
                                     :items="product_set_material_data"
                                     dense
-                                  />
+                                  /> -->
+                                  <v-data-table
+                                    :headers="product_set_material_headers"
+                                    :items="product_set_material_data"
+                                    item-key="product_code"
+                                    dense
+                                  >
+                                    <template v-slot:item="{ item }">
+                                      <tr>
+                                        <td align="center">{{ item.type }}</td>
+                                        <td align="center">{{ item.classification }}</td>
+                                        <td align="center">{{ item.product_code }}</td>
+                                        <td align="center">{{ item.name }}</td>
+                                        <td align="center">{{ item.model }}</td>
+                                        <td align="center">{{ item.spec }}</td>
+                                        <td align="center">{{ item.manufacturer }}</td>
+                                        <td align="center">
+                                          <v-text-field
+                                            dense
+                                            hide-details
+                                            v-model="item.module_material_num"
+                                            style="width:100px;font-size: 0.775rem !important;"
+                                            type="number"
+                                            filled
+                                          ></v-text-field>
+                                        </td>
+                                        <td align="center">{{ item.unit_price }}</td>
+                                        <td align="center">{{ item.unit_price * item.module_material_num }}</td>
+                                      </tr>
+                                    </template>
+                                  </v-data-table>
                                 </v-col>
                               </v-row>
                             </v-container>
@@ -1345,7 +1401,7 @@ export default {
 
       newProductItem: {
         classification:'',
-        module_code: '',
+        product_code: '',
         name: '',
         model: '',
         spec: '',
@@ -1384,7 +1440,7 @@ export default {
       ],
       module_set_material_headers: [
         { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'material_code', },
+        { text: '관리코드', align: 'center', value: 'module_code', },
         { text: '자재명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
@@ -1422,7 +1478,7 @@ export default {
       product_set_material_headers: [
         { text: '종류', align: 'center', value: 'type', },
         { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'material_code', },
+        { text: '관리코드', align: 'center', value: 'product_code', },
         { text: '자재명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
@@ -1713,12 +1769,21 @@ export default {
       product_data: [
         {
           product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
+          classification: 'GFM',
+          model: '완제품모델1',
+          manufacturer: '제조사2',
           name: 'ESS GFM용 PCS',
           spec: '380VAC 500kW',
+          unit_price: '1000',
+          stock_num: '1',
+          condition: 'G',
+          pe_number: 'PE240101-001',
           id:'380vac_500kW',
           button_toggle:true,
           product_info: [
             {
+              type:'반제품',
+              classification: '일반',
               product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01',
               name: 'PCS Ass`Y',
               model: '',
@@ -1862,6 +1927,8 @@ export default {
             },
             {
               product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02',
+              classification: '일반',
+              type:'반제품',
               name: '제어기 Ass`Y',
               model: '',
               spec: '',
@@ -2097,8 +2164,8 @@ export default {
     },
 
     editItem (item) {
-        this.editedMaterialIndex = this.material_data.indexOf(item)
-        this.editedMaterialItem = Object.assign({}, item)
+      this.editedMaterialIndex = this.material_data.indexOf(item)
+      this.editedMaterialItem = Object.assign({}, item)
       this.material_dialog = true
     },
 
@@ -2148,6 +2215,69 @@ export default {
         this.material_data.push(this.editedMaterialItem)
       }
       this.close()
+    },
+
+    registModule(){
+      this.module_dialog = true;
+      this.module_set_material_data = [];
+      this.newModuleItem.classification = '';
+      this.newModuleItem.module_code = '';
+      this.newModuleItem.name = '';
+      this.newModuleItem.model = '';
+      this.newModuleItem.spec = '';
+      this.newModuleItem.manufacturer = '';
+      this.newModuleItem.stock_num = '';
+      this.newModuleItem.condition = '';
+      this.newModuleItem.pe_number = '';
+      this.newModuleItem.unit_price = '';
+      this.newModuleItem.photo = '';
+    },
+
+    editModule(item){
+      this.module_dialog = true;
+      this.newModuleItem.classification = item.classification;
+      this.newModuleItem.module_code = item.module_code;
+      this.newModuleItem.name = item.name;
+      this.newModuleItem.model = item.model;
+      this.newModuleItem.spec = item.spec;
+      this.newModuleItem.manufacturer = item.manufacturer;
+      this.newModuleItem.stock_num = item.stock_num;
+      this.newModuleItem.condition = item.condition;
+      this.newModuleItem.pe_number = item.pe_number;
+      this.newModuleItem.unit_price = item.unit_price;
+      this.newModuleItem.photo = item.photo;
+      this.module_set_material_data = item.belong_data;
+    },
+
+    registProduct(){
+      this.product_dialog = true;
+      this.product_set_material_data = [];
+      this.newProductItem.classification = '';
+      this.newProductItem.product_code = '';
+      this.newProductItem.name = '';
+      this.newProductItem.model = '';
+      this.newProductItem.spec = '';
+      this.newProductItem.manufacturer = '';
+      this.newProductItem.stock_num = '';
+      this.newProductItem.condition = '';
+      this.newProductItem.pe_number = '';
+      this.newProductItem.unit_price = '';
+      this.newProductItem.photo = '';
+    },
+    editProduct(item){
+      this.product_dialog = true
+      this.newProductItem.classification = item.classification;
+      this.newProductItem.product_code = item.product_code;
+      this.newProductItem.name = item.name;
+      this.newProductItem.model = item.model;
+      this.newProductItem.spec = item.spec;
+      this.newProductItem.manufacturer = item.manufacturer;
+      this.newProductItem.stock_num = item.stock_num;
+      this.newProductItem.condition = item.condition;
+      this.newProductItem.pe_number = item.pe_number;
+      this.newProductItem.unit_price = item.unit_price;
+      this.newProductItem.photo = item.photo;
+      this.product_set_material_data = item.product_info;
     },
 
     async uploadMaterial () {
