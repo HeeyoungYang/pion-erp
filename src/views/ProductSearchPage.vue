@@ -56,7 +56,6 @@
                   </span>
                   <v-menu
                     open-on-hover
-                    v-model="inbound_approval_approved"
                     :close-on-content-click="false"
                     :nudge-width="100"
                     offset-x
