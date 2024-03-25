@@ -269,6 +269,19 @@
                           </v-menu>
 
                           <v-btn
+                            color="primary"
+                            fab
+                            x-small
+                            class="mr-3 float-right dont_print"
+                            elevation="0"
+                            data-html2canvas-ignore="true"
+                            @click="dialog_calculate_labor = true"
+                          >
+                            <v-icon
+                              small
+                            >mdi-pencil</v-icon>
+                          </v-btn>
+                          <!-- <v-btn
                             v-if="edit_labor_cost_data"
                             color="primary"
                             fab
@@ -294,13 +307,39 @@
                             <v-icon
                               small
                             >mdi-check</v-icon>
-                          </v-btn>
+                          </v-btn> -->
                         </v-col>
                       </v-row>
 
                     </v-card-title>
                     <v-card-text>
                       <v-data-table
+                        dense
+                        :headers="labor_cost_headers"
+                        :items="labor_cost_data"
+                        hide-default-footer
+                        disable-pagination
+                        class="elevation-1 labor_cost_list"
+                        disable-sort
+                      >
+                        <template v-slot:item="{ item, index }">
+                          <tr>
+                            <td align="center">{{ item.no }}</td>
+                            <td align="center">{{ item.name }}</td>
+                            <td align="center">{{ item.type }}</td>
+                            <td align="center">{{ item.occupation }}</td>
+                            <td align="center">{{ item.man_per_day }}</td>
+                            <td align="center">{{ Math.round(item.surcharge_ratio * 100) }}%</td>
+                            <td align="center">{{ item.adjustment_ratio }}</td>
+                            <td align="center">{{ item.man_per_hour }}</td>
+                            <td align="center">{{ item.unit_price }}</td>
+                            <td align="center">{{ item.quantity }}</td>
+                            <td align="center">{{  item.total_amount ? item.total_amount : (item.man_per_hour * item.quantity * item.unit_price).toFixed(0) }}</td>
+                            <td align="center" :class="calcRowSpan(item.name, index) == 0? 'd-none' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? item.no_total_amount : calcNoTotalAmount(item.name) }}</td>
+                          </tr>
+                        </template>
+                      </v-data-table>
+                      <!-- <v-data-table
                         dense
                         :headers="labor_cost_headers"
                         :items="labor_cost_data"
@@ -321,26 +360,29 @@
                                 hide-details
                                 v-model="item.occupation"
                                 label=""
-                                style="max-width:200px"
-                                @change="selectOccupationFunc(item.occupation, index)"
+                                style="max-width:130px; font-size:0.775rem!important"
+                                @change="selectOccupationFunc(item, item.occupation, index)"
                                 :disabled="edit_labor_cost_data"
                               ></v-select>
                             </td>
                             <td align="center">{{ item.man_per_day }}</td>
-                            <td align="center">{{ item.surcharge_ratio }}</td>
+                            <td align="center">{{ Math.round(item.surcharge_ratio * 100) }}%</td>
                             <td align="center">{{ item.adjustment_ratio }}</td>
                             <td align="center">{{ item.man_per_hour }}</td>
                             <td align="center">{{ item.unit_price }}</td>
                             <td align="center">
                               <v-text-field
+                                v-model="item.quantity"
                                 dense
                                 hide-details
-                                style="max-width:200px"
+                                type="number"
+                                style="max-width:110px; font-size:0.775rem!important"
                                 :disabled="edit_labor_cost_data"
+                                @keyup="calcAmount(item)"
                               ></v-text-field>
                             </td>
-                            <td align="center"></td>
-                            <td align="center"></td>
+                            <td align="center">{{  item.total_amount ? item.total_amount : (item.man_per_hour * item.quantity * item.unit_price).toFixed(0) }}</td>
+                            <td align="center" :class="calcRowSpan(item.name, index) == 0? 'd-none' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? item.no_total_amount : calcNoTotalAmount(item.name) }}</td>
                             <td align="center">
                               <v-icon
                                 color="primary"
@@ -358,7 +400,7 @@
                             </td>
                           </tr>
                         </template>
-                      </v-data-table>
+                      </v-data-table> -->
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
@@ -467,7 +509,24 @@
             hide-default-footer
             disable-pagination
             disable-sort
-          />
+          >
+            <template v-slot:item="{ item, index }">
+              <tr>
+                <td align="center">{{ item.no }}</td>
+                <td align="center">{{ item.name }}</td>
+                <td align="center">{{ item.type }}</td>
+                <td align="center">{{ item.occupation }}</td>
+                <td align="center">{{ item.man_per_day }}</td>
+                <td align="center">{{ Math.round(item.surcharge_ratio * 100) }}%</td>
+                <td align="center">{{ item.adjustment_ratio }}</td>
+                <td align="center">{{ item.man_per_hour }}</td>
+                <td align="center">{{ item.unit_price }}</td>
+                <td align="center">{{ item.quantity }}</td>
+                <td align="center">{{  item.total_amount ? item.total_amount : (item.man_per_hour * item.quantity * item.unit_price).toFixed(0) }}</td>
+                <td align="center" :class="calcRowSpan(item.name, index) == 0? 'print_labor_cost_dnone' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? item.no_total_amount : calcNoTotalAmount(item.name) }}</td>
+              </tr>
+            </template>
+          </v-data-table>
       </div>
     </v-main>
 
@@ -631,8 +690,8 @@
             <v-col>
               <v-data-table
                 dense
-                :headers="labor_cost_headers"
-                :items="labor_cost_list"
+                :headers="labor_list_headers"
+                :items="tab_main === 0 ? labor_cost_data : labor_cost_list"
                 hide-default-footer
                 disable-pagination
                 class="elevation-1"
@@ -651,8 +710,8 @@
                         hide-details
                         v-model="item.occupation"
                         label=""
-                        style="max-width:200px"
-                        @change="selectOccupationFunc(item.occupation, index)"
+                        style="max-width:160px; font-size:0.775rem!important"
+                        @change="selectOccupationFunc(item, item.occupation, index)"
                       ></v-select>
                     </td>
                     <td align="center">{{ item.man_per_day }}</td>
@@ -662,13 +721,15 @@
                     <td align="center">{{ item.unit_price }}</td>
                     <td align="center">
                       <v-text-field
+                        v-model="item.quantity"
                         dense
                         hide-details
                         filled
+                        type="number"
+                        style="max-width:110px; font-size:0.775rem!important"
                       ></v-text-field>
                     </td>
-                    <td align="center"></td>
-                    <td align="center"></td>
+                    <td align="center">{{  item.total_amount ? item.total_amount : (item.man_per_hour * item.quantity * item.unit_price).toFixed(0) }}</td>
                     <td align="center">
                       <v-icon
                         color="primary"
@@ -717,7 +778,7 @@ export default {
         dialog_search_product: false,
         dialog_calculate_labor: false,
         dialogDelete: false,
-        edit_labor_cost_data: true,
+        // edit_labor_cost_data: true,
         edit_survey_cost_data: true,
         print_labor_table: false,
         editedIndex: -1,
@@ -764,6 +825,19 @@ export default {
           { text: '수량', align: 'center', value: 'quantity', },
           { text: '금액', align: 'center', value: 'total_amount', },
           { text: '공정별 금액', align: 'center', value: 'no_total_amount', },
+        ],
+        labor_list_headers: [
+          { text: '품번', align: 'center', value: 'no'},
+          { text: '공종', align: 'center', value: 'name', },
+          { text: '규격', align: 'center', value: 'type', },
+          { text: '직종', align: 'center', value: 'occupation', },
+          { text: '공량(M/D)', align: 'center', value: 'man_per_day', },
+          { text: '할증율', align: 'center', value: 'surcharge_ratio', },
+          { text: '설계조정률', align: 'center', value: 'adjustment_ratio', },
+          { text: '공량(M/H)', align: 'center', value: 'man_per_hour', },
+          { text: '단가(M/D)', align: 'center', value: 'unit_price', },
+          { text: '수량', align: 'center', value: 'quantity', },
+          { text: '금액', align: 'center', value: 'total_amount', },
           { text: '추가', align: 'center', value: '', },
         ],
         dialog_search_product_headers:[
@@ -1282,13 +1356,13 @@ export default {
             type:'240㎟, 1C',
             occupation:'저압 케이블전공',
             man_per_day:'0.136',
-            surcharge_ratio:'115%',
+            surcharge_ratio:'1.15',
             adjustment_ratio:'1.0000',
             man_per_hour:'0.156',
-            unit_price:'290,333',
-            quantity:'2,280',
-            total_amount:'103,530,425',
-            no_total_amount:'103,530,425',
+            unit_price:'290333',
+            quantity:'2280',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-2',
@@ -1296,13 +1370,13 @@ export default {
             type:'6㎟, 2C',
             occupation:'저압 케이블전공',
             man_per_day:'0.018',
-            surcharge_ratio:'120%',
+            surcharge_ratio:'1.2',
             adjustment_ratio:'1.0000',
             man_per_hour:'0.022',
-            unit_price:'290,333',
+            unit_price:'290333',
             quantity:'880',
-            total_amount:'5,518,649',
-            no_total_amount:'20,639,191',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-2',
@@ -1310,13 +1384,13 @@ export default {
             type:'2.5㎟, 6C',
             occupation:'저압 케이블전공',
             man_per_day:'0.035',
-            surcharge_ratio:'120%',
+            surcharge_ratio:'1.2',
             adjustment_ratio:'1.0000',
             man_per_hour:'0.042',
-            unit_price:'290,333',
+            unit_price:'290333',
             quantity:'1240',
-            total_amount:'15,120,542',
-            no_total_amount:'20,639,191',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-3',
@@ -1324,13 +1398,13 @@ export default {
             type:'240㎟, 1C',
             occupation:'고압 케이블전공',
             man_per_day:'1.170',
-            surcharge_ratio:'120%',
+            surcharge_ratio:'1.2',
             adjustment_ratio:'1.0000',
             man_per_hour:'1.404',
-            unit_price:'353,395',
+            unit_price:'353395',
             quantity:'12',
-            total_amount:'5,953,998',
-            no_total_amount:'5,953,998',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-4',
@@ -1338,13 +1412,13 @@ export default {
             type:'6㎥, 1.5 Ton이하',
             occupation:'비계공',
             man_per_day:'2.00',
-            surcharge_ratio:'100%',
+            surcharge_ratio:'1',
             adjustment_ratio:'1.0000',
             man_per_hour:'2.000',
-            unit_price:'281,721',
+            unit_price:'281721',
             quantity:'3',
-            total_amount:'1,690,326',
-            no_total_amount:'50,485,019',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-4',
@@ -1352,13 +1426,13 @@ export default {
             type:'6㎥, 1.5 Ton이하',
             occupation:'변전전공',
             man_per_day:'4.05',
-            surcharge_ratio:'100%',
+            surcharge_ratio:'1',
             adjustment_ratio:'1.0000',
             man_per_hour:'4.050',
-            unit_price:'451,145',
+            unit_price:'451145',
             quantity:'3',
-            total_amount:'5,481,411',
-            no_total_amount:'50,485,019',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-4',
@@ -1366,13 +1440,13 @@ export default {
             type:'6㎥, 1.5 Ton이하',
             occupation:'보통인부',
             man_per_day:'3.30',
-            surcharge_ratio:'100%',
+            surcharge_ratio:'1',
             adjustment_ratio:'1.0000',
             man_per_hour:'3.300',
-            unit_price:'161,858',
+            unit_price:'161858',
             quantity:'3',
-            total_amount:'1,602,394',
-            no_total_amount:'50,485,019',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-4',
@@ -1380,13 +1454,13 @@ export default {
             type:'10㎥, 3 Ton 이하',
             occupation:'비계공',
             man_per_day:'4.00',
-            surcharge_ratio:'100%',
+            surcharge_ratio:'1',
             adjustment_ratio:'1.0000',
             man_per_hour:'4.000',
-            unit_price:'281,721',
+            unit_price:'281721',
             quantity:'8',
-            total_amount:'9,015,072',
-            no_total_amount:'50,485,019',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-4',
@@ -1394,13 +1468,13 @@ export default {
             type:'10㎥, 3 Ton 이하',
             occupation:'변전전공',
             man_per_day:'7.05',
-            surcharge_ratio:'100%',
+            surcharge_ratio:'1',
             adjustment_ratio:'1.0000',
             man_per_hour:'7.050',
-            unit_price:'451,145',
+            unit_price:'451145',
             quantity:'8',
-            total_amount:'25,444,578',
-            no_total_amount:'50,485,019',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-4',
@@ -1408,13 +1482,13 @@ export default {
             type:'10㎥, 3 Ton 이하',
             occupation:'보통인부',
             man_per_day:'5.60',
-            surcharge_ratio:'100%',
+            surcharge_ratio:'1',
             adjustment_ratio:'1.0000',
             man_per_hour:'5.600',
-            unit_price:'161,858',
+            unit_price:'161858',
             quantity:'8',
-            total_amount:'7,251,238',
-            no_total_amount:'50,485,019',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-5',
@@ -1422,13 +1496,13 @@ export default {
             type:'50sq, 3C',
             occupation:'저압 케이블전공',
             man_per_day:'0.043',
-            surcharge_ratio:'200%',
+            surcharge_ratio:'2',
             adjustment_ratio:'1.0000',
             man_per_hour:'0.086',
-            unit_price:'290,333',
+            unit_price:'290333',
             quantity:'240',
-            total_amount:'5,992,473',
-            no_total_amount:'5,992,473',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-6',
@@ -1436,13 +1510,13 @@ export default {
             type:'단면적 50,000㎟ 이하',
             occupation:'내선전공',
             man_per_day:'0.200',
-            surcharge_ratio:'144%',
+            surcharge_ratio:'1.44',
             adjustment_ratio:'1.0000',
             man_per_hour:'0.288',
-            unit_price:'269,968',
+            unit_price:'269968',
             quantity:'105',
-            total_amount:'8,163,832',
-            no_total_amount:'9,096,841',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-6',
@@ -1450,13 +1524,13 @@ export default {
             type:'단면적 30,000㎟ 이하',
             occupation:'내선전공',
             man_per_day:'0.160',
-            surcharge_ratio:'144%',
+            surcharge_ratio:'1.44',
             adjustment_ratio:'1.0000',
             man_per_hour:'0.230',
-            unit_price:'269,968',
+            unit_price:'269968',
             quantity:'15',
-            total_amount:'933,009',
-            no_total_amount:'9,096,841',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-7',
@@ -1464,13 +1538,13 @@ export default {
             type:'지중 인력견인 포설',
             occupation:'보통인부',
             man_per_day:'1.410',
-            surcharge_ratio:'100%',
+            surcharge_ratio:'1',
             adjustment_ratio:'1.0000',
             man_per_hour:'1.410',
-            unit_price:'161,858',
+            unit_price:'161858',
             quantity:'2.8',
-            total_amount:'639,015',
-            no_total_amount:'639,015',
+            total_amount:'',
+            no_total_amount:'',
           },
         ],
 
@@ -1481,13 +1555,13 @@ export default {
             type:'240㎟, 1C',
             occupation:'',
             man_per_day:'0.136',
-            surcharge_ratio:'115%',
+            surcharge_ratio:'1.15',
             adjustment_ratio:'',
-            man_per_hour:'0.156',
+            man_per_hour:'',
             unit_price:'',
-            quantity:'2,280',
-            total_amount:'103,530,425',
-            no_total_amount:'103,530,425',
+            quantity:'',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-2',
@@ -1495,13 +1569,13 @@ export default {
             type:'6㎟, 2C',
             occupation:'',
             man_per_day:'0.018',
-            surcharge_ratio:'120%',
+            surcharge_ratio:'1.20',
             adjustment_ratio:'',
-            man_per_hour:'0.022',
+            man_per_hour:'',
             unit_price:'',
-            quantity:'880',
-            total_amount:'5,518,649',
-            no_total_amount:'20,639,191',
+            quantity:'',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-2',
@@ -1509,13 +1583,13 @@ export default {
             type:'2.5㎟, 6C',
             occupation:'',
             man_per_day:'0.035',
-            surcharge_ratio:'120%',
+            surcharge_ratio:'1.20',
             adjustment_ratio:'',
-            man_per_hour:'0.042',
+            man_per_hour:'',
             unit_price:'',
-            quantity:'1240',
-            total_amount:'15,120,542',
-            no_total_amount:'20,639,191',
+            quantity:'',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-3',
@@ -1523,13 +1597,13 @@ export default {
             type:'240㎟, 1C',
             occupation:'',
             man_per_day:'1.170',
-            surcharge_ratio:'120%',
+            surcharge_ratio:'1.20',
             adjustment_ratio:'',
-            man_per_hour:'1.404',
+            man_per_hour:'',
             unit_price:'',
-            quantity:'12',
-            total_amount:'5,953,998',
-            no_total_amount:'5,953,998',
+            quantity:'',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-4',
@@ -1537,13 +1611,13 @@ export default {
             type:'6㎥, 1.5 Ton이하',
             occupation:'',
             man_per_day:'2.00',
-            surcharge_ratio:'100%',
+            surcharge_ratio:'1',
             adjustment_ratio:'',
-            man_per_hour:'2.000',
+            man_per_hour:'',
             unit_price:'',
-            quantity:'3',
-            total_amount:'1,690,326',
-            no_total_amount:'50,485,019',
+            quantity:'',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-4',
@@ -1551,13 +1625,13 @@ export default {
             type:'10㎥, 3 Ton 이하',
             occupation:'',
             man_per_day:'4.00',
-            surcharge_ratio:'100%',
+            surcharge_ratio:'1',
             adjustment_ratio:'',
-            man_per_hour:'4.000',
+            man_per_hour:'',
             unit_price:'',
-            quantity:'8',
-            total_amount:'9,015,072',
-            no_total_amount:'50,485,019',
+            quantity:'',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-5',
@@ -1565,13 +1639,13 @@ export default {
             type:'50sq, 3C',
             occupation:'',
             man_per_day:'0.043',
-            surcharge_ratio:'200%',
+            surcharge_ratio:'2',
             adjustment_ratio:'',
-            man_per_hour:'0.086',
+            man_per_hour:'',
             unit_price:'',
-            quantity:'240',
-            total_amount:'5,992,473',
-            no_total_amount:'5,992,473',
+            quantity:'',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-6',
@@ -1579,13 +1653,13 @@ export default {
             type:'단면적 50,000㎟ 이하',
             occupation:'',
             man_per_day:'0.200',
-            surcharge_ratio:'144%',
+            surcharge_ratio:'1.44',
             adjustment_ratio:'',
-            man_per_hour:'0.288',
+            man_per_hour:'',
             unit_price:'',
-            quantity:'105',
-            total_amount:'8,163,832',
-            no_total_amount:'9,096,841',
+            quantity:'',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-6',
@@ -1593,13 +1667,13 @@ export default {
             type:'단면적 30,000㎟ 이하',
             occupation:'',
             man_per_day:'0.160',
-            surcharge_ratio:'144%',
+            surcharge_ratio:'1.44',
             adjustment_ratio:'',
-            man_per_hour:'0.230',
+            man_per_hour:'',
             unit_price:'',
-            quantity:'15',
-            total_amount:'933,009',
-            no_total_amount:'9,096,841',
+            quantity:'',
+            total_amount:'',
+            no_total_amount:'',
           },
           {
             no:'품-7',
@@ -1607,13 +1681,13 @@ export default {
             type:'지중 인력견인 포설',
             occupation:'',
             man_per_day:'1.410',
-            surcharge_ratio:'100%',
+            surcharge_ratio:'1',
             adjustment_ratio:'',
-            man_per_hour:'1.410',
+            man_per_hour:'',
             unit_price:'',
-            quantity:'2.8',
-            total_amount:'639,015',
-            no_total_amount:'639,015',
+            quantity:'',
+            total_amount:'',
+            no_total_amount:'',
           },
         ],
 
@@ -1635,21 +1709,30 @@ export default {
       this.dialog_selected_product_data = item;
       this.calc_cost_detail_data2[0].belong_data = item.belong_data;
     },
-    selectOccupationFunc(data, idx){
+    selectOccupationFunc(item, data){
       let wage_list = this.wage_unit_price_list
       for(let i = 0; i < wage_list.length; i++){
         if(data == wage_list[i].occupation){
-          this.labor_cost_list[idx].unit_price = wage_list[i].unit_price
-          this.labor_cost_list[idx].adjustment_ratio = wage_list[i].adjustment_ratio
+          item.unit_price = wage_list[i].unit_price
+          item.adjustment_ratio = wage_list[i].adjustment_ratio
+          item.man_per_hour =  (item.man_per_day * item.surcharge_ratio * item.adjustment_ratio).toFixed(3);
         }
       }
     },
     addLaborCostList(item, idx){
       const newItem = JSON.parse(JSON.stringify(item));
-      this.labor_cost_list.splice(idx, 0, newItem)
+      if(this.tab_main == 0){
+        this.labor_cost_data.splice(idx, 0, newItem)
+      }else if (this.tab_main == 1){
+        this.labor_cost_list.splice(idx, 0, newItem)
+      }
     },
     deleteLaborCostList(idx){
+      if(this.tab_main == 0){
+      this.labor_cost_data.splice(idx, 1);
+      }else if (this.tab_main == 1){
       this.labor_cost_list.splice(idx, 1);
+      }
     },
     deleteItem () {
       this.dialogDelete = true;
@@ -1661,7 +1744,30 @@ export default {
     closeDelete(){
       this.dialogDelete = false;
     },
-
+    calcNoTotalAmount(labor){
+      let labor_data = this.labor_cost_data
+      let sum_no_total_amount = 0;
+      labor_data.forEach(data =>{
+        if(data.name == labor){
+          sum_no_total_amount += Number((data.man_per_hour * data.quantity * data.unit_price).toFixed(0));
+        }
+      })
+      return sum_no_total_amount;
+    },
+    calcRowSpan(labor, idx){
+      let labor_data = this.labor_cost_data
+      let rowspan = 0;
+      if(idx > 0  && labor_data[idx].name == labor_data[idx-1].name){
+        rowspan = 0;
+      }else {
+        labor_data.forEach(data =>{
+          if(data.name == labor){
+            rowspan++;
+          }
+        })
+      }
+      return rowspan;
+    },
     printLaborCost(fileName){
       this.print_labor_table = true;
 
@@ -1760,6 +1866,5 @@ export default {
 #print_labor_cost table th{white-space: normal;}
 #print_labor_cost table td,
 #print_labor_cost table th{white-space: normal; padding: 5px 10px; font-size:7px!important}
-#print_labor_cost table th:last-child,
-#print_labor_cost table td:last-child{display: none;}
+.print_labor_cost_dnone{display: none;}
 </style>

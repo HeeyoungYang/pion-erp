@@ -102,8 +102,8 @@
                   >
                   <DataTableComponent
                       :headers="headers"
-                      :items="data.product_info"
-                      :item-key="data.product_info.product_code"
+                      :items="data.belong_data"
+                      :item-key="data.belong_data.product_code"
                       hide-default-footer
                       disable-pagination
                       children-key="belong_data"
@@ -167,7 +167,7 @@ export default {
           spec: '380VAC 500kW',
           id:'380vac_500kW',
           button_toggle:true,
-          product_info: [
+          belong_data: [
             {
               product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01',
               module_material_name: 'PCS Ass`Y',
