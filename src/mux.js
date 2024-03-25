@@ -215,23 +215,23 @@ mux.Server = {
         if (reqObj.files && Array.isArray(reqObj.files)){
           reqObj.files.forEach((file, index) => {
             if (file.folder){
-              formData.append('folder'+index, file.folder);
+              formData.append('folder_'+index, file.folder);
             }else {
               if (reqObj.folder){
-                formData.append('folder'+index, reqObj.folder);
+                formData.append('folder_'+index, reqObj.folder);
               }else {
-                reject('upload file error: 폴더명, 파일 정보와 함께 요청해야 합니다.');
+                reject('upload file error: 폴더명 정보와 함께 요청해야 합니다.');
               }
             }
             formData.append('fileName_'+index, file.name);
-            formData.append('fileType_'+index, file.type);
-            formData.append('file_'+index, file.file);
+            formData.append('file', file.file);
           });
         }else if (reqObj.file && reqObj.folder) {
           formData.append('folder_0', reqObj.folder);
           formData.append('fileName_0', reqObj.file.name);
-          formData.append('fileType_0', reqObj.file.type);
-          formData.append('file_0', reqObj.file);
+          formData.append('file', reqObj.file);
+        }else if (reqObj.file) {
+          reject('upload file error: 폴더명 정보와 함께 요청해야 합니다.')
         }else {
           reject('upload file error: 업로드 대상이 없습니다.');
         }
@@ -271,12 +271,40 @@ mux.Server = {
         }else {
           reject('download file error: 폴더명, 파일 정보와 함께 요청해야 합니다.');
         }
+        if (!reqObj.path) {
+          reject('upload file error: path 정보와 함께 요청해야 합니다.');
+        }
+
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
+        if (reqObj.timeout){
+          this.axiosInstance.defaults.timeout = reqObj.timeout;
+        }
+        
         Object.keys(reqObj).forEach(key => {
           if (key !== 'path' && key !== 'folder' && key !== 'fileName'){
             sendData[key] = reqObj[key];
           }
         });
         const result = await mux.Server.get(sendData);
+        const fileData = result.data.data; // Base64로 인코딩된 파일 데이터
+        const fileName = reqObj.fileName; // 파일명
+
+        // Base64 디코딩하여 Blob 객체 생성
+        const byteCharacters = atob(fileData);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+
+        // Blob 객체를 다운로드할 수 있는 링크 생성
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
         resolve(result);
       } catch (error) {
         reject(error);
