@@ -139,11 +139,10 @@ export default {
 
       searchCardInputs:[
         {label:'승인', type:'auto', col:'12', sm:'4', lg:'2', value:'All', list:['All', '승인', '미승인', '반려']},
-        {label:'발주번호', col:'12', sm:'4', lg:'2', value: ''},
+        {label:'프로젝트', col:'12', sm:'4', lg:'2', value: ''},
         {label:'관리코드', col:'12', sm:'4', lg:'2', value: ''},
         {label:'제품명', col:'12', sm:'4', lg:'2', value: ''},
-        {label:'제조사', col:'12', sm:'4', lg:'2', value: ''},
-        {label:'입고일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'2'}
+        {label:'출고 요청일', type:'date', range:true, value:[], col:'12', sm:'4', lg:'2'}
       ],
 
       ship_approve_headers: [
