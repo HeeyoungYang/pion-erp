@@ -178,7 +178,7 @@
                                       small
                                       class="mr-2"
                                       elevation="2"
-                                      @click="save"
+                                      @click="uploadMaterial"
                                     >
                                       저장
                                     </v-btn>
@@ -305,6 +305,7 @@
                                     sm="6"
                                   >
                                   <v-file-input
+                                    ref="material_photo"
                                     small-chips
                                     label="사진"
                                   ></v-file-input>
@@ -765,7 +766,7 @@
                                       alt="Pionelectric Logo"
                                       class="shrink mr-2"
                                       contain
-                                      src="../assets/img/pion_logo.png"
+                                      :src="testImg ? testImg : ''"
                                       transition="scale-transition"
                                       width="150"
                                     />
@@ -1107,6 +1108,7 @@ export default {
   data() {
     return {
       mux: mux,
+      testImg: '',
       tab_main: null,
       tab_items:['원부자재 정보', '반제품 정보', '완제품 정보'],
       dialog_excel: false,
@@ -1950,6 +1952,21 @@ export default {
       }
       this.close()
     },
+
+    async uploadMaterial () {
+      let files = this.$refs.material_photo.$refs.input.files;
+      if (files.length > 0){
+        // 업로드할 때, 이미지 파일을 리사이징하고 바이너리 데이터 생성(백엔드로 전달해 DB에 저장할 데이터)
+        const thumbnailBuffer = await mux.Util.resizeImageToBinary(files[0], 300, 300);
+
+        // // 업로드할 때, 원본도 AWS S3 버킷에 업로드해야 함.
+        // mux.Server.uploadFile(reqObj);
+        
+        // 출력할 때, 바이너리 데이터를 img src 에 적용(백엔드로 받은 데이터)
+        this.testImg = mux.Util.binaryToURL(thumbnailBuffer);
+      }
+    },
+
     loadExcelFile(event) {
       if(event){
         const file = event;
