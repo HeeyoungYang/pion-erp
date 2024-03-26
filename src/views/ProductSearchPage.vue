@@ -10,31 +10,34 @@
           cols="12"
           sm="11"
         >
-
-        <InputsCardComponent
+          <CardComponent
             elevation="1"
             text-class=" pt-3"
-            dense
-            clearable
-            filled
-            hide-details
-            :inputs="searchCardInputs"
+            title-class="d-none"
           >
-            <v-col
-              cols="12"
-              sm="4"
-              lg="3"
+            <InputsFormComponent
+              slot="cardText"
+              dense
+              clearable
+              filled
+              hide-details
+              :inputs="searchCardInputs"
             >
-              <v-btn
-                color="primary"
-                elevation="2"
-                @click="searchButton"
+              <v-col
+                cols="12"
+                sm="4"
+                lg="3"
               >
-                <v-icon>mdi-magnify</v-icon>검색
-              </v-btn>
-            </v-col>
-          </InputsCardComponent>
-
+                <v-btn
+                  color="primary"
+                  elevation="2"
+                  @click="searchButton"
+                >
+                  <v-icon>mdi-magnify</v-icon>검색
+                </v-btn>
+              </v-col>
+            </InputsFormComponent>
+          </CardComponent>
           <div>
             <ExpansionPanelComponent
               :data="product_data"
@@ -124,14 +127,16 @@
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent.vue";
 import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
-import InputsCardComponent from "@/components/InputsCardComponent.vue";
+import CardComponent from "@/components/CardComponent.vue";
+import InputsFormComponent from "@/components/InputsFormComponent.vue";
 
 export default {
   components: {
                 NavComponent,
                 DataTableComponent,
                 ExpansionPanelComponent,
-                InputsCardComponent
+                CardComponent,
+                InputsFormComponent,
               },
   mounted(){
     // this.closeAll()

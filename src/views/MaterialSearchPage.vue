@@ -10,48 +10,53 @@
           cols="12"
           sm="11"
         >
-          <InputsCardComponent
+          <CardComponent
             elevation="1"
             text-class=" pt-3"
-            dense
-            clearable
-            filled
-            hide-details
-            :inputs="searchCardInputs"
+            title-class="d-none"
           >
-            <v-col
-              cols="12"
-              sm="4"
-              lg="3"
+            <InputsFormComponent
+              slot="cardText"
+              dense
+              clearable
+              filled
+              hide-details
+              :inputs="searchCardInputs"
             >
-              <v-row>
-                <v-col
-                  cols="6"
-                  sm="6"
-                  lg="6"
-                >
-                  <v-checkbox
-                    v-model="stock_more_0"
-                    label="재고 > 0"
-                  ></v-checkbox>
-                </v-col>
-                <v-col
-                  cols="6"
-                  sm="6"
-                  lg="6"
-                  align-self="center"
-                >
-                  <v-btn
-                    color="primary"
-                    elevation="2"
-                    @click="searchButton"
+              <v-col
+                cols="12"
+                sm="4"
+                lg="3"
+              >
+                <v-row>
+                  <v-col
+                    cols="6"
+                    sm="6"
+                    lg="6"
                   >
-                    <v-icon>mdi-magnify</v-icon>검색
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-col>
-          </InputsCardComponent>
+                    <v-checkbox
+                      v-model="stock_more_0"
+                      label="재고 > 0"
+                    ></v-checkbox>
+                  </v-col>
+                  <v-col
+                    cols="6"
+                    sm="6"
+                    lg="6"
+                    align-self="center"
+                  >
+                    <v-btn
+                      color="primary"
+                      elevation="2"
+                      @click="searchButton"
+                    >
+                      <v-icon>mdi-magnify</v-icon>검색
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </InputsFormComponent>
+          </CardComponent>
           <v-card
           elevation="1"
           class="mt-5"
@@ -98,14 +103,16 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
-import InputsCardComponent from "@/components/InputsCardComponent.vue";
+import CardComponent from "@/components/CardComponent.vue";
+import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import mux from "@/mux";
 
 export default {
   components: {
                 NavComponent,
-                InputsCardComponent,
                 DataTableComponent,
+                CardComponent,
+                InputsFormComponent,
               },
   data(){
     return{
