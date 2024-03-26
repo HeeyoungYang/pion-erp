@@ -10,17 +10,13 @@
           cols="12"
           sm="11"
         >
-          <InputsCardComponent
+          <CardComponent
             elevation="1"
             text-class=" pt-3"
-            dense
-            clearable
-            filled
-            hide-details
-            :inputs="searchCardInputs"
-            v-if="select_product"
+            title-class="mb-0 font-weight-black"
+            divider-class="mb-3"
           >
-            <v-card-title  slot="cardTitle" style="border-bottom: 1px solid #ccc" class="mb-3 font-weight-black">
+            <div slot="cardTitle">
               <span>자재 선택</span>
               <v-btn
                 small
@@ -30,267 +26,281 @@
               >
                 직접 입력형 전환
               </v-btn>
-            </v-card-title>
-            <v-col
-              cols="12"
-              sm="4"
-              lg="3"
-              align-self="center"
+            </div>
+            <InputsFormComponent
+              slot="cardText"
+              dense
+              clearable
+              filled
+              hide-details
+              :inputs="searchCardInputs"
+              v-if="select_product"
             >
-              <v-btn
-                color="primary"
-                elevation="2"
+              <v-col
+                cols="12"
+                sm="4"
+                lg="3"
+                align-self="center"
               >
-                <v-icon>mdi-magnify</v-icon>검색
-              </v-btn>
-            </v-col>
-            <v-col cols="12">
-              <DataTableComponent
-                dense
-                v-model="product_inbound_data"
-                :headers="product_search_headers"
-                :items="product_search_data"
-                item-key="product_code"
-                show-select
-                show-photo
-                />
-            </v-col>
-          </InputsCardComponent>
-
-
-          <InputsCardComponent
+                <v-btn
+                  color="primary"
+                  elevation="2"
+                >
+                  <v-icon>mdi-magnify</v-icon>검색
+                </v-btn>
+              </v-col>
+              <v-col cols="12">
+                <DataTableComponent
+                  dense
+                  v-model="product_inbound_data"
+                  :headers="product_search_headers"
+                  :items="product_search_data"
+                  item-key="product_code"
+                  show-select
+                  show-photo
+                  />
+              </v-col>
+            </InputsFormComponent>
+          </CardComponent>
+          <CardComponent
             elevation="1"
             card-class="mt-5"
             text-class=" pt-3"
-            dense
-            clearable
-            filled
-            hide-details
-            :inputs="inboundCardInputs"
+            title-class="mb-0 font-weight-black"
+            divider-class="mb-3"
           >
-            <v-card-title  slot="cardTitle" style="border-bottom: 1px solid #ccc" class="mb-3 font-weight-black">
+            <div slot="cardTitle">
               입고 정보 입력
-            </v-card-title>
-            <v-col cols="12" sm="4" lg="2" align-self="center">
-              <v-radio-group
-                dense
-                hide-details
-                class="mt-0"
-                v-model="something_wrong_radio"
-                row
-              >
-                <v-radio
-                  label="이상 없음"
-                  value="이상 없음"
-                  @click="something_wrong = false"
-                ></v-radio>
-                <v-radio
-                  label="이상 있음"
-                  value="이상 있음"
-                  class="mr-0"
-                  @click="something_wrong = true"
-                ></v-radio>
-              </v-radio-group>
-            </v-col>
-            <v-col cols="12" sm="4" lg="4" v-if="something_wrong">
-              <v-text-field
-                dense
-                hide-details
-                filled
-                label="사유"
-                v-model="something_wrong_reason"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="4" lg="4" align-self="center">
-              <v-btn
-                small
-                color="default"
-                class="mr-2 ml-4"
-                @click="addProductInboundData"
-                v-if="add_self"
-              >
-                행 추가
-              </v-btn>
-              <v-btn
-                v-if="add_self"
-                small
-                color="error"
-                class="mr-2"
-                @click="addProductInboundDataCancle"
-              >
-                직접 입력형 취소
-              </v-btn>
-              <v-btn
-                small
-                color="success"
-              >
-                입고 승인 요청
-              </v-btn>
-            </v-col>
-            <v-col
-              cols="12"
+            </div>
+            <InputsFormComponent
+              slot="cardText"
+              dense
+              clearable
+              filled
+              hide-details
+              :inputs="inboundCardInputs"
             >
-              <v-data-table
-                dense
-                :headers="product_inbound_headers"
-                :items="product_inbound_data"
-                item-key="product_code"
-                class="elevation-1"
+              <v-col cols="12" sm="4" lg="2" align-self="center">
+                <v-radio-group
+                  dense
+                  hide-details
+                  class="mt-0"
+                  v-model="something_wrong_radio"
+                  row
+                >
+                  <v-radio
+                    label="이상 없음"
+                    value="이상 없음"
+                    @click="something_wrong = false"
+                  ></v-radio>
+                  <v-radio
+                    label="이상 있음"
+                    value="이상 있음"
+                    class="mr-0"
+                    @click="something_wrong = true"
+                  ></v-radio>
+                </v-radio-group>
+              </v-col>
+              <v-col cols="12" sm="4" lg="4" v-if="something_wrong">
+                <v-text-field
+                  dense
+                  hide-details
+                  filled
+                  label="사유"
+                  v-model="something_wrong_reason"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="4" lg="4" align-self="center">
+                <v-btn
+                  small
+                  color="default"
+                  class="mr-2 ml-4"
+                  @click="addProductInboundData"
+                  v-if="add_self"
+                >
+                  행 추가
+                </v-btn>
+                <v-btn
+                  v-if="add_self"
+                  small
+                  color="error"
+                  class="mr-2"
+                  @click="addProductInboundDataCancle"
+                >
+                  직접 입력형 취소
+                </v-btn>
+                <v-btn
+                  small
+                  color="success"
+                >
+                  입고 승인 요청
+                </v-btn>
+              </v-col>
+              <v-col
+                cols="12"
               >
-                <template v-slot:item="{ item }">
-                  <tr v-if="!add_self">
-                    <td align="center">{{  item.product_type }}</td>
-                    <td align="center">{{  item.product_classification }}</td>
-                    <td align="center">{{  item.product_code }}</td>
-                    <td align="center">{{  item.product_name }}</td>
-                    <td align="center">
-                      <v-text-field
-                        dense
-                        hide-details
-                        filled
-                        type="number"
-                        style="max-width:150px"
-                        v-model="item.product_inbound_num"
-                      >
-                      </v-text-field>
-                    </td>
-                    <td align="center">{{  item.product_model }}</td>
-                    <td align="center">
-                      <v-text-field
-                        dense
-                        hide-details
-                        filled
-                        style="max-width:200px"
-                        v-model="item.product_spec"
-                      >
-                      </v-text-field>
-                    </td>
-                    <td align="center">{{  item.manufacturer }}</td>
-                    <td align="center">{{  item.pe_number }}</td>
-                    <td align="center">{{  item.unit_price }}</td>
-                    <td align="center">{{  item.photo }}</td>
-                  </tr>
-                  <tr v-else-if="add_self">
-                    <td align="center">
-                      <v-autocomplete
-                        v-model="item.product_classification"
-                        :items="product_type_list.slice(1)"
-                        dense
-                        filled
-                        hide-details
-                        style="width:150px"
-                      ></v-autocomplete>
-                    </td>
-                    <td align="center">
-                      <v-autocomplete
-                        v-model="item.product_type"
-                        :items="product_classification_list.slice(1)"
-                        dense
-                        filled
-                        hide-details
-                        style="width:150px"
-                      ></v-autocomplete>
-                    </td>
-                    <td align="center">
-                      <v-text-field
-                        dense
-                        hide-details
-                        filled
-                        v-model="item.product_code"
-                        style="width:200px"
-                      >
-                      </v-text-field>
-                    </td>
-                    <td align="center">
-                      <v-text-field
-                        dense
-                        hide-details
-                        filled
-                        v-model="item.product_name"
-                        style="width:150px"
-                      >
-                      </v-text-field>
-                    </td>
-                    <td align="center">
-                      <v-text-field
-                        dense
-                        hide-details
-                        filled
-                        type="number"
-                        v-model="item.product_inbound_num"
-                        style="width:150px"
-                      >
+                <v-data-table
+                  dense
+                  :headers="product_inbound_headers"
+                  :items="product_inbound_data"
+                  item-key="product_code"
+                  class="elevation-1"
+                >
+                  <template v-slot:item="{ item }">
+                    <tr v-if="!add_self">
+                      <td align="center">{{  item.product_type }}</td>
+                      <td align="center">{{  item.product_classification }}</td>
+                      <td align="center">{{  item.product_code }}</td>
+                      <td align="center">{{  item.product_name }}</td>
+                      <td align="center">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          type="number"
+                          style="max-width:150px"
+                          v-model="item.product_inbound_num"
+                        >
+                        </v-text-field>
+                      </td>
+                      <td align="center">{{  item.product_model }}</td>
+                      <td align="center">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          style="max-width:200px"
+                          v-model="item.product_spec"
+                        >
+                        </v-text-field>
+                      </td>
+                      <td align="center">{{  item.manufacturer }}</td>
+                      <td align="center">{{  item.pe_number }}</td>
+                      <td align="center">{{  item.unit_price }}</td>
+                      <td align="center">{{  item.photo }}</td>
+                    </tr>
+                    <tr v-else-if="add_self">
+                      <td align="center">
+                        <v-autocomplete
+                          v-model="item.product_classification"
+                          :items="product_type_list.slice(1)"
+                          dense
+                          filled
+                          hide-details
+                          style="width:150px"
+                        ></v-autocomplete>
+                      </td>
+                      <td align="center">
+                        <v-autocomplete
+                          v-model="item.product_type"
+                          :items="product_classification_list.slice(1)"
+                          dense
+                          filled
+                          hide-details
+                          style="width:150px"
+                        ></v-autocomplete>
+                      </td>
+                      <td align="center">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          v-model="item.product_code"
+                          style="width:200px"
+                        >
+                        </v-text-field>
+                      </td>
+                      <td align="center">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          v-model="item.product_name"
+                          style="width:150px"
+                        >
+                        </v-text-field>
+                      </td>
+                      <td align="center">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          type="number"
+                          v-model="item.product_inbound_num"
+                          style="width:150px"
+                        >
 
-                      </v-text-field>
-                    </td>
-                    <td align="center">
-                      <v-text-field
-                        dense
-                        hide-details
-                        filled
-                        v-model="item.product_model"
-                        style="width:150px"
-                      >
-                      </v-text-field>
-                    </td>
-                    <td align="center">
-                      <v-text-field
-                        dense
-                        hide-details
-                        filled
-                        v-model="item.product_spec"
-                        style="width:150px"
-                      >
-                      </v-text-field>
-                    </td>
-                    <td align="center">
-                      <v-text-field
-                        dense
-                        hide-details
-                        filled
-                        v-model="item.manufacturer"
-                        style="width:150px"
-                      >
-                      </v-text-field>
-                    </td>
-                    <td align="center">
-                      <v-text-field
-                        dense
-                        hide-details
-                        filled
-                        v-model="item.pe_number"
-                        style="width:150px"
-                      >
-                      </v-text-field>
-                    </td>
-                    <td align="center">
-                      <v-text-field
-                        dense
-                        hide-details
-                        filled
-                        type="number"
-                        v-model="item.unit_price"
-                        style="width:150px"
-                      >
+                        </v-text-field>
+                      </td>
+                      <td align="center">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          v-model="item.product_model"
+                          style="width:150px"
+                        >
+                        </v-text-field>
+                      </td>
+                      <td align="center">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          v-model="item.product_spec"
+                          style="width:150px"
+                        >
+                        </v-text-field>
+                      </td>
+                      <td align="center">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          v-model="item.manufacturer"
+                          style="width:150px"
+                        >
+                        </v-text-field>
+                      </td>
+                      <td align="center">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          v-model="item.pe_number"
+                          style="width:150px"
+                        >
+                        </v-text-field>
+                      </td>
+                      <td align="center">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          type="number"
+                          v-model="item.unit_price"
+                          style="width:150px"
+                        >
 
-                      </v-text-field>
-                    </td>
-                    <td align="center">
-                      <v-file-input
-                        small-chips
-                        filled
-                        dense
-                        hide-details
-                        hide-input
-                        v-model="item.photo"
-                        prepend-icon="mdi-image"
-                      ></v-file-input>
-                    </td>
-                  </tr>
-                </template>
-              </v-data-table>
-            </v-col>
-          </InputsCardComponent>
+                        </v-text-field>
+                      </td>
+                      <td align="center">
+                        <v-file-input
+                          small-chips
+                          filled
+                          dense
+                          hide-details
+                          hide-input
+                          v-model="item.photo"
+                          prepend-icon="mdi-image"
+                        ></v-file-input>
+                      </td>
+                    </tr>
+                  </template>
+                </v-data-table>
+              </v-col>
+            </InputsFormComponent>
+          </CardComponent>
         </v-col>
       </v-row>
     </v-main>
@@ -299,13 +309,15 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
-import InputsCardComponent from "@/components/InputsCardComponent.vue";
+import InputsFormComponent from "@/components/InputsFormComponent.vue";
+import CardComponent from "@/components/CardComponent.vue";
 
 export default {
   components: {
                 NavComponent,
                 DataTableComponent,
-                InputsCardComponent,
+                InputsFormComponent,
+                CardComponent,
               },
   data(){
     return{

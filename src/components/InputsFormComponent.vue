@@ -117,7 +117,7 @@
 
 /**
  * @file InputsFormComponent.vue
- * @description 인풋 모음 카드 컴포넌트
+ * @description 인풋 모음 컴포넌트
  * !date 타입 인풋은 한 개만 포함 가능. 두 개째부터는 slot 에 직접 구현!
  * @typedef {Object} props
  * @property {Array} inputs - 인풋 객체 배열

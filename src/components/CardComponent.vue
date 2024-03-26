@@ -3,6 +3,7 @@
     <v-card-title  :class="titleClass ? titleClass : ''">
       <slot name="cardTitle"></slot>
     </v-card-title>
+    <v-divider :class="dividerClass ? dividerClass : 'd-none'"></v-divider>
     <v-card-text :class="textClass ? textClass : ''">
       <slot name="cardText"></slot>
     </v-card-text>
@@ -19,6 +20,7 @@
  * @property {String} [elevation] - v-card elevation(default:'')
  * @property {String} [textClass] - v-card-text 클래스(default:'')
  * @property {String} [titleClass] - v-card-title 클래스(default:'')
+ * @property {String} [dividerClass] - v-divider 클래스(default:'d-none')
  * @property {String} [cardClass] - v-card 클래스(default:'')
  */
 export default {
@@ -26,6 +28,7 @@ export default {
     elevation: String,
     textClass: String,
     titleClass: String,
+    dividerClass: String,
     cardClass: String,
   },
   computed:{

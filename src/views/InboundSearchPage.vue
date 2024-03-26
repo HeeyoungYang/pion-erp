@@ -10,29 +10,34 @@
           cols="12"
           sm="11"
         >
-          <InputsCardComponent
+          <CardComponent
             elevation="1"
             text-class=" pt-3"
-            dense
-            clearable
-            filled
-            hide-details
-            :inputs="searchCardInputs"
+            title-class="d-none"
           >
-            <v-col
-              cols="12"
-              sm="4"
-              lg="2"
-              align-self="center"
+            <InputsFormComponent
+              slot="cardText"
+              dense
+              clearable
+              filled
+              hide-details
+              :inputs="searchCardInputs"
             >
-              <v-btn
-                color="primary"
-                elevation="2"
+              <v-col
+                cols="12"
+                sm="4"
+                lg="2"
+                align-self="center"
               >
-                <v-icon>mdi-magnify</v-icon>검색
-              </v-btn>
-            </v-col>
-          </InputsCardComponent>
+                <v-btn
+                  color="primary"
+                  elevation="2"
+                >
+                  <v-icon>mdi-magnify</v-icon>검색
+                </v-btn>
+              </v-col>
+            </InputsFormComponent>
+          </CardComponent>
 
           <v-row>
             <v-col
@@ -121,15 +126,17 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
-import InputsCardComponent from "@/components/InputsCardComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
+import CardComponent from "@/components/CardComponent.vue";
+import InputsFormComponent from "@/components/InputsFormComponent.vue";
 
 export default {
   components: {
                 NavComponent,
                 DataTableComponent,
-                InputsCardComponent,
                 ModalDialogComponent,
+                CardComponent,
+                InputsFormComponent,
               },
   data(){
     return{

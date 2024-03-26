@@ -596,12 +596,9 @@
                                   <p class="text-h6 font-weight-black mb-0">원부자재 리스트</p>
                                 </v-col>
                                 <v-col cols="12">
-                                  <InputsCardComponent
-                                    elevation="1"
-                                    text-class=" pt-3"
+                                  <InputsFormComponent
                                     dense
                                     clearable
-                                    filled
                                     hide-details
                                     :inputs="moduleSearchMaterialInputs"
                                   >
@@ -624,7 +621,7 @@
                                         원부자재 선택 닫기
                                       </v-btn>
                                     </v-col>
-                                  </InputsCardComponent>
+                                  </InputsFormComponent>
                                 </v-col>
                                 <v-col cols="12">
                                   <DataTableComponent
@@ -1046,9 +1043,7 @@
                                     <p class="text-h6 font-weight-black mb-0">자재 리스트</p>
                                   </v-col>
                                   <v-col cols="12">
-                                    <InputsCardComponent
-                                      elevation="1"
-                                      text-class=" pt-3"
+                                    <InputsFormComponent
                                       dense
                                       clearable
                                       filled
@@ -1074,7 +1069,7 @@
                                           자재 선택 닫기
                                         </v-btn>
                                       </v-col>
-                                    </InputsCardComponent>
+                                    </InputsFormComponent>
                                   </v-col>
                                   <v-col cols="12">
                                     <DataTableComponent
@@ -1184,7 +1179,6 @@ import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent.vue";
 import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
-import InputsCardComponent from "@/components/InputsCardComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import mux from "@/mux";
@@ -1195,7 +1189,6 @@ export default {
     ModalDialogComponent,
     DataTableComponent,
     ExpansionPanelComponent,
-    InputsCardComponent,
     CardComponent,
     InputsFormComponent,
   },
