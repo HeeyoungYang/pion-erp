@@ -281,7 +281,9 @@
                         filled
                         dense
                         hide-details
+                        hide-input
                         v-model="item.photo"
+                        prepend-icon="mdi-image"
                       ></v-file-input>
                     </td>
                   </tr>

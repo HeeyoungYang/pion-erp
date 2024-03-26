@@ -24,48 +24,53 @@
             <v-tab-item>
               <v-row justify="center">
                 <v-col cols="12">
-                  <InputsCardComponent
+                  <CardComponent
                     elevation="1"
                     text-class=" pt-3"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    :inputs="searchMaterialCardInputs"
+                    title-class="d-none"
                   >
-                    <v-col
-                      cols="12"
-                      sm="4"
-                      lg="3"
+                    <InputsFormComponent
+                      slot="cardText"
+                      dense
+                      clearable
+                      filled
+                      hide-details
+                      :inputs="searchMaterialCardInputs"
                     >
-                      <v-row>
-                        <v-col
-                          cols="6"
-                          sm="6"
-                          lg="6"
-                        >
-                          <v-checkbox
-                            v-model="material_stock_more_0"
-                            label="재고 > 0"
-                          ></v-checkbox>
-                        </v-col>
-                        <v-col
-                          cols="6"
-                          sm="6"
-                          lg="6"
-                          align-self="center"
-                        >
-                          <v-btn
-                            color="primary"
-                            elevation="2"
-                            @click="searchMaterialButton"
+                      <v-col
+                        cols="12"
+                        sm="4"
+                        lg="3"
+                      >
+                        <v-row>
+                          <v-col
+                            cols="6"
+                            sm="6"
+                            lg="6"
                           >
-                            <v-icon>mdi-magnify</v-icon>검색
-                          </v-btn>
-                        </v-col>
-                      </v-row>
-                    </v-col>
-                  </InputsCardComponent>
+                            <v-checkbox
+                              v-model="material_stock_more_0"
+                              label="재고 > 0"
+                            ></v-checkbox>
+                          </v-col>
+                          <v-col
+                            cols="6"
+                            sm="6"
+                            lg="6"
+                            align-self="center"
+                          >
+                            <v-btn
+                              color="primary"
+                              elevation="2"
+                              @click="searchMaterialButton"
+                            >
+                              <v-icon>mdi-magnify</v-icon>검색
+                            </v-btn>
+                          </v-col>
+                        </v-row>
+                      </v-col>
+                    </InputsFormComponent>
+                  </CardComponent>
                 </v-col>
                 <v-col cols="12">
                   <v-card elevation="1">
@@ -200,102 +205,14 @@
                                   </v-col>
                                 </v-row>
 
-                                <v-row>
-                                  <v-col
-                                    cols="12"
-                                    sm="6"
-                                  >
-                                    <v-text-field
-                                      v-model="editedMaterialItem.classification"
-                                      label="분류"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="6"
-                                  >
-                                    <v-text-field
-                                      v-model="editedMaterialItem.material_code"
-                                      label="관리코드"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="6"
-                                  >
-                                    <v-text-field
-                                      v-model="editedMaterialItem.name"
-                                      label="자재명"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="6"
-                                  >
-                                    <v-text-field
-                                      v-model="editedMaterialItem.model"
-                                      label="모델명"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="6"
-                                  >
-                                    <v-text-field
-                                      v-model="editedMaterialItem.spec"
-                                      label="사양"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="6"
-                                  >
-                                    <v-text-field
-                                      v-model="editedMaterialItem.manufacturer"
-                                      label="제조사"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="6"
-                                  >
-                                    <v-text-field
-                                      v-model="editedMaterialItem.stock_num"
-                                      label="재고 수량"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="6"
-                                  >
-                                    <v-text-field
-                                      v-model="editedMaterialItem.condition"
-                                      label="재고 상태"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="6"
-                                  >
-                                    <v-text-field
-                                      v-model="editedMaterialItem.pe_number"
-                                      label="PE No."
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="6"
-                                  >
-                                    <v-text-field
-                                      v-model="editedMaterialItem.unit_price"
-                                      label="단가"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="1"
-                                  >
+                                <InputsFormComponent
+                                  clearable
+                                  :filled="false"
+                                  :outlined="false"
+                                  :inputs="registMaterialInputs"
+                                >
 
+                                <v-col cols="12" sm="2">
                                   <v-menu
                                     open-on-hover
                                     :close-on-content-click="false"
@@ -325,21 +242,15 @@
                                         <v-list-item class="pa-0">
                                           <v-list-item-content class="pa-3">
                                             <v-list-item-subtitle>
-                                              <v-img
-                                                alt="Pionelectric Logo"
-                                                class="shrink mr-2"
-                                                contain
-                                                src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
-                                                transition="scale-transition"
-                                              />
+                                              자재 이미지
                                             </v-list-item-subtitle>
                                           </v-list-item-content>
                                         </v-list-item>
                                       </v-list>
                                     </v-card>
                                   </v-menu>
-                                  </v-col>
-                                </v-row>
+                                </v-col>
+                                </InputsFormComponent>
                               </v-container>
                             </ModalDialogComponent>
                         </v-col>
@@ -386,48 +297,53 @@
                   cols="12"
                   sm="12"
                 >
-                <InputsCardComponent
+                  <CardComponent
                     elevation="1"
                     text-class=" pt-3"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    :inputs="searchModuleCardInputs"
+                    title-class="d-none"
                   >
-                    <v-col
-                      cols="12"
-                      sm="4"
-                      lg="3"
+                    <InputsFormComponent
+                      slot="cardText"
+                      dense
+                      clearable
+                      filled
+                      hide-details
+                      :inputs="searchModuleCardInputs"
                     >
-                      <v-row>
-                        <v-col
-                          cols="6"
-                          sm="6"
-                          lg="6"
-                        >
-                          <v-checkbox
-                            v-model="module_stock_more_0"
-                            label="재고 > 0"
-                          ></v-checkbox>
-                        </v-col>
-                        <v-col
-                          cols="6"
-                          sm="6"
-                          lg="6"
-                          align-self="center"
-                        >
-                          <v-btn
-                            color="primary"
-                            elevation="2"
-                            @click="searchButton"
+                      <v-col
+                        cols="12"
+                        sm="4"
+                        lg="3"
+                      >
+                        <v-row>
+                          <v-col
+                            cols="6"
+                            sm="6"
+                            lg="6"
                           >
-                            <v-icon>mdi-magnify</v-icon>검색
-                          </v-btn>
-                        </v-col>
-                      </v-row>
-                    </v-col>
-                  </InputsCardComponent>
+                            <v-checkbox
+                              v-model="module_stock_more_0"
+                              label="재고 > 0"
+                            ></v-checkbox>
+                          </v-col>
+                          <v-col
+                            cols="6"
+                            sm="6"
+                            lg="6"
+                            align-self="center"
+                          >
+                            <v-btn
+                              color="primary"
+                              elevation="2"
+                              @click="searchButton"
+                            >
+                              <v-icon>mdi-magnify</v-icon>검색
+                            </v-btn>
+                          </v-col>
+                        </v-row>
+                      </v-col>
+                    </InputsFormComponent>
+                  </CardComponent>
 
                   <v-card
                   elevation="1"
@@ -799,9 +715,13 @@
                   cols="12"
                   sm="12"
                 >
-                  <InputsCardComponent
-                      elevation="1"
-                      text-class=" pt-3"
+                  <CardComponent
+                    elevation="1"
+                    text-class=" pt-3"
+                    title-class="d-none"
+                  >
+                    <InputsFormComponent
+                      slot="cardText"
                       dense
                       clearable
                       filled
@@ -812,6 +732,7 @@
                         cols="12"
                         sm="4"
                         lg="3"
+                        align-self="center"
                       >
                         <v-btn
                           color="primary"
@@ -821,431 +742,433 @@
                           <v-icon>mdi-magnify</v-icon>검색
                         </v-btn>
                       </v-col>
-                    </InputsCardComponent>
-                <div>
-                  <ExpansionPanelComponent
-                    :data="product_data"
-                    elevation="1"
-                    class="mt-5"
-                    multiple>
+                    </InputsFormComponent>
+                  </CardComponent>
 
-                    <template v-slot:header="{ data }">
-                      <p
-                        class="text-h6 font-weight-black mb-0"
-                        item-align-center
-                      >
-                        {{ data.name }} ({{ data.spec }})
-                        <span
-                          class="text-body-1 font-weight-bold black--text ml-2"
+                  <div>
+                    <ExpansionPanelComponent
+                      :data="product_data"
+                      elevation="1"
+                      class="mt-5"
+                      multiple>
+
+                      <template v-slot:header="{ data }">
+                        <p
+                          class="text-h6 font-weight-black mb-0"
                           item-align-center
                         >
-                          : {{ data.product_code }}
-                        </span>
-                        <v-menu
-                          open-on-hover
-                          :close-on-content-click="false"
-                          :nudge-width="100"
-                          offset-x
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-icon
-                              small
-                              v-bind="attrs"
-                              v-on="on"
+                          {{ data.name }} ({{ data.spec }})
+                          <span
+                            class="text-body-1 font-weight-bold black--text ml-2"
+                            item-align-center
+                          >
+                            : {{ data.product_code }}
+                          </span>
+                          <v-menu
+                            open-on-hover
+                            :close-on-content-click="false"
+                            :nudge-width="100"
+                            offset-x
+                          >
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-icon
+                                small
+                                v-bind="attrs"
+                                v-on="on"
+                              >
+                                mdi-image
+                              </v-icon>
+                            </template>
+
+                            <v-card class="pa-0">
+                              <v-list class="pa-0">
+                                <v-list-item class="pa-0">
+                                  <v-list-item-content class="pa-3">
+                                    <v-list-item-subtitle>
+                                      제품이미지영역
+                                      <v-img
+                                        alt="Pionelectric Logo"
+                                        class="shrink mr-2"
+                                        contain
+                                        :src="testImg ? testImg : ''"
+                                        transition="scale-transition"
+                                        width="150"
+                                      />
+                                    </v-list-item-subtitle>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list>
+                            </v-card>
+                          </v-menu>
+                        </p>
+
+                      </template>
+                      <template v-slot:content="{ data }">
+                        <v-divider class="mb-4"></v-divider>
+                        <v-row>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            align-self="center"
+                          >
+                            <v-chip
+                              color="indigo"
+                              text-color="white"
                             >
-                              mdi-image
-                            </v-icon>
-                          </template>
-
-                          <v-card class="pa-0">
-                            <v-list class="pa-0">
-                              <v-list-item class="pa-0">
-                                <v-list-item-content class="pa-3">
-                                  <v-list-item-subtitle>
-                                    제품이미지영역
-                                    <v-img
-                                      alt="Pionelectric Logo"
-                                      class="shrink mr-2"
-                                      contain
-                                      :src="testImg ? testImg : ''"
-                                      transition="scale-transition"
-                                      width="150"
-                                    />
-                                  </v-list-item-subtitle>
-                                </v-list-item-content>
-                              </v-list-item>
-                            </v-list>
-                          </v-card>
-                        </v-menu>
-                      </p>
-
-                    </template>
-                    <template v-slot:content="{ data }">
-                      <v-divider class="mb-4"></v-divider>
-                      <v-row>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          align-self="center"
-                        >
-                          <v-chip
-                            color="indigo"
-                            text-color="white"
+                              총 금액 :
+                            </v-chip>
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            align-self="center"
                           >
-                            총 금액 :
-                          </v-chip>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          align-self="center"
-                        >
-                          <v-btn color="blue-grey darken-1" small class="mr-2 float-right white--text" @click="product_dialog_delete = true">완제품 삭제</v-btn>
-                          <v-btn color="primary" small class="mr-2 float-right" @click="editProduct(data)">수정</v-btn>
-                          <v-btn color="success" small class="mr-2 float-right" @click="registProduct">등록</v-btn>
+                            <v-btn color="blue-grey darken-1" small class="mr-2 float-right white--text" @click="product_dialog_delete = true">완제품 삭제</v-btn>
+                            <v-btn color="primary" small class="mr-2 float-right" @click="editProduct(data)">수정</v-btn>
+                            <v-btn color="success" small class="mr-2 float-right" @click="registProduct">등록</v-btn>
 
-                          <!-- 완제품 등록 Modal -->
-                          <ModalDialogComponent
-                            :dialog-value="product_dialog"
-                            max-width="70%"
-                            title-class=" "
-                            :dialog-transition="'slide-x-transition'"
-                            :dialog-custom="'custom-dialog elevation-0 white'"
-                            :card-elevation="'0'"
-                            :hide-overlay="true"
-                            :persistent="true"
-                          >
-                            <v-container>
-                              <!-- 모달 내용 구성 -->
-                              <v-row>
-                                <v-col
-                                  cols="12"
-                                >
-                                  <p class="text-h6 font-weight-black float-left mb-0">완제품 정보 입력</p>
-                                  <v-btn
-                                    color="success"
-                                    small
-                                    class="ml-4 float-left"
-                                    elevation="2"
-                                    @click="save"
+                            <!-- 완제품 등록 Modal -->
+                            <ModalDialogComponent
+                              :dialog-value="product_dialog"
+                              max-width="70%"
+                              title-class=" "
+                              :dialog-transition="'slide-x-transition'"
+                              :dialog-custom="'custom-dialog elevation-0 white'"
+                              :card-elevation="'0'"
+                              :hide-overlay="true"
+                              :persistent="true"
+                            >
+                              <v-container>
+                                <!-- 모달 내용 구성 -->
+                                <v-row>
+                                  <v-col
+                                    cols="12"
                                   >
-                                    저장
-                                  </v-btn>
-                                  <v-btn
-                                    color="default"
-                                    small
-                                    class="ml-2 float-left"
-                                    elevation="2"
-                                    @click="close"
-                                  >
-                                    닫기
-                                  </v-btn>
-                                </v-col>
-                              </v-row>
-
-                              <v-row>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newProductItem.classification"
-                                    label="분류"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newProductItem.product_code"
-                                    label="완제품 코드"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newProductItem.name"
-                                    label="완제품명"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newProductItem.model"
-                                    label="모델명"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newProductItem.spec"
-                                    label="사양"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newProductItem.manufacturer"
-                                    label="제조사"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newProductItem.stock_num"
-                                    label="재고 수량"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newProductItem.condition"
-                                    label="재고 상태"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newProductItem.pe_number"
-                                    label="PE No."
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newProductItem.unit_price"
-                                    label="단가"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="1"
-                                >
-                                  <v-menu
-                                    open-on-hover
-                                    :close-on-content-click="false"
-                                    :nudge-width="100"
-                                    offset-x
-                                  >
-                                    <template v-slot:activator="{ on, attrs }">
-                                      <div
-                                        v-bind="attrs"
-                                        v-on="on"
-                                      >
-                                        <v-file-input
-                                          dense
-                                          hide-details
-                                          filled
-                                          label=" "
-                                          v-model="newProductItem.photo"
-                                          hide-input
-                                          prepend-icon="mdi-image"
-                                          accept=".png, .jpg, .jpeg"
-                                        ></v-file-input>
-                                      </div>
-                                    </template>
-
-                                    <v-card class="pa-0">
-                                      <v-list class="pa-0">
-                                        <v-list-item class="pa-0">
-                                          <v-list-item-content class="pa-3">
-                                            <v-list-item-subtitle>
-                                              <v-img
-                                                alt="Pionelectric Logo"
-                                                class="shrink mr-2"
-                                                contain
-                                                src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
-                                                transition="scale-transition"
-                                              />
-                                            </v-list-item-subtitle>
-                                          </v-list-item-content>
-                                        </v-list-item>
-                                      </v-list>
-                                    </v-card>
-                                  </v-menu>
-                                </v-col>
-                              </v-row>
-                              <v-row>
-                                <v-col cols="12">
-                                  <v-btn color="primary" small @click="set_material_search = true" v-if="!set_material_search">자재 선택</v-btn>
-                                  <v-btn color="primary" small @click="set_material_search = false" v-if="set_material_search">선택 닫기</v-btn>
-                                </v-col>
-                              </v-row>
-                              <v-row v-if="set_material_search" style="background: #efefef;">
-                                <v-col cols="12">
-                                  <p class="text-h6 font-weight-black mb-0">자재 리스트</p>
-                                </v-col>
-                                <v-col cols="12">
-                                  <InputsCardComponent
-                                    elevation="1"
-                                    text-class=" pt-3"
-                                    dense
-                                    clearable
-                                    filled
-                                    hide-details
-                                    :inputs="productSearchMaterialModuleInputs"
-                                  >
-                                    <v-col
-                                      cols="12"
-                                      sm="4"
-                                      lg="3"
-                                      align-self="center"
+                                    <p class="text-h6 font-weight-black float-left mb-0">완제품 정보 입력</p>
+                                    <v-btn
+                                      color="success"
+                                      small
+                                      class="ml-4 float-left"
+                                      elevation="2"
+                                      @click="save"
                                     >
-                                      <v-btn
-                                        color="primary"
-                                        elevation="2"
-                                        class="mr-2"
-                                        small
-                                        @click="searchButton"
-                                      >
-                                        검색
-                                      </v-btn>
-                                      <v-btn color="default" small @click="set_material_search = false" v-if="set_material_search">
-                                        자재 선택 닫기
-                                      </v-btn>
-                                    </v-col>
-                                  </InputsCardComponent>
-                                </v-col>
-                                <v-col cols="12">
-                                  <DataTableComponent
-                                    :headers="product_search_material_headers"
-                                    :items="search_material_for_product_data"
-                                    :v-model="product_set_material_data"
-                                    show-select
-                                    dense
-                                  />
-                                </v-col>
-                              </v-row>
-                              <v-divider class="my-7"></v-divider>
-                              <v-row>
-                                <v-col cols="9" class="pb-0">
-                                  <p class="text-h6 font-weight-black mb-0">선택 자재 <v-btn x-small color="error" class="ml-4" @click="resetData('product')">비우기</v-btn></p>
-                                </v-col>
-                                <v-col cols="12">
-                                  <!-- <DataTableComponent
-                                    :headers="product_set_material_headers"
-                                    :items="product_set_material_data"
-                                    dense
-                                  /> -->
-                                  <v-data-table
-                                    :headers="product_set_material_headers"
-                                    :items="product_set_material_data"
-                                    item-key="product_code"
-                                    dense
+                                      저장
+                                    </v-btn>
+                                    <v-btn
+                                      color="default"
+                                      small
+                                      class="ml-2 float-left"
+                                      elevation="2"
+                                      @click="close"
+                                    >
+                                      닫기
+                                    </v-btn>
+                                  </v-col>
+                                </v-row>
+
+                                <v-row>
+                                  <v-col
+                                    cols="12"
+                                    sm="3"
                                   >
-                                    <template v-slot:item="{ item }">
-                                      <tr>
-                                        <td align="center">{{ item.type }}</td>
-                                        <td align="center">{{ item.classification }}</td>
-                                        <td align="center">{{ item.product_code }}</td>
-                                        <td align="center">{{ item.name }}</td>
-                                        <td align="center">{{ item.model }}</td>
-                                        <td align="center">{{ item.spec }}</td>
-                                        <td align="center">{{ item.manufacturer }}</td>
-                                        <td align="center">
-                                          <v-text-field
+                                    <v-text-field
+                                      dense
+                                      hide-details
+                                      filled
+                                      v-model="newProductItem.classification"
+                                      label="분류"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="3"
+                                  >
+                                    <v-text-field
+                                      dense
+                                      hide-details
+                                      filled
+                                      v-model="newProductItem.product_code"
+                                      label="완제품 코드"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="3"
+                                  >
+                                    <v-text-field
+                                      dense
+                                      hide-details
+                                      filled
+                                      v-model="newProductItem.name"
+                                      label="완제품명"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="3"
+                                  >
+                                    <v-text-field
+                                      dense
+                                      hide-details
+                                      filled
+                                      v-model="newProductItem.model"
+                                      label="모델명"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="3"
+                                  >
+                                    <v-text-field
+                                      dense
+                                      hide-details
+                                      filled
+                                      v-model="newProductItem.spec"
+                                      label="사양"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="3"
+                                  >
+                                    <v-text-field
+                                      dense
+                                      hide-details
+                                      filled
+                                      v-model="newProductItem.manufacturer"
+                                      label="제조사"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="3"
+                                  >
+                                    <v-text-field
+                                      dense
+                                      hide-details
+                                      filled
+                                      v-model="newProductItem.stock_num"
+                                      label="재고 수량"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="3"
+                                  >
+                                    <v-text-field
+                                      dense
+                                      hide-details
+                                      filled
+                                      v-model="newProductItem.condition"
+                                      label="재고 상태"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="3"
+                                  >
+                                    <v-text-field
+                                      dense
+                                      hide-details
+                                      filled
+                                      v-model="newProductItem.pe_number"
+                                      label="PE No."
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="3"
+                                  >
+                                    <v-text-field
+                                      dense
+                                      hide-details
+                                      filled
+                                      v-model="newProductItem.unit_price"
+                                      label="단가"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col
+                                    cols="12"
+                                    sm="1"
+                                  >
+                                    <v-menu
+                                      open-on-hover
+                                      :close-on-content-click="false"
+                                      :nudge-width="100"
+                                      offset-x
+                                    >
+                                      <template v-slot:activator="{ on, attrs }">
+                                        <div
+                                          v-bind="attrs"
+                                          v-on="on"
+                                        >
+                                          <v-file-input
                                             dense
                                             hide-details
-                                            v-model="item.module_material_num"
-                                            style="width:100px;font-size: 0.775rem !important;"
-                                            type="number"
                                             filled
-                                          ></v-text-field>
-                                        </td>
-                                        <td align="center">{{ item.unit_price }}</td>
-                                        <td align="center">{{ item.unit_price * item.module_material_num }}</td>
-                                      </tr>
-                                    </template>
-                                  </v-data-table>
-                                </v-col>
-                              </v-row>
-                            </v-container>
-                          </ModalDialogComponent>
+                                            label=" "
+                                            v-model="newProductItem.photo"
+                                            hide-input
+                                            prepend-icon="mdi-image"
+                                            accept=".png, .jpg, .jpeg"
+                                          ></v-file-input>
+                                        </div>
+                                      </template>
 
-                          <!-- 완제품 삭제 Dialog -->
-                          <ModalDialogComponent
-                            :dialog-value="product_dialog_delete"
-                            max-width="500px"
-                            title-class="text-body-1 font-weight-black"
-                            text-class="text-body-2"
-                            save-text="삭제"
-                            close-text="취소"
-                            @save="deleteItemConfirm"
-                            @close="closeDelete"
+                                      <v-card class="pa-0">
+                                        <v-list class="pa-0">
+                                          <v-list-item class="pa-0">
+                                            <v-list-item-content class="pa-3">
+                                              <v-list-item-subtitle>
+                                                <v-img
+                                                  alt="Pionelectric Logo"
+                                                  class="shrink mr-2"
+                                                  contain
+                                                  src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
+                                                  transition="scale-transition"
+                                                />
+                                              </v-list-item-subtitle>
+                                            </v-list-item-content>
+                                          </v-list-item>
+                                        </v-list>
+                                      </v-card>
+                                    </v-menu>
+                                  </v-col>
+                                </v-row>
+                                <v-row>
+                                  <v-col cols="12">
+                                    <v-btn color="primary" small @click="set_material_search = true" v-if="!set_material_search">자재 선택</v-btn>
+                                    <v-btn color="primary" small @click="set_material_search = false" v-if="set_material_search">선택 닫기</v-btn>
+                                  </v-col>
+                                </v-row>
+                                <v-row v-if="set_material_search" style="background: #efefef;">
+                                  <v-col cols="12">
+                                    <p class="text-h6 font-weight-black mb-0">자재 리스트</p>
+                                  </v-col>
+                                  <v-col cols="12">
+                                    <InputsCardComponent
+                                      elevation="1"
+                                      text-class=" pt-3"
+                                      dense
+                                      clearable
+                                      filled
+                                      hide-details
+                                      :inputs="productSearchMaterialModuleInputs"
+                                    >
+                                      <v-col
+                                        cols="12"
+                                        sm="4"
+                                        lg="3"
+                                        align-self="center"
+                                      >
+                                        <v-btn
+                                          color="primary"
+                                          elevation="2"
+                                          class="mr-2"
+                                          small
+                                          @click="searchButton"
+                                        >
+                                          검색
+                                        </v-btn>
+                                        <v-btn color="default" small @click="set_material_search = false" v-if="set_material_search">
+                                          자재 선택 닫기
+                                        </v-btn>
+                                      </v-col>
+                                    </InputsCardComponent>
+                                  </v-col>
+                                  <v-col cols="12">
+                                    <DataTableComponent
+                                      :headers="product_search_material_headers"
+                                      :items="search_material_for_product_data"
+                                      :v-model="product_set_material_data"
+                                      show-select
+                                      dense
+                                    />
+                                  </v-col>
+                                </v-row>
+                                <v-divider class="my-7"></v-divider>
+                                <v-row>
+                                  <v-col cols="9" class="pb-0">
+                                    <p class="text-h6 font-weight-black mb-0">선택 자재 <v-btn x-small color="error" class="ml-4" @click="resetData('product')">비우기</v-btn></p>
+                                  </v-col>
+                                  <v-col cols="12">
+                                    <!-- <DataTableComponent
+                                      :headers="product_set_material_headers"
+                                      :items="product_set_material_data"
+                                      dense
+                                    /> -->
+                                    <v-data-table
+                                      :headers="product_set_material_headers"
+                                      :items="product_set_material_data"
+                                      item-key="product_code"
+                                      dense
+                                    >
+                                      <template v-slot:item="{ item }">
+                                        <tr>
+                                          <td align="center">{{ item.type }}</td>
+                                          <td align="center">{{ item.classification }}</td>
+                                          <td align="center">{{ item.product_code }}</td>
+                                          <td align="center">{{ item.name }}</td>
+                                          <td align="center">{{ item.model }}</td>
+                                          <td align="center">{{ item.spec }}</td>
+                                          <td align="center">{{ item.manufacturer }}</td>
+                                          <td align="center">
+                                            <v-text-field
+                                              dense
+                                              hide-details
+                                              v-model="item.module_material_num"
+                                              style="width:100px;font-size: 0.775rem !important;"
+                                              type="number"
+                                              filled
+                                            ></v-text-field>
+                                          </td>
+                                          <td align="center">{{ item.unit_price }}</td>
+                                          <td align="center">{{ item.unit_price * item.module_material_num }}</td>
+                                        </tr>
+                                      </template>
+                                    </v-data-table>
+                                  </v-col>
+                                </v-row>
+                              </v-container>
+                            </ModalDialogComponent>
+
+                            <!-- 완제품 삭제 Dialog -->
+                            <ModalDialogComponent
+                              :dialog-value="product_dialog_delete"
+                              max-width="500px"
+                              title-class="text-body-1 font-weight-black"
+                              text-class="text-body-2"
+                              save-text="삭제"
+                              close-text="취소"
+                              @save="deleteItemConfirm"
+                              @close="closeDelete"
+                            >
+                              <template v-slot:titleHTML>
+                                <p class="mb-0">{{ product_data.product_code }}</p>
+                                <p class="red--text">완제품을 삭제하시겠습니까?</p>
+                              </template>
+                              삭제 시 복구 불가능합니다.
+                            </ModalDialogComponent>
+                          </v-col>
+                          <v-col
+                            cols="12"
                           >
-                            <template v-slot:titleHTML>
-                              <p class="mb-0">{{ product_data.product_code }}</p>
-                              <p class="red--text">완제품을 삭제하시겠습니까?</p>
-                            </template>
-                            삭제 시 복구 불가능합니다.
-                          </ModalDialogComponent>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                        >
-                        <DataTableComponent
-                            :headers="product_headers"
-                            :items="data.product_info"
-                            :item-key="data.product_info.product_code"
-                            hide-default-footer
-                            disable-pagination
-                            children-key="belong_data"
-                            table-style=""
-                            show-photo
-                            dense
-                          />
-                        </v-col>
-                      </v-row>
-                    </template>
-                  </ExpansionPanelComponent>
-                </div>
+                          <DataTableComponent
+                              :headers="product_headers"
+                              :items="data.product_info"
+                              :item-key="data.product_info.product_code"
+                              hide-default-footer
+                              disable-pagination
+                              children-key="belong_data"
+                              table-style=""
+                              show-photo
+                              dense
+                            />
+                          </v-col>
+                        </v-row>
+                      </template>
+                    </ExpansionPanelComponent>
+                  </div>
                 </v-col>
               </v-row>
             </v-tab-item>
@@ -1262,6 +1185,8 @@ import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent.vue";
 import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
 import InputsCardComponent from "@/components/InputsCardComponent.vue";
+import CardComponent from "@/components/CardComponent.vue";
+import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import mux from "@/mux";
 
 export default {
@@ -1271,6 +1196,8 @@ export default {
     DataTableComponent,
     ExpansionPanelComponent,
     InputsCardComponent,
+    CardComponent,
+    InputsFormComponent,
   },
   data() {
     return {
@@ -1295,6 +1222,18 @@ export default {
       select_product_type: '반제품',
 
       material_stock_more_0: true,
+      registMaterialInputs:[
+        {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'6', lg:'6'},
+        {label:'관리코드', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'자재명', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'모델명', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'사양', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'제조사', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'재고수량', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'재고상태', type:'auto', col:'12', sm:'6', lg:'6', value:'All', list:['All', 'G', 'B']},
+        {label:'PE No.', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'단가', col:'12', sm:'6', lg:'6', value: ''},
+      ],
       searchMaterialCardInputs:[
         {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'3'},
         {label:'상태', type:'auto', col:'12', sm:'4', lg:'3', value:'All', list:['All', 'G', 'B']},
