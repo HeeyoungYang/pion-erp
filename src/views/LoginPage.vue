@@ -211,15 +211,15 @@ export default {
       if (process.env.NODE_ENV === 'production'){
 
         mux.Server.post({
-          path:'/login', id, pw
+          path:'/api/signin/', user_name:id, password:pw
         }).then(result => {
-          alert(result)
           console.log('result :>> ', result);
           if (this.checkbox){
             Vue.$cookies.set(this.$configJson.cookies.id, id);
           }else {
             Vue.$cookies.remove(this.$configJson.cookies.id);
           }
+          mux.Server.move({path:'/home'});
         }).catch(err => {
           console.error('err :>> ', err);
           switch (err.message) {
@@ -235,7 +235,7 @@ export default {
               break;
           }
         });
-
+        
       }else {
         if (this.checkbox){
           Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');

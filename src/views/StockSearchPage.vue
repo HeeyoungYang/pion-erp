@@ -84,7 +84,7 @@
                   <DataTableComponent
                     :headers="headers"
                     :items="product_data"
-                    :item-key="product_data.product_code"
+                    :item-key="product_data._code"
                     show-photo
                     dense
                   />
@@ -133,14 +133,14 @@ export default {
       headers: [
         { text: '종류', align: 'center', value: 'type', },
         { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'product_code', },
+        { text: '관리코드', align: 'center', value: '_code', },
         { text: '제품명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: '재고', align: 'center', value: 'stock_num', },
         { text: '상태', align: 'center', value: 'condition', },
-        { text: 'PE No.', align: 'center', value: 'pe_number', },
+        { text: 'PE No.', align: 'center', value: 'pe_no', },
         { text: '입고일자', align: 'center', value: 'inbound_date', },
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '총액', align: 'center', value: 'stock_price', },
@@ -295,40 +295,105 @@ export default {
 
       let searchType = this.searchCardInputs.find(x=>x.label === '종류').value;
       if (searchType === 'All')
-        searchType = '%';
-      let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+        searchType = '';
+      let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
+      if (searchClassification === 'All')
+      searchClassification = '';
       let searchCondition = this.searchCardInputs.find(x=>x.label === '상태').value;
       if (searchCondition === 'All')
-        searchCondition = '%';
+      searchCondition = '';
+      let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+      let searchProductName = this.searchCardInputs.find(x=>x.label === '제품명').value;
+      let searchModelName = this.searchCardInputs.find(x=>x.label === '모델명').value;
+      let searchProductSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
+      let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
+      let searchStockMoreZero = this.stock_more_0 ? 0 : '';
 
       try {
         let result = await mux.Server.post({
           path: '/api/sample_rest_api/',
           "query_info":{
-            "script_file_name": "rooting_stock_table_root_json_2024_03_18_15_49_08.json",
+            "script_file_name":"rooting_product_table_stock_table_module_table_material_table_root_json_2024_03_27_10_33_27.json",
             "params":[
-              {
-                "key":"type",
-                "type":"string",
-                "value": searchType
-              },
-              {
-                "key":"product_code",
-                "type":"string",
-                "value": searchProductCode
-              },
-              {
-                "key":"condition",
-                "type":"string",
-                "value": searchCondition
-              }
-            ]
-          }
+                        {                        
+                            "key": "classification",
+                            "type": "string",
+                            "value": searchClassification
+                        },
+                        {                            
+                            "key": "manufacturer",
+                            "type": "string",
+                            "value": searchManufacturer
+                         
+                        },
+                        {                            
+                            "key": "model",
+                            "type": "string",
+                            "value": searchModelName
+                        },
+                        {                            
+                            "key": "name",
+                            "type": "string",
+                            "value": searchProductName
+                         
+                        },
+                        {
+                            "key": "_code",
+                            "type": "string",
+                            "value": searchProductCode
+                        },
+                        {                          
+                            "key": "spec",
+                            "type": "string",
+                            "value": searchProductSpec
+                        },
+                        {                            
+                            "key": "type",
+                            "type": "string",
+                            "value": searchType
+                        },
+                        {                            
+                            "key": "condition",
+                            "type": "string",
+                            "value": searchCondition
+                        },
+                        {
+                            "key": "stock_num",
+                            "type": "int",
+                            "value": searchStockMoreZero
+                        }
+                    ]
+            }
+                
+          // "query_info":{
+          //   "script_file_name": "rooting_stock_table_root_json_2024_03_18_15_49_08.json",
+          //   "params":[
+          //     {
+          //       "key":"type",
+          //       "type":"string",
+          //       "value": searchType
+          //     },
+          //     {
+          //       "key":"product_code",
+          //       "type":"string",
+          //       "value": searchProductCode
+          //     },
+          //     {
+          //       "key":"condition",
+          //       "type":"string",
+          //       "value": searchCondition
+          //     }
+          //   ]
+          // }
         });
 
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
+        result = result.map(a => {
+          a.stock_price = Math.round(a.unit_price * a.stock_num)
+          return a;
+        });
         this.product_data = result;
 
       } catch (error) {
