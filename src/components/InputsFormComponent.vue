@@ -57,6 +57,7 @@
         :outlined="input.outlined === undefined ? (outlined ? outlined : false) : input.outlined"
         :dense="dense"
         :hide-details="hideDetails"
+        :hide-input="input.hide_input"
         :prepend-icon="input.icon"
         :append-icon="input.appendIcon"
         :label="input.label"
@@ -131,6 +132,7 @@
  * @property {Boolean} [hideDetails] - 디테일 숨김 여부(default:false)
  * @property {Boolean} [clearable] - 전역 clearable(default:false)
  * @property {Boolean} [filled] - 전역 filled(default:false)
+ * @property {Boolean} [outlined] - 전역 outlined(default:false)
  * @property {Boolean} [smallChips] - 파일 선택 시 chip 사용 여부(default:false)
  */
 export default {
@@ -142,6 +144,7 @@ export default {
     hideDetails: Boolean,
     clearable: Boolean,
     filled: Boolean,
+    outlined: Boolean,
     smallChips: Boolean
   },
   computed:{
