@@ -60,12 +60,12 @@ mux.Server = {
 
         if (sendData.path !== '/'){
           try {
-            let result = await this.get(sendData); // 페이지 이동 전 path 로 Get 요청을 통해 토큰 및 권한 인증
-            if (result){
+            // let result = await this.get(sendData); // 페이지 이동 전 path 로 Get 요청을 통해 토큰 및 권한 인증
+            // if (result){
               router.push(sendData.path);
-            }else {
-              this.logOut();
-            }
+            // }else {
+            //   this.logOut();
+            // }
           } catch (error) {
             this.logOut();
           }
@@ -361,11 +361,14 @@ mux.Server = {
 
         // 응답에 accessToken 이 있으면 localStorage 에, refreshToken 이 있으면 쿠키에 저장
         if (response.data){
-          if (response.data.accessToken){
-            localStorage.setItem('accessToken', response.data.accessToken)
-          }
-          if (response.data.refreshToken){
-            Vue.$cookies.set(configJson.$cookies.refreshToken, response.data.refreshToken, configJson.refreshTokenCookieExpiration);
+          if (response && response.data && response.data.data){
+            if (response.data.data.AuthenticationResult.AccessToken){
+              localStorage.setItem('AccessToken', response.data.data.AuthenticationResult.AccessToken)
+              console.log('response.data.data.AuthenticationResult.ExpiresIn :>> ', response.data.data.AuthenticationResult.ExpiresIn);
+            }
+            if (response.data.data.AuthenticationResult.RefreshToken){
+              Vue.$cookies.set(configJson.cookies.refreshToken, response.data.data.AuthenticationResult.RefreshToken, configJson.refreshTokenCookieExpiration);
+            }
           }
         }
         this.axiosInstance.defaults.timeout = this.defaultTimeout;
@@ -418,7 +421,7 @@ mux.Server = {
 // Axios인스턴스 설정: 요청 시마다 헤더에 토큰을 추가
 mux.Server.axiosInstance.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('AccessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -438,13 +441,13 @@ mux.Server.axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      const refreshToken = Vue.$cookies.get(configJson.$cookies.refreshToken);
+      const refreshToken = Vue.$cookies.get(configJson.cookies.refreshToken);
       if (refreshToken) {
         try {
           // RefreshToken을 사용하여 새로운 AccessToken을 요청합니다.
           const response = await axios.post('/token-refresh', { refreshToken });
           const newAccessToken = response.data.accessToken;
-          localStorage.setItem('accessToken', newAccessToken);
+          localStorage.setItem('AccessToken', newAccessToken);
           // 기존 요청을 재시도합니다.
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           return axios(originalRequest);
