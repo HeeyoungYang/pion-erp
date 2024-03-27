@@ -56,7 +56,7 @@ mux.Server = {
       Object.keys(defaultObj).forEach(key => {
         sendData[key] = defaultObj[key];
       });
-      if (process.env.NODE_ENV === 'production'){
+      // if (process.env.NODE_ENV === 'production'){
 
         if (sendData.path !== '/'){
           try {
@@ -73,9 +73,9 @@ mux.Server = {
           this.logOut();
         }
 
-      }else {
-        router.push(sendData.path);
-      }
+      // }else {
+      //   router.push(sendData.path);
+      // }
 
     } catch (error) {
       if (axios.isCancel(error)) {

@@ -208,14 +208,14 @@ export default {
     async login(){
       const id = document.getElementById('idField').value;
       const pw = document.getElementById('pwField').value;
-      if (process.env.NODE_ENV === 'production'){
+      // if (process.env.NODE_ENV === 'production'){
 
         mux.Server.post({
           path:'/api/signin/', user_name:id, password:pw
         }).then(result => {
           console.log('result :>> ', result);
           if (this.checkbox){
-            Vue.$cookies.set(this.$configJson.cookies.id, id);
+            Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');
           }else {
             Vue.$cookies.remove(this.$configJson.cookies.id);
           }
@@ -236,14 +236,14 @@ export default {
           }
         });
         
-      }else {
-        if (this.checkbox){
-          Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');
-        }else {
-          Vue.$cookies.remove(this.$configJson.cookies.id);
-        }
-        mux.Server.move({path:'/home'});
-      }
+      // }else {
+      //   if (this.checkbox){
+      //     Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');
+      //   }else {
+      //     Vue.$cookies.remove(this.$configJson.cookies.id);
+      //   }
+      //   mux.Server.move({path:'/home'});
+      // }
     }
   },
 

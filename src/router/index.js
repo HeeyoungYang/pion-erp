@@ -121,29 +121,4 @@ const router = new VueRouter({
   routes
 });
 
-// if (process.env.NODE_ENV === 'production'){
-//   // 네비게이션 가드를 사용하여 페이지 이동 시 세션 ID를 체크
-//   router.beforeEach((to, from, next) => {
-//     const sessionId = getSessionId();
-//     if (to.path !== '/' && !sessionId) {
-//         // 대시보드 페이지로 이동하는데 세션 ID가 없는 경우 로그인 페이지로 리다이렉트
-//         next('/');
-//     } else {
-//         next();
-//     }
-//   });
-// }
-
-// // 세션 ID를 가져오는 함수
-// function getSessionId() {
-//   const cookies = document.cookie.split(';');
-//   for (let i = 0; i < cookies.length; i++) {
-//       const cookie = cookies[i].trim();
-//       if (cookie.startsWith("sessionId=")) {
-//           return cookie.substring("sessionId=".length, cookie.length);
-//       }
-//   }
-//   return null;
-// }
-
 export default router
