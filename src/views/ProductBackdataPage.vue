@@ -73,35 +73,104 @@
                   </CardComponent>
                 </v-col>
                 <v-col cols="12">
-                  <v-card elevation="1">
-                    <v-card-title style="width:100%;">
-                      <v-row>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          align-self="center"
+                  <CardComponent
+                    elevation="1"
+                    text-class=" pt-3"
+                    divider-class="mb-3"
+                  >
+                    <v-row slot="cardTitle">
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        align-self="center"
+                      >
+                        <v-chip
+                          class="mr-2"
+                          color="indigo"
+                          text-color="white"
                         >
-                          <v-chip
-                            class="mr-2"
-                            color="indigo"
-                            text-color="white"
-                          >
-                            총 금액 :
-                          </v-chip>
-                        </v-col>
+                          총 금액 :
+                        </v-chip>
+                      </v-col>
 
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          align-self="center"
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        align-self="center"
+                      >
+                        <v-btn color="primary" small outlined class="mb-2 float-right" @click="dialog_excel = true">엑셀 업로드</v-btn>
+                        <v-btn color="success" small class="mb-2 mr-2 float-right" @click="registMaterialItem">등록</v-btn>
+                        <!-- ▼ 엑셀 업로드 Modal -->
+                        <ModalDialogComponent
+                          :dialog-value="dialog_excel"
+                          title-class="white"
+                          max-width="70%"
+                          :dialog-transition="'slide-x-transition'"
+                          :dialog-custom="'custom-dialog elevation-0 white'"
+                          :card-elevation="'0'"
+                          :hide-overlay="true"
+                          :persistent="true"
                         >
-                          <v-btn color="primary" small outlined class="mb-2 float-right" @click="dialog_excel = true">엑셀 업로드</v-btn>
-                          <v-btn color="success" small class="mb-2 mr-2 float-right" @click="material_dialog = true">등록</v-btn>
-                          <!-- ▼ 엑셀 업로드 Modal -->
+                          <v-container>
+                            <v-row>
+                              <v-col
+                                cols="12"
+                                sm="4"
+                              >
+                                <v-file-input
+                                  small-chips
+                                  filled
+                                  dense
+                                  hide-details
+                                  label="엑셀 불러오기"
+                                  prepend-icon=""
+                                  append-icon="mdi-paperclip"
+                                  accept=".xlsx, .xls"
+                                  @change="loadExcelFile"
+                                ></v-file-input>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="4"
+                              >
+                                <v-file-input
+                                  filled
+                                  dense
+                                  hide-details
+                                  multiple
+                                  label="사진 첨부(.jpg, .png, .jpeg)"
+                                  prepend-icon=""
+                                  append-icon="mdi-image-edit"
+                                  accept=".png, .jpg, .jpeg"
+                                  v-model="excel_photos"
+                                ></v-file-input>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="4"
+                                align-self="center"
+                              >
+                                <v-btn color="primary" small class="mr-2" href="/forms/원부자재_엑셀업로드_양식.xlsx" download >양식</v-btn>
+                                <v-btn color="success" small class="mr-2" @click="registMaterialExcel">등록</v-btn>
+                                <v-btn color="default" small class="mr-2" @click="close">취소</v-btn>
+                              </v-col>
+                              <v-col cols="12">
+                                <p class="error--text">※ 선택한 사진의 파일명과 엑셀 내 기입한 사진명은 꼭 일치해야합니다.</p>
+                                <DataTableComponent
+                                  :headers="material_excel_headers"
+                                  :items="material_excel_upload_data"
+                                  dense
+                                />
+                              </v-col>
+                            </v-row>
+                          </v-container>
+                        </ModalDialogComponent>
+
+                        <!-- 원부자재 등록 Modal -->
                           <ModalDialogComponent
-                            :dialog-value="dialog_excel"
-                            title-class="white"
-                            max-width="70%"
+                            :dialog-value="material_dialog"
+                            max-width="30%"
+                            title-class=" "
                             :dialog-transition="'slide-x-transition'"
                             :dialog-custom="'custom-dialog elevation-0 white'"
                             :card-elevation="'0'"
@@ -109,183 +178,87 @@
                             :persistent="true"
                           >
                             <v-container>
+                              <!-- 모달 내용 구성 -->
                               <v-row>
                                 <v-col
                                   cols="12"
-                                  sm="4"
                                 >
-                                  <v-file-input
-                                    small-chips
-                                    filled
-                                    dense
-                                    hide-details
-                                    label="엑셀 불러오기"
-                                    prepend-icon=""
-                                    append-icon="mdi-paperclip"
-                                    @change="loadExcelFile"
-                                  ></v-file-input>
+                                  <v-btn
+                                    color="success"
+                                    small
+                                    class="mr-2"
+                                    elevation="2"
+                                    @click="uploadMaterial"
+                                  >
+                                    저장
+                                  </v-btn>
+                                  <v-btn
+                                    color="default"
+                                    small
+                                    class="mr-2"
+                                    elevation="2"
+                                    @click="close"
+                                  >
+                                    닫기
+                                  </v-btn>
                                 </v-col>
                                 <v-col
                                   cols="12"
                                   sm="4"
+                                  lg="3"
                                 >
-                                  <v-file-input
-                                    filled
-                                    dense
-                                    hide-details
-                                    multiple
-                                    label="사진 첨부(.jpg, .png, .jpeg)"
-                                    prepend-icon=""
-                                    append-icon="mdi-image"
-                                    accept=".png, .jpg, .jpeg"
-                                    @change="loadExcelFile"
-                                  ></v-file-input>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="4"
-                                  align-self="center"
-                                >
-                                <v-btn color="primary" small class="mr-2" href="/forms/원부자재_엑셀업로드_양식.xlsx" download >양식</v-btn>
-                                <v-btn color="success" small class="mr-2" @click="save">등록</v-btn>
-                                <v-btn color="default" small class="mr-2" @click="close">취소</v-btn>
-                                </v-col>
-                                <v-col cols="12">
-                                  <DataTableComponent
-                                    :headers="material_headers"
-                                    :items="material_excel_upload_data"
-                                    dense
-                                  />
                                 </v-col>
                               </v-row>
+
+                              <InputsFormComponent
+                                clearable
+                                :inputs="registMaterialInputs"
+                              >
+                                <v-col cols="12" sm="8" align-self="center" v-if="this.registMaterialInputs[this.registMaterialInputs.length-1].value">
+                                  <v-img
+                                    alt="Pionelectric Logo"
+                                    class="shrink mr-2"
+                                    contain
+                                    src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
+                                    transition="scale-transition"
+                                  />
+                                </v-col>
+                              </InputsFormComponent>
                             </v-container>
                           </ModalDialogComponent>
-
-                          <!-- 원부자재 등록 Modal -->
-                            <ModalDialogComponent
-                              :dialog-value="material_dialog"
-                              max-width="30%"
-                              title-class=" "
-                              :dialog-transition="'slide-x-transition'"
-                              :dialog-custom="'custom-dialog elevation-0 white'"
-                              :card-elevation="'0'"
-                              :hide-overlay="true"
-                              :persistent="true"
-                            >
-                              <v-container>
-                                <!-- 모달 내용 구성 -->
-                                <v-row>
-                                  <v-col
-                                    cols="12"
-                                  >
-                                    <v-btn
-                                      color="success"
-                                      small
-                                      class="mr-2"
-                                      elevation="2"
-                                      @click="uploadMaterial"
-                                    >
-                                      저장
-                                    </v-btn>
-                                    <v-btn
-                                      color="default"
-                                      small
-                                      class="mr-2"
-                                      elevation="2"
-                                      @click="close"
-                                    >
-                                      닫기
-                                    </v-btn>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="4"
-                                    lg="3"
-                                  >
-                                  </v-col>
-                                </v-row>
-
-                                <InputsFormComponent
-                                  clearable
-                                  :filled="false"
-                                  :outlined="false"
-                                  :inputs="registMaterialInputs"
-                                >
-
-                                <v-col cols="12" sm="2">
-                                  <v-menu
-                                    open-on-hover
-                                    :close-on-content-click="false"
-                                    :nudge-width="100"
-                                    offset-x
-                                  >
-                                    <template v-slot:activator="{ on, attrs }">
-                                      <div
-                                        v-bind="attrs"
-                                        v-on="on"
-                                      >
-                                        <v-file-input
-                                          dense
-                                          hide-details
-                                          filled
-                                          label=" "
-                                          v-model="editedMaterialItem.photo"
-                                          hide-input
-                                          prepend-icon="mdi-image"
-                                          accept=".png, .jpg, .jpeg"
-                                        ></v-file-input>
-                                      </div>
-                                    </template>
-
-                                    <v-card class="pa-0">
-                                      <v-list class="pa-0">
-                                        <v-list-item class="pa-0">
-                                          <v-list-item-content class="pa-3">
-                                            <v-list-item-subtitle>
-                                              자재 이미지
-                                            </v-list-item-subtitle>
-                                          </v-list-item-content>
-                                        </v-list-item>
-                                      </v-list>
-                                    </v-card>
-                                  </v-menu>
-                                </v-col>
-                                </InputsFormComponent>
-                              </v-container>
-                            </ModalDialogComponent>
-                        </v-col>
-                      </v-row>
-                    </v-card-title>
-
-                    <v-divider></v-divider>
-
-                    <DataTableComponent
-                      :headers="material_headers"
-                      :items="material_data"
-                      show-photo
-                      editable
-                      deletable
-                      dense
-                      @edit="editItem"
-                      @delete="deleteItem"
-                    />
-                    <ModalDialogComponent
-                      :dialog-value="material_dialog_delete"
-                      max-width="350px"
-                      title-class="text-body-1 font-weight-black"
-                      text-class="text-body-2"
-                      save-text="삭제"
-                      close-text="취소"
-                      @save="deleteItemConfirm"
-                      @close="closeDelete"
-                    >
-                      <template v-slot:titleHTML>
-                        <p class="mb-0">{{ editedMaterialItem.material_code }}</p>
-                        <p class="red--text">자재를 삭제하시겠습니까?</p>
-                      </template>
-                      삭제 시 복구 불가능합니다.
-                    </ModalDialogComponent>
-                  </v-card>
+                      </v-col>
+                    </v-row>
+                    <v-row slot="cardText">
+                      <v-col cols="12">
+                        <DataTableComponent
+                          :headers="material_headers"
+                          :items="material_data"
+                          show-photo
+                          editable
+                          deletable
+                          dense
+                          @edit="editMaterialItem"
+                          @delete="deleteItem"
+                        />
+                        <ModalDialogComponent
+                          :dialog-value="delete_dialog"
+                          max-width="350px"
+                          title-class="text-body-1 font-weight-black"
+                          text-class="text-body-2"
+                          save-text="삭제"
+                          close-text="취소"
+                          @save="deleteItemConfirm"
+                          @close="closeDelete"
+                        >
+                          <template v-slot:titleHTML>
+                            <p class="mb-0">{{ tab_main==0 ? editRegistMaterial.material_code : (tab_main==1 ? editRegistModule.module_code : '') }}</p>
+                            <p class="red--text">자재를 삭제하시겠습니까?</p>
+                          </template>
+                          삭제 시 복구 불가능합니다.
+                        </ModalDialogComponent>
+                      </v-col>
+                    </v-row>
+                  </CardComponent>
                 </v-col>
               </v-row>
             </v-tab-item>
@@ -335,7 +308,6 @@
                             <v-btn
                               color="primary"
                               elevation="2"
-                              @click="searchButton"
                             >
                               <v-icon>mdi-magnify</v-icon>검색
                             </v-btn>
@@ -345,362 +317,251 @@
                     </InputsFormComponent>
                   </CardComponent>
 
-                  <v-card
-                  elevation="1"
-                  class="mt-5"
+
+                  <CardComponent
+                    elevation="1"
+                    text-class=" pt-3"
+                    divider-class="mb-3"
+                    card-class="mt-5"
                   >
-                    <v-card-text class=" pt-3">
-                      <v-row>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          align-self="center"
+                    <v-row slot="cardTitle">
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        align-self="center"
+                      >
+                        <v-chip
+                          class="mr-2"
+                          color="indigo"
+                          text-color="white"
                         >
-                          <v-chip
-                            class="mr-2"
-                            color="indigo"
-                            text-color="white"
-                          >
-                            총 재고 :
-                          </v-chip>
-                          <v-chip
-                            color="indigo"
-                            text-color="white"
-                          >
-                            총 금액 :
-                          </v-chip>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          align-self="center"
+                          총 재고 :
+                        </v-chip>
+                        <v-chip
+                          color="indigo"
+                          text-color="white"
                         >
-                          <v-btn color="success" small class="mr-2 float-right" @click="registModule">등록</v-btn>
+                          총 금액 :
+                        </v-chip>
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        align-self="center"
+                      >
+                        <v-btn color="success" small class="mr-2 float-right" @click="registModuleItem">등록</v-btn>
 
-                          <!-- 반제품 등록 Modal -->
-                          <ModalDialogComponent
-                            :dialog-value="module_dialog"
-                            max-width="70%"
-                            title-class=" "
-                            :dialog-transition="'slide-x-transition'"
-                            :dialog-custom="'custom-dialog elevation-0 white'"
-                            :card-elevation="'0'"
-                            :hide-overlay="true"
-                            :persistent="true"
-                          >
-                            <v-container>
-                              <!-- 모달 내용 구성 -->
-                              <v-row>
-                                <v-col
-                                  cols="12"
+                        <!-- 반제품 등록 Modal -->
+                        <ModalDialogComponent
+                          :dialog-value="module_dialog"
+                          max-width="70%"
+                          title-class=" "
+                          :dialog-transition="'slide-x-transition'"
+                          :dialog-custom="'custom-dialog elevation-0 white'"
+                          :card-elevation="'0'"
+                          :hide-overlay="true"
+                          :persistent="true"
+                        >
+                          <v-container>
+                            <!-- 모달 내용 구성 -->
+                            <v-row>
+                              <v-col
+                                cols="12"
+                              >
+                                <p class="text-h6 font-weight-black float-left mb-0">반제품 정보 입력</p>
+                                <v-btn
+                                  color="success"
+                                  small
+                                  class="ml-4 float-left"
+                                  elevation="2"
+                                  @click="uploadModule"
                                 >
-                                  <p class="text-h6 font-weight-black float-left mb-0">반제품 정보 입력</p>
-                                  <v-btn
-                                    color="success"
-                                    small
-                                    class="ml-4 float-left"
-                                    elevation="2"
-                                    @click="save"
-                                  >
-                                    저장
-                                  </v-btn>
-                                  <v-btn
-                                    color="default"
-                                    small
-                                    class="ml-2 float-left"
-                                    elevation="2"
-                                    @click="close"
-                                  >
-                                    닫기
-                                  </v-btn>
-                                </v-col>
-                              </v-row>
+                                  저장
+                                </v-btn>
+                                <v-btn
+                                  color="default"
+                                  small
+                                  class="ml-2 float-left"
+                                  elevation="2"
+                                  @click="close"
+                                >
+                                  닫기
+                                </v-btn>
+                              </v-col>
+                            </v-row>
 
-                              <v-row>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newModuleItem.classification"
-                                    label="분류"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newModuleItem.module_code"
-                                    label="관리코드"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newModuleItem.name"
-                                    label="자재명"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newModuleItem.model"
-                                    label="모델명"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newModuleItem.spec"
-                                    label="사양"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newModuleItem.manufacturer"
-                                    label="제조사"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newModuleItem.stock_num"
-                                    label="재고 수량"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newModuleItem.condition"
-                                    label="재고 상태"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newModuleItem.pe_number"
-                                    label="PE No."
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="3"
-                                >
-                                  <v-text-field
-                                    dense
-                                    hide-details
-                                    filled
-                                    v-model="newModuleItem.unit_price"
-                                    label="단가"
-                                  ></v-text-field>
-                                </v-col>
-                                <v-col
-                                  cols="12"
-                                  sm="1"
-                                >
+                            <InputsFormComponent
+                              slot="cardText"
+                              dense
+                              clearable
+                              filled
+                              hide-details
+                              :inputs="registModuleInputs"
+                            >
+                              <v-menu
+                                open-on-hover
+                                :close-on-content-click="false"
+                                :nudge-width="100"
+                                offset-x
+                                v-if="this.registModuleInputs[this.registModuleInputs.length-1].value"
+                              >
+                                <template v-slot:activator="{ on, attrs }">
+                                  <v-col cols="12" sm="1" align-self="center">
+                                    <v-icon
+                                      v-bind="attrs"
+                                      v-on="on"
+                                    >
+                                      mdi-image-multiple-outline
+                                    </v-icon>
+                                  </v-col>
+                                </template>
 
-                                <v-menu
-                                    open-on-hover
-                                    :close-on-content-click="false"
-                                    :nudge-width="100"
-                                    offset-x
+                                <v-card class="pa-0">
+                                  <v-list class="pa-0">
+                                    <v-list-item class="pa-0">
+                                      <v-list-item-content class="pa-3">
+                                        <v-list-item-subtitle>
+                                          제품이미지영역
+                                          <v-img
+                                            alt="Pionelectric Logo"
+                                            class="shrink mr-2"
+                                            contain
+                                            :src="testImg ? testImg : ''"
+                                            transition="scale-transition"
+                                            width="150"
+                                          />
+                                        </v-list-item-subtitle>
+                                      </v-list-item-content>
+                                    </v-list-item>
+                                  </v-list>
+                                </v-card>
+                              </v-menu>
+                            </InputsFormComponent>
+                            <v-row>
+                              <v-col cols="12">
+                                <v-btn color="primary" small @click="set_material_search = true" v-if="!set_material_search">원부자재 선택</v-btn>
+                              </v-col>
+                            </v-row>
+                            <v-row v-if="set_material_search" style="background: #efefef;">
+                              <v-col cols="9">
+                                <p class="text-h6 font-weight-black mb-0">원부자재 리스트</p>
+                              </v-col>
+                              <v-col cols="12">
+                                <InputsFormComponent
+                                  dense
+                                  clearable
+                                  hide-details
+                                  :inputs="moduleSearchMaterialInputs"
+                                >
+                                  <v-col
+                                    cols="12"
+                                    sm="4"
+                                    lg="3"
+                                    align-self="center"
                                   >
-                                    <template v-slot:activator="{ on, attrs }">
-                                      <div
-                                        v-bind="attrs"
-                                        v-on="on"
-                                      >
-                                        <v-file-input
+                                    <v-btn
+                                      color="primary"
+                                      elevation="2"
+                                      class="mr-2"
+                                      small
+                                    >
+                                      검색
+                                    </v-btn>
+                                    <v-btn
+                                      color="success"
+                                      elevation="2"
+                                      class="mr-2"
+                                      small
+                                      @click="addItemsToModule"
+                                    >
+                                      추가
+                                    </v-btn>
+                                    <v-btn color="default" small @click="set_material_search = false" v-if="set_material_search">
+                                      원부자재 선택 닫기
+                                    </v-btn>
+                                  </v-col>
+                                </InputsFormComponent>
+                              </v-col>
+                              <v-col cols="12">
+                              <DataTableComponent
+                                dense
+                                v-model="selected_material_for_module_data"
+                                :headers="module_search_material_headers"
+                                :items="search_material_for_module_data"
+                                item-key="material_code"
+                                show-select
+                              />
+                              </v-col>
+                            </v-row>
+                            <v-divider class="my-7"></v-divider>
+                            <v-row>
+                              <v-col cols="12" class="pb-0">
+                                <p class="text-h6 font-weight-black mb-0">선택 원부자재 <v-btn x-small color="error" class="ml-4" @click="resetData('module')">비우기</v-btn></p>
+                              </v-col>
+                              <v-col cols="12">
+                                <!-- <DataTableComponent
+                                  :headers="module_set_material_headers"
+                                  :items="module_set_material_data"
+                                  dense
+                                /> -->
+                                <v-data-table
+                                  :headers="module_set_material_headers"
+                                  :items="module_set_material_data"
+                                  item-key="material_code"
+                                  dense
+                                >
+                                  <template v-slot:item="{ item }">
+                                    <tr>
+                                      <td align="center">{{ item.classification }}</td>
+                                      <td align="center">{{ item.module_code }}</td>
+                                      <td align="center">{{ item.name }}</td>
+                                      <td align="center">{{ item.model }}</td>
+                                      <td align="center">{{ item.spec }}</td>
+                                      <td align="center">{{ item.manufacturer }}</td>
+                                      <td align="center">
+                                        <v-text-field
                                           dense
                                           hide-details
+                                          v-model="item.material_num"
+                                          style="width:100px;font-size: 0.775rem !important;"
+                                          type="number"
                                           filled
-                                          label=" "
-                                          v-model="newModuleItem.photo"
-                                          hide-input
-                                          prepend-icon="mdi-image"
-                                          accept=".png, .jpg, .jpeg"
-                                        ></v-file-input>
-                                      </div>
-                                    </template>
-
-                                    <v-card class="pa-0">
-                                      <v-list class="pa-0">
-                                        <v-list-item class="pa-0">
-                                          <v-list-item-content class="pa-3">
-                                            <v-list-item-subtitle>
-                                              <v-img
-                                                alt="Pionelectric Logo"
-                                                class="shrink mr-2"
-                                                contain
-                                                src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
-                                                transition="scale-transition"
-                                              />
-                                            </v-list-item-subtitle>
-                                          </v-list-item-content>
-                                        </v-list-item>
-                                      </v-list>
-                                    </v-card>
-                                  </v-menu>
-                                </v-col>
-                              </v-row>
-                              <v-row>
-                                <v-col cols="12">
-                                  <v-btn color="primary" small @click="set_material_search = true" v-if="!set_material_search">원부자재 선택</v-btn>
-                                </v-col>
-                              </v-row>
-                              <v-row v-if="set_material_search" style="background: #efefef;">
-                                <v-col cols="9">
-                                  <p class="text-h6 font-weight-black mb-0">원부자재 리스트</p>
-                                </v-col>
-                                <v-col cols="12">
-                                  <InputsFormComponent
-                                    dense
-                                    clearable
-                                    hide-details
-                                    :inputs="moduleSearchMaterialInputs"
-                                  >
-                                    <v-col
-                                      cols="12"
-                                      sm="4"
-                                      lg="3"
-                                      align-self="center"
-                                    >
-                                      <v-btn
-                                        color="primary"
-                                        elevation="2"
-                                        class="mr-2"
-                                        small
-                                        @click="searchButton"
-                                      >
-                                        검색
-                                      </v-btn>
-                                      <v-btn color="default" small @click="set_material_search = false" v-if="set_material_search">
-                                        원부자재 선택 닫기
-                                      </v-btn>
-                                    </v-col>
-                                  </InputsFormComponent>
-                                </v-col>
-                                <v-col cols="12">
-                                  <DataTableComponent
-                                    :headers="module_search_material_headers"
-                                    :items="search_material_for_module_data"
-                                    :v-model="module_set_material_data"
-                                    show-select
-                                    dense
-                                  />
-                                </v-col>
-                              </v-row>
-                              <v-divider class="my-7"></v-divider>
-                              <v-row>
-                                <v-col cols="12" class="pb-0">
-                                  <p class="text-h6 font-weight-black mb-0">선택 원부자재 <v-btn x-small color="error" class="ml-4" @click="resetData('module')">비우기</v-btn></p>
-                                </v-col>
-                                <v-col cols="12">
-                                  <!-- <DataTableComponent
-                                    :headers="module_set_material_headers"
-                                    :items="module_set_material_data"
-                                    dense
-                                  /> -->
-                                  <v-data-table
-                                    :headers="module_set_material_headers"
-                                    :items="module_set_material_data"
-                                    item-key="module_code"
-                                    dense
-                                  >
-                                    <template v-slot:item="{ item }">
-                                      <tr>
-                                        <td align="center">{{ item.classification }}</td>
-                                        <td align="center">{{ item.module_code }}</td>
-                                        <td align="center">{{ item.name }}</td>
-                                        <td align="center">{{ item.model }}</td>
-                                        <td align="center">{{ item.spec }}</td>
-                                        <td align="center">{{ item.manufacturer }}</td>
-                                        <td align="center">
-                                          <v-text-field
-                                            dense
-                                            hide-details
-                                            v-model="item.material_num"
-                                            style="width:100px;font-size: 0.775rem !important;"
-                                            type="number"
-                                            filled
-                                          ></v-text-field>
-                                        </td>
-                                        <td align="center">{{ item.unit_price }}</td>
-                                        <td align="center">{{ item.unit_price * item.material_num }}</td>
-                                      </tr>
-                                    </template>
-                                  </v-data-table>
-                                </v-col>
-                              </v-row>
-                            </v-container>
-                          </ModalDialogComponent>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                        >
-                          <DataTableComponent
-                              :headers="module_headers"
-                              :items="module_data"
-                              :item-key="module_data.module_code"
-                              hide-default-footer
-                              disable-pagination
-                              children-key="belong_data"
-                              table-style=""
-                              editable
-                              deletable
-                              dense
-                              notEditableBelong
-                              @edit="editModule"
-                              @delete="deleteItem"
-                              show-photo
-                          />
-                        </v-col>
-                      </v-row>
-                    </v-card-text>
-                  </v-card>
+                                        ></v-text-field>
+                                      </td>
+                                      <td align="center">{{ item.unit_price }}</td>
+                                      <td align="center">{{ item.unit_price * item.material_num }}</td>
+                                    </tr>
+                                  </template>
+                                </v-data-table>
+                              </v-col>
+                            </v-row>
+                          </v-container>
+                        </ModalDialogComponent>
+                      </v-col>
+                    </v-row>
+                    <v-row slot="cardText">
+                      <v-col
+                        cols="12"
+                      >
+                        <DataTableComponent
+                            :headers="module_headers"
+                            :items="module_data"
+                            :item-key="module_data.module_code"
+                            hide-default-footer
+                            disable-pagination
+                            children-key="belong_data"
+                            table-style=""
+                            editable
+                            deletable
+                            dense
+                            notEditableBelong
+                            @edit="editModuleItem"
+                            @delete="deleteItem"
+                            show-photo
+                        />
+                      </v-col>
+                    </v-row>
+                  </CardComponent>
                 </v-col>
               </v-row>
             </v-tab-item>
@@ -734,7 +595,6 @@
                         <v-btn
                           color="primary"
                           elevation="2"
-                          @click="searchButton"
                         >
                           <v-icon>mdi-magnify</v-icon>검색
                         </v-btn>
@@ -773,7 +633,7 @@
                                 v-bind="attrs"
                                 v-on="on"
                               >
-                                mdi-image
+                                mdi-image-edit
                               </v-icon>
                             </template>
 
@@ -821,8 +681,8 @@
                             align-self="center"
                           >
                             <v-btn color="blue-grey darken-1" small class="mr-2 float-right white--text" @click="product_dialog_delete = true">완제품 삭제</v-btn>
-                            <v-btn color="primary" small class="mr-2 float-right" @click="editProduct(data)">수정</v-btn>
-                            <v-btn color="success" small class="mr-2 float-right" @click="registProduct">등록</v-btn>
+                            <v-btn color="primary" small class="mr-2 float-right" @click="editProductItem(data)">수정</v-btn>
+                            <v-btn color="success" small class="mr-2 float-right" @click="registProductItem">등록</v-btn>
 
                             <!-- 완제품 등록 Modal -->
                             <ModalDialogComponent
@@ -847,7 +707,7 @@
                                       small
                                       class="ml-4 float-left"
                                       elevation="2"
-                                      @click="save"
+                                      @click="uploadProduct"
                                     >
                                       저장
                                     </v-btn>
@@ -862,176 +722,53 @@
                                     </v-btn>
                                   </v-col>
                                 </v-row>
-
-                                <v-row>
-                                  <v-col
-                                    cols="12"
-                                    sm="3"
+                                <InputsFormComponent
+                                  slot="cardText"
+                                  dense
+                                  clearable
+                                  filled
+                                  hide-details
+                                  :inputs="registProductInputs"
+                                >
+                                  <v-menu
+                                    open-on-hover
+                                    :close-on-content-click="false"
+                                    :nudge-width="100"
+                                    offset-x
                                   >
-                                    <v-text-field
-                                      dense
-                                      hide-details
-                                      filled
-                                      v-model="newProductItem.classification"
-                                      label="분류"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="3"
-                                  >
-                                    <v-text-field
-                                      dense
-                                      hide-details
-                                      filled
-                                      v-model="newProductItem.product_code"
-                                      label="완제품 코드"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="3"
-                                  >
-                                    <v-text-field
-                                      dense
-                                      hide-details
-                                      filled
-                                      v-model="newProductItem.name"
-                                      label="완제품명"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="3"
-                                  >
-                                    <v-text-field
-                                      dense
-                                      hide-details
-                                      filled
-                                      v-model="newProductItem.model"
-                                      label="모델명"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="3"
-                                  >
-                                    <v-text-field
-                                      dense
-                                      hide-details
-                                      filled
-                                      v-model="newProductItem.spec"
-                                      label="사양"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="3"
-                                  >
-                                    <v-text-field
-                                      dense
-                                      hide-details
-                                      filled
-                                      v-model="newProductItem.manufacturer"
-                                      label="제조사"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="3"
-                                  >
-                                    <v-text-field
-                                      dense
-                                      hide-details
-                                      filled
-                                      v-model="newProductItem.stock_num"
-                                      label="재고 수량"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="3"
-                                  >
-                                    <v-text-field
-                                      dense
-                                      hide-details
-                                      filled
-                                      v-model="newProductItem.condition"
-                                      label="재고 상태"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="3"
-                                  >
-                                    <v-text-field
-                                      dense
-                                      hide-details
-                                      filled
-                                      v-model="newProductItem.pe_number"
-                                      label="PE No."
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="3"
-                                  >
-                                    <v-text-field
-                                      dense
-                                      hide-details
-                                      filled
-                                      v-model="newProductItem.unit_price"
-                                      label="단가"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col
-                                    cols="12"
-                                    sm="1"
-                                  >
-                                    <v-menu
-                                      open-on-hover
-                                      :close-on-content-click="false"
-                                      :nudge-width="100"
-                                      offset-x
-                                    >
-                                      <template v-slot:activator="{ on, attrs }">
-                                        <div
+                                    <!-- v-if="this.registProductInputs[this.registProductInputs.length-1].value" -->
+                                    <template v-slot:activator="{ on, attrs }">
+                                      <v-col cols="12" sm="1" align-self="center">
+                                        <v-icon
                                           v-bind="attrs"
                                           v-on="on"
                                         >
-                                          <v-file-input
-                                            dense
-                                            hide-details
-                                            filled
-                                            label=" "
-                                            v-model="newProductItem.photo"
-                                            hide-input
-                                            prepend-icon="mdi-image"
-                                            accept=".png, .jpg, .jpeg"
-                                          ></v-file-input>
-                                        </div>
-                                      </template>
+                                          mdi-image-multiple-outline
+                                        </v-icon>
+                                      </v-col>
+                                    </template>
 
-                                      <v-card class="pa-0">
-                                        <v-list class="pa-0">
-                                          <v-list-item class="pa-0">
-                                            <v-list-item-content class="pa-3">
-                                              <v-list-item-subtitle>
-                                                <v-img
-                                                  alt="Pionelectric Logo"
-                                                  class="shrink mr-2"
-                                                  contain
-                                                  src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
-                                                  transition="scale-transition"
-                                                />
-                                              </v-list-item-subtitle>
-                                            </v-list-item-content>
-                                          </v-list-item>
-                                        </v-list>
-                                      </v-card>
-                                    </v-menu>
-                                  </v-col>
-                                </v-row>
+                                    <v-card class="pa-0">
+                                      <v-list class="pa-0">
+                                        <v-list-item class="pa-0">
+                                          <v-list-item-content class="pa-3">
+                                            <v-list-item-subtitle>
+                                              제품이미지영역
+                                              <v-img
+                                                alt="Pionelectric Logo"
+                                                class="shrink mr-2"
+                                                contain
+                                                :src="testImg ? testImg : ''"
+                                                transition="scale-transition"
+                                                width="150"
+                                              />
+                                            </v-list-item-subtitle>
+                                          </v-list-item-content>
+                                        </v-list-item>
+                                      </v-list>
+                                    </v-card>
+                                  </v-menu>
+                                </InputsFormComponent>
                                 <v-row>
                                   <v-col cols="12">
                                     <v-btn color="primary" small @click="set_material_search = true" v-if="!set_material_search">자재 선택</v-btn>
@@ -1061,9 +798,17 @@
                                           elevation="2"
                                           class="mr-2"
                                           small
-                                          @click="searchButton"
                                         >
                                           검색
+                                        </v-btn>
+                                        <v-btn
+                                          color="success"
+                                          elevation="2"
+                                          class="mr-2"
+                                          small
+                                          @click="addItemsToProduct"
+                                        >
+                                          추가
                                         </v-btn>
                                         <v-btn color="default" small @click="set_material_search = false" v-if="set_material_search">
                                           자재 선택 닫기
@@ -1073,9 +818,10 @@
                                   </v-col>
                                   <v-col cols="12">
                                     <DataTableComponent
-                                      :headers="product_search_material_headers"
-                                      :items="search_material_for_product_data"
-                                      :v-model="product_set_material_data"
+                                      v-model="selected_items_for_product_data"
+                                      :headers="product_search_item_headers"
+                                      :items="search_items_for_product_data"
+                                      item-key="product_code"
                                       show-select
                                       dense
                                     />
@@ -1088,13 +834,13 @@
                                   </v-col>
                                   <v-col cols="12">
                                     <!-- <DataTableComponent
-                                      :headers="product_set_material_headers"
-                                      :items="product_set_material_data"
+                                      :headers="product_set_items_headers"
+                                      :items="product_set_items_data"
                                       dense
                                     /> -->
                                     <v-data-table
-                                      :headers="product_set_material_headers"
-                                      :items="product_set_material_data"
+                                      :headers="product_set_items_headers"
+                                      :items="product_set_items_data"
                                       item-key="product_code"
                                       dense
                                     >
@@ -1111,14 +857,14 @@
                                             <v-text-field
                                               dense
                                               hide-details
-                                              v-model="item.module_material_num"
+                                              v-model="item.product_num"
                                               style="width:100px;font-size: 0.775rem !important;"
                                               type="number"
                                               filled
                                             ></v-text-field>
                                           </td>
                                           <td align="center">{{ item.unit_price }}</td>
-                                          <td align="center">{{ item.unit_price * item.module_material_num }}</td>
+                                          <td align="center">{{ item.unit_price * item.product_num }}</td>
                                         </tr>
                                       </template>
                                     </v-data-table>
@@ -1150,8 +896,8 @@
                           >
                           <DataTableComponent
                               :headers="product_headers"
-                              :items="data.product_info"
-                              :item-key="data.product_info.product_code"
+                              :items="data.belong_data"
+                              :item-key="data.belong_data.product_code"
                               hide-default-footer
                               disable-pagination
                               children-key="belong_data"
@@ -1204,7 +950,7 @@ export default {
       upload_excel_file: '',
 
       material_dialog: false,
-      material_dialog_delete: false,
+      delete_dialog: false,
 
       module_dialog: false,
       module_dialog_delete: false,
@@ -1215,18 +961,6 @@ export default {
       select_product_type: '반제품',
 
       material_stock_more_0: true,
-      registMaterialInputs:[
-        {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'6', lg:'6'},
-        {label:'관리코드', col:'12', sm:'6', lg:'6', value: ''},
-        {label:'자재명', col:'12', sm:'6', lg:'6', value: ''},
-        {label:'모델명', col:'12', sm:'6', lg:'6', value: ''},
-        {label:'사양', col:'12', sm:'6', lg:'6', value: ''},
-        {label:'제조사', col:'12', sm:'6', lg:'6', value: ''},
-        {label:'재고수량', col:'12', sm:'6', lg:'6', value: ''},
-        {label:'재고상태', type:'auto', col:'12', sm:'6', lg:'6', value:'All', list:['All', 'G', 'B']},
-        {label:'PE No.', col:'12', sm:'6', lg:'6', value: ''},
-        {label:'단가', col:'12', sm:'6', lg:'6', value: ''},
-      ],
       searchMaterialCardInputs:[
         {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'3'},
         {label:'상태', type:'auto', col:'12', sm:'4', lg:'3', value:'All', list:['All', 'G', 'B']},
@@ -1236,6 +970,19 @@ export default {
         {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
         {label:'제조사', col:'12', sm:'4', lg:'3', value: ''},
         // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
+      ],
+      registMaterialInputs:[
+        {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'6', lg:'6',},
+        {label:'관리코드', column_name:'material_code',  col:'12', sm:'6', lg:'6', value: ''},
+        {label:'자재명', column_name:'name',  col:'12', sm:'6', lg:'6', value: ''},
+        {label:'모델명', column_name:'model',  col:'12', sm:'6', lg:'6', value: ''},
+        {label:'사양', column_name:'spec', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'제조사', column_name:'manufacturer', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'재고수량', column_name:'stock_num', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'재고상태', column_name:'condition', type:'auto', col:'12', sm:'6', lg:'6', value:'', list:['G', 'B']},
+        {label:'PE No.', column_name:'pe_number', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'단가', column_name:'unit_price', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'사진', column_name:'photo', type:'file', col:'12', sm:'1', lg:'1', value: '', hide_input:true, icon:'mdi-image-edit' },
       ],
       module_stock_more_0: true,
       searchModuleCardInputs:[
@@ -1247,6 +994,19 @@ export default {
         {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
         {label:'제조사', col:'12', sm:'4', lg:'3', value: ''},
         // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
+      ],
+      registModuleInputs:[
+        {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'3', lg:'3',},
+        {label:'관리코드', column_name:'module_code',  col:'12', sm:'3', lg:'3', value: ''},
+        {label:'자재명', column_name:'name',  col:'12', sm:'3', lg:'3', value: ''},
+        {label:'모델명', column_name:'model',  col:'12', sm:'3', lg:'3', value: ''},
+        {label:'사양', column_name:'spec', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'제조사', column_name:'manufacturer', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'재고수량', column_name:'stock_num', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'재고상태', column_name:'condition', type:'auto', col:'12', sm:'3', lg:'3', value:'', list:['G', 'B']},
+        {label:'PE No.', column_name:'pe_number', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'단가', column_name:'unit_price', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'사진', column_name:'photo', type:'file', col:'12', sm:'1', lg:'1', value: '', hide_input:true, icon:'mdi-image-edit',},
       ],
       moduleSearchMaterialInputs:[
         {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'3'},
@@ -1262,6 +1022,19 @@ export default {
         {label:'제품명', col:'12', sm:'4', lg:'3', value: ''},
         {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
       ],
+      registProductInputs:[
+        {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'3', lg:'3',},
+        {label:'완제품코드', column_name:'product_code',  col:'12', sm:'3', lg:'3', value: ''},
+        {label:'완제품명', column_name:'name',  col:'12', sm:'3', lg:'3', value: ''},
+        {label:'모델명', column_name:'model',  col:'12', sm:'3', lg:'3', value: ''},
+        {label:'사양', column_name:'spec', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'제조사', column_name:'manufacturer', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'재고수량', column_name:'stock_num', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'재고상태', column_name:'condition', type:'auto', col:'12', sm:'3', lg:'3', value:'', list:['G', 'B']},
+        {label:'PE No.', column_name:'pe_number', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'단가', column_name:'unit_price', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'사진', column_name:'photo', type:'file', col:'12', sm:'1', lg:'1', value: '', hide_input:true, icon:'mdi-image-edit',},
+      ],
       productSearchMaterialModuleInputs:[
         {label:'종류', type:'auto', list:['All', '원부자재', '반제품'], value:'All', col:'12', sm:'4', lg:'3'},
         {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'3'},
@@ -1275,6 +1048,7 @@ export default {
       set_material_search: false,
 
       menu: false,
+      excel_photos: [],
       material_headers: [
         { text: '분류', align: 'center', value: 'classification', },
         { text: '관리코드', align: 'center', value: 'material_code', },
@@ -1288,10 +1062,25 @@ export default {
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '총액', align: 'center', value: 'stock_price', },
       ],
+      material_excel_headers: [
+        { text: '분류', align: 'center', value: 'classification', },
+        { text: '관리코드', align: 'center', value: 'material_code', },
+        { text: '제품명', align: 'center', value: 'name', },
+        { text: '모델명', align: 'center', value: 'model', },
+        { text: '사양', align: 'center', value: 'spec', },
+        { text: '제조사', align: 'center', value: 'manufacturer', },
+        { text: '재고', align: 'center', value: 'stock_num', },
+        { text: '상태', align: 'center', value: 'condition', },
+        { text: 'PE No.', align: 'center', value: 'pe_number', },
+        { text: '단가', align: 'center', value: 'unit_price', },
+        { text: '사진', align: 'center', value: 'photo', },
+      ],
       material_data: [],
       material_excel_upload_data: [],
-      editedMaterialIndex: -1,
-      editedMaterialItem: {
+      editedIndex: -1,
+      editRegistMaterial: {
+        creater:null,
+        type:'원부자재',
         classification:'',
         material_code: '',
         name: '',
@@ -1303,6 +1092,7 @@ export default {
         pe_number: '',
         inbound_date: '',
         unit_price: '',
+        photo:'',
       },
       defaultMaterialItem: {
         classification:'',
@@ -1317,7 +1107,9 @@ export default {
         inbound_date: '',
         unit_price: '',
       },
-      newModuleItem: {
+      editRegistModule: {
+        creater:null,
+        type:'반제품',
         classification:'',
         module_code: '',
         name: '',
@@ -1329,20 +1121,26 @@ export default {
         pe_number: '',
         unit_price: '',
         photo: '',
+        thumbnail: null,
+        belong_data:[]
       },
 
-      newProductItem: {
-        classification:'',
-        product_code: '',
-        name: '',
-        model: '',
-        spec: '',
-        manufacturer: '',
-        stock_num: '',
-        condition: '',
-        pe_number: '',
-        unit_price: '',
+      editRegistProduct: {
+        creater: null,
+        type: '완제품',
+        classification : '',
+        product_code : '',
+        name : '',
+        model : '',
+        spec : '',
+        manufacturer : '',
+        stock_num : 0,
+        condition : '',
+        pe_number : '',
+        unit_price : 0,
         photo: '',
+        thumbnail : null,
+        belong_data:[]
       },
       module_headers: [
         { text: '', align: 'center', value: '', },
@@ -1382,32 +1180,63 @@ export default {
         { text: '총액', align: 'center', value: 'stock_price', },
       ],
       module_set_material_data:[],
-      search_material_for_module_data:[],
+      search_material_for_module_data:[
+        {
+          classification:'일반',
+          material_code: '공장2F_E-09-1111',
+          name: '원부자재1111',
+          model: '모델1111',
+          spec: '스펙1111',
+          manufacturer: '파이온일렉트릭',
+          unit_price: '1',
+          product_price: '',
+        },
+        {
+          classification:'일반',
+          material_code: '공장2F_E-09-2222',
+          name: '원부자재2222',
+          model: '모델2222',
+          spec: '스펙2222',
+          manufacturer: '파이온일렉트릭',
+          unit_price: '2',
+          product_price: '',
+        },
+        {
+          classification:'일반',
+          material_code: '공장2F_E-09-3333',
+          name: '원부자재3333',
+          model: '모델3333',
+          spec: '스펙3333',
+          manufacturer: '파이온일렉트릭',
+          unit_price: '3',
+          product_price: '',
+        },
+      ],
+      selected_material_for_module_data:[],
 
       product_headers: [
         { text: '', align: 'center', value: '', },
-        { text: '제품코드', align: 'center', value: 'product_code', },
+        { text: '제품코드', align: 'center', value: 'product_item_code', },
         { text: '제품명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '필요수량', align: 'center', value: 'module_material_num', },
+        { text: '필요수량', align: 'center', value: 'product_num', },
         { text: '재고', align: 'center', value: 'stock_num', },
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '총액', align: 'center', value: 'product_price', },
       ],
-      product_search_material_headers: [
+      product_search_item_headers: [
         { text: '종류', align: 'center', value: 'type', },
         { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'material_code', },
+        { text: '관리코드', align: 'center', value: 'product_code', },
         { text: '자재명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
       ],
-      product_set_material_headers: [
+      product_set_items_headers: [
         { text: '종류', align: 'center', value: 'type', },
         { text: '분류', align: 'center', value: 'classification', },
         { text: '관리코드', align: 'center', value: 'product_code', },
@@ -1419,23 +1248,66 @@ export default {
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '총액', align: 'center', value: 'stock_price', },
       ],
-      product_set_material_data:[],
-      search_material_for_product_data:[],
+      product_set_items_data:[],
+      search_items_for_product_data:[
+        {
+          type:'원부자재',
+          classification: 'GFM',
+          product_code: '공장2F_E-09-01',
+          name: 'IGBT & SMPS',
+          model: '원부자재모델1',
+          spec: '원부자재사양1',
+          manufacturer: '파이온일렉트릭',
+          unit_price: '111',
+        },
+        {
+          type:'원부자재',
+          classification: 'GFM',
+          product_code: '공장2F_E-09-02',
+          name: 'SPD, 퓨즈',
+          model: '원부자재모델2',
+          spec: '원부자재사양2',
+          manufacturer: '파이온일렉트릭',
+          unit_price: '222',
+        },
+        {
+          type:'반제품',
+          classification: 'GFM',
+          product_code: '공장2F_E-29-01',
+          name: 'IGBT & SMPS',
+          model: '반제품모델1',
+          spec: '반제품사양1',
+          manufacturer: '파이온일렉트릭',
+          unit_price: '333',
+        },
+        {
+          type:'반제품',
+          classification: 'GFM',
+          product_code: '공장2F_E-29-02',
+          name: 'SPD, 퓨즈',
+          model: '반제품모델2',
+          spec: '반제품사양2',
+          manufacturer: '파이온일렉트릭',
+          unit_price: '444',
+        },
+      ],
+      selected_items_for_product_data: [],
+
       module_data: [
         {
           classification: 'GFM',
           module_code: '공장2F_E-01-01',
           name: 'PCS Ass`Y',
-          model: '',
-          spec: '',
+          model: '반제품모델1',
+          spec: '반제품스펙1',
           manufacturer: '파이온일렉트릭',
           material_num: '',
           stock_num: '10',
-          condition: '',
-          pe_number: '',
+          condition: 'G',
+          pe_number: 'PE240202-001',
           inbound_date: '',
           unit_price: '',
-          product_price: '',
+          photo: 'testt.jpg',
           belong_data:[
             {
               classification: 'GFM',
@@ -1710,18 +1582,18 @@ export default {
           stock_num: '1',
           condition: 'G',
           pe_number: 'PE240101-001',
-          id:'380vac_500kW',
-          button_toggle:true,
-          product_info: [
+          photo:'productphoto.jpg',
+          belong_data: [
             {
               type:'반제품',
               classification: '일반',
-              product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01',
+              product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01',
+              product_code:'반제품01_001',
               name: 'PCS Ass`Y',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              module_material_num: '1',
+              product_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1730,12 +1602,13 @@ export default {
               product_price: '',
               belong_data:[
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-01',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-01',
+                  product_code: '원부자재01_001',
                   name: 'IGBT & SMPS',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1744,12 +1617,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-04',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-02',
+                  product_code: '원부자재01_002',
                   name: 'SPD, 퓨즈',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1758,12 +1632,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-05',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-03',
+                  product_code: '원부자재01_003',
                   name: '쿨링팬',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1772,12 +1647,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-06',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-04',
+                  product_code: '원부자재01_004',
                   name: '보호회로',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1786,12 +1662,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-07',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-05',
+                  product_code: '원부자재01_005',
                   name: '리액터',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1800,12 +1677,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-08',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-06',
+                  product_code: '원부자재01_006',
                   name: 'MCCB',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1814,12 +1692,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-09',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-07',
+                  product_code: '원부자재01_007',
                   name: 'EMC',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1828,12 +1707,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-10',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-08',
+                  product_code: '원부자재01_008',
                   name: 'DC Capacitor',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1842,12 +1722,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-11',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-09',
+                  product_code: '원부자재01_009',
                   name: '외함 및 기구',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1858,14 +1739,15 @@ export default {
               ]
             },
             {
-              product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02',
+              product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02',
+              product_code:'반제품02_002',
               classification: '일반',
               type:'반제품',
               name: '제어기 Ass`Y',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              module_material_num: '1',
+              product_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1875,12 +1757,13 @@ export default {
               belong_data:
               [
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-01',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-01',
+                  product_code: '원부자재02_001',
                   name: '제어기(LK11)',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1889,12 +1772,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-02',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-02',
+                  product_code: '원부자재02_002',
                   name: '인터페이스보드',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1903,12 +1787,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-03',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-03',
+                  product_code: '원부자재02_003',
                   name: 'SMPS(15VDC)',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1917,12 +1802,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-04',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-04',
+                  product_code: '원부자재02_004',
                   name: 'SMPS Bracket',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1931,12 +1817,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-05',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-05',
+                  product_code: '원부자재02_005',
                   name: 'HMI PC',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1945,12 +1832,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-06',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-06',
+                  product_code: '원부자재02_006',
                   name: 'PLC',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1959,12 +1847,13 @@ export default {
                   product_price: '',
                 },
                 {
-                  product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-07',
+                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-07',
+                  product_code: '원부자재02_007',
                   name: '통신케이블',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  module_material_num: '1',
+                  product_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1981,19 +1870,13 @@ export default {
   },
 
   computed: {
-    formTitle () {
-      return this.editedMaterialIndex === -1 ? '등록' : '수정'
-    },
-    formDisabled () {
-      return this.editedMaterialIndex === -1 ? false : true
-    },
   },
 
   watch: {
     material_dialog (val) {
       val || this.close()
     },
-    material_dialog_delete (val) {
+    delete_dialog (val) {
       val || this.closeDelete()
     },
   },
@@ -2008,211 +1891,140 @@ export default {
     },
     initialize () {
       this.material_data = [
-      // {
-      //     classification:'일반',
-      //     material_code: '공장2F_E-09-01',
-      //     name: 'IGBT & SMPS',
-      //     model: '',
-      //     spec: '',
-      //     manufacturer: '파이온일렉트릭',
-      //     product_num: '1',
-      //     condition: 'G',
-      //     pe_number: '',
-      //     inbound_date: '2024-03-11',
-      //     unit_price: '',
-      //     product_price: '',
-      //   },
-      //   {
-      //     classification:'일반',
-      //     material_code: '공장2F_E-09-02',
-      //     name: 'SPD, 퓨즈',
-      //     model: '',
-      //     spec: '',
-      //     manufacturer: '파이온일렉트릭',
-      //     product_num: '1',
-      //     condition: 'G',
-      //     pe_number: '',
-      //     inbound_date: '2024-03-11',
-      //     unit_price: '',
-      //     product_price: '',
-      //   },
-      //   {
-      //     classification:'일반',
-      //     material_code: '공장2F_E-09-03',
-      //     name: '쿨링팬',
-      //     model: '',
-      //     spec: '',
-      //     manufacturer: '파이온일렉트릭',
-      //     product_num: '1',
-      //     condition: 'G',
-      //     pe_number: '',
-      //     inbound_date: '2024-03-11',
-      //     unit_price: '',
-      //     product_price: '',
-      //   },
-      //   {
-      //     classification:'일반',
-      //     material_code: '공장2F_E-09-05',
-      //     name: '보호회로',
-      //     model: '',
-      //     spec: '',
-      //     manufacturer: '파이온일렉트릭',
-      //     product_num: '1',
-      //     condition: 'G',
-      //     pe_number: '',
-      //     inbound_date: '2024-03-11',
-      //     unit_price: '',
-      //     product_price: '',
-      //   },
-      //   {
-      //     classification:'일반',
-      //     material_code: '공장2F_E-09-06',
-      //     name: '리액터',
-      //     model: '',
-      //     spec: '',
-      //     manufacturer: '파이온일렉트릭',
-      //     product_num: '1',
-      //     condition: 'G',
-      //     pe_number: '',
-      //     inbound_date: '2024-03-11',
-      //     unit_price: '',
-      //     product_price: '',
-      //   },
-      //   {
-      //     classification:'일반',
-      //     material_code: '공장2F_E-09-07',
-      //     name: 'MCCB',
-      //     model: '',
-      //     spec: '',
-      //     manufacturer: '파이온일렉트릭',
-      //     product_num: '1',
-      //     condition: 'G',
-      //     pe_number: '',
-      //     inbound_date: '2024-03-11',
-      //     unit_price: '',
-      //     product_price: '',
-      //   },
+      {
+          classification:'일반',
+          material_code: '공장2F_E-09-01',
+          name: 'IGBT & SMPS',
+          model: '모델1',
+          spec: '사양1',
+          manufacturer: '파이온일렉트릭',
+          stock_num: '1',
+          condition: 'G',
+          pe_number: 'PE240101-001',
+          inbound_date: '2024-03-11',
+          unit_price: '1',
+          stock_price: '1',
+          photo:'photoName'
+        },
+        // {
+        //   classification:'일반',
+        //   material_code: '공장2F_E-09-02',
+        //   name: 'SPD, 퓨즈',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   product_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   product_price: '',
+        // },
+        // {
+        //   classification:'일반',
+        //   material_code: '공장2F_E-09-03',
+        //   name: '쿨링팬',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   product_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   product_price: '',
+        // },
+        // {
+        //   classification:'일반',
+        //   material_code: '공장2F_E-09-05',
+        //   name: '보호회로',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   product_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   product_price: '',
+        // },
+        // {
+        //   classification:'일반',
+        //   material_code: '공장2F_E-09-06',
+        //   name: '리액터',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   product_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   product_price: '',
+        // },
+        // {
+        //   classification:'일반',
+        //   material_code: '공장2F_E-09-07',
+        //   name: 'MCCB',
+        //   model: '',
+        //   spec: '',
+        //   manufacturer: '파이온일렉트릭',
+        //   product_num: '1',
+        //   condition: 'G',
+        //   pe_number: '',
+        //   inbound_date: '2024-03-11',
+        //   unit_price: '',
+        //   product_price: '',
+        // },
       ]
     },
-
-    editItem (item) {
-      this.editedMaterialIndex = this.material_data.indexOf(item)
-      this.editedMaterialItem = Object.assign({}, item)
+    registMaterialItem(){
+      let material_input = this.registMaterialInputs;
+      material_input.forEach(data =>{
+        data.value = '';
+      })
+      this.material_dialog = true
+    },
+    registMaterialExcel(){
+      if(this.material_excel_upload_data.length == 0){
+        alert("업로드할 엑셀을 선택해주세요")
+      }
+      //material_excel_upload_data : 불러온 엑셀 데이터
+    },
+    editMaterialItem (item) {
+      let material_input = this.registMaterialInputs;
+      material_input.forEach(data =>{
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            data.value = Object.values(item)[i];
+          }
+        }
+      })
       this.material_dialog = true
     },
 
-    deleteItem (item) {
-        this.editedMaterialIndex = this.material_data.indexOf(item)
-        this.editedMaterialItem = Object.assign({}, item)
-      this.material_dialog_delete = true
-    },
-
-    deleteItemConfirm () {
-        this.material_data.splice(this.editedMaterialIndex, 1)
-      this.closeDelete()
-    },
-
-    close () {
-      this.material_dialog = false
-      this.module_dialog = false
-      this.product_dialog = false
-      this.dialog_excel = false
-      this.$nextTick(() => {
-        this.editedMaterialItem = Object.assign({}, this.defaultMaterialItem)
-        this.editedMaterialIndex = -1
-      })
-    },
-    closeDelete () {
-      this.material_dialog_delete = false
-      this.module_dialog_delete = false
-      this.product_dialog_delete = false
-      this.dialog_excel = false
-      this.$nextTick(() => {
-        this.editedMaterialItem = Object.assign({}, this.defaultMaterialItem)
-        this.editedMaterialIndex = -1
-      })
-    },
-    resetData(type){
-      if(type == 'module'){
-        this.module_set_material_data = [];
-      }else if(type == 'product'){
-        this.product_set_material_data = [];
-      }
-    },
-
-    save () {
-      if (this.editedMaterialIndex > -1) {
-        Object.assign(this.material_data[this.editedMaterialIndex], this.editedMaterialItem)
-      } else {
-        this.material_data.push(this.editedMaterialItem)
-      }
-      this.close()
-    },
-
-    registModule(){
-      this.module_dialog = true;
-      this.module_set_material_data = [];
-      this.newModuleItem.classification = '';
-      this.newModuleItem.module_code = '';
-      this.newModuleItem.name = '';
-      this.newModuleItem.model = '';
-      this.newModuleItem.spec = '';
-      this.newModuleItem.manufacturer = '';
-      this.newModuleItem.stock_num = '';
-      this.newModuleItem.condition = '';
-      this.newModuleItem.pe_number = '';
-      this.newModuleItem.unit_price = '';
-      this.newModuleItem.photo = '';
-    },
-
-    editModule(item){
-      this.module_dialog = true;
-      this.newModuleItem.classification = item.classification;
-      this.newModuleItem.module_code = item.module_code;
-      this.newModuleItem.name = item.name;
-      this.newModuleItem.model = item.model;
-      this.newModuleItem.spec = item.spec;
-      this.newModuleItem.manufacturer = item.manufacturer;
-      this.newModuleItem.stock_num = item.stock_num;
-      this.newModuleItem.condition = item.condition;
-      this.newModuleItem.pe_number = item.pe_number;
-      this.newModuleItem.unit_price = item.unit_price;
-      this.newModuleItem.photo = item.photo;
-      this.module_set_material_data = item.belong_data;
-    },
-
-    registProduct(){
-      this.product_dialog = true;
-      this.product_set_material_data = [];
-      this.newProductItem.classification = '';
-      this.newProductItem.product_code = '';
-      this.newProductItem.name = '';
-      this.newProductItem.model = '';
-      this.newProductItem.spec = '';
-      this.newProductItem.manufacturer = '';
-      this.newProductItem.stock_num = '';
-      this.newProductItem.condition = '';
-      this.newProductItem.pe_number = '';
-      this.newProductItem.unit_price = '';
-      this.newProductItem.photo = '';
-    },
-    editProduct(item){
-      this.product_dialog = true
-      this.newProductItem.classification = item.classification;
-      this.newProductItem.product_code = item.product_code;
-      this.newProductItem.name = item.name;
-      this.newProductItem.model = item.model;
-      this.newProductItem.spec = item.spec;
-      this.newProductItem.manufacturer = item.manufacturer;
-      this.newProductItem.stock_num = item.stock_num;
-      this.newProductItem.condition = item.condition;
-      this.newProductItem.pe_number = item.pe_number;
-      this.newProductItem.unit_price = item.unit_price;
-      this.newProductItem.photo = item.photo;
-      this.product_set_material_data = item.product_info;
-    },
-
     async uploadMaterial () {
+      // 저장버튼 클릭 시 registMaterialInputs의 value를 editRegistMaterial에 전달
+      let material_input = this.registMaterialInputs;
+      let item = this.editRegistMaterial;
+      let no_data = [];
+      material_input.forEach(data =>{
+        if(data.label !== '사진' && !data.value){
+          no_data.push(data.label);
+        }
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            item[Object.keys(item)[i]] = data.value;
+          }
+        }
+      })
+
+
+      if(no_data.length > 0){
+        alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
+        return;
+      }
+
       let files = this.$refs.material_photo.$refs.input.files;
       if (files.length > 0){
         // 업로드할 때, 이미지 파일을 리사이징하고 바이너리 데이터 생성(백엔드로 전달해 DB에 저장할 데이터)
@@ -2226,10 +2038,190 @@ export default {
       }
     },
 
+    registModuleItem(){
+      let module_input = this.registModuleInputs;
+      module_input.forEach(data =>{
+        data.value = '';
+      })
+      this.module_set_material_data = [];
+      this.module_dialog = true
+    },
+
+    editModuleItem(item){
+      let module_input = this.registModuleInputs;
+      module_input.forEach(data =>{
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            data.value = Object.values(item)[i];
+          }
+        }
+      })
+      this.module_set_material_data = item.belong_data
+      this.module_dialog = true;
+    },
+    addItemsToModule(){
+      this.selected_material_for_module_data.forEach(data =>{
+        this.module_set_material_data.push(data);
+      })
+      // this.selected_material_for_module_data = []
+    },
+    uploadModule(){
+      // 저장버튼 클릭 시 registModuleInputs value를 editRegistModule에 전달
+      // 수정, 등록 둘 다 editRegistModule로 요청
+      let module_input = this.registModuleInputs;
+      let item = this.editRegistModule;
+      let no_data=[];
+      module_input.forEach(data =>{
+        if(data.label !== '사진' && !data.value){
+          no_data.push(data.label);
+        }
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            item[Object.keys(item)[i]] = data.value;
+          }
+        }
+      })
+
+      if(no_data.length > 0){
+        alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
+        return;
+      }
+      this.module_set_material_data.forEach(material =>{
+        item.belong_data.push({material_code: material.module_code, material_num: material.material_num});
+      })
+    },
+
+    registProductItem(){
+      let product_input = this.registProductInputs;
+      product_input.forEach(data =>{
+        data.value = '';
+      })
+      this.product_set_items_data = [];
+      this.product_dialog = true;
+    },
+
+    editProductItem(item){
+      let product_input = this.registProductInputs;
+      product_input.forEach(data =>{
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            data.value = Object.values(item)[i];
+          }
+        }
+      })
+      this.product_set_items_data = item.belong_data
+      this.product_dialog = true;
+    },
+    addItemsToProduct(){
+      this.selected_items_for_product_data.forEach(data =>{
+        this.product_set_items_data.push(data);
+      })
+    },
+    uploadProduct(){
+      // 저장버튼 클릭 시 registProductInputs value를 editRegistProduct에 전달
+      // 수정, 등록 둘 다 editRegistProduct로 요청
+      let product_input = this.registProductInputs;
+      let item = this.editRegistProduct;
+      let no_data=[];
+      product_input.forEach(data =>{
+        if(data.label !== '사진' && !data.value){
+          no_data.push(data.label);
+        }
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            item[Object.keys(item)[i]] = data.value;
+          }
+        }
+      })
+
+      if(no_data.length > 0){
+        alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
+        return;
+      }
+      this.product_set_items_data.forEach(items =>{
+        if(items.type == '원부자재'){
+          item.belong_data.push({type:items.type, material_code: items.product_code, material_num: items.product_num});
+        }else if(items.type == '반제품'){
+          item.belong_data.push({type:items.type, module_code: items.product_code, module_num: items.product_num});
+        }
+      })
+    },
+
+    deleteItem (item) {
+      if(this.tab_main == 0){
+        this.editedIndex = this.material_data.indexOf(item)
+        this.editRegistMaterial = Object.assign({}, item)
+      }else if(this.tab_main == 1){
+        this.editedIndex = this.module_data.indexOf(item)
+        this.editRegistModule  = Object.assign({}, item)
+      }
+        this.delete_dialog = true
+    },
+
+    deleteItemConfirm () {
+      if(this.tab_main == 0){
+        this.material_data.splice(this.editedIndex, 1)
+      }else if(this.tab_main == 1){
+        this.module_data.splice(this.editedIndex, 1)
+      }
+      this.closeDelete()
+    },
+
+    // editProduct(item){
+    //   this.product_dialog = true
+    //   this.newProductItem.classification = item.classification;
+    //   this.newProductItem.product_code = item.product_code;
+    //   this.newProductItem.name = item.name;
+    //   this.newProductItem.model = item.model;
+    //   this.newProductItem.spec = item.spec;
+    //   this.newProductItem.manufacturer = item.manufacturer;
+    //   this.newProductItem.stock_num = item.stock_num;
+    //   this.newProductItem.condition = item.condition;
+    //   this.newProductItem.pe_number = item.pe_number;
+    //   this.newProductItem.unit_price = item.unit_price;
+    //   this.newProductItem.photo = item.photo;
+    //   this.product_set_items_data = item.belong_data;
+    // },
+
+    close () {
+      this.material_dialog = false
+      this.module_dialog = false
+      this.product_dialog = false
+      this.dialog_excel = false
+      this.$nextTick(() => {
+        this.editRegistMaterial = Object.assign({}, this.defaultMaterialItem)
+        this.editedIndex = -1
+      })
+    },
+    closeDelete () {
+      this.delete_dialog = false
+      this.dialog_excel = false
+      this.$nextTick(() => {
+        this.editRegistMaterial = Object.assign({}, this.defaultMaterialItem)
+        this.editedIndex = -1
+      })
+    },
+    resetData(type){
+      if(type == 'module'){
+        this.module_set_material_data = [];
+      }else if(type == 'product'){
+        this.product_set_items_data = [];
+      }
+    },
+
+    save () {
+      if (this.editedIndex > -1) {
+        Object.assign(this.material_data[this.editedIndex], this.editRegistMaterial)
+      } else {
+        this.material_data.push(this.editRegistMaterial)
+      }
+      this.close()
+    },
+
     loadExcelFile(event) {
       if(event){
         const file = event;
-        const headers = this.material_headers; // 헤더 정보
+        const headers = this.material_excel_headers; // 헤더 정보
         const items = this.material_excel_upload_data; // 테이블 내용 정보
         mux.Excel.open(file, headers, items);
       }
