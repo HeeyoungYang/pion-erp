@@ -251,7 +251,7 @@
                           @close="closeDelete"
                         >
                           <template v-slot:titleHTML>
-                            <p class="mb-0">{{ tab_main==0 ? editRegistMaterial.material_code : (tab_main==1 ? editRegistModule.module_code : '') }}</p>
+                            <p class="mb-0">{{ tab_main==0 ? editRegistMaterial.material_code : (tab_main==1 ? editRegistModule.module_code : (tab_main==2 ? editRegistProduct.product_code : '')) }}</p>
                             <p class="red--text">자재를 삭제하시겠습니까?</p>
                           </template>
                           삭제 시 복구 불가능합니다.
@@ -680,7 +680,7 @@
                             sm="6"
                             align-self="center"
                           >
-                            <v-btn color="blue-grey darken-1" small class="mr-2 float-right white--text" @click="product_dialog_delete = true">완제품 삭제</v-btn>
+                            <v-btn color="blue-grey darken-1" small class="mr-2 float-right white--text" @click="deleteItem(data)">완제품 삭제</v-btn>
                             <v-btn color="primary" small class="mr-2 float-right" @click="editProductItem(data)">수정</v-btn>
                             <v-btn color="success" small class="mr-2 float-right" @click="registProductItem">등록</v-btn>
 
@@ -885,7 +885,7 @@
                               @close="closeDelete"
                             >
                               <template v-slot:titleHTML>
-                                <p class="mb-0">{{ product_data.product_code }}</p>
+                                <p class="mb-0">{{ data.product_code }}</p>
                                 <p class="red--text">완제품을 삭제하시겠습니까?</p>
                               </template>
                               삭제 시 복구 불가능합니다.
@@ -946,19 +946,13 @@ export default {
       tab_items:['원부자재 정보', '반제품 정보', '완제품 정보'],
       dialog_excel: false,
 
-      material_search: '',
-      upload_excel_file: '',
-
       material_dialog: false,
       delete_dialog: false,
 
       module_dialog: false,
-      module_dialog_delete: false,
 
       product_dialog: false,
       product_dialog_delete: false,
-
-      select_product_type: '반제품',
 
       material_stock_more_0: true,
       searchMaterialCardInputs:[
@@ -1079,7 +1073,6 @@ export default {
       material_excel_upload_data: [],
       editedIndex: -1,
       editRegistMaterial: {
-        creater:null,
         type:'원부자재',
         classification:'',
         material_code: '',
@@ -1108,7 +1101,6 @@ export default {
         unit_price: '',
       },
       editRegistModule: {
-        creater:null,
         type:'반제품',
         classification:'',
         module_code: '',
@@ -1126,7 +1118,6 @@ export default {
       },
 
       editRegistProduct: {
-        creater: null,
         type: '완제품',
         classification : '',
         product_code : '',
@@ -1189,7 +1180,6 @@ export default {
           spec: '스펙1111',
           manufacturer: '파이온일렉트릭',
           unit_price: '1',
-          product_price: '',
         },
         {
           classification:'일반',
@@ -1199,7 +1189,6 @@ export default {
           spec: '스펙2222',
           manufacturer: '파이온일렉트릭',
           unit_price: '2',
-          product_price: '',
         },
         {
           classification:'일반',
@@ -1209,7 +1198,6 @@ export default {
           spec: '스펙3333',
           manufacturer: '파이온일렉트릭',
           unit_price: '3',
-          product_price: '',
         },
       ],
       selected_material_for_module_data:[],
@@ -1322,7 +1310,6 @@ export default {
               pe_number: '',
               inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1337,7 +1324,6 @@ export default {
               pe_number: '',
               inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1350,9 +1336,7 @@ export default {
               stock_num: '10',
               condition: '',
               pe_number: '',
-              inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1365,9 +1349,7 @@ export default {
               stock_num: '10',
               condition: '',
               pe_number: '',
-              inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1380,9 +1362,7 @@ export default {
               stock_num: '10',
               condition: '',
               pe_number: '',
-              inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1395,9 +1375,7 @@ export default {
               stock_num: '10',
               condition: '',
               pe_number: '',
-              inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1410,9 +1388,7 @@ export default {
               stock_num: '10',
               condition: '',
               pe_number: '',
-              inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1425,9 +1401,7 @@ export default {
               stock_num: '10',
               condition: '',
               pe_number: '',
-              inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1440,9 +1414,7 @@ export default {
               stock_num: '10',
               condition: '',
               pe_number: '',
-              inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
           ]
         },
@@ -1459,7 +1431,6 @@ export default {
           pe_number: '',
           inbound_date: '',
           unit_price: '',
-          product_price: '',
           belong_data:
           [
             {
@@ -1475,7 +1446,6 @@ export default {
               pe_number: '',
               inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1490,7 +1460,6 @@ export default {
               pe_number: '',
               inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1505,7 +1474,6 @@ export default {
               pe_number: '',
               inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1520,7 +1488,6 @@ export default {
               pe_number: '',
               inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1535,7 +1502,6 @@ export default {
               pe_number: '',
               inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1550,7 +1516,6 @@ export default {
               pe_number: '',
               inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
             {
               classification: 'GFM',
@@ -1565,7 +1530,6 @@ export default {
               pe_number: '',
               inbound_date: '',
               unit_price: '',
-              product_price: '',
             },
           ]
         },
@@ -1599,7 +1563,6 @@ export default {
               pe_number: '',
               inbound_date: '',
               unit_price: '',
-              product_price: '',
               belong_data:[
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-01',
@@ -1614,7 +1577,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-02',
@@ -1629,7 +1591,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-03',
@@ -1644,7 +1605,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-04',
@@ -1659,7 +1619,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-05',
@@ -1674,7 +1633,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-06',
@@ -1689,7 +1647,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-07',
@@ -1704,7 +1661,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-08',
@@ -1719,7 +1675,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-09',
@@ -1734,7 +1689,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
               ]
             },
@@ -1753,7 +1707,6 @@ export default {
               pe_number: '',
               inbound_date: '',
               unit_price: '',
-              product_price: '',
               belong_data:
               [
                 {
@@ -1769,7 +1722,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-02',
@@ -1784,7 +1736,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-03',
@@ -1799,7 +1750,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-04',
@@ -1814,7 +1764,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-05',
@@ -1829,7 +1778,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-06',
@@ -1844,7 +1792,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-07',
@@ -1859,7 +1806,6 @@ export default {
                   pe_number: '',
                   inbound_date: '',
                   unit_price: '',
-                  product_price: '',
                 },
               ]
             },
@@ -1992,6 +1938,7 @@ export default {
       //material_excel_upload_data : 불러온 엑셀 데이터
     },
     editMaterialItem (item) {
+      this.editedIndex = this.material_data.indexOf(item)
       let material_input = this.registMaterialInputs;
       material_input.forEach(data =>{
         for(let i=0; i<Object.keys(item).length; i++){
@@ -2005,6 +1952,7 @@ export default {
 
     async uploadMaterial () {
       // 저장버튼 클릭 시 registMaterialInputs의 value를 editRegistMaterial에 전달
+      // 수정, 등록 둘 다 editRegistMaterial 요청, editedIndex에 따라 구분
       let material_input = this.registMaterialInputs;
       let item = this.editRegistMaterial;
       let no_data = [];
@@ -2019,23 +1967,33 @@ export default {
         }
       })
 
-
       if(no_data.length > 0){
         alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
         return;
       }
 
-      let files = this.$refs.material_photo.$refs.input.files;
-      if (files.length > 0){
-        // 업로드할 때, 이미지 파일을 리사이징하고 바이너리 데이터 생성(백엔드로 전달해 DB에 저장할 데이터)
-        const thumbnailBuffer = await mux.Util.resizeImageToBinary(files[0], 300, 300);
-
-        // // 업로드할 때, 원본도 AWS S3 버킷에 업로드해야 함.
-        // mux.Server.uploadFile(reqObj);
-
-        // 출력할 때, 바이너리 데이터를 img src 에 적용(백엔드로 받은 데이터)
-        this.testImg = mux.Util.binaryToURL(thumbnailBuffer);
+      this.editRegistMaterial.type = '원부자재'
+      if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
+        this.editRegistMaterial.creater = 'user_id';
+      }else{// 아니라면 수정
+        this.editRegistMaterial.modifier = 'user_id';
       }
+
+      //editRegistMaterial를 전달 Back으로 전달
+
+
+
+      // let files = this.$refs.material_photo.$refs.input.files;
+      // if (files.length > 0){
+      //   // 업로드할 때, 이미지 파일을 리사이징하고 바이너리 데이터 생성(백엔드로 전달해 DB에 저장할 데이터)
+      //   const thumbnailBuffer = await mux.Util.resizeImageToBinary(files[0], 300, 300);
+
+      //   // // 업로드할 때, 원본도 AWS S3 버킷에 업로드해야 함.
+      //   // mux.Server.uploadFile(reqObj);
+
+      //   // 출력할 때, 바이너리 데이터를 img src 에 적용(백엔드로 받은 데이터)
+      //   this.testImg = mux.Util.binaryToURL(thumbnailBuffer);
+      // }
     },
 
     registModuleItem(){
@@ -2048,6 +2006,7 @@ export default {
     },
 
     editModuleItem(item){
+      this.editedIndex = this.module_data.indexOf(item)
       let module_input = this.registModuleInputs;
       module_input.forEach(data =>{
         for(let i=0; i<Object.keys(item).length; i++){
@@ -2067,7 +2026,7 @@ export default {
     },
     uploadModule(){
       // 저장버튼 클릭 시 registModuleInputs value를 editRegistModule에 전달
-      // 수정, 등록 둘 다 editRegistModule로 요청
+      // 수정, 등록 둘 다 editRegistModule에 요청, editedIndex에 따라 구분
       let module_input = this.registModuleInputs;
       let item = this.editRegistModule;
       let no_data=[];
@@ -2089,6 +2048,15 @@ export default {
       this.module_set_material_data.forEach(material =>{
         item.belong_data.push({material_code: material.module_code, material_num: material.material_num});
       })
+
+      this.editRegistModule.type = '반제품'
+      if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
+        this.editRegistModule.creater = 'user_id';
+      }else{// 아니라면 수정
+        this.editRegistModule.modifier = 'user_id';
+      }
+
+      console.log('반제품 데이터 : ' + JSON.stringify(this.editRegistModule));
     },
 
     registProductItem(){
@@ -2101,6 +2069,7 @@ export default {
     },
 
     editProductItem(item){
+      this.editedIndex = this.product_data.indexOf(item)
       let product_input = this.registProductInputs;
       product_input.forEach(data =>{
         for(let i=0; i<Object.keys(item).length; i++){
@@ -2119,7 +2088,7 @@ export default {
     },
     uploadProduct(){
       // 저장버튼 클릭 시 registProductInputs value를 editRegistProduct에 전달
-      // 수정, 등록 둘 다 editRegistProduct로 요청
+      // 수정, 등록 둘 다 editRegistProduct에 요청, editedIndex에 따라 구분
       let product_input = this.registProductInputs;
       let item = this.editRegistProduct;
       let no_data=[];
@@ -2145,43 +2114,54 @@ export default {
           item.belong_data.push({type:items.type, module_code: items.product_code, module_num: items.product_num});
         }
       })
+
+      this.editRegistProduct.type = '반제품'
+      if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
+        this.editRegistProduct.creater = 'user_id';
+      }else{// 아니라면 수정
+        this.editRegistProduct.modifier = 'user_id';
+      }
+
+      console.log('완제품 데이터 : ' + JSON.stringify(this.editRegistProduct));
     },
 
     deleteItem (item) {
       if(this.tab_main == 0){
         this.editedIndex = this.material_data.indexOf(item)
         this.editRegistMaterial = Object.assign({}, item)
+        this.editRegistMaterial.modifier = 'user_id';
+        this.editRegistMaterial.type = '원부자재';
       }else if(this.tab_main == 1){
         this.editedIndex = this.module_data.indexOf(item)
         this.editRegistModule  = Object.assign({}, item)
+        this.editRegistModule.modifier = 'user_id';
+        this.editRegistModule.type = '반제품';
+
+      }else if(this.tab_main == 2){
+        this.editedIndex = this.product_data.indexOf(item)
+        this.editRegistProduct  = Object.assign({}, item)
+        this.editRegistProduct.modifier = 'user_id';
+        this.editRegistProduct.type = '완제품';
       }
         this.delete_dialog = true
     },
 
     deleteItemConfirm () {
+      let delete_data;
       if(this.tab_main == 0){
         this.material_data.splice(this.editedIndex, 1)
+        delete_data = this.editRegistMaterial;
       }else if(this.tab_main == 1){
         this.module_data.splice(this.editedIndex, 1)
+        delete_data = this.editRegistModule;
+      }else if(this.tab_main == 2){
+        this.product_data.splice(this.editedIndex, 1)
+        delete_data = this.editRegistProduct;
       }
+      console.log('삭제 데이터 : ' + JSON.stringify(delete_data));
+
       this.closeDelete()
     },
-
-    // editProduct(item){
-    //   this.product_dialog = true
-    //   this.newProductItem.classification = item.classification;
-    //   this.newProductItem.product_code = item.product_code;
-    //   this.newProductItem.name = item.name;
-    //   this.newProductItem.model = item.model;
-    //   this.newProductItem.spec = item.spec;
-    //   this.newProductItem.manufacturer = item.manufacturer;
-    //   this.newProductItem.stock_num = item.stock_num;
-    //   this.newProductItem.condition = item.condition;
-    //   this.newProductItem.pe_number = item.pe_number;
-    //   this.newProductItem.unit_price = item.unit_price;
-    //   this.newProductItem.photo = item.photo;
-    //   this.product_set_items_data = item.belong_data;
-    // },
 
     close () {
       this.material_dialog = false
@@ -2204,8 +2184,10 @@ export default {
     resetData(type){
       if(type == 'module'){
         this.module_set_material_data = [];
+        this.selected_material_for_module_data = [];
       }else if(type == 'product'){
         this.product_set_items_data = [];
+        this.selected_items_for_product_data = [];
       }
     },
 
