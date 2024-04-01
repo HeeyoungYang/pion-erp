@@ -251,7 +251,7 @@
                           @close="closeDelete"
                         >
                           <template v-slot:titleHTML>
-                            <p class="mb-0">{{ tab_main==0 ? editRegistMaterial.material_code : (tab_main==1 ? editRegistModule.module_code : (tab_main==2 ? editRegistProduct.product_code : '')) }}</p>
+                            <p class="mb-0">{{ tab_main==0 ? editRegistMaterial.item_code : (tab_main==1 ? editRegistModule.item_code : (tab_main==2 ? editRegistProduct.item_code : '')) }}</p>
                             <p class="red--text">자재를 삭제하시겠습니까?</p>
                           </template>
                           삭제 시 복구 불가능합니다.
@@ -488,7 +488,7 @@
                                 v-model="selected_material_for_module_data"
                                 :headers="module_search_material_headers"
                                 :items="search_material_for_module_data"
-                                item-key="material_code"
+                                item-key="item_code"
                                 show-select
                               />
                               </v-col>
@@ -499,38 +499,31 @@
                                 <p class="text-h6 font-weight-black mb-0">선택 원부자재 <v-btn x-small color="error" class="ml-4" @click="resetData('module')">비우기</v-btn></p>
                               </v-col>
                               <v-col cols="12">
-                                <!-- <DataTableComponent
-                                  :headers="module_set_material_headers"
-                                  :items="module_set_material_data"
-                                  dense
-                                /> -->
                                 <v-data-table
                                   :headers="module_set_material_headers"
                                   :items="module_set_material_data"
-                                  item-key="material_code"
+                                  item-key="item_code"
                                   dense
                                 >
-                                  <template v-slot:item="{ item }">
-                                    <tr>
-                                      <td align="center">{{ item.classification }}</td>
-                                      <td align="center">{{ item.module_code }}</td>
-                                      <td align="center">{{ item.name }}</td>
-                                      <td align="center">{{ item.model }}</td>
-                                      <td align="center">{{ item.spec }}</td>
-                                      <td align="center">{{ item.manufacturer }}</td>
-                                      <td align="center">
-                                        <v-text-field
-                                          dense
-                                          hide-details
-                                          v-model="item.material_num"
-                                          style="width:100px;font-size: 0.775rem !important;"
-                                          type="number"
-                                          filled
-                                        ></v-text-field>
-                                      </td>
-                                      <td align="center">{{ item.unit_price }}</td>
-                                      <td align="center">{{ item.unit_price * item.material_num }}</td>
-                                    </tr>
+                                  <template v-slot:[`item.item_num`] = "{ item }">
+                                    <v-text-field
+                                      dense
+                                      hide-details
+                                      v-model="item.item_num"
+                                      style="width:100px;font-size: 0.775rem !important;"
+                                      type="number"
+                                      filled
+                                    ></v-text-field>
+                                  </template>
+                                  <template v-slot:[`item.item_price`] = "{ item }">
+                                    {{  item.unit_price * item.item_num ? item.unit_price * item.item_num :  0 }}
+                                  </template>
+                                  <template v-slot:[`item.delete_item`]="{ index }">
+                                    <v-icon
+                                      color="grey"
+                                      small
+                                      @click="deleteBelongItem(index)"
+                                    >mdi-minus-thick</v-icon>
                                   </template>
                                 </v-data-table>
                               </v-col>
@@ -546,7 +539,7 @@
                         <DataTableComponent
                             :headers="module_headers"
                             :items="module_data"
-                            :item-key="module_data.module_code"
+                            :item-key="module_data.item_code"
                             hide-default-footer
                             disable-pagination
                             children-key="belong_data"
@@ -619,7 +612,7 @@
                             class="text-body-1 font-weight-bold black--text ml-2"
                             item-align-center
                           >
-                            : {{ data.product_code }}
+                            : {{ data.item_code }}
                           </span>
                           <v-menu
                             open-on-hover
@@ -821,7 +814,7 @@
                                       v-model="selected_items_for_product_data"
                                       :headers="product_search_item_headers"
                                       :items="search_items_for_product_data"
-                                      item-key="product_code"
+                                      item-key="item_code"
                                       show-select
                                       dense
                                     />
@@ -830,42 +823,37 @@
                                 <v-divider class="my-7"></v-divider>
                                 <v-row>
                                   <v-col cols="9" class="pb-0">
-                                    <p class="text-h6 font-weight-black mb-0">선택 자재 <v-btn x-small color="error" class="ml-4" @click="resetData('product')">비우기</v-btn></p>
+                                    <p class="text-h6 font-weight-black mb-0">
+                                      선택 자재
+                                      <v-btn x-small color="default" class="ml-4" @click="resetData('product')">비우기</v-btn>
+                                    </p>
                                   </v-col>
                                   <v-col cols="12">
-                                    <!-- <DataTableComponent
-                                      :headers="product_set_items_headers"
-                                      :items="product_set_items_data"
-                                      dense
-                                    /> -->
                                     <v-data-table
                                       :headers="product_set_items_headers"
                                       :items="product_set_items_data"
-                                      item-key="product_code"
+                                      item-key="item_code"
                                       dense
                                     >
-                                      <template v-slot:item="{ item }">
-                                        <tr>
-                                          <td align="center">{{ item.type }}</td>
-                                          <td align="center">{{ item.classification }}</td>
-                                          <td align="center">{{ item.product_code }}</td>
-                                          <td align="center">{{ item.name }}</td>
-                                          <td align="center">{{ item.model }}</td>
-                                          <td align="center">{{ item.spec }}</td>
-                                          <td align="center">{{ item.manufacturer }}</td>
-                                          <td align="center">
-                                            <v-text-field
-                                              dense
-                                              hide-details
-                                              v-model="item.product_num"
-                                              style="width:100px;font-size: 0.775rem !important;"
-                                              type="number"
-                                              filled
-                                            ></v-text-field>
-                                          </td>
-                                          <td align="center">{{ item.unit_price }}</td>
-                                          <td align="center">{{ item.unit_price * item.product_num }}</td>
-                                        </tr>
+                                      <template v-slot:[`item.item_num`] = "{ item }">
+                                        <v-text-field
+                                          dense
+                                          hide-details
+                                          v-model="item.item_num"
+                                          style="width:100px;font-size: 0.775rem !important;"
+                                          type="number"
+                                          filled
+                                        ></v-text-field>
+                                      </template>
+                                      <template v-slot:[`item.item_price`] = "{ item }">
+                                        {{  item.unit_price * item.item_num ? item.unit_price * item.item_num :  0 }}
+                                      </template>
+                                      <template v-slot:[`item.delete_item`]="{ index }">
+                                        <v-icon
+                                          color="grey"
+                                          small
+                                          @click="deleteBelongItem(index)"
+                                        >mdi-minus-thick</v-icon>
                                       </template>
                                     </v-data-table>
                                   </v-col>
@@ -885,7 +873,7 @@
                               @close="closeDelete"
                             >
                               <template v-slot:titleHTML>
-                                <p class="mb-0">{{ data.product_code }}</p>
+                                <p class="mb-0">{{ data.item_code }}</p>
                                 <p class="red--text">완제품을 삭제하시겠습니까?</p>
                               </template>
                               삭제 시 복구 불가능합니다.
@@ -897,7 +885,7 @@
                           <DataTableComponent
                               :headers="product_headers"
                               :items="data.belong_data"
-                              :item-key="data.belong_data.product_code"
+                              :item-key="data.belong_data.item_code"
                               hide-default-footer
                               disable-pagination
                               children-key="belong_data"
@@ -967,7 +955,7 @@ export default {
       ],
       registMaterialInputs:[
         {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'6', lg:'6',},
-        {label:'관리코드', column_name:'material_code',  col:'12', sm:'6', lg:'6', value: ''},
+        {label:'관리코드', column_name:'item_code',  col:'12', sm:'6', lg:'6', value: ''},
         {label:'자재명', column_name:'name',  col:'12', sm:'6', lg:'6', value: ''},
         {label:'모델명', column_name:'model',  col:'12', sm:'6', lg:'6', value: ''},
         {label:'사양', column_name:'spec', col:'12', sm:'6', lg:'6', value: ''},
@@ -991,7 +979,7 @@ export default {
       ],
       registModuleInputs:[
         {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'3', lg:'3',},
-        {label:'관리코드', column_name:'module_code',  col:'12', sm:'3', lg:'3', value: ''},
+        {label:'관리코드', column_name:'item_code',  col:'12', sm:'3', lg:'3', value: ''},
         {label:'자재명', column_name:'name',  col:'12', sm:'3', lg:'3', value: ''},
         {label:'모델명', column_name:'model',  col:'12', sm:'3', lg:'3', value: ''},
         {label:'사양', column_name:'spec', col:'12', sm:'3', lg:'3', value: ''},
@@ -1018,7 +1006,7 @@ export default {
       ],
       registProductInputs:[
         {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'3', lg:'3',},
-        {label:'완제품코드', column_name:'product_code',  col:'12', sm:'3', lg:'3', value: ''},
+        {label:'완제품코드', column_name:'item_code',  col:'12', sm:'3', lg:'3', value: ''},
         {label:'완제품명', column_name:'name',  col:'12', sm:'3', lg:'3', value: ''},
         {label:'모델명', column_name:'model',  col:'12', sm:'3', lg:'3', value: ''},
         {label:'사양', column_name:'spec', col:'12', sm:'3', lg:'3', value: ''},
@@ -1045,7 +1033,7 @@ export default {
       excel_photos: [],
       material_headers: [
         { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'material_code', },
+        { text: '관리코드', align: 'center', value: 'item_code', },
         { text: '제품명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
@@ -1054,11 +1042,11 @@ export default {
         { text: '상태', align: 'center', value: 'condition', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
+        { text: '재고 총액', align: 'center', value: 'stock_price', },
       ],
       material_excel_headers: [
         { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'material_code', },
+        { text: '관리코드', align: 'center', value: 'item_code', },
         { text: '제품명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
@@ -1075,7 +1063,7 @@ export default {
       editRegistMaterial: {
         type:'원부자재',
         classification:'',
-        material_code: '',
+        item_code: '',
         name: '',
         model: '',
         spec: '',
@@ -1089,7 +1077,7 @@ export default {
       },
       defaultMaterialItem: {
         classification:'',
-        material_code: '',
+        item_code: '',
         name: '',
         model: '',
         spec: '',
@@ -1103,7 +1091,7 @@ export default {
       editRegistModule: {
         type:'반제품',
         classification:'',
-        module_code: '',
+        item_code: '',
         name: '',
         model: '',
         spec: '',
@@ -1120,7 +1108,7 @@ export default {
       editRegistProduct: {
         type: '완제품',
         classification : '',
-        product_code : '',
+        item_code : '',
         name : '',
         model : '',
         spec : '',
@@ -1136,22 +1124,22 @@ export default {
       module_headers: [
         { text: '', align: 'center', value: '', },
         { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'module_code', },
+        { text: '관리코드', align: 'center', value: 'item_code', },
         { text: '제품명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '필요수량', align: 'center', value: 'material_num', },
+        { text: '필요수량', align: 'center', value: 'item_num', },
         { text: '재고', align: 'center', value: 'stock_num', },
         { text: '상태', align: 'center', value: 'condition', },
         { text: 'PE No.', align: 'center', value: 'pe_number', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
+        { text: '총액', align: 'center', value: 'item_price', },
       ],
 
       module_search_material_headers: [
         { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'material_code', },
+        { text: '관리코드', align: 'center', value: 'item_code', },
         { text: '자재명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
@@ -1161,20 +1149,21 @@ export default {
       ],
       module_set_material_headers: [
         { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'module_code', },
+        { text: '관리코드', align: 'center', value: 'item_code', },
         { text: '자재명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '필요수량', align: 'center', value: 'material_num', },
+        { text: '필요수량', align: 'center', value: 'item_num', sortable: false},
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
+        { text: '총액', align: 'center', value: 'item_price', },
+        { text: '제외', align: 'center', value: 'delete_item', sortable: false},
       ],
       module_set_material_data:[],
       search_material_for_module_data:[
         {
           classification:'일반',
-          material_code: '공장2F_E-09-1111',
+          item_code: '공장2F_E-09-1111',
           name: '원부자재1111',
           model: '모델1111',
           spec: '스펙1111',
@@ -1183,7 +1172,7 @@ export default {
         },
         {
           classification:'일반',
-          material_code: '공장2F_E-09-2222',
+          item_code: '공장2F_E-09-2222',
           name: '원부자재2222',
           model: '모델2222',
           spec: '스펙2222',
@@ -1192,7 +1181,7 @@ export default {
         },
         {
           classification:'일반',
-          material_code: '공장2F_E-09-3333',
+          item_code: '공장2F_E-09-3333',
           name: '원부자재3333',
           model: '모델3333',
           spec: '스펙3333',
@@ -1209,7 +1198,7 @@ export default {
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '필요수량', align: 'center', value: 'product_num', },
+        { text: '필요수량', align: 'center', value: 'item_num', },
         { text: '재고', align: 'center', value: 'stock_num', },
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '총액', align: 'center', value: 'product_price', },
@@ -1217,7 +1206,7 @@ export default {
       product_search_item_headers: [
         { text: '종류', align: 'center', value: 'type', },
         { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'product_code', },
+        { text: '관리코드', align: 'center', value: 'item_code', },
         { text: '자재명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
@@ -1227,21 +1216,22 @@ export default {
       product_set_items_headers: [
         { text: '종류', align: 'center', value: 'type', },
         { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'product_code', },
+        { text: '관리코드', align: 'center', value: 'item_code', },
         { text: '자재명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '필요수량', align: 'center', value: 'material_num', },
+        { text: '필요수량', align: 'center', value: 'item_num', sortable: false},
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
+        { text: '총액', align: 'center', value: 'item_price', },
+        { text: '제외', align: 'center', value: 'delete_item', sortable: false },
       ],
       product_set_items_data:[],
       search_items_for_product_data:[
         {
           type:'원부자재',
           classification: 'GFM',
-          product_code: '공장2F_E-09-01',
+          item_code: '공장2F_E-09-01',
           name: 'IGBT & SMPS',
           model: '원부자재모델1',
           spec: '원부자재사양1',
@@ -1251,7 +1241,7 @@ export default {
         {
           type:'원부자재',
           classification: 'GFM',
-          product_code: '공장2F_E-09-02',
+          item_code: '공장2F_E-09-02',
           name: 'SPD, 퓨즈',
           model: '원부자재모델2',
           spec: '원부자재사양2',
@@ -1261,7 +1251,7 @@ export default {
         {
           type:'반제품',
           classification: 'GFM',
-          product_code: '공장2F_E-29-01',
+          item_code: '공장2F_E-29-01',
           name: 'IGBT & SMPS',
           model: '반제품모델1',
           spec: '반제품사양1',
@@ -1271,7 +1261,7 @@ export default {
         {
           type:'반제품',
           classification: 'GFM',
-          product_code: '공장2F_E-29-02',
+          item_code: '공장2F_E-29-02',
           name: 'SPD, 퓨즈',
           model: '반제품모델2',
           spec: '반제품사양2',
@@ -1284,12 +1274,12 @@ export default {
       module_data: [
         {
           classification: 'GFM',
-          module_code: '공장2F_E-01-01',
+          item_code: '공장2F_E-01-01',
           name: 'PCS Ass`Y',
           model: '반제품모델1',
           spec: '반제품스펙1',
           manufacturer: '파이온일렉트릭',
-          material_num: '',
+          item_num: '',
           stock_num: '10',
           condition: 'G',
           pe_number: 'PE240202-001',
@@ -1299,12 +1289,12 @@ export default {
           belong_data:[
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-01',
+              item_code: '공장2F_E-09-01',
               name: 'IGBT & SMPS',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1313,12 +1303,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-02',
+              item_code: '공장2F_E-09-02',
               name: 'SPD, 퓨즈',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1327,12 +1317,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-03',
+              item_code: '공장2F_E-09-03',
               name: '쿨링팬',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1340,12 +1330,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-04',
+              item_code: '공장2F_E-09-04',
               name: '보호회로',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1353,12 +1343,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-05',
+              item_code: '공장2F_E-09-05',
               name: '리액터',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1366,12 +1356,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-06',
+              item_code: '공장2F_E-09-06',
               name: 'MCCB',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1379,12 +1369,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-07',
+              item_code: '공장2F_E-09-07',
               name: 'EMC',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1392,12 +1382,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-08',
+              item_code: '공장2F_E-09-08',
               name: 'DC Capacitor',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1405,12 +1395,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-09',
+              item_code: '공장2F_E-09-09',
               name: '외함 및 기구',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1420,12 +1410,12 @@ export default {
         },
         {
           classification: 'GFM',
-          module_code: '공장2F_E-02-01',
+          item_code: '공장2F_E-02-01',
           name: '제어기 Ass`Y',
           model: '',
           spec: '',
           manufacturer: '파이온일렉트릭',
-          material_num: '',
+          item_num: '',
           stock_num: '10',
           condition: '',
           pe_number: '',
@@ -1435,12 +1425,12 @@ export default {
           [
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-11',
+              item_code: '공장2F_E-09-11',
               name: '제어기(LK11)',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1449,12 +1439,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-12',
+              item_code: '공장2F_E-09-12',
               name: '인터페이스보드',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1463,12 +1453,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-13',
+              item_code: '공장2F_E-09-13',
               name: 'SMPS(15VDC)',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1477,12 +1467,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-14',
+              item_code: '공장2F_E-09-14',
               name: 'SMPS Bracket',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1491,12 +1481,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-15',
+              item_code: '공장2F_E-09-15',
               name: 'HMI PC',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1505,12 +1495,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-16',
+              item_code: '공장2F_E-09-16',
               name: 'PLC',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1519,12 +1509,12 @@ export default {
             },
             {
               classification: 'GFM',
-              module_code: '공장2F_E-09-17',
+              item_code: '공장2F_E-09-17',
               name: '통신케이블',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              material_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1536,7 +1526,7 @@ export default {
       ],
       product_data: [
         {
-          product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
+          item_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
           classification: 'GFM',
           model: '완제품모델1',
           manufacturer: '제조사2',
@@ -1552,12 +1542,12 @@ export default {
               type:'반제품',
               classification: '일반',
               product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01',
-              product_code:'반제품01_001',
+              item_code:'반제품01_001',
               name: 'PCS Ass`Y',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              product_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1566,12 +1556,12 @@ export default {
               belong_data:[
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-01',
-                  product_code: '원부자재01_001',
+                  item_code: '원부자재01_001',
                   name: 'IGBT & SMPS',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1580,12 +1570,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-02',
-                  product_code: '원부자재01_002',
+                  item_code: '원부자재01_002',
                   name: 'SPD, 퓨즈',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1594,12 +1584,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-03',
-                  product_code: '원부자재01_003',
+                  item_code: '원부자재01_003',
                   name: '쿨링팬',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1608,12 +1598,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-04',
-                  product_code: '원부자재01_004',
+                  item_code: '원부자재01_004',
                   name: '보호회로',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1622,12 +1612,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-05',
-                  product_code: '원부자재01_005',
+                  item_code: '원부자재01_005',
                   name: '리액터',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1636,12 +1626,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-06',
-                  product_code: '원부자재01_006',
+                  item_code: '원부자재01_006',
                   name: 'MCCB',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1650,12 +1640,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-07',
-                  product_code: '원부자재01_007',
+                  item_code: '원부자재01_007',
                   name: 'EMC',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1664,12 +1654,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-08',
-                  product_code: '원부자재01_008',
+                  item_code: '원부자재01_008',
                   name: 'DC Capacitor',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1678,12 +1668,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-09',
-                  product_code: '원부자재01_009',
+                  item_code: '원부자재01_009',
                   name: '외함 및 기구',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1694,14 +1684,14 @@ export default {
             },
             {
               product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02',
-              product_code:'반제품02_002',
+              item_code:'반제품02_002',
               classification: '일반',
               type:'반제품',
               name: '제어기 Ass`Y',
               model: '',
               spec: '',
               manufacturer: '파이온일렉트릭',
-              product_num: '1',
+              item_num: '1',
               stock_num: '10',
               condition: '',
               pe_number: '',
@@ -1711,12 +1701,12 @@ export default {
               [
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-01',
-                  product_code: '원부자재02_001',
+                  item_code: '원부자재02_001',
                   name: '제어기(LK11)',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1725,12 +1715,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-02',
-                  product_code: '원부자재02_002',
+                  item_code: '원부자재02_002',
                   name: '인터페이스보드',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1739,12 +1729,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-03',
-                  product_code: '원부자재02_003',
+                  item_code: '원부자재02_003',
                   name: 'SMPS(15VDC)',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1753,12 +1743,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-04',
-                  product_code: '원부자재02_004',
+                  item_code: '원부자재02_004',
                   name: 'SMPS Bracket',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1767,12 +1757,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-05',
-                  product_code: '원부자재02_005',
+                  item_code: '원부자재02_005',
                   name: 'HMI PC',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1781,12 +1771,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-06',
-                  product_code: '원부자재02_006',
+                  item_code: '원부자재02_006',
                   name: 'PLC',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1795,12 +1785,12 @@ export default {
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-07',
-                  product_code: '원부자재02_007',
+                  item_code: '원부자재02_007',
                   name: '통신케이블',
                   model: '',
                   spec: '',
                   manufacturer: '파이온일렉트릭',
-                  product_num: '1',
+                  item_num: '1',
                   stock_num: '10',
                   condition: '',
                   pe_number: '',
@@ -1839,7 +1829,7 @@ export default {
       this.material_data = [
       {
           classification:'일반',
-          material_code: '공장2F_E-09-01',
+          item_code: '공장2F_E-09-01',
           name: 'IGBT & SMPS',
           model: '모델1',
           spec: '사양1',
@@ -1854,12 +1844,12 @@ export default {
         },
         // {
         //   classification:'일반',
-        //   material_code: '공장2F_E-09-02',
+        //   item_code: '공장2F_E-09-02',
         //   name: 'SPD, 퓨즈',
         //   model: '',
         //   spec: '',
         //   manufacturer: '파이온일렉트릭',
-        //   product_num: '1',
+        //   item_num: '1',
         //   condition: 'G',
         //   pe_number: '',
         //   inbound_date: '2024-03-11',
@@ -1868,12 +1858,12 @@ export default {
         // },
         // {
         //   classification:'일반',
-        //   material_code: '공장2F_E-09-03',
+        //   item_code: '공장2F_E-09-03',
         //   name: '쿨링팬',
         //   model: '',
         //   spec: '',
         //   manufacturer: '파이온일렉트릭',
-        //   product_num: '1',
+        //   item_num: '1',
         //   condition: 'G',
         //   pe_number: '',
         //   inbound_date: '2024-03-11',
@@ -1882,12 +1872,12 @@ export default {
         // },
         // {
         //   classification:'일반',
-        //   material_code: '공장2F_E-09-05',
+        //   item_code: '공장2F_E-09-05',
         //   name: '보호회로',
         //   model: '',
         //   spec: '',
         //   manufacturer: '파이온일렉트릭',
-        //   product_num: '1',
+        //   item_num: '1',
         //   condition: 'G',
         //   pe_number: '',
         //   inbound_date: '2024-03-11',
@@ -1896,12 +1886,12 @@ export default {
         // },
         // {
         //   classification:'일반',
-        //   material_code: '공장2F_E-09-06',
+        //   item_code: '공장2F_E-09-06',
         //   name: '리액터',
         //   model: '',
         //   spec: '',
         //   manufacturer: '파이온일렉트릭',
-        //   product_num: '1',
+        //   item_num: '1',
         //   condition: 'G',
         //   pe_number: '',
         //   inbound_date: '2024-03-11',
@@ -1910,12 +1900,12 @@ export default {
         // },
         // {
         //   classification:'일반',
-        //   material_code: '공장2F_E-09-07',
+        //   item_code: '공장2F_E-09-07',
         //   name: 'MCCB',
         //   model: '',
         //   spec: '',
         //   manufacturer: '파이온일렉트릭',
-        //   product_num: '1',
+        //   item_num: '1',
         //   condition: 'G',
         //   pe_number: '',
         //   inbound_date: '2024-03-11',
@@ -2015,14 +2005,17 @@ export default {
           }
         }
       })
-      this.module_set_material_data = item.belong_data
+      for(let d=0; d<item.belong_data.length; d++){
+        this.module_set_material_data.push(item.belong_data[d])
+      }
+      // this.module_set_material_data= item.belong_data
       this.module_dialog = true;
     },
     addItemsToModule(){
       this.selected_material_for_module_data.forEach(data =>{
         this.module_set_material_data.push(data);
       })
-      // this.selected_material_for_module_data = []
+      this.selected_material_for_module_data = []
     },
     uploadModule(){
       // 저장버튼 클릭 시 registModuleInputs value를 editRegistModule에 전달
@@ -2046,7 +2039,7 @@ export default {
         return;
       }
       this.module_set_material_data.forEach(material =>{
-        item.belong_data.push({material_code: material.module_code, material_num: material.material_num});
+        item.belong_data.push({material_code: material.item_code, material_num: material.item_num});
       })
 
       this.editRegistModule.type = '반제품'
@@ -2078,13 +2071,17 @@ export default {
           }
         }
       })
-      this.product_set_items_data = item.belong_data
+      for(let d=0; d<item.belong_data.length; d++){
+        this.product_set_items_data.push(item.belong_data[d])
+      }
+      // this.product_set_items_data = item.belong_data
       this.product_dialog = true;
     },
     addItemsToProduct(){
       this.selected_items_for_product_data.forEach(data =>{
         this.product_set_items_data.push(data);
       })
+      this.selected_items_for_product_data = []
     },
     uploadProduct(){
       // 저장버튼 클릭 시 registProductInputs value를 editRegistProduct에 전달
@@ -2109,9 +2106,9 @@ export default {
       }
       this.product_set_items_data.forEach(items =>{
         if(items.type == '원부자재'){
-          item.belong_data.push({type:items.type, material_code: items.product_code, material_num: items.product_num});
+          item.belong_data.push({type:items.type, material_code: items.item_code, material_num: items.item_num});
         }else if(items.type == '반제품'){
-          item.belong_data.push({type:items.type, module_code: items.product_code, module_num: items.product_num});
+          item.belong_data.push({type:items.type, module_code: items.item_code, module_num: items.item_num});
         }
       })
 
@@ -2125,6 +2122,13 @@ export default {
       console.log('완제품 데이터 : ' + JSON.stringify(this.editRegistProduct));
     },
 
+    deleteBelongItem(idx){
+      if(this.tab_main == 1){
+      this.module_set_material_data.splice(idx, 1);
+      }else if (this.tab_main == 2){
+      this.product_set_items_data.splice(idx, 1);
+      }
+    },
     deleteItem (item) {
       if(this.tab_main == 0){
         this.editedIndex = this.material_data.indexOf(item)
@@ -2252,7 +2256,7 @@ export default {
                   "value": searchName
               },
               {
-                  "key": "material_code",
+                  "key": "item_code",
                   "type":"string",
                   "value": searchMaterialCode
               },
