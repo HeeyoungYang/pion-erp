@@ -2444,7 +2444,24 @@ export default {
       this.dialogDelete = true;
     },
     deleteItemConfirm () {
-      this.search_cost_data.splice(this.editedIndex, 1)
+      for (let i = this.search_cost_data.length - 1; i >= 0; i--) {
+        const data = this.search_cost_data[i];
+        if (data.cost_calc_code === this.clickedProductCost.cost_calc_code){
+          this.search_cost_data.splice(i, 1);
+        }
+      }
+      Object.keys(this.searched_datas).forEach(key => {
+        for (let i = this.searched_datas[key].length - 1; i >= 0; i--) {
+          const data = this.searched_datas[key][i];
+          if (data.cost_calc_code === this.clickedProductCost.cost_calc_code){
+            this.searched_datas[key].splice(i, 1);
+          }
+        }
+      });
+      this.survey_cost_data = [];
+      this.labor_cost_data = [];
+      this.clickedProductCost = {};
+      this.calc_cost_detail_data = [];
       this.closeDelete()
     },
     closeDelete(){
