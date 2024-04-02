@@ -499,21 +499,21 @@
                                 <p class="text-h6 font-weight-black mb-0">선택 원부자재 <v-btn x-small color="error" class="ml-4" @click="resetData('module')">비우기</v-btn></p>
                               </v-col>
                               <v-col cols="12">
-                                <DataTableComponent
+                                <!-- <DataTableComponent
                                   :headers="module_set_material_headers"
                                   :items="module_set_material_data"
                                   item-key="item_code"
                                   item-num-input
                                   dense
-                                ></DataTableComponent>
-                                <!-- <InputsDataTableComponent
+                                ></DataTableComponent> -->
+                                <InputsDataTableComponent
                                   :headers="module_set_material_headers"
                                   :items="module_set_material_data"
                                   item-key="item_code"
                                   dense
                                   deletable
                                   @delete="deleteBelongItem"
-                                ></InputsDataTableComponent> -->
+                                ></InputsDataTableComponent>
                               </v-col>
                             </v-row>
                           </v-container>
