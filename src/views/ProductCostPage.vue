@@ -301,33 +301,6 @@
                               small
                             >mdi-pencil</v-icon>
                           </v-btn>
-                          <!-- <v-btn
-                            v-if="edit_labor_cost_data"
-                            color="primary"
-                            fab
-                            x-small
-                            class="mr-3 float-right dont_print"
-                            elevation="0"
-                            @click="edit_labor_cost_data = false"
-                            data-html2canvas-ignore="true"
-                          >
-                            <v-icon
-                              small
-                            >mdi-pencil</v-icon>
-                          </v-btn>
-                          <v-btn
-                            v-if="!edit_labor_cost_data"
-                            color="primary"
-                            fab
-                            x-small
-                            class="mr-3 float-right"
-                            elevation="0"
-                            @click="edit_labor_cost_data = true"
-                          >
-                            <v-icon
-                              small
-                            >mdi-check</v-icon>
-                          </v-btn> -->
                         </v-col>
                       </v-row>
 
@@ -359,68 +332,6 @@
                           </tr>
                         </template>
                       </v-data-table>
-                      <!-- <v-data-table
-                        dense
-                        :headers="labor_cost_headers"
-                        :items="labor_cost_data"
-                        hide-default-footer
-                        disable-pagination
-                        class="elevation-1 labor_cost_list"
-                        disable-sort
-                      >
-                        <template v-slot:item="{ item, index }">
-                          <tr>
-                            <td align="center">{{ item.no }}</td>
-                            <td align="center">{{ item.name }}</td>
-                            <td align="center">{{ item.type }}</td>
-                            <td align="center">
-                              <v-select
-                                :items="labor_occupation_list"
-                                dense
-                                hide-details
-                                v-model="item.occupation"
-                                label=""
-                                style="max-width:130px; font-size:0.775rem!important"
-                                @change="selectOccupationFunc(item, item.occupation, index)"
-                                :disabled="edit_labor_cost_data"
-                              ></v-select>
-                            </td>
-                            <td align="center">{{ item.man_per_day }}</td>
-                            <td align="center">{{ Math.round(item.surcharge_ratio * 100) }}%</td>
-                            <td align="center">{{ item.adjustment_ratio }}</td>
-                            <td align="center">{{ item.man_per_hour }}</td>
-                            <td align="center">{{ item.unit_price }}</td>
-                            <td align="center">
-                              <v-text-field
-                                v-model="item.quantity"
-                                dense
-                                hide-details
-                                type="number"
-                                style="max-width:110px; font-size:0.775rem!important"
-                                :disabled="edit_labor_cost_data"
-                                @keyup="calcAmount(item)"
-                              ></v-text-field>
-                            </td>
-                            <td align="center">{{  item.total_amount ? item.total_amount : (item.man_per_hour * item.quantity * item.unit_price).toFixed(0) }}</td>
-                            <td align="center" :class="calcRowSpan(item.name, index) == 0? 'd-none' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? item.no_total_amount : calcNoTotalAmount(item.name) }}</td>
-                            <td align="center">
-                              <v-icon
-                                color="primary"
-                                small
-                                :disabled="edit_labor_cost_data"
-                                @click="addLaborCostList(item, index)"
-                              >mdi-plus-thick</v-icon>
-                              <v-icon
-                                color="grey"
-                                small
-                                class="ml-3"
-                                :disabled="edit_labor_cost_data"
-                                @click="deleteLaborCostList(index)"
-                              >mdi-minus-thick</v-icon>
-                            </td>
-                          </tr>
-                        </template>
-                      </v-data-table> -->
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
@@ -1336,204 +1247,7 @@ export default {
 
         ],
 
-        labor_cost_data: [
-          // {
-          //   no:'품-1',
-          //   name:'고압케이블 포설',
-          //   type:'240㎟, 1C',
-          //   occupation:'저압 케이블전공',
-          //   man_per_day:'0.136',
-          //   surcharge_ratio:'1.15',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'0.156',
-          //   unit_price:'290333',
-          //   quantity:'2280',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-2',
-          //   name:'저압케이블 포설',
-          //   type:'6㎟, 2C',
-          //   occupation:'저압 케이블전공',
-          //   man_per_day:'0.018',
-          //   surcharge_ratio:'1.2',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'0.022',
-          //   unit_price:'290333',
-          //   quantity:'880',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-2',
-          //   name:'저압케이블 포설',
-          //   type:'2.5㎟, 6C',
-          //   occupation:'저압 케이블전공',
-          //   man_per_day:'0.035',
-          //   surcharge_ratio:'1.2',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'0.042',
-          //   unit_price:'290333',
-          //   quantity:'1240',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-3',
-          //   name:'전력케이블 단말처리',
-          //   type:'240㎟, 1C',
-          //   occupation:'고압 케이블전공',
-          //   man_per_day:'1.170',
-          //   surcharge_ratio:'1.2',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'1.404',
-          //   unit_price:'353395',
-          //   quantity:'12',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-4',
-          //   name:'Cubicle 설치',
-          //   type:'6㎥, 1.5 Ton이하',
-          //   occupation:'비계공',
-          //   man_per_day:'2.00',
-          //   surcharge_ratio:'1',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'2.000',
-          //   unit_price:'281721',
-          //   quantity:'3',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-4',
-          //   name:'Cubicle 설치',
-          //   type:'6㎥, 1.5 Ton이하',
-          //   occupation:'변전전공',
-          //   man_per_day:'4.05',
-          //   surcharge_ratio:'1',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'4.050',
-          //   unit_price:'451145',
-          //   quantity:'3',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-4',
-          //   name:'Cubicle 설치',
-          //   type:'6㎥, 1.5 Ton이하',
-          //   occupation:'보통인부',
-          //   man_per_day:'3.30',
-          //   surcharge_ratio:'1',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'3.300',
-          //   unit_price:'161858',
-          //   quantity:'3',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-4',
-          //   name:'Cubicle 설치',
-          //   type:'10㎥, 3 Ton 이하',
-          //   occupation:'비계공',
-          //   man_per_day:'4.00',
-          //   surcharge_ratio:'1',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'4.000',
-          //   unit_price:'281721',
-          //   quantity:'8',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-4',
-          //   name:'Cubicle 설치',
-          //   type:'10㎥, 3 Ton 이하',
-          //   occupation:'변전전공',
-          //   man_per_day:'7.05',
-          //   surcharge_ratio:'1',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'7.050',
-          //   unit_price:'451145',
-          //   quantity:'8',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-4',
-          //   name:'Cubicle 설치',
-          //   type:'10㎥, 3 Ton 이하',
-          //   occupation:'보통인부',
-          //   man_per_day:'5.60',
-          //   surcharge_ratio:'1',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'5.600',
-          //   unit_price:'161858',
-          //   quantity:'8',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-5',
-          //   name:'전기실  전원 케이블 포설',
-          //   type:'50sq, 3C',
-          //   occupation:'저압 케이블전공',
-          //   man_per_day:'0.043',
-          //   surcharge_ratio:'2',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'0.086',
-          //   unit_price:'290333',
-          //   quantity:'240',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-6',
-          //   name:'케이블 트레이',
-          //   type:'단면적 50,000㎟ 이하',
-          //   occupation:'내선전공',
-          //   man_per_day:'0.200',
-          //   surcharge_ratio:'1.44',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'0.288',
-          //   unit_price:'269968',
-          //   quantity:'105',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-6',
-          //   name:'케이블 트레이',
-          //   type:'단면적 30,000㎟ 이하',
-          //   occupation:'내선전공',
-          //   man_per_day:'0.160',
-          //   surcharge_ratio:'1.44',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'0.230',
-          //   unit_price:'269968',
-          //   quantity:'15',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-          // {
-          //   no:'품-7',
-          //   name:'통신케이블 포설',
-          //   type:'지중 인력견인 포설',
-          //   occupation:'보통인부',
-          //   man_per_day:'1.410',
-          //   surcharge_ratio:'1',
-          //   adjustment_ratio:'1.0000',
-          //   man_per_hour:'1.410',
-          //   unit_price:'161858',
-          //   quantity:'2.8',
-          //   total_amount:'',
-          //   no_total_amount:'',
-          // },
-        ],
+        labor_cost_data: [],
         merged_labor_cost_data: [],
 
         labor_cost_list: [
@@ -1704,7 +1418,7 @@ export default {
         // tool_rent_fee_formula: '직접노무비X3%',
         // transportation_fee_num: 1,
         // transportation_fee_ratio: 0.00418,
-        // transportation_fee_fomula: '노무비X0.418%',
+        // transportation_fee_formula: '노무비X0.418%',
         // industrial_accident_num: 1,
         // industrial_accident_ratio: 0.037,
         // industrial_accident_formula: '노무비X3.7%',
@@ -1763,43 +1477,43 @@ export default {
           }
         });
         
-      // 산출내역서 직접 노무비 리스트 적용
+      // 조회 - 직접 노무비 리스트 적용
       this.calc_cost_detail_data_direct_labor.belong_data = this.merged_labor_cost_data;
-      // 산출내역서 간접 노무비 적용
+      // 조회 - 간접 노무비 적용
       this.calc_cost_detail_data_indirect_labor.cost_unit_price = this.indirect_labor_cost_unit_price;
-      // 산출내역서 고용보험료 적용
+      // 조회 - 고용보험료 적용
       this.calc_cost_detail_data_employment_insurance.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.employment_insurance_ratio);
-      // 산출내역서 공구손료 적용
+      // 조회 - 공구손료 적용
       this.calc_cost_detail_data_tool_rent_fee.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.tool_rent_fee_ratio);
-      // 산출내역서 여비교통 통신비 적용
+      // 조회 - 여비교통 통신비 적용
       this.calc_cost_detail_data_transportation_fee.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.transportation_fee_ratio);
-      // 산출내역서 산재보험료 적용
+      // 조회 - 산재보험료 적용
       this.calc_cost_detail_data_industrial_accident.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.industrial_accident_ratio);
-      // 산출내역서 세금과공과 적용
+      // 조회 - 세금과공과 적용
       this.calc_cost_detail_data_taxes_dues.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.taxes_dues_ratio);
-      // 산출내역서 복리후생비 적용
+      // 조회 - 복리후생비 적용
       this.calc_cost_detail_data_welfare_benefits.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.welfare_benefits_ratio);
-      // 산출내역서 퇴직공제 부금비 적용
+      // 조회 - 퇴직공제 부금비 적용
       this.calc_cost_detail_data_retirement.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.retirement_ratio);
-      // 산출내역서 소모품비 적용
+      // 조회 - 소모품비 적용
       this.calc_cost_detail_data_expendables.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.expendables_ratio);
-      // 산출내역서 산업안전보건관리비 적용
+      // 조회 - 산업안전보건관리비 적용
       this.calc_cost_detail_data_industrial_safety.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.industrial_safety_ratio);
 
-      // 산출내역서 일반관리비 적용
+      // 조회 - 일반관리비 적용
       this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
-      // 산출내역서 이윤 적용
+      // 조회 - 이윤 적용
       this.calc_cost_detail_data_profite.cost_unit_price = this.profite_unit_price;
       },
       deep: true // 객체 내부 속성 변경 감지
     },
     
-    // 산출내역서 데이터 변경
+    // 조회 - 데이터 변경
     calc_cost_detail_data: {
       handler(){
-        // 산출내역서 일반관리비 적용
+        // 조회 - 일반관리비 적용
         this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
-        // 산출내역서 이윤 적용
+        // 조회 - 이윤 적용
         this.calc_cost_detail_data_profite.cost_unit_price = this.profite_unit_price;
       },
       deep: true // 객체 내부 속성 변경 감지
@@ -1847,46 +1561,7 @@ export default {
   },
 
   mounted() {
-    // watch test
-    // labor_cost_data
-    this.merged_labor_cost_data = [];
-    this.labor_cost_data.forEach(labor => {
-      const sameNameIndex = this.merged_labor_cost_data.findIndex(x=>x.cost_list === labor.name);
-      const mergedUnitPrice = Math.round(labor.unit_price * labor.quantity * labor.man_per_hour);
-      if (sameNameIndex >= 0){
-        this.merged_labor_cost_data[sameNameIndex].cost_unit_price += mergedUnitPrice;
-      }else {
-        this.merged_labor_cost_data.push({cost_list:labor.name, cost_unit:'식', cost_num:1, cost_unit_price:mergedUnitPrice});
-      }
-    });
-
-    // 산출내역서 직접 노무비 리스트 적용
-    this.calc_cost_detail_data_direct_labor.belong_data = this.merged_labor_cost_data;
-    // 산출내역서 간접 노무비 적용
-    this.calc_cost_detail_data_indirect_labor.cost_unit_price = this.indirect_labor_cost_unit_price;
-    // 산출내역서 고용보험료 적용
-    this.calc_cost_detail_data_employment_insurance.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.employment_insurance_ratio);
-    // 산출내역서 공구손료 적용
-    this.calc_cost_detail_data_tool_rent_fee.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.tool_rent_fee_ratio);
-    // 산출내역서 여비교통 통신비 적용
-    this.calc_cost_detail_data_transportation_fee.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.transportation_fee_ratio);
-    // 산출내역서 산재보험료 적용
-    this.calc_cost_detail_data_industrial_accident.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.industrial_accident_ratio);
-    // 산출내역서 세금과공과 적용
-    this.calc_cost_detail_data_taxes_dues.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.taxes_dues_ratio);
-    // 산출내역서 복리후생비 적용
-    this.calc_cost_detail_data_welfare_benefits.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.welfare_benefits_ratio);
-    // 산출내역서 퇴직공제 부금비 적용
-    this.calc_cost_detail_data_retirement.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.retirement_ratio);
-    // 산출내역서 소모품비 적용
-    this.calc_cost_detail_data_expendables.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.expendables_ratio);
-    // 산출내역서 산업안전보건관리비 적용
-    this.calc_cost_detail_data_industrial_safety.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.industrial_safety_ratio);
-
-    // 산출내역서 일반관리비 적용
-    this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
-    // 산출내역서 이윤 적용
-    this.calc_cost_detail_data_profite.cost_unit_price = this.profite_unit_price;
+    
   },
 
   methods: {
@@ -1914,7 +1589,7 @@ export default {
             tool_rent_fee_formula: '직접노무비X3%',
             transportation_fee_num: 1,
             transportation_fee_ratio: 0.00418,
-            transportation_fee_fomula: '노무비X0.418%',
+            transportation_fee_formula: '노무비X0.418%',
             industrial_accident_num: 1,
             industrial_accident_ratio: 0.037,
             industrial_accident_formula: '노무비X3.7%',
@@ -2320,6 +1995,7 @@ export default {
       }
     },
     clickSearchedTr(item) {
+      this.edit_survey_cost_num_disabled = true;
       this.clickedProductCost = item;
       this.labor_cost_data = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code);
       this.calc_cost_detail_data_product_cost.belong_data = this.searched_datas.product_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
@@ -2335,11 +2011,23 @@ export default {
         a.cost_unit = '제품';
         return a;
       });
+      // set num
+      this.calc_cost_detail_data_employment_insurance.cost_num = this.clickedProductCost.employment_insurance_num;
+      this.calc_cost_detail_data_tool_rent_fee.cost_num = this.clickedProductCost.tool_rent_fee_num;
+      this.calc_cost_detail_data_transportation_fee.cost_num = this.clickedProductCost.transportation_fee_num;
+      this.calc_cost_detail_data_industrial_accident.cost_num = this.clickedProductCost.industrial_accident_num;
+      this.calc_cost_detail_data_taxes_dues.cost_num = this.clickedProductCost.taxes_dues_num;
+      this.calc_cost_detail_data_welfare_benefits.cost_num = this.clickedProductCost.welfare_benefits_num;
+      this.calc_cost_detail_data_retirement.cost_num = this.clickedProductCost.retirement_num;
+      this.calc_cost_detail_data_expendables.cost_num = this.clickedProductCost.expendables_num;
+      this.calc_cost_detail_data_industrial_safety.cost_num = this.clickedProductCost.industrial_safety_num;
+      this.calc_cost_detail_data_normal_maintenance_fee.cost_num = this.clickedProductCost.normal_maintenance_fee_num;
+      this.calc_cost_detail_data_profite.cost_num = this.clickedProductCost.profite_num;
       // set formula
       this.calc_cost_detail_data_indirect_labor.belong_data[0].cost_list = ' - ' + this.clickedProductCost.indirect_labor_formula;
       this.calc_cost_detail_data_employment_insurance.belong_data[0].cost_list = ' - ' + this.clickedProductCost.employment_insurance_formula;
       this.calc_cost_detail_data_tool_rent_fee.belong_data[0].cost_list = ' - ' + this.clickedProductCost.tool_rent_fee_formula;
-      this.calc_cost_detail_data_transportation_fee.belong_data[0].cost_list = ' - ' + this.clickedProductCost.transportation_fee_fomula;
+      this.calc_cost_detail_data_transportation_fee.belong_data[0].cost_list = ' - ' + this.clickedProductCost.transportation_fee_formula;
       this.calc_cost_detail_data_industrial_accident.belong_data[0].cost_list = ' - ' + this.clickedProductCost.industrial_accident_formula;
       this.calc_cost_detail_data_taxes_dues.belong_data[0].cost_list = ' - ' + this.clickedProductCost.taxes_dues_formula;
       this.calc_cost_detail_data_welfare_benefits.belong_data[0].cost_list = ' - ' + this.clickedProductCost.welfare_benefits_formula;
@@ -2370,35 +2058,36 @@ export default {
 
       //==================
       this.calc_cost_detail_data_product_cost.belong_data = [];
-      // 산출내역서 직접 노무비 리스트 적용
+      // 조회 - 직접 노무비 리스트 적용
       this.calc_cost_detail_data_direct_labor.belong_data = [];
-      // 산출내역서 간접 노무비 적용
+      // 조회 - 간접 노무비 적용
       this.calc_cost_detail_data_indirect_labor.cost_unit_price = 0;
-      // 산출내역서 고용보험료 적용
+      // 조회 - 고용보험료 적용
       this.calc_cost_detail_data_employment_insurance.cost_unit_price = 0;
-      // 산출내역서 공구손료 적용
+      // 조회 - 공구손료 적용
       this.calc_cost_detail_data_tool_rent_fee.cost_unit_price = 0;
-      // 산출내역서 여비교통 통신비 적용
+      // 조회 - 여비교통 통신비 적용
       this.calc_cost_detail_data_transportation_fee.cost_unit_price = 0;
-      // 산출내역서 산재보험료 적용
+      // 조회 - 산재보험료 적용
       this.calc_cost_detail_data_industrial_accident.cost_unit_price = 0;
-      // 산출내역서 세금과공과 적용
+      // 조회 - 세금과공과 적용
       this.calc_cost_detail_data_taxes_dues.cost_unit_price = 0;
-      // 산출내역서 복리후생비 적용
+      // 조회 - 복리후생비 적용
       this.calc_cost_detail_data_welfare_benefits.cost_unit_price = 0;
-      // 산출내역서 퇴직공제 부금비 적용
+      // 조회 - 퇴직공제 부금비 적용
       this.calc_cost_detail_data_retirement.cost_unit_price = 0;
-      // 산출내역서 소모품비 적용
+      // 조회 - 소모품비 적용
       this.calc_cost_detail_data_expendables.cost_unit_price = 0;
-      // 산출내역서 산업안전보건관리비 적용
+      // 조회 - 산업안전보건관리비 적용
       this.calc_cost_detail_data_industrial_safety.cost_unit_price = 0;
       
-      // 산출내역서 일반관리비 적용
+      // 조회 - 일반관리비 적용
       this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = 0;
-      // 산출내역서 이윤 적용
+      // 조회 - 이윤 적용
       this.calc_cost_detail_data_profite.cost_unit_price = 0;
       //=================
 
+      this.edit_survey_cost_num_disabled = true;
       this.labor_cost_data = [];
       this.clickedProductCost = {};
       this.closeDelete()
