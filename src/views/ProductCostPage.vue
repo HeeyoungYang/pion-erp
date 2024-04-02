@@ -1426,7 +1426,7 @@ export default {
     // 노무비 Dialog show and hide
     dialog_calculate_labor(show) {
       if(show){
-        this.origin_labor_cost_data = this.labor_cost_data.map(a=>a);
+        this.origin_labor_cost_data = JSON.parse(JSON.stringify(this.labor_cost_data));
       }else {
         this.labor_cost_data = this.origin_labor_cost_data;
       }
