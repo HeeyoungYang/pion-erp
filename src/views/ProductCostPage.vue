@@ -154,6 +154,7 @@
                           <v-menu offset-y>
                             <template v-slot:activator="{ on, attrs }">
                               <v-btn
+                                v-show="edit_survey_cost_num_disabled"
                                 color="success"
                                 fab
                                 x-small
@@ -181,7 +182,20 @@
                               </v-list-item>
                             </v-list>
                           </v-menu>
-
+                          <v-btn
+                            v-show="!edit_survey_cost_num_disabled"
+                            color="error"
+                            fab
+                            x-small
+                            class="float-right dont_print"
+                            elevation="0"
+                            data-html2canvas-ignore="true"
+                            @click="edit_survey_cost_num_disabled = true"
+                          >
+                            <v-icon
+                              small
+                            >mdi-undo-variant</v-icon>
+                          </v-btn>
                           <v-btn
                             v-if="edit_survey_cost_num_disabled"
                             color="primary"
@@ -1791,65 +1805,61 @@ export default {
           }
         });
         
-        // 산출내역서 직접 노무비 리스트 적용
-        this.calc_cost_detail_data_direct_labor.belong_data = this.merged_labor_cost_data;
-        this.direct_labor_cost = this.merged_labor_cost_data.reduce((a,b)=>{
-          return a + Math.round(b.cost_unit_price * b.cost_num);
-        }, 0);
-        this.indirect_labor_cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.indirect_labor_ratio)
-        // 산출내역서 간접 노무비 적용
-        this.calc_cost_detail_data_indirect_labor.cost_unit_price = this.indirect_labor_cost_unit_price;
-        this.indirect_labor_cost = Math.round(this.calc_cost_detail_data_indirect_labor.cost_num * this.indirect_labor_cost_unit_price);
-        this.total_labor_cost = this.direct_labor_cost + this.indirect_labor_cost;
-        // 계산서 노무비 적용
-        this.survey_cost_data_labor_cost.cost_unit_price = this.total_labor_cost;
-        // 산출내역서 고용보험료 적용
-        this.calc_cost_detail_data_employment_insurance.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.employment_insurance_ratio);
-        // 산출내역서 공구손료 적용
-        this.calc_cost_detail_data_tool_rent_fee.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.tool_rent_fee_ratio);
-        // 산출내역서 여비교통 통신비 적용
-        this.calc_cost_detail_data_transportation_fee.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.transportation_fee_ratio);
-        // 산출내역서 산재보험료 적용
-        this.calc_cost_detail_data_industrial_accident.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.industrial_accident_ratio);
-        // 산출내역서 세금과공과 적용
-        this.calc_cost_detail_data_taxes_dues.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.taxes_dues_ratio);
-        // 산출내역서 복리후생비 적용
-        this.calc_cost_detail_data_welfare_benefits.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.welfare_benefits_ratio);
-        // 산출내역서 퇴직공제 부금비 적용
-        this.calc_cost_detail_data_retirement.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.retirement_ratio);
-        // 산출내역서 소모품비 적용
-        this.calc_cost_detail_data_expendables.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.expendables_ratio);
-        // 산출내역서 산업안전보건관리비 적용
-        this.calc_cost_detail_data_industrial_safety.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.industrial_safety_ratio);
-        
-        this.total_expense_fee 
-        = Math.round(this.calc_cost_detail_data_employment_insurance.cost_unit_price * this.calc_cost_detail_data_employment_insurance.cost_num)
-        + Math.round(this.calc_cost_detail_data_tool_rent_fee.cost_unit_price * this.calc_cost_detail_data_tool_rent_fee.cost_num)
-        + Math.round(this.calc_cost_detail_data_transportation_fee.cost_unit_price * this.calc_cost_detail_data_transportation_fee.cost_num)
-        + Math.round(this.calc_cost_detail_data_industrial_accident.cost_unit_price * this.calc_cost_detail_data_industrial_accident.cost_num)
-        + Math.round(this.calc_cost_detail_data_taxes_dues.cost_unit_price * this.calc_cost_detail_data_taxes_dues.cost_num)
-        + Math.round(this.calc_cost_detail_data_welfare_benefits.cost_unit_price * this.calc_cost_detail_data_welfare_benefits.cost_num)
-        + Math.round(this.calc_cost_detail_data_retirement.cost_unit_price * this.calc_cost_detail_data_retirement.cost_num)
-        + Math.round(this.calc_cost_detail_data_expendables.cost_unit_price * this.calc_cost_detail_data_expendables.cost_num)
-        + Math.round(this.calc_cost_detail_data_industrial_safety.cost_unit_price * this.calc_cost_detail_data_industrial_safety.cost_num);
-        this.total_product_cost = this.calc_cost_detail_data_product_cost.belong_data.reduce((a,b)=>{
-          return a + Math.round(b.cost_unit_price * b.cost_num);
-        }, 0);
-        // 계산서 경비 적용
-        this.survey_cost_data_expense.cost_unit_price = this.total_expense_fee;
-        // 산출내역서 일반관리비 적용
-        this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = Math.round((this.total_product_cost + this.total_labor_cost + this.total_expense_fee) * this.clickedProductCost.normal_maintenance_fee_ratio);
-        this.normal_maintenance_fee = Math.round(this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price * this.calc_cost_detail_data_normal_maintenance_fee.cost_num);
-        // 계산서 일반관리비 적용
-        this.survey_cost_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee;
-        // 산출내역서 이윤 적용
-        this.calc_cost_detail_data_profite.cost_unit_price = Math.round((this.total_labor_cost + this.total_expense_fee + this.normal_maintenance_fee) * this.clickedProductCost.profite_ratio);
-        this.profite = Math.round(this.calc_cost_detail_data_profite.cost_unit_price * this.calc_cost_detail_data_profite.cost_num);
-        // 계산서 이윤 적용
-        this.survey_cost_data_profite.cost_unit_price = this.profite;
+      // 산출내역서 직접 노무비 리스트 적용
+      this.calc_cost_detail_data_direct_labor.belong_data = this.merged_labor_cost_data;
+      // 산출내역서 간접 노무비 적용
+      this.calc_cost_detail_data_indirect_labor.cost_unit_price = this.indirect_labor_cost_unit_price;
+      // 계산서 노무비 적용
+      this.survey_cost_data_labor_cost.cost_unit_price = this.total_labor_cost;
+      // 산출내역서 고용보험료 적용
+      this.calc_cost_detail_data_employment_insurance.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.employment_insurance_ratio);
+      // 산출내역서 공구손료 적용
+      this.calc_cost_detail_data_tool_rent_fee.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.tool_rent_fee_ratio);
+      // 산출내역서 여비교통 통신비 적용
+      this.calc_cost_detail_data_transportation_fee.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.transportation_fee_ratio);
+      // 산출내역서 산재보험료 적용
+      this.calc_cost_detail_data_industrial_accident.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.industrial_accident_ratio);
+      // 산출내역서 세금과공과 적용
+      this.calc_cost_detail_data_taxes_dues.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.taxes_dues_ratio);
+      // 산출내역서 복리후생비 적용
+      this.calc_cost_detail_data_welfare_benefits.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.welfare_benefits_ratio);
+      // 산출내역서 퇴직공제 부금비 적용
+      this.calc_cost_detail_data_retirement.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.retirement_ratio);
+      // 산출내역서 소모품비 적용
+      this.calc_cost_detail_data_expendables.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.expendables_ratio);
+      // 산출내역서 산업안전보건관리비 적용
+      this.calc_cost_detail_data_industrial_safety.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.industrial_safety_ratio);
+
+      // 계산서 경비 적용
+      this.survey_cost_data_expense.cost_unit_price = this.total_expense_fee;
+      // 산출내역서 일반관리비 적용
+      this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
+      // 계산서 일반관리비 적용
+      this.survey_cost_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
+      // 산출내역서 이윤 적용
+      this.calc_cost_detail_data_profite.cost_unit_price = this.profite_unit_price;
+      // 계산서 이윤 적용
+      this.survey_cost_data_profite.cost_unit_price = this.profite_unit_price;
       },
       deep: true // 객체 내부 속성 변경 감지
-    }
+    },
+    
+    // 산출내역서 데이터 변경
+    calc_cost_detail_data: {
+      handler(){
+        //
+        this.survey_cost_data_expense.cost_unit_price = this.total_expense_fee;
+        // 산출내역서 일반관리비 적용
+        this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
+        // 계산서 일반관리비 적용
+        this.survey_cost_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
+        // 산출내역서 이윤 적용
+        this.calc_cost_detail_data_profite.cost_unit_price = this.profite_unit_price;
+        // 계산서 이윤 적용
+        this.survey_cost_data_profite.cost_unit_price = this.profite_unit_price;
+      },
+      deep: true // 객체 내부 속성 변경 감지
+    },
   },
 
   computed: {
@@ -1871,8 +1881,10 @@ export default {
       + Math.round(this.calc_cost_detail_data_retirement.cost_unit_price * this.calc_cost_detail_data_retirement.cost_num)
       + Math.round(this.calc_cost_detail_data_expendables.cost_unit_price * this.calc_cost_detail_data_expendables.cost_num)
       + Math.round(this.calc_cost_detail_data_industrial_safety.cost_unit_price * this.calc_cost_detail_data_industrial_safety.cost_num)},
-    normal_maintenance_fee(){ return Math.round(this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price * this.calc_cost_detail_data_normal_maintenance_fee.cost_num)},
-    profite(){ return Math.round(this.calc_cost_detail_data_profite.cost_unit_price * this.calc_cost_detail_data_profite.cost_num)},
+    normal_maintenance_fee_unit_price(){ return Math.round((this.total_product_cost + this.total_labor_cost + this.total_expense_fee) * this.clickedProductCost.normal_maintenance_fee_ratio)},
+    normal_maintenance_fee(){ return Math.round(this.normal_maintenance_fee_unit_price * this.calc_cost_detail_data_normal_maintenance_fee.cost_num)},
+    profite_unit_price() { return Math.round((this.total_labor_cost + this.total_expense_fee + this.normal_maintenance_fee) * this.clickedProductCost.profite_ratio)},
+    profite(){ return Math.round(this.profite_unit_price * this.calc_cost_detail_data_profite.cost_num)},
 
     survey_cost_data_product_cost(){ return this.survey_cost_data.find(x=>x.cost_list==='재료비')},
     survey_cost_data_labor_cost(){ return this.survey_cost_data.find(x=>x.cost_list==='노무비')},
@@ -1911,14 +1923,8 @@ export default {
 
     // 산출내역서 직접 노무비 리스트 적용
     this.calc_cost_detail_data_direct_labor.belong_data = this.merged_labor_cost_data;
-    this.direct_labor_cost = this.merged_labor_cost_data.reduce((a,b)=>{
-      return a + Math.round(b.cost_unit_price * b.cost_num);
-    }, 0);
-    this.indirect_labor_cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.indirect_labor_ratio)
     // 산출내역서 간접 노무비 적용
     this.calc_cost_detail_data_indirect_labor.cost_unit_price = this.indirect_labor_cost_unit_price;
-    this.indirect_labor_cost = Math.round(this.calc_cost_detail_data_indirect_labor.cost_num * this.indirect_labor_cost_unit_price);
-    this.total_labor_cost = this.direct_labor_cost + this.indirect_labor_cost;
     // 계산서 노무비 적용
     this.survey_cost_data_labor_cost.cost_unit_price = this.total_labor_cost;
     // 산출내역서 고용보험료 적용
@@ -1939,32 +1945,17 @@ export default {
     this.calc_cost_detail_data_expendables.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.expendables_ratio);
     // 산출내역서 산업안전보건관리비 적용
     this.calc_cost_detail_data_industrial_safety.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.industrial_safety_ratio);
-    
-    this.total_expense_fee 
-    = Math.round(this.calc_cost_detail_data_employment_insurance.cost_unit_price * this.calc_cost_detail_data_employment_insurance.cost_num)
-    + Math.round(this.calc_cost_detail_data_tool_rent_fee.cost_unit_price * this.calc_cost_detail_data_tool_rent_fee.cost_num)
-    + Math.round(this.calc_cost_detail_data_transportation_fee.cost_unit_price * this.calc_cost_detail_data_transportation_fee.cost_num)
-    + Math.round(this.calc_cost_detail_data_industrial_accident.cost_unit_price * this.calc_cost_detail_data_industrial_accident.cost_num)
-    + Math.round(this.calc_cost_detail_data_taxes_dues.cost_unit_price * this.calc_cost_detail_data_taxes_dues.cost_num)
-    + Math.round(this.calc_cost_detail_data_welfare_benefits.cost_unit_price * this.calc_cost_detail_data_welfare_benefits.cost_num)
-    + Math.round(this.calc_cost_detail_data_retirement.cost_unit_price * this.calc_cost_detail_data_retirement.cost_num)
-    + Math.round(this.calc_cost_detail_data_expendables.cost_unit_price * this.calc_cost_detail_data_expendables.cost_num)
-    + Math.round(this.calc_cost_detail_data_industrial_safety.cost_unit_price * this.calc_cost_detail_data_industrial_safety.cost_num);
-    this.total_product_cost = this.calc_cost_detail_data_product_cost.belong_data.reduce((a,b)=>{
-      return a + Math.round(b.cost_unit_price * b.cost_num);
-    }, 0);
+
     // 계산서 경비 적용
     this.survey_cost_data_expense.cost_unit_price = this.total_expense_fee;
     // 산출내역서 일반관리비 적용
-    this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = Math.round((this.total_product_cost + this.total_labor_cost + this.total_expense_fee) * this.clickedProductCost.normal_maintenance_fee_ratio);
-    this.normal_maintenance_fee = Math.round(this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price * this.calc_cost_detail_data_normal_maintenance_fee.cost_num);
+    this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
     // 계산서 일반관리비 적용
-    this.survey_cost_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee;
+    this.survey_cost_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
     // 산출내역서 이윤 적용
-    this.calc_cost_detail_data_profite.cost_unit_price = Math.round((this.total_labor_cost + this.total_expense_fee + this.normal_maintenance_fee) * this.clickedProductCost.profite_ratio);
-    this.profite = Math.round(this.calc_cost_detail_data_profite.cost_unit_price * this.calc_cost_detail_data_profite.cost_num);
+    this.calc_cost_detail_data_profite.cost_unit_price = this.profite_unit_price;
     // 계산서 이윤 적용
-    this.survey_cost_data_profite.cost_unit_price = this.profite;
+    this.survey_cost_data_profite.cost_unit_price = this.profite_unit_price;
   },
 
   methods: {
@@ -2464,12 +2455,8 @@ export default {
       this.calc_cost_detail_data_product_cost.belong_data = [];
       // 산출내역서 직접 노무비 리스트 적용
       this.calc_cost_detail_data_direct_labor.belong_data = [];
-      this.direct_labor_cost = 0;
-      this.indirect_labor_cost_unit_price = 0;
       // 산출내역서 간접 노무비 적용
       this.calc_cost_detail_data_indirect_labor.cost_unit_price = 0;
-      this.indirect_labor_cost = 0;
-      this.total_labor_cost = 0;
       // 계산서 노무비 적용
       this.survey_cost_data_labor_cost.cost_unit_price = 0;
       // 산출내역서 고용보험료 적용
@@ -2491,20 +2478,16 @@ export default {
       // 산출내역서 산업안전보건관리비 적용
       this.calc_cost_detail_data_industrial_safety.cost_unit_price = 0;
       
-      this.total_expense_fee = 0;
-      this.total_product_cost = 0;
       // 계산서 경비 적용
       this.survey_cost_data_expense.cost_unit_price = 0;
       // 산출내역서 일반관리비 적용
       this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = 0;
-      this.normal_maintenance_fee = 0;
       // 계산서 일반관리비 적용
       this.survey_cost_data_normal_maintenance_fee.cost_unit_price = 0;
       // 산출내역서 이윤 적용
       this.calc_cost_detail_data_profite.cost_unit_price = 0;
-      this.profite = 0;
       // 계산서 이윤 적용
-      this.survey_cost_data_profite.cost_unit_price = this.profite;
+      this.survey_cost_data_profite.cost_unit_price = 0;
       //=================
 
       this.labor_cost_data = [];
@@ -2645,27 +2628,13 @@ export default {
           return x;
         }
       });
-      this.total_expense_fee 
-      = Math.round(this.calc_cost_detail_data_employment_insurance.cost_unit_price * this.calc_cost_detail_data_employment_insurance.cost_num)
-      + Math.round(this.calc_cost_detail_data_tool_rent_fee.cost_unit_price * this.calc_cost_detail_data_tool_rent_fee.cost_num)
-      + Math.round(this.calc_cost_detail_data_transportation_fee.cost_unit_price * this.calc_cost_detail_data_transportation_fee.cost_num)
-      + Math.round(this.calc_cost_detail_data_industrial_accident.cost_unit_price * this.calc_cost_detail_data_industrial_accident.cost_num)
-      + Math.round(this.calc_cost_detail_data_taxes_dues.cost_unit_price * this.calc_cost_detail_data_taxes_dues.cost_num)
-      + Math.round(this.calc_cost_detail_data_welfare_benefits.cost_unit_price * this.calc_cost_detail_data_welfare_benefits.cost_num)
-      + Math.round(this.calc_cost_detail_data_retirement.cost_unit_price * this.calc_cost_detail_data_retirement.cost_num)
-      + Math.round(this.calc_cost_detail_data_expendables.cost_unit_price * this.calc_cost_detail_data_expendables.cost_num)
-      + Math.round(this.calc_cost_detail_data_industrial_safety.cost_unit_price * this.calc_cost_detail_data_industrial_safety.cost_num);
-      this.total_product_cost = this.calc_cost_detail_data_product_cost.belong_data.reduce((a,b)=>{
-        return a + Math.round(b.cost_unit_price * b.cost_num);
-      }, 0);
+      
       // 계산서 경비 적용
       this.survey_cost_data_expense.cost_unit_price = this.total_expense_fee;
-      this.normal_maintenance_fee = Math.round(this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price * this.calc_cost_detail_data_normal_maintenance_fee.cost_num);
       // 계산서 일반관리비 적용
-      this.survey_cost_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee;
-      this.profite = Math.round(this.calc_cost_detail_data_profite.cost_unit_price * this.calc_cost_detail_data_profite.cost_num);
+      this.survey_cost_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
       // 계산서 이윤 적용
-      this.survey_cost_data_profite.cost_unit_price = this.profite;
+      this.survey_cost_data_profite.cost_unit_price = this.profite_unit_price;
 
       this.searchDataCalcProcess(this.searched_datas);
       // }
