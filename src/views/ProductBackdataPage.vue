@@ -499,33 +499,21 @@
                                 <p class="text-h6 font-weight-black mb-0">선택 원부자재 <v-btn x-small color="error" class="ml-4" @click="resetData('module')">비우기</v-btn></p>
                               </v-col>
                               <v-col cols="12">
-                                <v-data-table
+                                <DataTableComponent
+                                  :headers="module_set_material_headers"
+                                  :items="module_set_material_data"
+                                  item-key="item_code"
+                                  item-num-input
+                                  dense
+                                ></DataTableComponent>
+                                <!-- <InputsDataTableComponent
                                   :headers="module_set_material_headers"
                                   :items="module_set_material_data"
                                   item-key="item_code"
                                   dense
-                                >
-                                  <template v-slot:[`item.item_num`] = "{ item }">
-                                    <v-text-field
-                                      dense
-                                      hide-details
-                                      v-model="item.item_num"
-                                      style="width:100px;font-size: 0.775rem !important;"
-                                      type="number"
-                                      filled
-                                    ></v-text-field>
-                                  </template>
-                                  <template v-slot:[`item.item_price`] = "{ item }">
-                                    {{  item.unit_price * item.item_num ? item.unit_price * item.item_num :  0 }}
-                                  </template>
-                                  <template v-slot:[`item.delete_item`]="{ index }">
-                                    <v-icon
-                                      color="grey"
-                                      small
-                                      @click="deleteBelongItem(index)"
-                                    >mdi-minus-thick</v-icon>
-                                  </template>
-                                </v-data-table>
+                                  deletable
+                                  @delete="deleteBelongItem"
+                                ></InputsDataTableComponent> -->
                               </v-col>
                             </v-row>
                           </v-container>
@@ -829,7 +817,15 @@
                                     </p>
                                   </v-col>
                                   <v-col cols="12">
-                                    <v-data-table
+                                    <InputsDataTableComponent
+                                      :headers="product_set_items_headers"
+                                      :items="product_set_items_data"
+                                      item-key="item_code"
+                                      dense
+                                      deletable
+                                      @delete="deleteBelongItem"
+                                    ></InputsDataTableComponent>
+                                    <!-- <v-data-table
                                       :headers="product_set_items_headers"
                                       :items="product_set_items_data"
                                       item-key="item_code"
@@ -855,7 +851,7 @@
                                           @click="deleteBelongItem(index)"
                                         >mdi-minus-thick</v-icon>
                                       </template>
-                                    </v-data-table>
+                                    </v-data-table> -->
                                   </v-col>
                                 </v-row>
                               </v-container>
@@ -915,6 +911,7 @@ import DataTableComponent from "@/components/DataTableComponent.vue";
 import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
+import InputsDataTableComponent from "@/components/InputsDataTableComponent.vue";
 import mux from "@/mux";
 
 export default {
@@ -922,6 +919,7 @@ export default {
     NavComponent,
     ModalDialogComponent,
     DataTableComponent,
+    InputsDataTableComponent,
     ExpansionPanelComponent,
     CardComponent,
     InputsFormComponent,
@@ -1154,10 +1152,10 @@ export default {
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '필요수량', align: 'center', value: 'item_num', sortable: false},
+        // { text: '필요수량', align: 'center', value: 'item_num', sortable: false},
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '총액', align: 'center', value: 'item_price', },
-        { text: '제외', align: 'center', value: 'delete_item', sortable: false},
+        { text: '제외', align: 'center', value: 'edit_item', sortable: false},
       ],
       module_set_material_data:[],
       search_material_for_module_data:[
@@ -1224,7 +1222,7 @@ export default {
         { text: '필요수량', align: 'center', value: 'item_num', sortable: false},
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '총액', align: 'center', value: 'item_price', },
-        { text: '제외', align: 'center', value: 'delete_item', sortable: false },
+        { text: '제외', align: 'center', value: 'edit_item', sortable: false },
       ],
       product_set_items_data:[],
       search_items_for_product_data:[
@@ -2193,15 +2191,6 @@ export default {
         this.product_set_items_data = [];
         this.selected_items_for_product_data = [];
       }
-    },
-
-    save () {
-      if (this.editedIndex > -1) {
-        Object.assign(this.material_data[this.editedIndex], this.editRegistMaterial)
-      } else {
-        this.material_data.push(this.editRegistMaterial)
-      }
-      this.close()
     },
 
     loadExcelFile(event) {
