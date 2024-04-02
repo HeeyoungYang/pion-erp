@@ -154,7 +154,7 @@
                           <p class="text-h5 black--text mb-0 font-weight-black"  style="font-weight: bold;">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 산출내역서</p>
                         </v-col>
 
-                        <v-col cols="12" sm="2">
+                        <v-col v-show="edit_buttons_show" cols="12" sm="2">
                           <v-menu offset-y>
                             <template v-slot:activator="{ on, attrs }">
                               <v-btn
@@ -256,7 +256,7 @@
                         <v-col cols="12" sm="10">
                           <p class="text-h5 font-weight-black black--text mb-0">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 노무비 산출</p>
                         </v-col>
-                        <v-col cols="12" sm="2">
+                        <v-col v-show="edit_buttons_show" cols="12" sm="2">
                           <v-menu offset-y>
                             <template v-slot:activator="{ on, attrs }">
                               <v-btn
@@ -714,6 +714,7 @@ export default {
         dialogDelete: false,
         // edit_labor_cost_data: true,
         edit_survey_cost_num_disabled: true,
+        edit_buttons_show: false,
         print_labor_table: false,
         editedIndex: -1,
         content_save_items: [
@@ -834,12 +835,7 @@ export default {
           },
         ],
         search_cost_data: [
-          {
-            product_name: 'ESS GFM용 PCS (380VAC 500kW)',
-            cost_created_time: '2024-02-29',
-            cost_creater: '김OO',
-            cost_total_amount: '1000,000'
-          },
+          
         ],
 
         calc_cost_detail_data: [
@@ -847,20 +843,7 @@ export default {
             cost_list: '재료비',
             cost_list_colspan: 4,
 
-            belong_data: [
-              {
-                cost_list: '제품A',
-                cost_unit: '제품',
-                cost_num: 1,
-                cost_unit_price: 15000
-              },
-              {
-                cost_list: '제품B',
-                cost_unit: '제품',
-                cost_num: 2,
-                cost_unit_price: 10000
-              }
-            ]
+            belong_data: []
           },
           {
             cost_list: '노무비',
@@ -869,24 +852,16 @@ export default {
               {
                 cost_list: '가. 직접 노무비',
                 cost_list_colspan: 4,
-                belong_data: [
-                  {cost_list:'고압케이블 포설', cost_unit: '식',cost_num:'1',cost_unit_price:103530425},
-                  {cost_list:'저압케이블 포설', cost_unit: '식',cost_num:'1',cost_unit_price:20639191},
-                  {cost_list:'전력케이블 단말처리', cost_unit: '식', cost_num:'1', cost_unit_price:5953998},
-                  {cost_list:'Cubicle 설치', cost_unit: '식', cost_num:'1', cost_unit_price:5953998},
-                  {cost_list:'전기실 전원 케이블 포설', cost_unit: '식', cost_num:'1', cost_unit_price:5992473},
-                  {cost_list:'케이블 트레이', cost_unit: '식', cost_num:'1', cost_unit_price:9096841},
-                  {cost_list:'통신케이블 포설', cost_unit: '식', cost_num:'1', cost_unit_price:639015}
-                ]
+                belong_data: []
               },
               {
                 cost_list: '나. 간접 노무비',
                 cost_unit: '식',
                 cost_num: 1,
-                cost_unit_price: 23953109,
+                cost_unit_price: 0,
                 belong_data: [
                   {
-                    cost_list: '- (직접노무비) X 12.2%',
+                    cost_list: '',
                     cost_list_colspan: 5
                   }
                 ]
@@ -902,10 +877,10 @@ export default {
                 cost_unit: '식',
                 cost_num: 1,
                 cost_num_editable: true,
-                cost_unit_price: 2224929,
+                cost_unit_price: 0,
                 belong_data: [
                   {
-                    cost_list: '- (노무비) X 1.01%',
+                    cost_list: '',
                     cost_list_colspan: 5
                   }
                 ]
@@ -915,10 +890,10 @@ export default {
                 cost_unit: '식',
                 cost_num: 1,
                 cost_num_editable: true,
-                cost_unit_price: 5890108,
+                cost_unit_price: 0,
                 belong_data: [
                   {
-                    cost_list: '- (직접노무비) X 3%',
+                    cost_list: '',
                     cost_list_colspan: 5
                   }
                 ]
@@ -928,10 +903,10 @@ export default {
                 cost_unit: '식',
                 cost_num: 1,
                 cost_num_editable: true,
-                cost_unit_price: 920812,
+                cost_unit_price: 0,
                 belong_data: [
                   {
-                    cost_list: '- (노무비) X 0.418%',
+                    cost_list: '',
                     cost_list_colspan: 5
                   }
                 ]
@@ -941,10 +916,10 @@ export default {
                 cost_unit: '식',
                 cost_num: 1,
                 cost_num_editable: true,
-                cost_unit_price: 8150732,
+                cost_unit_price: 0,
                 belong_data: [
                   {
-                    cost_list: '- (노무비) X 3.7%',
+                    cost_list: '',
                     cost_list_colspan: 5
                   }
                 ]
@@ -954,10 +929,10 @@ export default {
                 cost_unit: '식',
                 cost_num: 1,
                 cost_num_editable: true,
-                cost_unit_price: 286377,
+                cost_unit_price: 0,
                 belong_data: [
                   {
-                    cost_list: '- (노무비) X 0.13%',
+                    cost_list: '',
                     cost_list_colspan: 5
                   }
                 ]
@@ -967,10 +942,10 @@ export default {
                 cost_unit: '식',
                 cost_num: 1,
                 cost_num_editable: true,
-                cost_unit_price: 5280353,
+                cost_unit_price: 0,
                 belong_data: [
                   {
-                    cost_list: '- (노무비) X 2.397%',
+                    cost_list: '',
                     cost_list_colspan: 5
                   }
                 ]
@@ -980,10 +955,10 @@ export default {
                 cost_unit: '식',
                 cost_num: 1,
                 cost_num_editable: true,
-                cost_unit_price: 4515750,
+                cost_unit_price: 0,
                 belong_data: [
                   {
-                    cost_list: '- (직접노무비) X 2.3%',
+                    cost_list: '',
                     cost_list_colspan: 5
                   }
                 ]
@@ -993,10 +968,10 @@ export default {
                 cost_unit: '식',
                 cost_num: 1,
                 cost_num_editable: true,
-                cost_unit_price: 	3258090,
+                cost_unit_price: 	0,
                 belong_data: [
                   {
-                    cost_list: '- (노무비) X 1.479%',
+                    cost_list: '',
                     cost_list_colspan: 5
                   }
                 ]
@@ -1006,10 +981,10 @@ export default {
                 cost_unit: '식',
                 cost_num: 1,
                 cost_num_editable: true,
-                cost_unit_price: 4358680,
+                cost_unit_price: 0,
                 belong_data: [
                   {
-                    cost_list: '- ((직접 노무비) X 1.85% X 1.2)',
+                    cost_list: '',
                     cost_list_colspan: 5
                   }
                 ]
@@ -1020,12 +995,12 @@ export default {
             cost_list: '일반관리비',
             cost_unit: '식',
             cost_num: 1,
-            cost_unit_price: 15310554,
+            cost_unit_price: 0,
             cost_num_editable: true,
             allow_edit_decimal_point: true,
             belong_data: [
               {
-                cost_list: '- (재료비+노무비+경비) X 6%',
+                cost_list: '',
                 cost_list_colspan: 5
               }
             ]
@@ -1036,10 +1011,10 @@ export default {
             cost_num: 1,
             cost_num_editable: true,
             allow_edit_decimal_point: true,
-            cost_unit_price: 40572968,
+            cost_unit_price: 0,
             belong_data: [
               {
-                cost_list: '- (노무비+경비+일반관리비) X %',
+                cost_list: '',
                 cost_list_colspan: 5
               }
             ]
@@ -1997,6 +1972,7 @@ export default {
     },
     clickSearchedTr(item) {
       this.edit_survey_cost_num_disabled = true;
+      this.edit_buttons_show = true;
       this.clickedProductCost = item;
       this.labor_cost_data = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code);
       this.calc_cost_detail_data_product_cost.belong_data = this.searched_datas.product_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
@@ -2093,7 +2069,21 @@ export default {
       // 조회 - 이윤 적용
       this.calc_cost_detail_data_profite.cost_unit_price = 0;
 
+      this.calc_cost_detail_data_indirect_labor.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_employment_insurance.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_tool_rent_fee.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_transportation_fee.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_industrial_accident.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_taxes_dues.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_welfare_benefits.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_retirement.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_expendables.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_industrial_safety.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_normal_maintenance_fee.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_profite.belong_data[0].cost_list = '';
+
       this.edit_survey_cost_num_disabled = true;
+      this.edit_buttons_show = false;
       this.labor_cost_data = [];
       this.clickedProductCost = {};
     },
