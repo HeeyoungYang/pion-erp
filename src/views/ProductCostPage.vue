@@ -1914,6 +1914,7 @@ export default {
         ]
       };
 
+      this.clearClicked();
       this.searchDataCalcProcess(searchResult, true);
 
     },
@@ -2056,7 +2057,13 @@ export default {
         }
       });
 
-      //==================
+      this.clearClicked();
+      this.closeDelete();
+    },
+    closeDelete(){
+      this.dialogDelete = false;
+    },
+    clearClicked() {
       this.calc_cost_detail_data_product_cost.belong_data = [];
       // 조회 - 직접 노무비 리스트 적용
       this.calc_cost_detail_data_direct_labor.belong_data = [];
@@ -2085,15 +2092,10 @@ export default {
       this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = 0;
       // 조회 - 이윤 적용
       this.calc_cost_detail_data_profite.cost_unit_price = 0;
-      //=================
 
       this.edit_survey_cost_num_disabled = true;
       this.labor_cost_data = [];
       this.clickedProductCost = {};
-      this.closeDelete()
-    },
-    closeDelete(){
-      this.dialogDelete = false;
     },
     calcNoTotalAmount(labor){
       let labor_data = this.labor_cost_data
