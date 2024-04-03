@@ -1152,7 +1152,7 @@ export default {
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        // { text: '필요수량', align: 'center', value: 'item_num', sortable: false},
+        { text: '필요수량', align: 'center', value: 'item_num', sortable: false},
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '총액', align: 'center', value: 'item_price', },
         { text: '제외', align: 'center', value: 'edit_item', sortable: false},
