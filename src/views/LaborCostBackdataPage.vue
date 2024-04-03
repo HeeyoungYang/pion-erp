@@ -85,6 +85,17 @@
                               sm="6"
                               md="6"
                             >
+                              <v-select
+                                :items="occupation_list"
+                                label="직종"
+                                v-model="editedLaborItem.occupation"
+                              ></v-select>
+                            </v-col>
+                            <v-col
+                              cols="12"
+                              sm="6"
+                              md="6"
+                            >
                               <v-text-field
                                 v-model="editedLaborItem.man_per_day"
                                 label="공량(M/D)"
@@ -266,10 +277,12 @@ export default {
       laborDialogDelete: false,
       wageDialog: false,
       wageDialogDelete: false,
+      occupation_list:[],
       labor_headers: [
         { text: '품번', align: 'center', value: 'no'},
         { text: '공종', align: 'center', value: 'name', },
         { text: '규격', align: 'center', value: 'type', },
+        { text: '직종', align: 'center', value: 'occupation', },
         { text: '공량(M/D)', align: 'center', value: 'man_per_day', },
         { text: '할증율', align: 'center', value: 'surcharge_ratio', },
       ],
@@ -285,6 +298,7 @@ export default {
         no:'',
         name: '',
         type: '',
+        occupation: '',
         man_per_day: '',
         surcharge_ratio: '',
       },
@@ -350,6 +364,7 @@ export default {
             no:'품-1',
             name:'고압케이블 포설',
             type:'240㎟, 1C',
+            occupation:'고압 케이블전공',
             man_per_day:'0.136',
             surcharge_ratio:'115',
           },
@@ -357,6 +372,7 @@ export default {
             no:'품-2',
             name:'저압케이블 포설',
             type:'6㎟, 2C',
+            occupation:'저압 케이블전공',
             man_per_day:'0.018',
             surcharge_ratio:'120',
           },
@@ -364,6 +380,7 @@ export default {
             no:'품-2',
             name:'저압케이블 포설',
             type:'2.5㎟, 6C',
+            occupation:'저압 케이블전공',
             man_per_day:'0.035',
             surcharge_ratio:'120',
           },
@@ -371,6 +388,7 @@ export default {
             no:'품-3',
             name:'전력케이블 단말처리',
             type:'240㎟, 1C',
+            occupation:'ALL',
             man_per_day:'1.170',
             surcharge_ratio:'120',
           },
@@ -378,13 +396,55 @@ export default {
             no:'품-4',
             name:'Cubicle 설치',
             type:'6㎥, 1.5 Ton이하',
+            occupation:'비계공',
             man_per_day:'2.00',
             surcharge_ratio:'100',
           },
           {
+            no:'품-4',
+            name:'Cubicle 설치',
+            type:'6㎥, 1.5 Ton이하',
+            occupation:'변전전공',
+            man_per_day:'4.05',
+            surcharge_ratio:'100',
+          },
+          {
+            no:'품-4',
+            name:'Cubicle 설치',
+            type:'6㎥, 1.5 Ton이하',
+            occupation:'보통인부',
+            man_per_day:'3.3',
+            surcharge_ratio:'100',
+          },
+          {
+            no:'품-4',
+            name:'Cubicle 설치',
+            type:'10㎥이하,3 Ton이하',
+            occupation:'비계공',
+            man_per_day:'4.00',
+            surcharge_ratio:'100',
+          },
+          {
+            no:'품-4',
+            name:'Cubicle 설치',
+            type:'10㎥이하,3 Ton이하',
+            occupation:'변전전공',
+            man_per_day:'7.05',
+            surcharge_ratio:'100',
+          },
+          {
+            no:'품-4',
+            name:'Cubicle 설치',
+            type:'10㎥이하,3 Ton이하',
+            occupation:'보통인부',
+            man_per_day:'5.6',
+            surcharge_ratio:'100',
+          },
+          {
             no:'품-5',
-            name:'전기실  전원 케이블 포설',
+            name:'전기실 전원 케이블 포설',
             type:'50sq, 3C',
+            occupation:'저압 케이블전공',
             man_per_day:'0.043',
             surcharge_ratio:'200',
           },
@@ -392,13 +452,23 @@ export default {
             no:'품-6',
             name:'케이블 트레이',
             type:'단면적 50,000㎟ 이하',
+            occupation:'내선전공',
             man_per_day:'0.200',
+            surcharge_ratio:'144',
+          },
+          {
+            no:'품-6',
+            name:'케이블 트레이',
+            type:'단면적 30,000㎟ 이하',
+            occupation:'내선전공',
+            man_per_day:'0.16',
             surcharge_ratio:'144',
           },
           {
             no:'품-7',
             name:'통신케이블 포설',
             type:'지중 인력견인 포설',
+            occupation:'보통인부',
             man_per_day:'1.410',
             surcharge_ratio:'100',
           },
@@ -435,12 +505,18 @@ export default {
             adjustment_ratio: '1.0000',
           },
       ]
+
+      this.occupation_list.push('All');
+      for(let d=0; d<this.wage_data.length; d++){
+        this.occupation_list.push(this.wage_data[d].occupation)
+      }
     },
 
     editLaborItem (item) {
       this.editedLaborIndex = this.labor_data.indexOf(item)
       this.editedLaborItem = Object.assign({}, item)
       this.laborDialog = true
+
     },
 
     editWageItem (item) {
