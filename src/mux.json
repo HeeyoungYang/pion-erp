@@ -1,9 +1,9 @@
 {
   "defaultTimeout": 300000,
-  "refreshTokenCookieExpiration": "7d",
+  "RefreshTokenCookieExpiration": "7d",
   
   "cookies": {
     "id": "savedID",
-    "refreshToken": "refreshToken"
+    "RefreshToken": "RefreshToken"
   }
 }
