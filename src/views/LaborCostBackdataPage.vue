@@ -19,7 +19,7 @@
             </v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab_main" class="pb-1">
-            <!-- ▼ 노무비 산철 정보 -->
+            <!-- ▼ 노무비 산출 정보 -->
             <v-tab-item>
               <v-card elevation="1">
                 <v-card-text>
@@ -43,78 +43,18 @@
                         saveText="저장"
                         :persistent="true"
                         @close="close"
-                        @save="save"
+                        @save="uploadLaborItem"
                       >
                         <template v-slot:activator>
-                          <v-btn color="primary" outlined class="mb-2 float-right" @click="laborDialog = true">정보 추가</v-btn>
+                          <v-btn color="primary" outlined class="mb-2 float-right" @click="registLaborItem">정보 추가</v-btn>
                         </template>
                         <v-container>
-                          <v-row>
-                            <v-col
-                              cols="12"
-                              sm="6"
-                              md="6"
-                            >
-                              <v-text-field
-                                v-model="editedLaborItem.no"
-                                label="품번"
-                              ></v-text-field>
-                            </v-col>
-                            <v-col
-                              cols="12"
-                              sm="6"
-                              md="6"
-                            >
-                              <v-text-field
-                                v-model="editedLaborItem.name"
-                                label="공종"
-                              ></v-text-field>
-                            </v-col>
-                            <v-col
-                              cols="12"
-                              sm="6"
-                              md="6"
-                            >
-                              <v-text-field
-                                v-model="editedLaborItem.type"
-                                label="규격"
-                              ></v-text-field>
-                            </v-col>
-                            <v-col
-                              cols="12"
-                              sm="6"
-                              md="6"
-                            >
-                              <v-select
-                                :items="occupation_list"
-                                label="직종"
-                                v-model="editedLaborItem.occupation"
-                              ></v-select>
-                            </v-col>
-                            <v-col
-                              cols="12"
-                              sm="6"
-                              md="6"
-                            >
-                              <v-text-field
-                                v-model="editedLaborItem.man_per_day"
-                                label="공량(M/D)"
-                                type="number"
-                              ></v-text-field>
-                            </v-col>
-                            <v-col
-                              cols="12"
-                              sm="6"
-                              md="6"
-                            >
-                              <v-text-field
-                                v-model="editedLaborItem.surcharge_ratio"
-                                label="할증율"
-                                type="number"
-                                suffix="%"
-                              ></v-text-field>
-                            </v-col>
-                          </v-row>
+                            <!-- slot="cardText" -->
+                          <InputsFormComponent
+                            clearable
+                            hide-details
+                            :inputs="registLaborInputs"
+                          ></InputsFormComponent>
                         </v-container>
                       </ModalDialogComponent>
                     </v-col>
@@ -128,12 +68,12 @@
                   deletable
                   dense
                   @edit="editLaborItem"
-                  @delete="deleteLaborItem"
+                  @delete="deleteItem"
                 >
                 </DataTableComponent>
                 <ModalDialogComponent
-                  :dialog-value="laborDialogDelete"
-                  max-width="300px"
+                  :dialog-value="DialogDelete"
+                  max-width="450px"
                   title-class="text-body-1 font-weight-black"
                   text-class="text-body-2"
                   save-text="삭제"
@@ -142,10 +82,13 @@
                   @close="closeDelete"
                 >
                   <template v-slot:titleHTML>
-                    <p class="mb-0">{{ editedLaborItem.name }}</p>
-                    <p class="red--text">삭제하시겠습니까?</p>
+                    <p class="mb-1" style="width: 100%;" v-if="tab_main == 0">
+                      {{ editedLaborItem.name }} ( {{ editedLaborItem.type }} / {{ editedLaborItem.occupation }} )</p>
+                    <p class="mb-1" style="width: 100%;" v-if="tab_main == 1">
+                      {{ editedWageItem.occupation }}</p>
+                    <p class="red--text">해당 정보를 삭제하시겠습니까?</p>
                   </template>
-                  삭제된 시 복구 불가능합니다.
+                  삭제 시 복구 불가능합니다.
                 </ModalDialogComponent>
               </v-card>
             </v-tab-item>
@@ -175,13 +118,18 @@
                         saveText="저장"
                         :persistent="true"
                         @close="close"
-                        @save="save"
+                        @save="uploadWageItem"
                       >
                         <template v-slot:activator>
-                          <v-btn color="primary" outlined class="mb-2 float-right" @click="wageDialog = true">정보 추가</v-btn>
+                          <v-btn color="primary" outlined class="mb-2 float-right" @click="registWageItem">정보 추가</v-btn>
                         </template>
                         <v-container>
-                          <v-row>
+                          <InputsFormComponent
+                            clearable
+                            hide-details
+                            :inputs="registWageInputs"
+                          ></InputsFormComponent>
+                          <!-- <v-row>
                             <v-col
                               cols="12"
                               sm="6"
@@ -214,7 +162,7 @@
                                 type="number"
                               ></v-text-field>
                             </v-col>
-                          </v-row>
+                          </v-row> -->
                         </v-container>
                       </ModalDialogComponent>
                     </v-col>
@@ -228,10 +176,10 @@
                   deletable
                   dense
                   @edit="editWageItem"
-                  @delete="deleteWageItem"
+                  @delete="deleteItem"
                 >
                 </DataTableComponent>
-                <ModalDialogComponent
+                <!-- <ModalDialogComponent
                   :dialog-value="wageDialogDelete"
                   max-width="300px"
                   title-class="text-body-1 font-weight-black"
@@ -246,7 +194,7 @@
                     <p class="red--text">삭제하시겠습니까?</p>
                   </template>
                   삭제된 시 복구 불가능합니다.
-                </ModalDialogComponent>
+                </ModalDialogComponent> -->
               </v-card>
             </v-tab-item>
           </v-tabs-items>
@@ -260,12 +208,14 @@
 import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent";
+import InputsFormComponent from "@/components/InputsFormComponent.vue";
 
 export default {
   components: {
     NavComponent,
     ModalDialogComponent,
     DataTableComponent,
+    InputsFormComponent,
   },
   data() {
     return {
@@ -274,10 +224,23 @@ export default {
       search_labor: '',
       search_wage: '',
       laborDialog: false,
-      laborDialogDelete: false,
+      DialogDelete: false,
       wageDialog: false,
-      wageDialogDelete: false,
+      // wageDialogDelete: false,
       occupation_list:[],
+      registLaborInputs:[
+        {label:'품번', column_name:'no',  col:'12', sm:'6', lg:'6', value: '', },
+        {label:'공종', column_name:'name',  col:'12', sm:'6', lg:'6', value: '', },
+        {label:'규격', column_name:'type',  col:'12', sm:'6', lg:'6', value: '', },
+        {label:'직종', column_name:'occupation', type:'select', list:[], value:'', col:'12', sm:'6', lg:'6',},
+        {label:'공량(M/D)', column_name:'man_per_day', text_type:'number', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'할증율', column_name:'surcharge_ratio', text_type:'number', col:'12', sm:'6', lg:'6', value: '', suffix: '%'},
+      ],
+      registWageInputs:[
+        {label:'직종', column_name:'occupation', type:'select', list:[], value:'', col:'12', sm:'6', lg:'6',},
+        {label:'단가', column_name:'unit_price', text_type:'number',  col:'12', sm:'6', lg:'6', value: ''},
+        {label:'설계 조정율', column_name:'adjustment_ratio', text_type:'number', col:'12', sm:'6', lg:'6', value: ''},
+      ],
       labor_headers: [
         { text: '품번', align: 'center', value: 'no'},
         { text: '공종', align: 'center', value: 'name', },
@@ -295,6 +258,7 @@ export default {
       wage_data: [],
       editedLaborIndex: -1,
       editedLaborItem: {
+        code:'',
         no:'',
         name: '',
         type: '',
@@ -303,6 +267,7 @@ export default {
         surcharge_ratio: '',
       },
       defaultLaborItem: {
+        code:'',
         no:'',
         name: '',
         type: '',
@@ -320,6 +285,7 @@ export default {
         unit_price: '',
         adjustment_ratio: '',
       },
+      deleteDataList:{},
     }
   },
 
@@ -342,15 +308,15 @@ export default {
     laborDialog (val) {
       val || this.close()
     },
-    laborDialogDelete (val) {
+    DialogDelete (val) {
       val || this.closeDelete()
     },
     wageDialog (val) {
       val || this.close()
     },
-    wageDialogDelete (val) {
-      val || this.closeDelete()
-    },
+    // wageDialogDelete (val) {
+    //   val || this.closeDelete()
+    // },
   },
 
   created () {
@@ -361,6 +327,7 @@ export default {
     initialize () {
       this.labor_data = [
           {
+            code:'code1',
             no:'품-1',
             name:'고압케이블 포설',
             type:'240㎟, 1C',
@@ -369,6 +336,7 @@ export default {
             surcharge_ratio:'115',
           },
           {
+            code:'code2',
             no:'품-2',
             name:'저압케이블 포설',
             type:'6㎟, 2C',
@@ -377,6 +345,7 @@ export default {
             surcharge_ratio:'120',
           },
           {
+            code:'code3',
             no:'품-2',
             name:'저압케이블 포설',
             type:'2.5㎟, 6C',
@@ -385,6 +354,7 @@ export default {
             surcharge_ratio:'120',
           },
           {
+            code:'code4',
             no:'품-3',
             name:'전력케이블 단말처리',
             type:'240㎟, 1C',
@@ -393,6 +363,7 @@ export default {
             surcharge_ratio:'120',
           },
           {
+            code:'code5',
             no:'품-4',
             name:'Cubicle 설치',
             type:'6㎥, 1.5 Ton이하',
@@ -401,6 +372,7 @@ export default {
             surcharge_ratio:'100',
           },
           {
+            code:'code6',
             no:'품-4',
             name:'Cubicle 설치',
             type:'6㎥, 1.5 Ton이하',
@@ -409,6 +381,7 @@ export default {
             surcharge_ratio:'100',
           },
           {
+            code:'code7',
             no:'품-4',
             name:'Cubicle 설치',
             type:'6㎥, 1.5 Ton이하',
@@ -417,6 +390,7 @@ export default {
             surcharge_ratio:'100',
           },
           {
+            code:'code8',
             no:'품-4',
             name:'Cubicle 설치',
             type:'10㎥이하,3 Ton이하',
@@ -425,6 +399,7 @@ export default {
             surcharge_ratio:'100',
           },
           {
+            code:'code9',
             no:'품-4',
             name:'Cubicle 설치',
             type:'10㎥이하,3 Ton이하',
@@ -433,6 +408,7 @@ export default {
             surcharge_ratio:'100',
           },
           {
+            code:'code10',
             no:'품-4',
             name:'Cubicle 설치',
             type:'10㎥이하,3 Ton이하',
@@ -441,6 +417,7 @@ export default {
             surcharge_ratio:'100',
           },
           {
+            code:'code11',
             no:'품-5',
             name:'전기실 전원 케이블 포설',
             type:'50sq, 3C',
@@ -449,6 +426,7 @@ export default {
             surcharge_ratio:'200',
           },
           {
+            code:'code12',
             no:'품-6',
             name:'케이블 트레이',
             type:'단면적 50,000㎟ 이하',
@@ -457,6 +435,7 @@ export default {
             surcharge_ratio:'144',
           },
           {
+            code:'code13',
             no:'품-6',
             name:'케이블 트레이',
             type:'단면적 30,000㎟ 이하',
@@ -465,6 +444,7 @@ export default {
             surcharge_ratio:'144',
           },
           {
+            code:'code14',
             no:'품-7',
             name:'통신케이블 포설',
             type:'지중 인력견인 포설',
@@ -510,35 +490,164 @@ export default {
       for(let d=0; d<this.wage_data.length; d++){
         this.occupation_list.push(this.wage_data[d].occupation)
       }
+      this.registLaborInputs.forEach(data =>{
+        if(data.column_name == 'occupation'){
+          data.list = this.occupation_list;
+        }
+      })
+      this.registWageInputs.forEach(data =>{
+        if(data.column_name == 'occupation'){
+          data.list = this.occupation_list;
+        }
+      })
     },
+    registLaborItem(item){
+      this.editedLaborIndex = this.labor_data.indexOf(item)
+      let labor_input = this.registLaborInputs;
+      labor_input.forEach(data =>{
+        if(data.column_name == 'name' || data.column_name == 'type' || data.column_name == 'no'){
+          data.disabled = false
+        }
+        data.value = '';
+      })
+      this.laborDialog = true
 
+    },
     editLaborItem (item) {
       this.editedLaborIndex = this.labor_data.indexOf(item)
-      this.editedLaborItem = Object.assign({}, item)
+      // this.editedLaborItem = Object.assign({}, item)
+      let labor_input = this.registLaborInputs;
+      labor_input.forEach(data =>{
+        if(data.column_name == 'name' || data.column_name == 'type' || data.column_name == 'no'){
+          data.disabled = true
+        }
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            data.value = Object.values(item)[i];
+          }
+        }
+      })
       this.laborDialog = true
 
     },
 
+    uploadLaborItem () {
+      let labor_input = this.registLaborInputs;
+      let item = this.editedLaborItem;
+      let no_data = [];
+      labor_input.forEach(data =>{
+        if(!data.value){
+          no_data.push(data.label);
+        }
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            if(data.column_name == 'surcharge_ratio'){
+              item[Object.keys(item)[i]] = data.value * 0.01;
+            } else{
+              item[Object.keys(item)[i]] = data.value;
+            }
+          }
+        }
+      })
+
+      if(no_data.length > 0){
+        alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
+        return;
+      }
+
+      if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
+        this.editedLaborItem.creater = 'user_id';
+      }else{// 아니라면 수정
+        this.editedLaborItem.modifier = 'user_id';
+      }
+    },
     editWageItem (item) {
       this.editedWageIndex = this.wage_data.indexOf(item)
-      this.editedWageItem = Object.assign({}, item)
+      // this.editedWageItem = Object.assign({}, item)
+      let wage_input = this.registWageInputs;
+      wage_input.forEach(data =>{
+        if(data.column_name == 'occupation'){
+          data.disabled = true
+        }
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            data.value = Object.values(item)[i];
+          }
+        }
+      })
       this.wageDialog = true
     },
-
-    deleteLaborItem (item) {
-      this.editedLaborIndex = this.labor_data.indexOf(item)
-      this.editedLaborItem = Object.assign({}, item)
-      this.laborDialogDelete = true
-    },
-    deleteWageItem (item) {
+    registWageItem(item){
       this.editedWageIndex = this.wage_data.indexOf(item)
-      this.editedWageItem = Object.assign({}, item)
-      this.wageDialogDelete = true
+      let wage_input = this.registWageInputs;
+      wage_input.forEach(data =>{
+        if(data.column_name == 'occupation'){
+          data.disabled = false
+        }
+        data.value = '';
+      })
+      this.wageDialog = true
+
+    },
+    uploadWageItem () {
+      let wage_input = this.registWageInputs;
+      let item = this.editedWageItem;
+      let no_data = [];
+      wage_input.forEach(data =>{
+        if(!data.value){
+          no_data.push(data.label);
+        }
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            item[Object.keys(item)[i]] = data.value;
+          }
+        }
+      })
+
+      if(no_data.length > 0){
+        alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
+        return;
+      }
+
+      if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
+        this.editedLaborItem.creater = 'user_id';
+      }else{// 아니라면 수정
+        this.editedLaborItem.modifier = 'user_id';
+      }
+    },
+    // deleteWageItem (item) {
+    //   this.editedWageIndex = this.wage_data.indexOf(item)
+    //   this.editedWageItem = Object.assign({}, item)
+    //   this.wageDialogDelete = true
+    // },
+
+    deleteItem (item) {
+      if(this.tab_main == 0){
+        this.editedLaborIndex = this.labor_data.indexOf(item)
+        this.editedLaborItem = Object.assign({}, item)
+      }else if(this.tab_main == 1){
+        this.editedWageIndex = this.wage_data.indexOf(item)
+        this.editedWageItem = Object.assign({}, item)
+      }
+      this.DialogDelete = true
     },
 
     deleteItemConfirm () {
-      this.labor_data.splice(this.editedLaborIndex, 1)
-      this.wage_data.splice(this.editedWageIndex, 1)
+      this.deleteDataList = {};
+      this.deleteDataList.modifier = 'user_id';
+
+      if(this.tab_main == 0){
+        this.deleteDataList.code = this.editedLaborItem.code;
+        console.log('노무비 정보 삭제 : ' + JSON.stringify(this.deleteDataList));
+        this.labor_data.splice(this.editedLaborIndex, 1)
+      }else if(this.tab_main == 1){
+        this.deleteDataList.occupation = this.editedWageItem.occupation;
+        console.log('시중노임단가 정보 삭제 : ' + JSON.stringify(this.deleteDataList));
+        this.wage_data.splice(this.editedWageIndex, 1)
+      }
+
+      // 삭제 요청 = this.deleteDataList
+
       this.closeDelete()
     },
 
@@ -554,28 +663,13 @@ export default {
     },
 
     closeDelete () {
-      this.laborDialogDelete = false
-      this.wageDialogDelete = false
+      this.DialogDelete = false
       this.$nextTick(() => {
         this.editedLaborItem = Object.assign({}, this.defaultLaborItem)
         this.editedLaborIndex = -1
         this.editedWageItem = Object.assign({}, this.defaultWageItem)
         this.editedWageIndex = -1
       })
-    },
-
-    save () {
-      if (this.editedLaborIndex > -1) {
-        Object.assign(this.labor_data[this.editedLaborIndex], this.editedLaborItem)
-      } else {
-        this.labor_data.push(this.editedLaborItem)
-      }
-      if (this.editedWageIndex > -1) {
-        Object.assign(this.wage_data[this.editedWageIndex], this.editedWageItem)
-      } else {
-        this.wage_data.push(this.editedWageItem)
-      }
-      this.close()
     },
   },
 }
