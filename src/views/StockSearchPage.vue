@@ -73,14 +73,14 @@
                     color="indigo"
                     text-color="white"
                   >
-                    총 재고 : 9
+                    총 재고 : {{ total_stock_num }}
                   </v-chip>
                   <v-chip
                     class="ma-2"
                     color="indigo"
                     text-color="white"
                   >
-                    총 금액 :
+                    총 금액 : {{ total_stock_price }}
                   </v-chip>
                   <DataTableComponent
                     :headers="headers"
@@ -118,6 +118,8 @@ export default {
               },
   data(){
     return{
+      total_stock_num:0,
+      total_stock_price:0,
       stock_more_0: true,
 
       searchCardInputs:[
@@ -292,6 +294,8 @@ export default {
   },
   methods: {
     async searchButton() {
+      this.total_stock_num = 0;
+      this.total_stock_price = 0;
       // alert(this.searchCardInputs.find(x=>x.label === '일자').value.sort());
 
       let searchType = this.searchCardInputs.find(x=>x.label === '종류').value;
@@ -400,6 +404,11 @@ export default {
       } catch (error) {
         alert(error);
       }
+
+      this.product_data.forEach(data =>{
+        this.total_stock_num += data.stock_num
+        this.total_stock_price += data.stock_price
+      })
 
     }
   }
