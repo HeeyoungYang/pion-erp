@@ -6,6 +6,7 @@
     :lg="input.lg ? input.lg : ''">
       <v-text-field v-if="!input.type || input.type === 'text'"
         v-model="input.value"
+        :type="input.text_type"
         :dense="dense"
         :hide-details="hideDetails"
         :clearable="input.clearable === undefined ? (clearable ? clearable : false) : input.clearable"
@@ -13,7 +14,8 @@
         :outlined="input.outlined === undefined ? (outlined ? outlined : false) : input.outlined"
         :prepend-icon="input.icon"
         :label="input.label"
-        :disabled="input.disabled">
+        :disabled="input.disabled"
+        :suffix="input.suffix">
       </v-text-field>
       <v-select v-else-if="input.type === 'combo' || input.type === 'select'"
         v-model="input.value"

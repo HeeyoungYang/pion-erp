@@ -1,11 +1,14 @@
 <template>
-  <div>
+  <div class="main_page">
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
     <NavComponent></NavComponent>
-
     <!-- ▼ 본문 영역 -->
-    <v-main>
-      <p>Home</p>
+    <v-main class="hero">
+      <!-- <div style="height: 100%">
+        <video class="bg-video__content" autoplay muted loop>
+          <source src="../assets/img/earth_background_video.mp4" type="video/mp4" />
+        </video>
+      </div> -->
       <ModalDialogComponent
         :dialog-value="first_login_dialog"
         max-width="300px"
@@ -81,5 +84,11 @@ export default {
 
 </script>
 <style>
-
+.hero {
+  background: url('../assets/img/wind_sun.jpg');
+  opacity:0.5;
+  background-size: cover;
+  background-position: center center;
+  min-height: 953px;
+}
 </style>

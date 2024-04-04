@@ -953,7 +953,7 @@ export default {
       ],
       registMaterialInputs:[
         {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'6', lg:'6',},
-        {label:'관리코드', column_name:'item_code',  col:'12', sm:'6', lg:'6', value: ''},
+        {label:'관리코드', column_name:'item_code',  col:'12', sm:'6', lg:'6', value: '', },
         {label:'자재명', column_name:'name',  col:'12', sm:'6', lg:'6', value: ''},
         {label:'모델명', column_name:'model',  col:'12', sm:'6', lg:'6', value: ''},
         {label:'사양', column_name:'spec', col:'12', sm:'6', lg:'6', value: ''},
@@ -1119,6 +1119,7 @@ export default {
         thumbnail : null,
         belong_data:[]
       },
+      deleteItemList:{},
       module_headers: [
         { text: '', align: 'center', value: '', },
         { text: '분류', align: 'center', value: 'classification', },
@@ -1807,6 +1808,9 @@ export default {
   },
 
   watch: {
+    formDisabled () {
+      return this.editedIndex === -1 ? false : true
+    },
     material_dialog (val) {
       val || this.close()
     },
@@ -1915,6 +1919,9 @@ export default {
     registMaterialItem(){
       let material_input = this.registMaterialInputs;
       material_input.forEach(data =>{
+        if(data.column_name == 'item_code'){
+          data.disabled = false
+        }
         data.value = '';
       })
       this.material_dialog = true
@@ -1929,6 +1936,9 @@ export default {
       this.editedIndex = this.material_data.indexOf(item)
       let material_input = this.registMaterialInputs;
       material_input.forEach(data =>{
+        if(data.column_name == 'item_code'){
+          data.disabled = true
+        }
         for(let i=0; i<Object.keys(item).length; i++){
           if(data.column_name == Object.keys(item)[i]){
             data.value = Object.values(item)[i];
@@ -1987,6 +1997,9 @@ export default {
     registModuleItem(){
       let module_input = this.registModuleInputs;
       module_input.forEach(data =>{
+        if(data.column_name == 'item_code'){
+          data.disabled = false
+        }
         data.value = '';
       })
       this.module_set_material_data = [];
@@ -1997,6 +2010,9 @@ export default {
       this.editedIndex = this.module_data.indexOf(item)
       let module_input = this.registModuleInputs;
       module_input.forEach(data =>{
+        if(data.column_name == 'item_code'){
+          data.disabled = true
+        }
         for(let i=0; i<Object.keys(item).length; i++){
           if(data.column_name == Object.keys(item)[i]){
             data.value = Object.values(item)[i];
@@ -2053,6 +2069,9 @@ export default {
     registProductItem(){
       let product_input = this.registProductInputs;
       product_input.forEach(data =>{
+        if(data.column_name == 'item_code'){
+          data.disabled = false
+        }
         data.value = '';
       })
       this.product_set_items_data = [];
@@ -2063,6 +2082,9 @@ export default {
       this.editedIndex = this.product_data.indexOf(item)
       let product_input = this.registProductInputs;
       product_input.forEach(data =>{
+        if(data.column_name == 'item_code'){
+          data.disabled = true
+        }
         for(let i=0; i<Object.keys(item).length; i++){
           if(data.column_name == Object.keys(item)[i]){
             data.value = Object.values(item)[i];
@@ -2131,36 +2153,34 @@ export default {
       if(this.tab_main == 0){
         this.editedIndex = this.material_data.indexOf(item)
         this.editRegistMaterial = Object.assign({}, item)
-        this.editRegistMaterial.modifier = 'user_id';
-        this.editRegistMaterial.type = '원부자재';
       }else if(this.tab_main == 1){
         this.editedIndex = this.module_data.indexOf(item)
         this.editRegistModule  = Object.assign({}, item)
-        this.editRegistModule.modifier = 'user_id';
-        this.editRegistModule.type = '반제품';
-
       }else if(this.tab_main == 2){
         this.editedIndex = this.product_data.indexOf(item)
         this.editRegistProduct  = Object.assign({}, item)
-        this.editRegistProduct.modifier = 'user_id';
-        this.editRegistProduct.type = '완제품';
       }
-        this.delete_dialog = true
+      this.delete_dialog = true
     },
 
     deleteItemConfirm () {
-      let delete_data;
+      this.deleteItemList = {};
+      this.deleteItemList.modifier = 'user_id';
       if(this.tab_main == 0){
+        this.deleteItemList.material_code = this.editRegistMaterial.item_code;
+        console.log('원부자재 삭제 : ' + JSON.stringify(this.deleteItemList));
         this.material_data.splice(this.editedIndex, 1)
-        delete_data = this.editRegistMaterial;
       }else if(this.tab_main == 1){
+        this.deleteItemList.module_code = this.editRegistModule.item_code;
+        console.log('반제품 삭제 : ' + JSON.stringify(this.deleteItemList));
         this.module_data.splice(this.editedIndex, 1)
-        delete_data = this.editRegistModule;
       }else if(this.tab_main == 2){
+        this.deleteItemList.product_code = this.editRegistProduct.item_code;
+        console.log('완제품 삭제 : ' + JSON.stringify(this.deleteItemList));
         this.product_data.splice(this.editedIndex, 1)
-        delete_data = this.editRegistProduct;
       }
-      console.log('삭제 데이터 : ' + JSON.stringify(delete_data));
+
+      // 삭제 요청 = this.deleteItemList
 
       this.closeDelete()
     },
