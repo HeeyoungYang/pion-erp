@@ -36,6 +36,7 @@
                       filled
                       hide-details
                       :inputs="searchMaterialCardInputs"
+                      @enter="searchMaterialButton"
                     >
                       <v-col
                         cols="12"
@@ -282,6 +283,7 @@
                       filled
                       hide-details
                       :inputs="searchModuleCardInputs"
+                      @enter="searchMaterialButton"
                     >
                       <v-col
                         cols="12"
@@ -464,6 +466,7 @@
                                       elevation="2"
                                       class="mr-2"
                                       small
+                                      @enter="searchMaterialButton"
                                     >
                                       검색
                                     </v-btn>
@@ -566,6 +569,7 @@
                       filled
                       hide-details
                       :inputs="searchProductCardInputs"
+                      @enter="searchMaterialButton"
                     >
                       <v-col
                         cols="12"
@@ -779,6 +783,7 @@
                                           elevation="2"
                                           class="mr-2"
                                           small
+                                          @enter="searchMaterialButton"
                                         >
                                           검색
                                         </v-btn>

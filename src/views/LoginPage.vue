@@ -37,12 +37,14 @@
               label="아이디"
               filled
               :value="idValue"
+              @keyup.enter="login"
             ></v-text-field>
             <v-text-field
               id="pwField"
               label="비밀번호"
               type="password"
               filled
+              @keyup.enter="login"
             ></v-text-field>
           </v-col>
           <!-- ▼ 로그인 버튼. 클릭 시 /home으로 이동 -->
@@ -208,6 +210,14 @@ export default {
     async login(){
       const id = document.getElementById('idField').value;
       const pw = document.getElementById('pwField').value;
+
+      if(id == ''){
+        alert('아이디를 입력하세요.')
+        return;
+      }else if(pw == ''){
+        alert('비밀번호를 입력하세요.')
+        return;
+      }
       // if (process.env.NODE_ENV === 'production'){
 
         mux.Server.post({
@@ -235,7 +245,7 @@ export default {
               break;
           }
         });
-        
+
       // }else {
       //   if (this.checkbox){
       //     Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');

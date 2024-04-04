@@ -22,6 +22,7 @@
               filled
               hide-details
               :inputs="searchCardInputs"
+              @enter="searchButton"
             >
               <v-col
                 cols="12"

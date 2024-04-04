@@ -22,6 +22,7 @@
               filled
               hide-details
               :inputs="searchCardInputs"
+              @enter="searchButton"
             >
               <v-col
                 cols="12"
@@ -123,7 +124,7 @@ export default {
         {label:'종류', type:'auto', col:'12', sm:'4', lg:'2', value:'All', list:['All', '원부자재', '반제품', '완제품']},
         {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'2'},
         {label:'상태', type:'auto', col:'12', sm:'4', lg:'2', value:'All', list:['All', 'G', 'B']},
-        {label:'관리코드', col:'12', sm:'4', lg:'3', value: ''},
+        {label:'관리코드', col:'12', sm:'4', lg:'3', value: '',},
         {label:'제품명', col:'12', sm:'4', lg:'3', value: ''},
         {label:'모델명', col:'12', sm:'4', lg:'3', value: ''},
         {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
@@ -315,44 +316,44 @@ export default {
           "query_info":{
             "script_file_name":"rooting_product_table_stock_table_module_table_material_table_root_json_2024_03_27_10_33_27.json",
             "params":[
-                        {                        
+                        {
                             "key": "classification",
                             "type": "string",
                             "value": searchClassification
                         },
-                        {                            
+                        {
                             "key": "manufacturer",
                             "type": "string",
                             "value": searchManufacturer
-                         
+
                         },
-                        {                            
+                        {
                             "key": "model",
                             "type": "string",
                             "value": searchModelName
                         },
-                        {                            
+                        {
                             "key": "name",
                             "type": "string",
                             "value": searchProductName
-                         
+
                         },
                         {
                             "key": "_code",
                             "type": "string",
                             "value": searchProductCode
                         },
-                        {                          
+                        {
                             "key": "spec",
                             "type": "string",
                             "value": searchProductSpec
                         },
-                        {                            
+                        {
                             "key": "type",
                             "type": "string",
                             "value": searchType
                         },
-                        {                            
+                        {
                             "key": "condition",
                             "type": "string",
                             "value": searchCondition
@@ -364,7 +365,7 @@ export default {
                         }
                     ]
             }
-                
+
           // "query_info":{
           //   "script_file_name": "rooting_stock_table_root_json_2024_03_18_15_49_08.json",
           //   "params":[

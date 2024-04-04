@@ -15,7 +15,8 @@
         :prepend-icon="input.icon"
         :label="input.label"
         :disabled="input.disabled"
-        :suffix="input.suffix">
+        :suffix="input.suffix"
+        @keyup.enter="enterKeyup">
       </v-text-field>
       <v-select v-else-if="input.type === 'combo' || input.type === 'select'"
         v-model="input.value"
@@ -162,7 +163,9 @@ export default {
   watch: {
   },
   methods: {
-
+    enterKeyup() {
+      this.$emit('enter');
+    },
   }
 };
 </script>
