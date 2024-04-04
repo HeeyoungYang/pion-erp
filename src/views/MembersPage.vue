@@ -30,101 +30,20 @@
                     saveText="저장"
                     :persistent="true"
                     @close="close"
-                    @save="save"
+                    @save="uploadMember"
                   >
                     <template v-slot:activator>
                       <!-- ▼ 계정 추가 버튼 -->
-                      <v-btn color="primary" outlined class="mb-2 float-right" @click="dialog = true">계정 추가</v-btn>
+                      <v-btn color="primary" outlined class="mb-2 float-right" @click="registItem">계정 추가</v-btn>
                     </template>
                     <!-- ▼ 버튼 혹은 아이콘 클릭 시 노출되는 모달 창 내용 -->
                     <v-container>
                       <!-- 모달 내용 구성 -->
-                      <v-row>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6"
-                        >
-                          <!-- ▼ editedIndex의 값에 따라 계정 등록인지 계정 수정인지 파악하여 ID inputbox는 disabled 처리 : formDisabled -->
-                          <v-text-field
-                            v-model="editedItem.user_id"
-                            label="ID"
-                            :disabled=formDisabled
-                          ></v-text-field>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6"
-                        >
-                          <v-text-field
-                            v-model="editedItem.name"
-                            label="이름"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6"
-                        >
-                          <v-select
-                            :items="department_list"
-                            label="부서"
-                            :value="editedItem.department"
-                          ></v-select>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6"
-                        >
-                          <v-select
-                            :items="position_list"
-                            label="직책"
-                            :value="editedItem.position"
-                          ></v-select>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6"
-                        >
-                          <v-text-field
-                            v-model="editedItem.phone"
-                            label="전화번호"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6"
-                        >
-                          <v-text-field
-                            v-model="editedItem.extension"
-                            label="내선"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6"
-                        >
-                          <v-text-field
-                            v-model="editedItem.email"
-                            label="이메일"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6"
-                        >
-                          <v-text-field
-                            v-model="editedItem.mobile"
-                            label="모바일"
-                          ></v-text-field>
-                        </v-col>
-                      </v-row>
+                      <InputsFormComponent
+                        clearable
+                        hide-details
+                        :inputs="registMemberInputs"
+                      ></InputsFormComponent>
                     </v-container>
                   </ModalDialogComponent>
                 </v-col>
@@ -176,20 +95,30 @@
 import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent";
+import InputsFormComponent from "@/components/InputsFormComponent.vue";
 
 export default {
   components: {
     NavComponent,
     ModalDialogComponent,
     DataTableComponent,
+    InputsFormComponent,
   },
   data() {
     return {
       search: '',
       dialog: false,
       dialogDelete: false,
-      department_list: ['기획관리', '영업팀'],
-      position_list: ['사원', '주임', '대리', '매니저'],
+      registMemberInputs:[
+        {label:'ID', column_name:'user_id',  col:'12', sm:'6', lg:'6', value: '', },
+        {label:'이름', column_name:'name',  col:'12', sm:'6', lg:'6', value: '', },
+        {label:'부서', column_name:'department', type:'select', list:['기획관리', '영업팀'], value:'', col:'12', sm:'6', lg:'6',},
+        {label:'직책', column_name:'position', type:'select', list:['사원', '주임', '대리', '매니저'], value:'', col:'12', sm:'6', lg:'6',},
+        {label:'전화번호', column_name:'phone', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'내선', column_name:'extension', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'이메일', column_name:'email', col:'12', sm:'6', lg:'6', value: '', },
+        {label:'모바일', column_name:'mobile', col:'12', sm:'6', lg:'6', value: ''},
+      ],
       headers: [
         {text: 'ID', align: 'center', value: 'user_id'},
         {text: '이름', align: 'center', value: 'name'},
@@ -223,6 +152,7 @@ export default {
         email: '',
         mobile: '',
       },
+      deleteMemeber:{},
     }
   },
 
@@ -273,11 +203,59 @@ export default {
         },
       ]
     },
-
+    registItem(item){
+      this.editedIndex = this.members.indexOf(item)
+      let member_input = this.registMemberInputs;
+      member_input.forEach(data =>{
+        if(data.column_name == 'user_id'){
+          data.disabled = false
+        }
+        data.value = '';
+      })
+      this.dialog = true
+    },
     editItem (item) {
       this.editedIndex = this.members.indexOf(item)
-      this.editedItem = Object.assign({}, item)
+      // this.editedItem = Object.assign({}, item)
+      let member_input = this.registMemberInputs;
+      member_input.forEach(data =>{
+        if(data.column_name == 'user_id'){
+          data.disabled = true
+        }
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            data.value = Object.values(item)[i];
+          }
+        }
+      })
       this.dialog = true
+    },
+
+    uploadMember () {
+      let member_input = this.registMemberInputs;
+      let item = this.editedItem;
+      let no_data = [];
+      member_input.forEach(data =>{
+        if(!data.value){
+          no_data.push(data.label);
+        }
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            item[Object.keys(item)[i]] = data.value;
+          }
+        }
+      })
+
+      if(no_data.length > 0){
+        alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
+        return;
+      }
+
+      if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
+        this.editedItem.creater = 'user_id';
+      }else{// 아니라면 수정
+        this.editedItem.modifier = 'user_id';
+      }
     },
 
     deleteItem (item) {
@@ -287,6 +265,10 @@ export default {
     },
 
     deleteItemConfirm () {
+      this.deleteMemeber = {};
+      this.deleteMemeber.modifier = 'user_id'
+      this.deleteMemeber.user_id = this.editedItem.user_id;
+      console.log('계정 삭제 : ' + JSON.stringify(this.deleteMemeber));
       this.members.splice(this.editedIndex, 1)
       this.closeDelete()
     },
@@ -305,15 +287,6 @@ export default {
         this.editedItem = Object.assign({}, this.defaultItem)
         this.editedIndex = -1
       })
-    },
-
-    save () {
-      if (this.editedIndex > -1) {
-        Object.assign(this.members[this.editedIndex], this.editedItem)
-      } else {
-        this.members.push(this.editedItem)
-      }
-      this.close()
     },
   },
 }
