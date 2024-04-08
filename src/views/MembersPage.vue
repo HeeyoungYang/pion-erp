@@ -39,11 +39,12 @@
                     <!-- ▼ 버튼 혹은 아이콘 클릭 시 노출되는 모달 창 내용 -->
                     <v-container>
                       <!-- 모달 내용 구성 -->
-                      <InputsFormComponent
-                        clearable
-                        hide-details
-                        :inputs="registMemberInputs"
-                      ></InputsFormComponent>
+                      <v-form ref="memberForm">
+                        <InputsFormComponent
+                          clearable
+                          :inputs="registMemberInputs"
+                        ></InputsFormComponent>
+                      </v-form>
                     </v-container>
                   </ModalDialogComponent>
                 </v-col>
@@ -110,14 +111,44 @@ export default {
       dialog: false,
       dialogDelete: false,
       registMemberInputs:[
-        {label:'ID', column_name:'user_id',  col:'12', sm:'6', lg:'6', value: '', },
-        {label:'이름', column_name:'name',  col:'12', sm:'6', lg:'6', value: '', },
-        {label:'부서', column_name:'department', type:'select', list:['기획관리', '영업팀'], value:'', col:'12', sm:'6', lg:'6',},
-        {label:'직책', column_name:'position', type:'select', list:['사원', '주임', '대리', '매니저'], value:'', col:'12', sm:'6', lg:'6',},
-        {label:'전화번호', column_name:'phone', col:'12', sm:'6', lg:'6', value: ''},
-        {label:'내선', column_name:'extension', col:'12', sm:'6', lg:'6', value: ''},
-        {label:'이메일', column_name:'email', col:'12', sm:'6', lg:'6', value: '', },
-        {label:'모바일', column_name:'mobile', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'ID', column_name:'user_id',  col:'12', sm:'6', lg:'6', value: '',
+        rules: [
+          v => !!v || 'ID 입력',
+          v => !!(v &&   /[a-zA-Z]/.test(v) ) || '형식 확인(영문 대소문자)',
+        ]},
+        {label:'이름', column_name:'name',  col:'12', sm:'6', lg:'6', value: '',
+        rules: [
+          v => !!v || '이름 입력',
+          v => !!(v &&  /[가-힣]/.test(v) ) || '형식 확인(한글)',
+        ]},
+        {label:'부서', column_name:'department', type:'select', list:['기획관리', '영업팀'], value:'', col:'12', sm:'6', lg:'6',
+        rules: [
+          v => !!v || '부서 선택',
+        ]},
+        {label:'직책', column_name:'position', type:'select', list:['사원', '주임', '대리', '매니저'], value:'', col:'12', sm:'6', lg:'6',
+        rules: [
+          v => !!v || '직책 선택',
+        ]},
+        {label:'전화번호', column_name:'phone', col:'12', sm:'6', lg:'6', value: '',
+        rules: [
+          v => !!v || '전화번호 입력',
+          v => !!(v &&  /^\d{2,3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
+        ]},
+        {label:'내선', column_name:'extension', col:'12', sm:'6', lg:'6', value: '',
+        rules: [
+          v => !!v || '내선번호 입력',
+          v => !!(v &&  /[0-9]$/.test(v) ) || '숫자만 입력',
+        ]},
+        {label:'이메일', column_name:'email', col:'12', sm:'6', lg:'6', value: '',
+        rules: [
+          v => !!v || '이메일 입력',
+        v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)',
+        ]},
+        {label:'모바일', column_name:'mobile', col:'12', sm:'6', lg:'6', value: '',
+        rules: [
+          v => !!v || '휴대전화번호 입력',
+          v => !!(v &&  /^\d{3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
+        ]},
       ],
       headers: [
         {text: 'ID', align: 'center', value: 'user_id'},
@@ -232,29 +263,35 @@ export default {
     },
 
     uploadMember () {
+      const validate = this.$refs.memberForm.validate();
       let member_input = this.registMemberInputs;
       let item = this.editedItem;
-      let no_data = [];
-      member_input.forEach(data =>{
-        if(!data.value){
-          no_data.push(data.label);
-        }
-        for(let i=0; i<Object.keys(item).length; i++){
-          if(data.column_name == Object.keys(item)[i]){
-            item[Object.keys(item)[i]] = data.value;
+
+      if(validate){
+      // let no_data = [];
+        member_input.forEach(data =>{
+          // if(!data.value){
+          //   no_data.push(data.label);
+          // }
+          for(let i=0; i<Object.keys(item).length; i++){
+            if(data.column_name == Object.keys(item)[i]){
+              item[Object.keys(item)[i]] = data.value;
+            }
           }
+        })
+
+        // if(no_data.length > 0){
+        //   alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
+        //   return;
+        // }
+
+        if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
+          this.editedItem.creater = 'user_id';
+          alert('계정 추가가 완료되었습니다');
+        }else{// 아니라면 수정
+          this.editedItem.modifier = 'user_id';
+          alert('수정이 완료되었습니다');
         }
-      })
-
-      if(no_data.length > 0){
-        alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
-        return;
-      }
-
-      if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
-        this.editedItem.creater = 'user_id';
-      }else{// 아니라면 수정
-        this.editedItem.modifier = 'user_id';
       }
     },
 
