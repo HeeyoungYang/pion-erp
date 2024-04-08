@@ -42,6 +42,7 @@
         :outlined="input.outlined === undefined ? (outlined ? outlined : false) : input.outlined"
         :prepend-icon="input.icon"
         :disabled="input.disabled"
+        :rules="input.rules"
         :label="input.label"
       ></v-autocomplete>
       <v-textarea  v-else-if="input.type === 'textarea'"

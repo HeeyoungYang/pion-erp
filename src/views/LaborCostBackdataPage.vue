@@ -648,11 +648,6 @@ export default {
         }
       }
     },
-    // deleteWageItem (item) {
-    //   this.editedWageIndex = this.wage_data.indexOf(item)
-    //   this.editedWageItem = Object.assign({}, item)
-    //   this.wageDialogDelete = true
-    // },
 
     deleteItem (item) {
       if(this.tab_main == 0){
