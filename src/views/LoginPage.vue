@@ -32,20 +32,24 @@
             cols="12"
             md="9"
           >
-            <v-text-field
-              id="idField"
-              label="아이디"
-              filled
-              :value="idValue"
-              @keyup.enter="login"
-            ></v-text-field>
-            <v-text-field
-              id="pwField"
-              label="비밀번호"
-              type="password"
-              filled
-              @keyup.enter="login"
-            ></v-text-field>
+            <v-form ref="loginForm">
+              <v-text-field
+                id="idField"
+                label="아이디"
+                filled
+                :value="idValue"
+                :rules="idRules"
+                @keyup.enter="login"
+              ></v-text-field>
+              <v-text-field
+                id="pwField"
+                label="비밀번호"
+                type="password"
+                filled
+                :rules="passwordRules"
+                @keyup.enter="login"
+              ></v-text-field>
+            </v-form>
           </v-col>
           <!-- ▼ 로그인 버튼. 클릭 시 /home으로 이동 -->
           <v-col
@@ -116,7 +120,7 @@
                   <v-btn
                     color="blue darken-1"
                     text
-                    @click="dialog = false"
+                    @click="newPasswordDialog = false"
                   >
                     닫기
                   </v-btn>
@@ -155,7 +159,7 @@
                   <v-btn
                     color="blue darken-1"
                     text
-                    @click="dialog = false"
+                    @click="closeSetPassword"
                   >
                     닫기
                   </v-btn>
@@ -190,7 +194,14 @@ export default {
         verificationCode:'',
         setNewPassword:'',
         checkbox: Vue.$cookies.keys().includes(this.$configJson.cookies.id),
-        idValue: Vue.$cookies.keys().includes(this.$configJson.cookies.id) ? Vue.$cookies.get(this.$configJson.cookies.id) : ''
+        idValue: Vue.$cookies.keys().includes(this.$configJson.cookies.id) ? Vue.$cookies.get(this.$configJson.cookies.id) : '',
+        idRules: [
+          v => !!v || '아이디 입력',
+        ],
+        passwordRules: [
+          v => !!v || '비밀번호 입력',
+          v => !!(v &&  /^(?=.*[a-zA-z])(?=.*[0-9]).{8,16}$/.test(v) ) || '영문 + 숫자, 8자 이상 16자 이하',
+        ]
     }
   },
   methods: {
@@ -207,53 +218,61 @@ export default {
       this.verificationCode = '';
       this.setNewPassword = '';
     },
+    closeSetPassword(){
+      this.setPassword = false;
+      this.newPasswordDialog = false;
+    },
     async login(){
       const id = document.getElementById('idField').value;
       const pw = document.getElementById('pwField').value;
 
-      if(id == ''){
-        alert('아이디를 입력하세요.')
-        return;
-      }else if(pw == ''){
-        alert('비밀번호를 입력하세요.')
-        return;
-      }
+      // if(id == ''){
+      //   alert('아이디를 입력하세요.')
+      //   return;
+      // }else if(pw == ''){
+      //   alert('비밀번호를 입력하세요.')
+      //   return;
+      // }
+
+      const validate = this.$refs.loginForm.validate();
+      if(validate){
       // if (process.env.NODE_ENV === 'production'){
 
-        mux.Server.post({
-          path:'/api/signin/', user_name:id, password:pw
-        }).then(result => {
-          console.log('result :>> ', result);
-          if (this.checkbox){
-            Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');
-          }else {
-            Vue.$cookies.remove(this.$configJson.cookies.id);
-          }
-          mux.Server.move({path:'/home'});
-        }).catch(err => {
-          console.error('err :>> ', err);
-          switch (err.message) {
-            case 'password':
-              alert('비밀번호 오류');
-              break;
-            case 'id':
-              alert('존재하지 않는 아이디');
-              break;
+          mux.Server.post({
+            path:'/api/signin/', user_name:id, password:pw
+          }).then(result => {
+            console.log('result :>> ', result);
+            if (this.checkbox){
+              Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');
+            }else {
+              Vue.$cookies.remove(this.$configJson.cookies.id);
+            }
+            mux.Server.move({path:'/home'});
+          }).catch(err => {
+            console.error('err :>> ', err);
+            switch (err.message) {
+              case 'password':
+                alert('비밀번호 오류');
+                break;
+              case 'id':
+                alert('존재하지 않는 아이디');
+                break;
 
-            default:
-              alert(err.message);
-              break;
-          }
-        });
+              default:
+                alert(err.message);
+                break;
+            }
+          });
 
-      // }else {
-      //   if (this.checkbox){
-      //     Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');
-      //   }else {
-      //     Vue.$cookies.remove(this.$configJson.cookies.id);
-      //   }
-      //   mux.Server.move({path:'/home'});
-      // }
+        // }else {
+        //   if (this.checkbox){
+        //     Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');
+        //   }else {
+        //     Vue.$cookies.remove(this.$configJson.cookies.id);
+        //   }
+        //   mux.Server.move({path:'/home'});
+        // }
+      }
     }
   },
 
