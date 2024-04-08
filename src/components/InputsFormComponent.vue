@@ -16,6 +16,7 @@
         :label="input.label"
         :disabled="input.disabled"
         :suffix="input.suffix"
+        :rules="input.rules"
         @keyup.enter="enterKeyup">
       </v-text-field>
       <v-select v-else-if="input.type === 'combo' || input.type === 'select'"

@@ -78,33 +78,34 @@
                                 <v-icon>mdi-lock-alert</v-icon>
                               </v-btn>
                             </template>
-
-                            <v-row class="mt-3">
-                              <v-col cols="12">
-                                <v-text-field
-                                  v-model="passwords.currentPassword"
-                                  label="현재 비밀번호"
-                                  :rules="checkCurrentPasswordRules"
-                                  type="password"
-                                ></v-text-field>
-                              </v-col>
-                              <v-col cols="12">
-                                <v-text-field
-                                  v-model="passwords.newPassword"
-                                  label="새 비밀번호"
-                                  :rules="passwordRules"
-                                  type="password"
-                                ></v-text-field>
-                              </v-col>
-                              <v-col cols="12">
-                                <v-text-field
-                                  v-model="passwords.newPasswordCheck"
-                                  label="새 비밀번호 확인"
-                                  :rules="checkPasswordRules"
-                                  type="password"
-                                ></v-text-field>
-                              </v-col>
-                            </v-row>
+                              <v-form ref="passwordForm">
+                                <v-row class="mt-3">
+                                  <v-col cols="12">
+                                    <v-text-field
+                                      v-model="passwords.currentPassword"
+                                      label="현재 비밀번호"
+                                      :rules="checkCurrentPasswordRules"
+                                      type="password"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col cols="12">
+                                    <v-text-field
+                                      v-model="passwords.newPassword"
+                                      label="새 비밀번호"
+                                      :rules="passwordRules"
+                                      type="password"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col cols="12">
+                                    <v-text-field
+                                      v-model="passwords.newPasswordCheck"
+                                      label="새 비밀번호 확인"
+                                      :rules="checkPasswordRules"
+                                      type="password"
+                                    ></v-text-field>
+                                  </v-col>
+                                </v-row>
+                              </v-form>
                           </ModalDialogComponent>
                         </v-col>
                       </v-row>
@@ -114,16 +115,13 @@
                   <!-- ▼ 부서~모바일까지의 계정 정보 input 영역 -->
                   <v-col
                     cols="12"
-                    md="6"
-                    v-for="userInput in userInput"
-                    :key="userInput.label"
-                  ><!-- ▼ script에 기입된 userInput의 데이터를 가져와 순서대로 노출. disabled가 기본이며 수정 버튼을 클릭해야 disabled가 해제 됨-->
-                    <v-text-field
-                      v-model="userInput.data"
-                      :prepend-icon="userInput.icon"
-                      :label="userInput.label"
-                      :disabled="disabledInput"
-                    ></v-text-field>
+                  >
+                    <v-form ref="myInfoForm">
+                      <InputsFormComponent
+                        clearable
+                        :inputs="userInputs"
+                      ></InputsFormComponent>
+                    </v-form>
                   </v-col>
                 </v-row>
               </v-container>
@@ -142,15 +140,17 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
+import InputsFormComponent from "@/components/InputsFormComponent.vue";
 
 export default {
   components: {
                 NavComponent,
                 ModalDialogComponent,
+                InputsFormComponent,
               },
   data(){
     return{
-      disabledInput: true,
+      // disabledInput: true,
       // ▼ 정보 수정 버튼
       showEditButton: true,
       // ▼ 정보 수정 후 저장 버튼
@@ -159,13 +159,29 @@ export default {
       dialog: false,
       // ▼ 계정 기본 정보
       userInfo: {name: '윤준수', password:'test1234'},
-      userInput: [
-          {icon: 'mdi-crowd', label: '부서', data: '기획관리'},
-          {icon: 'mdi-map-marker-account', label: '직책', data: '매니저'},
-          {icon: 'mdi-phone-dial', label: '전화번호', data: '070-1234-1234'},
-          {icon: 'mdi-phone-in-talk', label: '내선', data:'123', disabled:true},
-          {icon: 'mdi-email-fast', label: '이메일', data: 'yjs@pionelectric.com'},
-          {icon: 'mdi-cellphone-text', label: '모바일', data: '010-1234-5678'},
+      userInputs:[
+        {icon: 'mdi-crowd', column_name:'department', label: '부서', value: '기획관리', col:'12', sm:'6', lg:'6', disabled:true},
+        {icon: 'mdi-map-marker-account', column_name:'position', label: '직책', value: '매니저', col:'12', sm:'6', lg:'6', disabled:true},
+        {icon: 'mdi-phone-dial', column_name:'phone', label: '전화번호', value: '070-1234-1234', col:'12', sm:'6', lg:'6', disabled:true,
+        rules: [
+          v => !!v || '전화번호 입력',
+          v => !!(v &&  /^\d{2,3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
+        ]},
+        {icon: 'mdi-phone-in-talk', column_name:'extension', label: '내선', value:'123', col:'12', sm:'6', lg:'6', disabled:true,
+        rules: [
+          v => !!v || '내선번호 입력',
+          v => !!(v &&  /[0-9]$/.test(v) ) || '숫자만 입력',
+        ]},
+        {icon: 'mdi-email-fast', column_name:'email', label: '이메일', value: 'yjs@pionelectric.com', col:'12', sm:'6', lg:'6', disabled:true,
+        rules: [
+          v => !!v || '이메일 입력',
+        v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)',
+        ]},
+        {icon: 'mdi-cellphone-text', column_name:'mobile', label: '모바일', value: '010-1234-5678', col:'12', sm:'6', lg:'6', disabled:true,
+        rules: [
+          v => !!v || '휴대전화번호 입력',
+          v => !!(v &&  /^\d{3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
+        ]},
       ],
       // ▼ 비밀번호 변경
       passwords:{
@@ -191,18 +207,36 @@ export default {
   methods: {
     // ▼ 수정버튼 onclick 함수
     editPrivacyInfoFunc(){
-      this.disabledInput = false;
+      this.userInputs.forEach(data =>{
+        if(data.column_name == 'department' || data.column_name == 'position'){
+          data.disabled = true
+        } else{
+          data.disabled = false
+        }
+      })
       this.showEditButton = false;
       this.showSaveButton = true;
     },
     // ▼ 저장버튼 onclick 함수
     savePrivacyInfoFunc(){
-      this.disabledInput = true;
-      this.showEditButton = true;
-      this.showSaveButton = false;
+      const validate = this.$refs.myInfoForm.validate();
+      if(validate){
+        alert('저장이 완료되었습니다.')
+
+        this.userInputs.forEach(data =>{
+          data.disabled = true
+        })
+        this.showEditButton = true;
+        this.showSaveButton = false;
+      }
     },
     save(){
-      this.dialog = false;
+      const validate = this.$refs.passwordForm.validate();
+      if(validate){
+        alert('비밀번호 변경이 완료되었습니다.')
+        this.dialog = false;
+      }
+
     }
   },
 }
