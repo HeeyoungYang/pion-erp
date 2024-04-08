@@ -90,7 +90,14 @@
                           color="indigo"
                           text-color="white"
                         >
-                          총 금액 :
+                          총 재고 : {{ material_total_stock_num }}
+                        </v-chip>
+                        <v-chip
+                          class="mr-2"
+                          color="indigo"
+                          text-color="white"
+                        >
+                          총 금액 : {{ material_total_stock_price }}
                         </v-chip>
                       </v-col>
 
@@ -337,13 +344,13 @@
                           color="indigo"
                           text-color="white"
                         >
-                          총 재고 :
+                          총 재고 : {{ module_total_stock_num }}
                         </v-chip>
                         <v-chip
                           color="indigo"
                           text-color="white"
                         >
-                          총 금액 :
+                          총 금액 : {{ module_total_stock_price }}
                         </v-chip>
                       </v-col>
                       <v-col
@@ -946,6 +953,12 @@ export default {
       product_dialog_delete: false,
 
       material_stock_more_0: true,
+
+      material_total_stock_num: 0,
+      material_total_stock_price: 0,
+      module_total_stock_num: 0,
+      module_total_stock_price: 0,
+
       searchMaterialCardInputs:[
         {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'3'},
         {label:'상태', type:'auto', col:'12', sm:'4', lg:'3', value:'All', list:['All', 'G', 'B']},
@@ -2297,6 +2310,10 @@ export default {
         alert(error);
       }
 
+      this.material_data.forEach(data =>{
+        this.material_total_stock_num += data.stock_num
+        this.material_total_stock_price += data.stock_price
+      })
     },
   },
 }

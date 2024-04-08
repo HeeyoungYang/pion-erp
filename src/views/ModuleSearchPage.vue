@@ -73,14 +73,14 @@
                     color="indigo"
                     text-color="white"
                   >
-                    총 재고 : 9
+                    총 재고 : {{ total_stock_num }}
                   </v-chip>
                   <v-chip
                     class="ma-2"
                     color="indigo"
                     text-color="white"
                   >
-                    총 금액 :
+                    총 금액 : {{ total_stock_price }}
                   </v-chip>
                   <DataTableComponent
                     :headers="headers"
@@ -122,6 +122,8 @@ export default {
   data(){
     return{
       stock_more_0: true,
+      total_stock_num:0,
+      total_stock_price:0,
       searchCardInputs:[
         {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'3'},
         {label:'상태', type:'auto', col:'12', sm:'4', lg:'3', value:'All', list:['All', 'G', 'B']},
@@ -432,6 +434,22 @@ export default {
 
   computed: {
   },
+  methods: {
+    searchButton() {
+      //검색 시 총 재고, 총 금액 초기화
+      this.total_stock_num = 0;
+      this.total_stock_price = 0;
+
+
+
+
+      //검색 후 총 재고, 총 금액 계산
+      this.product_data.forEach(data =>{
+        this.total_stock_num += data.stock_num
+        this.total_stock_price += data.stock_price
+      })
+    }
+  }
 }
 </script>
 <style lang="">
