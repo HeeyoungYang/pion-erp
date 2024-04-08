@@ -50,11 +50,12 @@
                         </template>
                         <v-container>
                             <!-- slot="cardText" -->
-                          <InputsFormComponent
-                            clearable
-                            hide-details
-                            :inputs="registLaborInputs"
-                          ></InputsFormComponent>
+                          <v-form ref="laborForm">
+                            <InputsFormComponent
+                              clearable
+                              :inputs="registLaborInputs"
+                            ></InputsFormComponent>
+                          </v-form>
                         </v-container>
                       </ModalDialogComponent>
                     </v-col>
@@ -124,11 +125,12 @@
                           <v-btn color="primary" outlined class="mb-2 float-right" @click="registWageItem">정보 추가</v-btn>
                         </template>
                         <v-container>
-                          <InputsFormComponent
-                            clearable
-                            hide-details
-                            :inputs="registWageInputs"
-                          ></InputsFormComponent>
+                          <v-form ref="wageForm">
+                            <InputsFormComponent
+                              clearable
+                              :inputs="registWageInputs"
+                            ></InputsFormComponent>
+                          </v-form>
                           <!-- <v-row>
                             <v-col
                               cols="12"
@@ -229,17 +231,53 @@ export default {
       // wageDialogDelete: false,
       occupation_list:[],
       registLaborInputs:[
-        {label:'품번', column_name:'no',  col:'12', sm:'6', lg:'6', value: '', },
-        {label:'공종', column_name:'name',  col:'12', sm:'6', lg:'6', value: '', },
-        {label:'규격', column_name:'type',  col:'12', sm:'6', lg:'6', value: '', },
-        {label:'직종', column_name:'occupation', type:'select', list:[], value:'', col:'12', sm:'6', lg:'6',},
-        {label:'공량(M/D)', column_name:'man_per_day', text_type:'number', col:'12', sm:'6', lg:'6', value: ''},
-        {label:'할증율', column_name:'surcharge_ratio', text_type:'number', col:'12', sm:'6', lg:'6', value: '', suffix: '%'},
+        {label:'품번', column_name:'no',  col:'12', sm:'6', lg:'6', value: '',
+          rules: [
+            v => !!v || '품번 입력',
+          ]
+        },
+        {label:'공종', column_name:'name',  col:'12', sm:'6', lg:'6', value: '',
+          rules: [
+            v => !!v || '공종 입력',
+          ]
+        },
+        {label:'규격', column_name:'type',  col:'12', sm:'6', lg:'6', value: '',
+          rules: [
+            v => !!v || '규격 입력',
+          ]
+        },
+        {label:'직종', column_name:'occupation', type:'select', list:[], value:'', col:'12', sm:'6', lg:'6',
+          rules: [
+            v => !!v || '직종 선택',
+          ]
+        },
+        {label:'공량(M/D)', column_name:'man_per_day', text_type:'number', col:'12', sm:'6', lg:'6', value: '',
+          rules: [
+            v => !!v || '공량 입력(숫자)',
+          ]
+        },
+        {label:'할증율', column_name:'surcharge_ratio', text_type:'number', col:'12', sm:'6', lg:'6', value: '', suffix: '%',
+          rules: [
+            v => !!v || '할증율 입력(숫자)',
+          ]
+        },
       ],
       registWageInputs:[
-        {label:'직종', column_name:'occupation', type:'select', list:[], value:'', col:'12', sm:'6', lg:'6',},
-        {label:'단가', column_name:'unit_price', text_type:'number',  col:'12', sm:'6', lg:'6', value: ''},
-        {label:'설계 조정율', column_name:'adjustment_ratio', text_type:'number', col:'12', sm:'6', lg:'6', value: ''},
+        {label:'직종', column_name:'occupation', value:'', col:'12', sm:'6', lg:'6',
+          rules: [
+            v => !!v || '직종 입력',
+          ]
+        },
+        {label:'단가', column_name:'unit_price', text_type:'number',  col:'12', sm:'6', lg:'6', value: '',
+          rules: [
+            v => !!v || '단가 입력(숫자)',
+          ]
+        },
+        {label:'설계 조정율', column_name:'adjustment_ratio', text_type:'number', col:'12', sm:'6', lg:'6', value: '',
+          rules: [
+            v => !!v || '설계 조정율 입력(숫자)',
+          ]
+        },
       ],
       labor_headers: [
         { text: '품번', align: 'center', value: 'no'},
@@ -333,7 +371,7 @@ export default {
             type:'240㎟, 1C',
             occupation:'고압 케이블전공',
             man_per_day:'0.136',
-            surcharge_ratio:'115',
+            surcharge_ratio:'115%',
           },
           {
             code:'code2',
@@ -342,7 +380,7 @@ export default {
             type:'6㎟, 2C',
             occupation:'저압 케이블전공',
             man_per_day:'0.018',
-            surcharge_ratio:'120',
+            surcharge_ratio:'120%',
           },
           {
             code:'code3',
@@ -351,7 +389,7 @@ export default {
             type:'2.5㎟, 6C',
             occupation:'저압 케이블전공',
             man_per_day:'0.035',
-            surcharge_ratio:'120',
+            surcharge_ratio:'120%',
           },
           {
             code:'code4',
@@ -360,7 +398,7 @@ export default {
             type:'240㎟, 1C',
             occupation:'ALL',
             man_per_day:'1.170',
-            surcharge_ratio:'120',
+            surcharge_ratio:'120%',
           },
           {
             code:'code5',
@@ -369,7 +407,7 @@ export default {
             type:'6㎥, 1.5 Ton이하',
             occupation:'비계공',
             man_per_day:'2.00',
-            surcharge_ratio:'100',
+            surcharge_ratio:'100%',
           },
           {
             code:'code6',
@@ -378,7 +416,7 @@ export default {
             type:'6㎥, 1.5 Ton이하',
             occupation:'변전전공',
             man_per_day:'4.05',
-            surcharge_ratio:'100',
+            surcharge_ratio:'100%',
           },
           {
             code:'code7',
@@ -387,7 +425,7 @@ export default {
             type:'6㎥, 1.5 Ton이하',
             occupation:'보통인부',
             man_per_day:'3.3',
-            surcharge_ratio:'100',
+            surcharge_ratio:'100%',
           },
           {
             code:'code8',
@@ -396,7 +434,7 @@ export default {
             type:'10㎥이하,3 Ton이하',
             occupation:'비계공',
             man_per_day:'4.00',
-            surcharge_ratio:'100',
+            surcharge_ratio:'100%',
           },
           {
             code:'code9',
@@ -405,7 +443,7 @@ export default {
             type:'10㎥이하,3 Ton이하',
             occupation:'변전전공',
             man_per_day:'7.05',
-            surcharge_ratio:'100',
+            surcharge_ratio:'100%',
           },
           {
             code:'code10',
@@ -414,7 +452,7 @@ export default {
             type:'10㎥이하,3 Ton이하',
             occupation:'보통인부',
             man_per_day:'5.6',
-            surcharge_ratio:'100',
+            surcharge_ratio:'100%',
           },
           {
             code:'code11',
@@ -423,7 +461,7 @@ export default {
             type:'50sq, 3C',
             occupation:'저압 케이블전공',
             man_per_day:'0.043',
-            surcharge_ratio:'200',
+            surcharge_ratio:'200%',
           },
           {
             code:'code12',
@@ -432,7 +470,7 @@ export default {
             type:'단면적 50,000㎟ 이하',
             occupation:'내선전공',
             man_per_day:'0.200',
-            surcharge_ratio:'144',
+            surcharge_ratio:'144%',
           },
           {
             code:'code13',
@@ -441,7 +479,7 @@ export default {
             type:'단면적 30,000㎟ 이하',
             occupation:'내선전공',
             man_per_day:'0.16',
-            surcharge_ratio:'144',
+            surcharge_ratio:'144%',
           },
           {
             code:'code14',
@@ -450,7 +488,7 @@ export default {
             type:'지중 인력견인 포설',
             occupation:'보통인부',
             man_per_day:'1.410',
-            surcharge_ratio:'100',
+            surcharge_ratio:'100%',
           },
       ]
       this.wage_data = [
@@ -518,13 +556,16 @@ export default {
       // this.editedLaborItem = Object.assign({}, item)
       let labor_input = this.registLaborInputs;
       labor_input.forEach(data =>{
-        if(data.column_name == 'name' || data.column_name == 'type' || data.column_name == 'no'){
-          data.disabled = true
-        }
         for(let i=0; i<Object.keys(item).length; i++){
           if(data.column_name == Object.keys(item)[i]){
             data.value = Object.values(item)[i];
           }
+        }
+        if(data.column_name == 'surcharge_ratio'){
+          data.value = Number(data.value.replace('%', ''));
+        }
+        if(data.column_name == 'name' || data.column_name == 'type' || data.column_name == 'no'){
+          data.disabled = true
         }
       })
       this.laborDialog = true
@@ -534,31 +575,28 @@ export default {
     uploadLaborItem () {
       let labor_input = this.registLaborInputs;
       let item = this.editedLaborItem;
-      let no_data = [];
-      labor_input.forEach(data =>{
-        if(!data.value){
-          no_data.push(data.label);
-        }
-        for(let i=0; i<Object.keys(item).length; i++){
-          if(data.column_name == Object.keys(item)[i]){
-            if(data.column_name == 'surcharge_ratio'){
-              item[Object.keys(item)[i]] = data.value * 0.01;
-            } else{
-              item[Object.keys(item)[i]] = data.value;
+
+      const validate = this.$refs.laborForm.validate();
+      if(validate){
+        labor_input.forEach(data =>{
+          for(let i=0; i<Object.keys(item).length; i++){
+            if(data.column_name == Object.keys(item)[i]){
+              if(data.column_name == 'surcharge_ratio'){
+                item[Object.keys(item)[i]] = data.value * 0.01;
+              } else{
+                item[Object.keys(item)[i]] = data.value;
+              }
             }
           }
+        })
+
+        if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
+          this.editedLaborItem.creater = 'user_id';
+          alert('등록이 완료되었습니다.');
+        }else{// 아니라면 수정
+          this.editedLaborItem.modifier = 'user_id';
+          alert('수정이 완료되었습니다.');
         }
-      })
-
-      if(no_data.length > 0){
-        alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
-        return;
-      }
-
-      if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
-        this.editedLaborItem.creater = 'user_id';
-      }else{// 아니라면 수정
-        this.editedLaborItem.modifier = 'user_id';
       }
     },
     editWageItem (item) {
@@ -592,27 +630,22 @@ export default {
     uploadWageItem () {
       let wage_input = this.registWageInputs;
       let item = this.editedWageItem;
-      let no_data = [];
-      wage_input.forEach(data =>{
-        if(!data.value){
-          no_data.push(data.label);
-        }
-        for(let i=0; i<Object.keys(item).length; i++){
-          if(data.column_name == Object.keys(item)[i]){
-            item[Object.keys(item)[i]] = data.value;
+      const validate = this.$refs.wageForm.validate();
+
+      if(validate){
+        wage_input.forEach(data =>{
+          for(let i=0; i<Object.keys(item).length; i++){
+            if(data.column_name == Object.keys(item)[i]){
+              item[Object.keys(item)[i]] = data.value;
+            }
           }
+        })
+
+        if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
+          this.editedLaborItem.creater = 'user_id';
+        }else{// 아니라면 수정
+          this.editedLaborItem.modifier = 'user_id';
         }
-      })
-
-      if(no_data.length > 0){
-        alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
-        return;
-      }
-
-      if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
-        this.editedLaborItem.creater = 'user_id';
-      }else{// 아니라면 수정
-        this.editedLaborItem.modifier = 'user_id';
       }
     },
     // deleteWageItem (item) {
