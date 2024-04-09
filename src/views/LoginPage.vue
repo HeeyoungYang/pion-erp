@@ -242,6 +242,8 @@ export default {
             path:'/api/signin/', user_name:id, password:pw
           }).then(result => {
             console.log('result :>> ', result);
+            const fullName = (result.data.family_name ? result.data.family_name : '') + (result.data.given_name ? result.data.given_name : '');
+            Vue.$cookies.set(this.$configJson.cookies.name, fullName, '1h');
             if (this.checkbox){
               Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');
             }else {

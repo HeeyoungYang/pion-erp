@@ -4,6 +4,7 @@
   
   "cookies": {
     "id": "savedID",
+    "name": "username",
     "RefreshToken": "RefreshToken"
   }
 }
