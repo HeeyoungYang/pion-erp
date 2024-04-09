@@ -3,7 +3,8 @@
     <v-col v-for="(input, index) in inputs"
     :key="input.label ? input.label : index" :cols="input.cols ? (Number(input.cols) > 12 ? '12' : input.cols) : (numInRow ? String(12 / (numInRow > 12 ? 12 : numInRow)) : '')"
     :sm="input.sm ? input.sm : ''"
-    :lg="input.lg ? input.lg : ''">
+    :lg="input.lg ? input.lg : ''"
+    :class="col_class">
       <v-text-field v-if="!input.type || input.type === 'text'"
         v-model="input.value"
         :type="input.text_type"
@@ -134,6 +135,7 @@
  *  {type:'date', value:[], label:'일자', range:true}
  * ]
  * @property {Number} [numInRow] - 한 줄 출력 인풋 개수 여부(default:0)
+ * @property {String} [col_class] - v-col 별 css class
  * @property {Boolean} [dense] - 줄간격 줄임 여부(default:false)
  * @property {Boolean} [hideDetails] - 디테일 숨김 여부(default:false)
  * @property {Boolean} [clearable] - 전역 clearable(default:false)
@@ -146,6 +148,7 @@ export default {
     inputs: Array,
     numInRow: Number,
     cardClass: String,
+    col_class: String,
     dense: Boolean,
     hideDetails: Boolean,
     clearable: Boolean,

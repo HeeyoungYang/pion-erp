@@ -400,53 +400,54 @@
                               </v-col>
                             </v-row>
 
-                            <InputsFormComponent
-                              slot="cardText"
-                              dense
-                              clearable
-                              filled
-                              hide-details
-                              :inputs="registModuleInputs"
-                            >
-                              <v-menu
-                                open-on-hover
-                                :close-on-content-click="false"
-                                :nudge-width="100"
-                                offset-x
-                                v-if="this.registModuleInputs[this.registModuleInputs.length-1].value"
+                            <v-form ref="moduleForm" class="mt-3">
+                              <InputsFormComponent
+                                dense
+                                clearable
+                                filled
+                                col_class="py-0"
+                                :inputs="registModuleInputs"
                               >
-                                <template v-slot:activator="{ on, attrs }">
-                                  <v-col cols="12" sm="1" align-self="center">
-                                    <v-icon
-                                      v-bind="attrs"
-                                      v-on="on"
-                                    >
-                                      mdi-image-multiple-outline
-                                    </v-icon>
-                                  </v-col>
-                                </template>
+                                <v-menu
+                                  open-on-hover
+                                  :close-on-content-click="false"
+                                  :nudge-width="100"
+                                  offset-x
+                                  v-if="this.registModuleInputs[this.registModuleInputs.length-1].value"
+                                >
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-col cols="12" sm="1">
+                                      <v-icon
+                                        v-bind="attrs"
+                                        v-on="on"
+                                      >
+                                        mdi-image-multiple-outline
+                                      </v-icon>
+                                    </v-col>
+                                  </template>
 
-                                <v-card class="pa-0">
-                                  <v-list class="pa-0">
-                                    <v-list-item class="pa-0">
-                                      <v-list-item-content class="pa-3">
-                                        <v-list-item-subtitle>
-                                          제품이미지영역
-                                          <v-img
-                                            alt="Pionelectric Logo"
-                                            class="shrink mr-2"
-                                            contain
-                                            :src="testImg ? testImg : ''"
-                                            transition="scale-transition"
-                                            width="150"
-                                          />
-                                        </v-list-item-subtitle>
-                                      </v-list-item-content>
-                                    </v-list-item>
-                                  </v-list>
-                                </v-card>
-                              </v-menu>
-                            </InputsFormComponent>
+                                  <v-card class="pa-0">
+                                    <v-list class="pa-0">
+                                      <v-list-item class="pa-0">
+                                        <v-list-item-content class="pa-3">
+                                          <v-list-item-subtitle>
+                                            제품이미지영역
+                                            <v-img
+                                              alt="Pionelectric Logo"
+                                              class="shrink mr-2"
+                                              contain
+                                              :src="testImg ? testImg : ''"
+                                              transition="scale-transition"
+                                              width="150"
+                                            />
+                                          </v-list-item-subtitle>
+                                        </v-list-item-content>
+                                      </v-list-item>
+                                    </v-list>
+                                  </v-card>
+                                </v-menu>
+                              </InputsFormComponent>
+                            </v-form>
                             <v-row>
                               <v-col cols="12">
                                 <v-btn color="primary" small @click="set_material_search = true" v-if="!set_material_search">원부자재 선택</v-btn>
@@ -715,53 +716,54 @@
                                     </v-btn>
                                   </v-col>
                                 </v-row>
-                                <InputsFormComponent
-                                  slot="cardText"
-                                  dense
-                                  clearable
-                                  filled
-                                  hide-details
-                                  :inputs="registProductInputs"
-                                >
-                                  <v-menu
-                                    open-on-hover
-                                    :close-on-content-click="false"
-                                    :nudge-width="100"
-                                    offset-x
+                                <v-form ref="productForm" class="mt-3">
+                                  <InputsFormComponent
+                                    dense
+                                    clearable
+                                    filled
+                                    col_class="py-0"
+                                    :inputs="registProductInputs"
                                   >
-                                    <!-- v-if="this.registProductInputs[this.registProductInputs.length-1].value" -->
-                                    <template v-slot:activator="{ on, attrs }">
-                                      <v-col cols="12" sm="1" align-self="center">
-                                        <v-icon
-                                          v-bind="attrs"
-                                          v-on="on"
-                                        >
-                                          mdi-image-multiple-outline
-                                        </v-icon>
-                                      </v-col>
-                                    </template>
+                                    <v-menu
+                                      open-on-hover
+                                      :close-on-content-click="false"
+                                      :nudge-width="100"
+                                      offset-x
+                                    >
+                                      <!-- v-if="this.registProductInputs[this.registProductInputs.length-1].value" -->
+                                      <template v-slot:activator="{ on, attrs }">
+                                        <v-col cols="12" sm="1">
+                                          <v-icon
+                                            v-bind="attrs"
+                                            v-on="on"
+                                          >
+                                            mdi-image-multiple-outline
+                                          </v-icon>
+                                        </v-col>
+                                      </template>
 
-                                    <v-card class="pa-0">
-                                      <v-list class="pa-0">
-                                        <v-list-item class="pa-0">
-                                          <v-list-item-content class="pa-3">
-                                            <v-list-item-subtitle>
-                                              제품이미지영역
-                                              <v-img
-                                                alt="Pionelectric Logo"
-                                                class="shrink mr-2"
-                                                contain
-                                                :src="testImg ? testImg : ''"
-                                                transition="scale-transition"
-                                                width="150"
-                                              />
-                                            </v-list-item-subtitle>
-                                          </v-list-item-content>
-                                        </v-list-item>
-                                      </v-list>
-                                    </v-card>
-                                  </v-menu>
-                                </InputsFormComponent>
+                                      <v-card class="pa-0">
+                                        <v-list class="pa-0">
+                                          <v-list-item class="pa-0">
+                                            <v-list-item-content class="pa-3">
+                                              <v-list-item-subtitle>
+                                                제품이미지영역
+                                                <v-img
+                                                  alt="Pionelectric Logo"
+                                                  class="shrink mr-2"
+                                                  contain
+                                                  :src="testImg ? testImg : ''"
+                                                  transition="scale-transition"
+                                                  width="150"
+                                                />
+                                              </v-list-item-subtitle>
+                                            </v-list-item-content>
+                                          </v-list-item>
+                                        </v-list>
+                                      </v-card>
+                                    </v-menu>
+                                  </InputsFormComponent>
+                                </v-form>
                                 <v-row>
                                   <v-col cols="12">
                                     <v-btn color="primary" small @click="set_material_search = true" v-if="!set_material_search">자재 선택</v-btn>
@@ -986,11 +988,7 @@ export default {
             v => !!v || '자재명 입력',
           ]
         },
-        {label:'모델명', column_name:'model',  col:'12', sm:'6', lg:'6', value: '',
-          rules: [
-            v => !!v || '모델명 입력',
-          ]
-        },
+        {label:'모델명', column_name:'model',  col:'12', sm:'6', lg:'6', value: '',},
         {label:'사양', column_name:'spec', col:'12', sm:'6', lg:'6', value: '',
           rules: [
             v => !!v || '사양 입력',
@@ -1031,26 +1029,61 @@ export default {
         // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
       ],
       registModuleInputs:[
-        {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'3', lg:'3',},
-        {label:'관리코드', column_name:'item_code',  col:'12', sm:'3', lg:'3', value: ''},
-        {label:'자재명', column_name:'name',  col:'12', sm:'3', lg:'3', value: ''},
+        {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'3', lg:'3',
+          rules: [
+            v => !!v || '분류 선택',
+          ]
+        },
+        {label:'관리코드', column_name:'item_code',  col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '관리코드 입력',
+          ]
+        },
+        {label:'자재명', column_name:'name',  col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '자재명 입력',
+          ]
+        },
         {label:'모델명', column_name:'model',  col:'12', sm:'3', lg:'3', value: ''},
-        {label:'사양', column_name:'spec', col:'12', sm:'3', lg:'3', value: ''},
-        {label:'제조사', column_name:'manufacturer', col:'12', sm:'3', lg:'3', value: ''},
-        {label:'재고수량', column_name:'stock_num', col:'12', sm:'3', lg:'3', value: ''},
-        {label:'재고상태', column_name:'condition', type:'auto', col:'12', sm:'3', lg:'3', value:'', list:['G', 'B']},
-        {label:'PE No.', column_name:'pe_number', col:'12', sm:'3', lg:'3', value: ''},
-        {label:'단가', column_name:'unit_price', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'사양', column_name:'spec', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '사양 입력',
+          ]
+        },
+        {label:'제조사', column_name:'manufacturer', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '제조사 입력',
+          ]
+        },
+        {label:'재고수량', text_type:'number', column_name:'stock_num', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '재고수량 입력(숫자)',
+          ]
+        },
+        {label:'재고상태', column_name:'condition', type:'auto', col:'12', sm:'3', lg:'3', value:'', list:['G', 'B'],
+          rules: [
+            v => !!v || '재고상태 선택',
+          ]
+        },
+        {label:'PE No.', column_name:'pe_number', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || 'PE No 입력',
+          ]
+        },
+        {label:'단가', text_type:'number', column_name:'unit_price', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '단가 입력(숫자)',
+          ]
+        },
         {label:'사진', column_name:'photo', type:'file', col:'12', sm:'1', lg:'1', value: '', hide_input:true, icon:'mdi-image-edit',},
       ],
       moduleSearchMaterialInputs:[
-        {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'3'},
-        {label:'관리코드', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'제품명', col:'12', sm:'4', lg:'3', value: ''},
+        {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'3',},
+        {label:'관리코드', col:'12', sm:'4', lg:'3', value: '',},
+        {label:'제품명', col:'12', sm:'4', lg:'3', value: '',},
         {label:'모델명', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'제조사', col:'12', sm:'4', lg:'3', value: ''},
-        // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
+        {label:'사양', col:'12', sm:'4', lg:'3', value: '',},
+        {label:'제조사', col:'12', sm:'4', lg:'3', value: '',},
       ],
       searchProductCardInputs:[
         {label:'제품코드', col:'12', sm:'4', lg:'3', value: ''},
@@ -1058,16 +1091,52 @@ export default {
         {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
       ],
       registProductInputs:[
-        {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'3', lg:'3',},
-        {label:'완제품코드', column_name:'item_code',  col:'12', sm:'3', lg:'3', value: ''},
-        {label:'완제품명', column_name:'name',  col:'12', sm:'3', lg:'3', value: ''},
+        {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'3', lg:'3',
+          rules: [
+            v => !!v || '분류 선택',
+          ]
+        },
+        {label:'완제품코드', column_name:'item_code',  col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '완제품 코드 입력',
+          ]
+        },
+        {label:'완제품명', column_name:'name',  col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '완제품명 입력',
+          ]
+        },
         {label:'모델명', column_name:'model',  col:'12', sm:'3', lg:'3', value: ''},
-        {label:'사양', column_name:'spec', col:'12', sm:'3', lg:'3', value: ''},
-        {label:'제조사', column_name:'manufacturer', col:'12', sm:'3', lg:'3', value: ''},
-        {label:'재고수량', column_name:'stock_num', col:'12', sm:'3', lg:'3', value: ''},
-        {label:'재고상태', column_name:'condition', type:'auto', col:'12', sm:'3', lg:'3', value:'', list:['G', 'B']},
-        {label:'PE No.', column_name:'pe_number', col:'12', sm:'3', lg:'3', value: ''},
-        {label:'단가', column_name:'unit_price', col:'12', sm:'3', lg:'3', value: ''},
+        {label:'사양', column_name:'spec', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '사양 입력',
+          ]
+        },
+        {label:'제조사', column_name:'manufacturer', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '제조사 입력',
+          ]
+        },
+        {label:'재고수량', text_type:'number', column_name:'stock_num', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '재고수량 입력(숫자)',
+          ]
+        },
+        {label:'재고상태', column_name:'condition', type:'auto', col:'12', sm:'3', lg:'3', value:'', list:['G', 'B'],
+          rules: [
+            v => !!v || '재고 상태 선택',
+          ]
+        },
+        {label:'PE No.', column_name:'pe_number', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || 'PE No 입력',
+          ]
+        },
+        {label:'단가', text_type:'number', column_name:'unit_price', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '단가 입력(숫자)',
+          ]
+        },
         {label:'사진', column_name:'photo', type:'file', col:'12', sm:'1', lg:'1', value: '', hide_input:true, icon:'mdi-image-edit',},
       ],
       productSearchMaterialModuleInputs:[
@@ -2020,8 +2089,10 @@ export default {
         this.editRegistMaterial.type = '원부자재'
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
           this.editRegistMaterial.creater = 'user_id';
+          alert('원부자재 등록이 완료되었습니다');
         }else{// 아니라면 수정
           this.editRegistMaterial.modifier = 'user_id';
+          alert('원부자재 수정이 완료되었습니다');
         }
       }
 
@@ -2084,34 +2155,30 @@ export default {
       // 수정, 등록 둘 다 editRegistModule에 요청, editedIndex에 따라 구분
       let module_input = this.registModuleInputs;
       let item = this.editRegistModule;
-      let no_data=[];
-      module_input.forEach(data =>{
-        if(data.label !== '사진' && !data.value){
-          no_data.push(data.label);
-        }
-        for(let i=0; i<Object.keys(item).length; i++){
-          if(data.column_name == Object.keys(item)[i]){
-            item[Object.keys(item)[i]] = data.value;
+      const validate = this.$refs.moduleForm.validate();
+      if(validate){
+        module_input.forEach(data =>{
+          for(let i=0; i<Object.keys(item).length; i++){
+            if(data.column_name == Object.keys(item)[i]){
+              item[Object.keys(item)[i]] = data.value;
+            }
           }
+        })
+        this.module_set_material_data.forEach(material =>{
+          item.belong_data.push({material_code: material.item_code, material_num: material.item_num});
+        })
+
+        this.editRegistModule.type = '반제품'
+        if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
+          this.editRegistModule.creater = 'user_id';
+          alert('반제품 등록이 완료되었습니다');
+        }else{// 아니라면 수정
+          this.editRegistModule.modifier = 'user_id';
+          alert('반제품 수정이 완료되었습니다');
         }
-      })
 
-      if(no_data.length > 0){
-        alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
-        return;
+        console.log('반제품 데이터 : ' + JSON.stringify(this.editRegistModule));
       }
-      this.module_set_material_data.forEach(material =>{
-        item.belong_data.push({material_code: material.item_code, material_num: material.item_num});
-      })
-
-      this.editRegistModule.type = '반제품'
-      if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
-        this.editRegistModule.creater = 'user_id';
-      }else{// 아니라면 수정
-        this.editRegistModule.modifier = 'user_id';
-      }
-
-      console.log('반제품 데이터 : ' + JSON.stringify(this.editRegistModule));
     },
 
     registProductItem(){
@@ -2156,38 +2223,38 @@ export default {
       // 수정, 등록 둘 다 editRegistProduct에 요청, editedIndex에 따라 구분
       let product_input = this.registProductInputs;
       let item = this.editRegistProduct;
-      let no_data=[];
-      product_input.forEach(data =>{
-        if(data.label !== '사진' && !data.value){
-          no_data.push(data.label);
-        }
-        for(let i=0; i<Object.keys(item).length; i++){
-          if(data.column_name == Object.keys(item)[i]){
-            item[Object.keys(item)[i]] = data.value;
+
+      const validate = this.$refs.productForm.validate();
+      if(validate){
+        product_input.forEach(data =>{
+          for(let i=0; i<Object.keys(item).length; i++){
+            if(data.column_name == Object.keys(item)[i]){
+              item[Object.keys(item)[i]] = data.value;
+            }
           }
+        })
+
+        this.product_set_items_data.forEach(items =>{
+          if(items.type == '원부자재'){
+            item.belong_data.push({type:items.type, material_code: items.item_code, material_num: items.item_num});
+          }else if(items.type == '반제품'){
+            item.belong_data.push({type:items.type, module_code: items.item_code, module_num: items.item_num});
+          }
+        })
+
+        this.editRegistProduct.type = '완제품'
+        if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
+          this.editRegistProduct.creater = 'user_id';
+          alert('완제품 등록이 완료되었습니다');
+
+        }else{// 아니라면 수정
+          this.editRegistProduct.modifier = 'user_id';
+          alert('완제품 수정이 완료되었습니다');
+
         }
-      })
 
-      if(no_data.length > 0){
-        alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
-        return;
+        console.log('완제품 데이터 : ' + JSON.stringify(this.editRegistProduct));
       }
-      this.product_set_items_data.forEach(items =>{
-        if(items.type == '원부자재'){
-          item.belong_data.push({type:items.type, material_code: items.item_code, material_num: items.item_num});
-        }else if(items.type == '반제품'){
-          item.belong_data.push({type:items.type, module_code: items.item_code, module_num: items.item_num});
-        }
-      })
-
-      this.editRegistProduct.type = '반제품'
-      if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
-        this.editRegistProduct.creater = 'user_id';
-      }else{// 아니라면 수정
-        this.editRegistProduct.modifier = 'user_id';
-      }
-
-      console.log('완제품 데이터 : ' + JSON.stringify(this.editRegistProduct));
     },
 
     deleteBelongItem(idx){
