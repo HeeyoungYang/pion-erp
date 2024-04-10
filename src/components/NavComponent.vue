@@ -10,7 +10,6 @@
         dense
         nav
       >
-      <!-- 1차 메뉴형 -->
       <!-- ▼ 캘린더 -->
       <!-- <v-list-item
         link
@@ -23,7 +22,6 @@
         <v-list-item-title>일정관리</v-list-item-title>
       </v-list-item> -->
 
-      <!-- 2차 메뉴형 -->
         <v-list-group
           :value="productMenu"
           prepend-icon="mdi-archive-search"
@@ -98,7 +96,66 @@
             </v-list-item>
           </v-list-group>
         </v-list-group>
+        <v-list-group
+          :value="productMenu"
+          prepend-icon="mdi-clipboard-text"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>영업관리</v-list-item-title>
+          </template>
 
+          <v-list-group
+            no-action
+            sub-group
+            :value="inboundMenu"
+          >
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title>견적 / 입찰</v-list-item-title>
+              </v-list-item-content>
+            </template>
+
+            <v-list-item
+              v-for="([title, icon, to], i) in estimatePages"
+              :key="i"
+              link
+              :to="to"
+              class="pl-6 grey lighten-3 ml-6"
+            >
+              <v-list-item-title v-text="title"></v-list-item-title>
+
+              <v-list-item-icon>
+                <v-icon v-text="icon"></v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-group>
+
+          <v-list-group
+            no-action
+            sub-group
+            :value="shipMenu"
+          >
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title>수주</v-list-item-title>
+              </v-list-item-content>
+            </template>
+
+            <v-list-item
+              v-for="([title, icon, to], i) in obtainOrderPages"
+              :key="i"
+              link
+              :to="to"
+              class="pl-6 grey lighten-3 ml-6"
+            >
+              <v-list-item-title v-text="title"></v-list-item-title>
+
+              <v-list-item-icon>
+                <v-icon v-text="icon"></v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-group>
+        </v-list-group>
 
         <!-- <v-list-group
           :value="estimateMenu"
@@ -256,9 +313,17 @@
       ],
 
       estimatePages: [
-        ['견적 작성', '', '/home'],
-        ['견적 조회', '', '/estimate-search'],
+        ['견적서', '', '/home'],
+        ['견적서 현황', '', '/home'],
       ],
+      obtainOrderPages: [
+        ['수주서', '', '/home'],
+        ['수주서 현황', '', '/home'],
+      ],
+      // estimatePages: [
+      //   ['견적 작성', '', '/home'],
+      //   ['견적 조회', '', '/estimate-search'],
+      // ],
 
       backDataPages: [
         ['재고 정보', '', '/product-backdata'],
