@@ -72,6 +72,7 @@
                     class="ma-2"
                     color="indigo"
                     text-color="white"
+                    small
                   >
                     총 재고 : {{ total_stock_num }}
                   </v-chip>
@@ -79,6 +80,7 @@
                     class="ma-2"
                     color="indigo"
                     text-color="white"
+                    small
                   >
                     총 금액 : {{ total_stock_price }}
                   </v-chip>
@@ -137,6 +139,7 @@ export default {
         { text: '종류', align: 'center', value: 'type', },
         { text: '분류', align: 'center', value: 'classification', },
         { text: '관리코드', align: 'center', value: '_code', },
+        { text: '위치', align: 'center', value: 'spot', },
         { text: '제품명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },

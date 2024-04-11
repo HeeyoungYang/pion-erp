@@ -72,6 +72,7 @@
                     class="ma-2"
                     color="indigo"
                     text-color="white"
+                    small
                   >
                     총 재고 : {{ total_stock_num }}
                   </v-chip>
@@ -79,6 +80,7 @@
                     class="ma-2"
                     color="indigo"
                     text-color="white"
+                    small
                   >
                     총 금액 : {{ total_stock_price }}
                   </v-chip>
@@ -139,6 +141,7 @@ export default {
         { text: '', align: 'center', value: '', },
         { text: '분류', align: 'center', value: 'classification', },
         { text: '관리코드', align: 'center', value: 'module_code', },
+        { text: '위치', align: 'center', value: 'spot', },
         { text: '제품명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
@@ -155,7 +158,8 @@ export default {
       product_data: [
       {
         classification: 'GFM',
-        module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01',
+        module_code: 'P-ESS-01',
+        spot:'공장동 1층',
         name: 'PCS Ass`Y',
         model: '',
         spec: '',
@@ -170,7 +174,8 @@ export default {
         belong_data:[
           {
             classification: 'GFM',
-            module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-01',
+            module_code: 'P-IGBT-01',
+            spot:'',
             name: 'IGBT & SMPS',
             model: '',
             spec: '',
@@ -186,6 +191,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-04',
+            spot:'',
             name: 'SPD, 퓨즈',
             model: '',
             spec: '',
@@ -201,6 +207,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-05',
+            spot:'',
             name: '쿨링팬',
             model: '',
             spec: '',
@@ -216,6 +223,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-06',
+            spot:'',
             name: '보호회로',
             model: '',
             spec: '',
@@ -231,6 +239,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-07',
+            spot:'',
             name: '리액터',
             model: '',
             spec: '',
@@ -246,6 +255,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-08',
+            spot:'',
             name: 'MCCB',
             model: '',
             spec: '',
@@ -261,6 +271,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-09',
+            spot:'',
             name: 'EMC',
             model: '',
             spec: '',
@@ -276,6 +287,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-10',
+            spot:'',
             name: 'DC Capacitor',
             model: '',
             spec: '',
@@ -291,6 +303,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-11',
+            spot:'',
             name: '외함 및 기구',
             model: '',
             spec: '',
@@ -308,6 +321,7 @@ export default {
       {
         classification: 'GFM',
         module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02',
+        spot:'공장동 2층',
         name: '제어기 Ass`Y',
         model: '',
         spec: '',
@@ -324,6 +338,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-01',
+            spot:'',
             name: '제어기(LK11)',
             model: '',
             spec: '',
@@ -339,6 +354,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-02',
+            spot:'',
             name: '인터페이스보드',
             model: '',
             spec: '',
@@ -354,6 +370,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-03',
+            spot:'',
             name: 'SMPS(15VDC)',
             model: '',
             spec: '',
@@ -369,6 +386,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-04',
+            spot:'',
             name: 'SMPS Bracket',
             model: '',
             spec: '',
@@ -384,6 +402,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-05',
+            spot:'',
             name: 'HMI PC',
             model: '',
             spec: '',
@@ -399,6 +418,7 @@ export default {
           {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-06',
+            spot:'',
             name: 'PLC',
             model: '',
             spec: '',
@@ -415,6 +435,7 @@ export default {
             classification: 'GFM',
             module_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-07',
             name: '통신케이블',
+            spot:'',
             model: '',
             spec: '',
             manufacturer: '파이온일렉트릭',

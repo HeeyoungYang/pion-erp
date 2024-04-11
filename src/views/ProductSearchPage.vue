@@ -103,6 +103,16 @@
                   <v-col
                     cols="12"
                   >
+                  <v-chip
+                    class="ma-2"
+                    color="indigo"
+                    text-color="white"
+                    small
+                    v-for="(spot_stock, idx) in data.spot_stock"
+                    :key="idx"
+                  >
+                    {{ spot_stock.spot }} : {{ spot_stock.stock_num }}개
+                  </v-chip>
                   <DataTableComponent
                       :headers="headers"
                       :items="data.belong_data"
@@ -170,11 +180,15 @@ export default {
           product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
           name: 'ESS GFM용 PCS',
           spec: '380VAC 500kW',
-          id:'380vac_500kW',
           button_toggle:true,
+          spot_stock: [
+            {spot:'공장동 2층', stock_num:'4'},
+            {spot:'공장동 1층', stock_num:'2'},
+          ],
           belong_data: [
             {
               product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01',
+
               module_material_name: 'PCS Ass`Y',
               model: '',
               spec: '',
@@ -189,6 +203,7 @@ export default {
               belong_data:[
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-01',
+
                   module_material_name: 'IGBT & SMPS',
                   model: '',
                   spec: '',
@@ -203,6 +218,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-04',
+
                   module_material_name: 'SPD, 퓨즈',
                   model: '',
                   spec: '',
@@ -217,6 +233,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-05',
+
                   module_material_name: '쿨링팬',
                   model: '',
                   spec: '',
@@ -231,6 +248,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-06',
+
                   module_material_name: '보호회로',
                   model: '',
                   spec: '',
@@ -245,6 +263,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-07',
+
                   module_material_name: '리액터',
                   model: '',
                   spec: '',
@@ -259,6 +278,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-08',
+
                   module_material_name: 'MCCB',
                   model: '',
                   spec: '',
@@ -273,6 +293,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-09',
+
                   module_material_name: 'EMC',
                   model: '',
                   spec: '',
@@ -287,6 +308,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-10',
+
                   module_material_name: 'DC Capacitor',
                   model: '',
                   spec: '',
@@ -301,6 +323,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-01-11',
+
                   module_material_name: '외함 및 기구',
                   model: '',
                   spec: '',
@@ -317,6 +340,7 @@ export default {
             },
             {
               product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02',
+
               module_material_name: '제어기 Ass`Y',
               model: '',
               spec: '',
@@ -332,6 +356,7 @@ export default {
               [
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-01',
+
                   module_material_name: '제어기(LK11)',
                   model: '',
                   spec: '',
@@ -346,6 +371,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-02',
+
                   module_material_name: '인터페이스보드',
                   model: '',
                   spec: '',
@@ -360,6 +386,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-03',
+
                   module_material_name: 'SMPS(15VDC)',
                   model: '',
                   spec: '',
@@ -374,6 +401,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-04',
+
                   module_material_name: 'SMPS Bracket',
                   model: '',
                   spec: '',
@@ -388,6 +416,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-05',
+
                   module_material_name: 'HMI PC',
                   model: '',
                   spec: '',
@@ -402,6 +431,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-06',
+
                   module_material_name: 'PLC',
                   model: '',
                   spec: '',
@@ -416,6 +446,7 @@ export default {
                 },
                 {
                   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1-02-07',
+
                   module_material_name: '통신케이블',
                   model: '',
                   spec: '',
