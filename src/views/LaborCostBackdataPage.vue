@@ -70,6 +70,8 @@
                   dense
                   @edit="editLaborItem"
                   @delete="deleteItem"
+                  hide-default-footer
+                  disable-pagination
                 >
                 </DataTableComponent>
                 <ModalDialogComponent
@@ -131,40 +133,6 @@
                               :inputs="registWageInputs"
                             ></InputsFormComponent>
                           </v-form>
-                          <!-- <v-row>
-                            <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
-                            >
-                              <v-text-field
-                                v-model="editedWageItem.occupation"
-                                label="직종"
-                              ></v-text-field>
-                            </v-col>
-                            <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
-                            >
-                              <v-text-field
-                                v-model="editedWageItem.unit_price"
-                                label="단가"
-                                type="number"
-                              ></v-text-field>
-                            </v-col>
-                            <v-col
-                              cols="12"
-                              sm="6"
-                              md="4"
-                            >
-                              <v-text-field
-                                v-model="editedWageItem.adjustment_ratio"
-                                label="설계 조정율"
-                                type="number"
-                              ></v-text-field>
-                            </v-col>
-                          </v-row> -->
                         </v-container>
                       </ModalDialogComponent>
                     </v-col>
@@ -177,26 +145,67 @@
                   editable
                   deletable
                   dense
+                  hide-default-footer
+                  disable-pagination
                   @edit="editWageItem"
                   @delete="deleteItem"
                 >
                 </DataTableComponent>
-                <!-- <ModalDialogComponent
-                  :dialog-value="wageDialogDelete"
-                  max-width="300px"
-                  title-class="text-body-1 font-weight-black"
-                  text-class="text-body-2"
-                  save-text="삭제"
-                  close-text="취소"
-                  @save="deleteItemConfirm"
-                  @close="closeDelete"
+              </v-card>
+            </v-tab-item>
+
+            <!-- ▼ 산출비율 정보 -->
+            <v-tab-item>
+              <v-card elevation="1">
+                <v-card-text>
+                  <v-row>
+                    <v-col cols="12">
+                      <p class="float-left text-h6 font-weight-black mb-0">
+                        <v-text-field
+                          v-model="search_ratio"
+                          append-icon="mdi-magnify"
+                          label="Search"
+                          dense
+                          single-line
+                          hide-details
+                        ></v-text-field>
+                      </p>
+                      <ModalDialogComponent
+                        :dialog-value="ratioDialog"
+                        max-width="600px"
+                        :title="formRatioTitle"
+                        closeText="취소"
+                        saveText="저장"
+                        :persistent="true"
+                        @close="close"
+                        @save="uploadRatioItem"
+                      >
+                        <!-- <template v-slot:activator>
+                          <v-btn color="primary" outlined class="mb-2 float-right" @click="registRatioItem">정보 추가</v-btn>
+                        </template> -->
+                        <v-container>
+                          <v-form ref="ratioForm">
+                            <InputsFormComponent
+                              :inputs="registRatioInputs"
+                            ></InputsFormComponent>
+                          </v-form>
+                          <p class="error--text">※ 백분율일 경우 '%' 기호 필수 입력(ex. 0.12%)</p>
+                        </v-container>
+                      </ModalDialogComponent>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+                <DataTableComponent
+                  :headers="ratio_headers"
+                  :items="ratio_data"
+                  :search="search_ratio"
+                  editable
+                  dense
+                  hide-default-footer
+                  disable-pagination
+                  @edit="editRatioItem"
                 >
-                  <template v-slot:titleHTML>
-                    <p class="mb-0">{{ editedWageItem.occupation }}</p>
-                    <p class="red--text">삭제하시겠습니까?</p>
-                  </template>
-                  삭제된 시 복구 불가능합니다.
-                </ModalDialogComponent> -->
+                </DataTableComponent>
               </v-card>
             </v-tab-item>
           </v-tabs-items>
@@ -222,12 +231,14 @@ export default {
   data() {
     return {
       tab_main: null,
-      tab_items:['노무비 산출 정보', '시중노임단가 정보'],
+      tab_items:['노무비 산출 정보', '시중노임단가 정보', '산출비율 정보'],
       search_labor: '',
       search_wage: '',
+      search_ratio: '',
       laborDialog: false,
       DialogDelete: false,
       wageDialog: false,
+      ratioDialog: false,
       // wageDialogDelete: false,
       occupation_list:[],
       registLaborInputs:[
@@ -279,6 +290,15 @@ export default {
           ]
         },
       ],
+      registRatioInputs:[
+        {label:'종류', column_name:'type', value:'', col:'12', sm:'12', lg:'12',},
+        {label:'', column_name:'formula1', col:'12', sm:'6', lg:'6', value: '', suffix: 'X',},
+        {label:'', column_name:'formula2', col:'12', sm:'3', lg:'3', value: '', suffix: '',
+          rules: [
+            v => !!v || '백분율(%) 혹은 숫자 입력',
+          ]
+        },
+      ],
       labor_headers: [
         { text: '품번', align: 'center', value: 'no'},
         { text: '공종', align: 'center', value: 'name', },
@@ -292,8 +312,13 @@ export default {
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '설계 조정률', align: 'center', value: 'adjustment_ratio', },
       ],
+      ratio_headers: [
+        { text: '종류', align: 'center', value: 'type'},
+        { text: '계산식', align: 'center', value: 'formula', },
+      ],
       labor_data: [],
       wage_data: [],
+      ratio_data: [],
       editedLaborIndex: -1,
       editedLaborItem: {
         code:'',
@@ -323,6 +348,17 @@ export default {
         unit_price: '',
         adjustment_ratio: '',
       },
+      editedRatioIndex: -1,
+      editedRatioItem: {
+        type:'',
+        formula: '',
+        ratio: '',
+      },
+      defaultRatioItem: {
+        type:'',
+        formula: '',
+        ratio: '',
+      },
       deleteDataList:{},
     }
   },
@@ -340,6 +376,12 @@ export default {
     formWageDisabled () {
       return this.editedWageIndex === -1 ? false : true
     },
+    formRatioTitle () {
+      return this.editedRatioIndex === -1 ? '정보 등록' : '정보 수정'
+    },
+    formRatioDisabled () {
+      return this.editedRatioIndex === -1 ? false : true
+    },
   },
 
   watch: {
@@ -350,6 +392,9 @@ export default {
       val || this.closeDelete()
     },
     wageDialog (val) {
+      val || this.close()
+    },
+    ratioDialog (val) {
       val || this.close()
     },
     // wageDialogDelete (val) {
@@ -523,6 +568,56 @@ export default {
             adjustment_ratio: '1.0000',
           },
       ]
+      this.ratio_data = [
+          {
+            type:'간접 노무비',
+            formula:'직접노무비X12.2%'
+          },
+          {
+            type:'고용보험료',
+            formula:'노무비X1.01%'
+          },
+          {
+            type:'공구손료',
+            formula:'직접노무비X3%'
+          },
+          {
+            type:'여비교통 통신비',
+            formula:'노무비X0.418%'
+          },
+          {
+            type:'산재보험료',
+            formula:'노무비X3.7%'
+          },
+          {
+            type:'세금과공과',
+            formula:'노무비X0.13%'
+          },
+          {
+            type:'복리후생비',
+            formula:'노무비X2.397%'
+          },
+          {
+            type:'퇴직공제 부금비',
+            formula:'직접노무비X2.3%'
+          },
+          {
+            type:'소모품비',
+            formula:'노무비X1.479%'
+          },
+          {
+            type:'산업안전보건관리비',
+            formula:'직접노무비X1.85%X1.2'
+          },
+          {
+            type:'일반관리비',
+            formula:'(재료비+노무비+경비)X6%'
+          },
+          {
+            type:'이윤',
+            formula:'(노무비+경비+일반관리비)X15%'
+          },
+      ]
 
       this.occupation_list.push('All');
       for(let d=0; d<this.wage_data.length; d++){
@@ -649,6 +744,79 @@ export default {
       }
     },
 
+    editRatioItem (item) {
+      this.editedRatioIndex = this.ratio_data.indexOf(item)
+      let ratio_input = this.registRatioInputs;
+      let split_formula = item.formula.split('X');
+      item.formula1 = split_formula[0]
+      item.formula2 = split_formula[1]
+      item.formula3 = split_formula[2]
+
+      if(split_formula.length == 3){
+        ratio_input.push({label:'', column_name:'formula3', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '백분율(%) 혹은 숫자 입력',
+          ]
+        })
+        ratio_input[2].suffix = 'X';
+        ratio_input[2].sm = '3';
+        ratio_input[2].lg = '3';
+      }else{
+        ratio_input.splice(3, 1)
+        ratio_input[2].suffix = '';
+        ratio_input[2].sm = '6';
+        ratio_input[2].lg = '6';
+      }
+      ratio_input.forEach(data =>{
+        if(data.column_name == 'type' || data.column_name == 'formula1'){
+          data.disabled = true
+        }
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            data.value = Object.values(item)[i];
+          }
+        }
+      })
+      this.ratioDialog = true
+    },
+    uploadRatioItem () {
+      let ratio_input = this.registRatioInputs;
+      let item = this.editedRatioItem;
+      const validate = this.$refs.ratioForm.validate();
+      let formula;
+      if(validate){
+        ratio_input.forEach(data =>{
+          if(data.column_name == 'type'){
+            item.type = data.value;
+          }else if(data.column_name == 'formula1'){
+            formula = data.value;
+          }else if(data.column_name == 'formula2' || data.column_name == 'formula3'){
+            formula = formula+'X'+data.value;
+          }
+        })
+
+        let split_formula = formula.split('X');
+        for(let i=1; i<split_formula.length; i++){
+          let percent = split_formula[i].indexOf('%')
+          if(percent > -1){
+            let replace_percent = split_formula[i].replace('%', '');
+            let change_percent = Math.round((replace_percent * 0.01) * 10000000) / 10000000;
+            split_formula.splice(i, 1, change_percent);
+          }
+        }
+        
+        if(split_formula.length == 2){
+          item.ratio = split_formula[1]
+        }else{
+          item.ratio =  Math.round((split_formula[1] * split_formula[2]) * 10000000) / 10000000;
+        }
+
+        item.formula = formula;
+        item.modifier = 'user_id';
+        console.log('수정된 정보 : ' + JSON.stringify(item));
+      }
+    },
+
     deleteItem (item) {
       if(this.tab_main == 0){
         this.editedLaborIndex = this.labor_data.indexOf(item)
@@ -682,11 +850,14 @@ export default {
     close () {
       this.laborDialog = false
       this.wageDialog = false
+      this.ratioDialog = false
       this.$nextTick(() => {
         this.editedLaborItem = Object.assign({}, this.defaultLaborItem)
         this.editedLaborIndex = -1
         this.editedWageItem = Object.assign({}, this.defaultWageItem)
         this.editedWageIndex = -1
+        this.editedRatioItem = Object.assign({}, this.defaultRatioItem)
+        this.editedRatioIndex = -1
       })
     },
 
