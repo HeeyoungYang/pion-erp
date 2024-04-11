@@ -328,6 +328,7 @@
       backDataPages: [
         ['재고 정보', '', '/product-backdata'],
         ['노무비 정보', '', '/labor-cost-backdata'],
+        ['기본 정보', '', '/basic-info-backdata'],
       ],
 
       adminPages: [

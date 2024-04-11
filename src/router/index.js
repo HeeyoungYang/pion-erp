@@ -16,6 +16,7 @@ import ShipRegisterPage from '@/views/ShipRegisterPage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
 import ProductBackdataPage from '@/views/ProductBackdataPage'
 import LaborCostBackdataPage from '@/views/LaborCostBackdataPage'
+import BasicInfoBackdataPage from '@/views/BasicInfoBackdataPage'
 import MyPage from '@/views/MyPage'
 import CalendarPage from '@/views/CalendarPage'
 import Vue2Editor from "vue2-editor"
@@ -137,6 +138,14 @@ const routes = [
     }
   },
   {
+    path: '/basic-info-backdata',
+    name: 'BasicInfoBackdataPage',
+    component: BasicInfoBackdataPage,
+    meta: {
+      permission: ['manager', 'admin', 'master']
+    }
+  },
+  {
     path: '/member-list',
     name: 'MembersPage',
     component: MembersPage,
@@ -221,7 +230,7 @@ const router = new VueRouter({
 //       return next();
 //     }
 //   }
- 
+
 //   // 권한 없을 경우 홈 화면으로 보냄
 //   alert('페이지 권한이 없습니다.');
 //   return next({ name: 'MainPage' });
