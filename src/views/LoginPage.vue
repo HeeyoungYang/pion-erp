@@ -239,7 +239,7 @@ export default {
       // if (process.env.NODE_ENV === 'production'){
 
           mux.Server.post({
-            path:'/api/signin/', user_name:id, password:pw
+            path:'/api/user/login/', user_name:id, password:pw
           }).then(result => {
             console.log('result :>> ', result);
             const fullName = (result.data.family_name ? result.data.family_name : '') + (result.data.given_name ? result.data.given_name : '');
@@ -251,7 +251,7 @@ export default {
             }
             mux.Server.move({path:'/home'});
           }).catch(err => {
-            console.error('err :>> ', err);
+            console.error('err :>>>>> ', err);
             switch (err.message) {
               case 'password':
                 alert('비밀번호 오류');
