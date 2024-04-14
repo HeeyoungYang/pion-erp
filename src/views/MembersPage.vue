@@ -97,6 +97,7 @@ import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
+import MemberPageConfig from "@/configure/MemberPageConfig.json";
 
 export default {
   components: {
@@ -150,17 +151,7 @@ export default {
           v => !!(v &&  /^\d{3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
         ]},
       ],
-      headers: [
-        {text: 'ID', align: 'center', value: 'user_id'},
-        {text: '이름', align: 'center', value: 'name'},
-        {text: '부서', align: 'center', value: 'department'},
-        {text: '직책', align: 'center', value: 'position'},
-        {text: '전화번호', align: 'center', value: 'phone'},
-        {text: '내선', align: 'center', value: 'extension'},
-        {text: '이메일', align: 'center', value: 'email'},
-        {text: '모바일', align: 'center', value: 'mobile'},
-        // { text: '편집', value: 'actions', sortable: false },
-      ],
+      headers: [],
       members: [],
       editedIndex: -1,
       editedItem: {
@@ -211,28 +202,9 @@ export default {
 
   methods: {
     initialize () {
-      this.members = [
-        {
-          user_id: 'yjs',
-          name: '윤준수',
-          department: '기획관리',
-          position: '매니저',
-          phone: '070-1234-1234',
-          extension: '123',
-          email: 'yjs@pionelectric.com',
-          mobile: '010-1234-5678',
-        },
-        {
-          user_id: 'kcs',
-          name: '김철수',
-          department: '영업팀',
-          position: '대리',
-          phone: '070-5678-5678',
-          extension: '456',
-          email: 'kcs@pionelectric.com',
-          mobile: '010-5678-1234',
-        },
-      ]
+      this.headers = MemberPageConfig.table_header;
+      console.log("MemberPageConfig.table_header=", MemberPageConfig.table_header);
+      this.members = MemberPageConfig.test_members;
     },
     registItem(item){
       this.editedIndex = this.members.indexOf(item)
