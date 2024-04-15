@@ -325,10 +325,10 @@
                             <td align="center">{{ Math.round(item.surcharge_ratio * 100) }}%</td>
                             <td align="center">{{ item.adjustment_ratio }}</td>
                             <td align="center">{{ item.man_per_hour }}</td>
-                            <td align="center">{{ item.unit_price }}</td>
-                            <td align="center">{{ item.quantity }}</td>
-                            <td align="center">{{  item.total_amount ? item.total_amount : (item.man_per_hour * item.quantity * item.unit_price).toFixed(0) }}</td>
-                            <td align="center" :class="calcRowSpan(item.name, index) == 0? 'd-none' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? item.no_total_amount : calcNoTotalAmount(item.name) }}</td>
+                            <td align="center">{{ mux.Number.withComma(item.unit_price) }}</td>
+                            <td align="center">{{ mux.Number.withComma(item.quantity) }}</td>
+                            <td align="center">{{  item.total_amount ? mux.Number.withComma(item.total_amount) : mux.Number.withComma((item.man_per_hour * item.quantity * item.unit_price).toFixed(0)) }}</td>
+                            <td align="center" :class="calcRowSpan(item.name, index) == 0? 'd-none' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? mux.Number.withComma(item.no_total_amount) : mux.Number.withComma(calcNoTotalAmount(item.name)) }}</td>
                           </tr>
                         </template>
                       </v-data-table>
@@ -432,7 +432,7 @@
 
       <!-- 노무비 산출 출력 화면 -->
       <div ref="calcLaborCard" style="background-color: white;" v-show="print_labor_table" id="print_labor_cost">
-        <p class="text-h5 font-weight-black black--text mb-5">ESS GFM용 PCS (380VAC 500kW) 노무비 산출</p>
+        <p class="text-h5 font-weight-black black--text mb-5">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 노무비 산출</p>
           <v-data-table
             dense
             :headers="labor_cost_headers"
@@ -451,10 +451,10 @@
                 <td align="center">{{ Math.round(item.surcharge_ratio * 100) }}%</td>
                 <td align="center">{{ item.adjustment_ratio }}</td>
                 <td align="center">{{ item.man_per_hour }}</td>
-                <td align="center">{{ item.unit_price }}</td>
-                <td align="center">{{ item.quantity }}</td>
-                <td align="center">{{  item.total_amount ? item.total_amount : (item.man_per_hour * item.quantity * item.unit_price).toFixed(0) }}</td>
-                <td align="center" :class="calcRowSpan(item.name, index) == 0? 'print_labor_cost_dnone' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? item.no_total_amount : calcNoTotalAmount(item.name) }}</td>
+                <td align="center">{{ mux.Number.withComma(item.unit_price) }}</td>
+                <td align="center">{{ mux.Number.withComma(item.quantity) }}</td>
+                <td align="center">{{  item.total_amount ? mux.Number.withComma(item.total_amount) : mux.Number.withComma((item.man_per_hour * item.quantity * item.unit_price).toFixed(0)) }}</td>
+                <td align="center" :class="calcRowSpan(item.name, index) == 0? 'print_labor_cost_dnone' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? mux.Number.withComma(item.no_total_amount) : mux.Number.withComma(calcNoTotalAmount(item.name)) }}</td>
               </tr>
             </template>
           </v-data-table>
@@ -631,12 +631,32 @@
               >
                 <template v-slot:item="{ item, index }">
                   <tr>
-                    <td align="center">{{ item.no }}</td>
-                    <td align="center">{{ item.name }}</td>
-                    <td align="center">{{ item.type }}</td>
+                    <td align="center">{{ tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).no : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).no : '') }}</td>
                     <td align="center">
                       <v-select
-                        :items="labor_occupation_list"
+                        :items="tab_main === 0 ? labor_data.map(x=> x.name) : labor_list.map(x=> x.name)"
+                        filled
+                        dense
+                        hide-details
+                        v-model="item.name"
+                        label=""
+                        style="max-width:160px; font-size:0.775rem!important"
+                      ></v-select>
+                    </td>
+                    <td align="center">
+                      <v-select
+                        :items="tab_main === 0 ? labor_data.map(x=> {if(x.name == item.name){return x.type;}}) : labor_list.map(x=> {if(x.name == item.name){return x.type;}})"
+                        filled
+                        dense
+                        hide-details
+                        v-model="item.type"
+                        label=""
+                        style="max-width:160px; font-size:0.775rem!important"
+                      ></v-select>
+                    </td>
+                    <td align="center">
+                      <v-select
+                        :items="tab_main === 0 ? (labor_data.map(x=> {if(x.name == item.name && x.type == item.type){return x.occupation;}}).includes('ALL') ? labor_occupation_data.map(x => x.name) : labor_data.map(x=> {if(x.name == item.name && x.type == item.type){return x.occupation;}})) : (labor_list.map(x=> {if(x.name == item.name && x.type == item.type){return x.occupation;}}).includes('ALL') ? labor_occupation_list.map(x => x.name) : labor_list.map(x=> {if(x.name == item.name && x.type == item.type){return x.occupation;}}))"
                         filled
                         dense
                         hide-details
@@ -646,11 +666,25 @@
                         @change="selectOccupationFunc(item, item.occupation, index)"
                       ></v-select>
                     </td>
-                    <td align="center">{{ item.man_per_day }}</td>
-                    <td align="center">{{ item.surcharge_ratio }}</td>
-                    <td align="center">{{ item.adjustment_ratio }}</td>
-                    <td align="center">{{ item.man_per_hour }}</td>
-                    <td align="center">{{ item.unit_price }}</td>
+                    <!-- man_per_day -->
+                    <td align="center">{{ tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '') }}</td>
+                    <!-- surcharge_ratio -->
+                    <td align="center">{{ tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '') }}</td>
+                    <!-- adjustment_ratio -->
+                    <td align="center">{{ tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio : '') }}</td>
+                    <!-- man_per_hour -->
+                    <td align="center">{{ 
+                      (tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '')) 
+                      && (tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '')) 
+                      && (tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio : '')) 
+                      ? parseFloat((
+                          (tab_main === 0 ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day)
+                          * (tab_main === 0 ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio)
+                          * (tab_main === 0 ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio)
+                        ).toFixed(3)) : '' 
+                    }}</td>
+                    <!-- unit_price -->
+                    <td align="center">{{ tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? mux.Number.withComma(labor_occupation_data.find(x=> x.name == item.occupation).unit_price) : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? mux.Number.withComma(labor_occupation_list.find(x=> x.name == item.occupation).unit_price) : '') }}</td>
                     <td align="center">
                       <v-text-field
                         v-model="item.quantity"
@@ -661,7 +695,21 @@
                         style="max-width:110px; font-size:0.775rem!important"
                       ></v-text-field>
                     </td>
-                    <td align="center">{{  item.total_amount ? item.total_amount : (item.man_per_hour * item.quantity * item.unit_price).toFixed(0) }}</td>
+                    <!-- total_amount -->
+                    <td align="center">{{ 
+                      ((tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '')) 
+                      && (tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '')) 
+                      && (tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio : '')) 
+                      && (tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? labor_occupation_data.find(x=> x.name == item.occupation).unit_price : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? labor_occupation_list.find(x=> x.name == item.occupation).unit_price : ''))
+                      ? mux.Number.withComma((
+                          ((tab_main === 0 ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day)
+                          * (tab_main === 0 ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio)
+                          * (tab_main === 0 ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio)).toFixed(3)
+                          * (tab_main === 0 ? labor_occupation_data.find(x=> x.name == item.occupation).unit_price : labor_occupation_list.find(x=> x.name == item.occupation).unit_price)
+                          * item.quantity
+                        ).toFixed(0))
+                      : '')
+                    }}</td>
                     <td align="center">
                       <v-icon
                         color="primary"
@@ -725,7 +773,300 @@ export default {
           {title:'엑셀', click:'excel'},
           {title:'PDF', click:'pdf'},
         ],
-        labor_occupation_list:['저압 케이블전공', '고압 케이블전공', '비계공', '변전전공', '보통인부', '내선전공'],
+        labor_selectable: [],
+        labor_occupation_selectable: [],
+        labor_data:[
+          {
+            no: '품-1',
+            name: '고압케이블 포설',
+            type: '240㎟, 1C',
+            occupation: '고압 케이블전공',
+            man_per_day: 0.136,
+            surcharge_ratio: 1.15
+          },
+          {
+            no: '품-2',
+            name: '저압케이블 포설', 
+            type: '6㎟, 2C',
+            occupation: '저압 케이블전공',
+            man_per_day: 0.018,
+            surcharge_ratio: 1.2
+          },
+          {
+            no: '품-2',
+            name: '저압케이블 포설', 
+            type: '2.5㎟, 6C',
+            occupation: '저압 케이블전공',
+            man_per_day: 0.035,
+            surcharge_ratio: 1.2
+          },
+          {
+            no: '품-3',
+            name: '전력케이블 단말처리', 
+            type: '240㎟, 1C',
+            occupation: 'ALL',
+            man_per_day: 1.17,
+            surcharge_ratio: 1.2
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '6㎥, 1.5 Ton이하',
+            occupation: '비계공',
+            man_per_day: 2,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '6㎥, 1.5 Ton이하',
+            occupation: '변전전공',
+            man_per_day: 4.05,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '6㎥, 1.5 Ton이하',
+            occupation: '보통인부',
+            man_per_day: 3.3,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '10㎥, 3 Ton 이하',
+            occupation: '비계공',
+            man_per_day: 4,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '10㎥, 3 Ton 이하',
+            occupation: '변전전공',
+            man_per_day: 7.05,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '10㎥, 3 Ton 이하',
+            occupation: '보통인부',
+            man_per_day: 5.6,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-5',
+            name: '전기실 전원 케이블 포설', 
+            type: '50sq, 3C',
+            occupation: '저압 케이블전공',
+            man_per_day: 0.043,
+            surcharge_ratio: 2
+          },
+          {
+            no: '품-6',
+            name: '케이블 트레이', 
+            type: '단면적 50,000㎟ 이하',
+            occupation: '내선전공',
+            man_per_day: 0.2,
+            surcharge_ratio: 1.44
+          },
+          {
+            no: '품-6',
+            name: '케이블 트레이', 
+            type: '단면적 50,000㎟ 이하',
+            occupation: '내선전공',
+            man_per_day: 0.16,
+            surcharge_ratio: 1.44
+          },
+          {
+            no: '품-7',
+            name: '통신케이블 포설', 
+            type: '지중 인력견인 포설',
+            occupation: '보통인부',
+            man_per_day: 1.41,
+            surcharge_ratio: 1
+          },
+        ],
+        labor_list:[
+        {
+            no: '품-1',
+            name: '고압케이블 포설',
+            type: '240㎟, 1C',
+            occupation: '고압 케이블전공',
+            man_per_day: 0.136,
+            surcharge_ratio: 1.15
+          },
+          {
+            no: '품-2',
+            name: '저압케이블 포설', 
+            type: '6㎟, 2C',
+            occupation: '저압 케이블전공',
+            man_per_day: 0.018,
+            surcharge_ratio: 1.2
+          },
+          {
+            no: '품-2',
+            name: '저압케이블 포설', 
+            type: '2.5㎟, 6C',
+            occupation: '저압 케이블전공',
+            man_per_day: 0.035,
+            surcharge_ratio: 1.2
+          },
+          {
+            no: '품-3',
+            name: '전력케이블 단말처리', 
+            type: '240㎟, 1C',
+            occupation: 'ALL',
+            man_per_day: 1.17,
+            surcharge_ratio: 1.2
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '6㎥, 1.5 Ton이하',
+            occupation: '비계공',
+            man_per_day: 2,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '6㎥, 1.5 Ton이하',
+            occupation: '변전전공',
+            man_per_day: 4.05,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '6㎥, 1.5 Ton이하',
+            occupation: '보통인부',
+            man_per_day: 3.3,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '10㎥, 3 Ton 이하',
+            occupation: '비계공',
+            man_per_day: 4,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '10㎥, 3 Ton 이하',
+            occupation: '변전전공',
+            man_per_day: 7.05,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-4',
+            name: 'Cubicle 설치', 
+            type: '10㎥, 3 Ton 이하',
+            occupation: '보통인부',
+            man_per_day: 5.6,
+            surcharge_ratio: 1
+          },
+          {
+            no: '품-5',
+            name: '전기실 전원 케이블 포설', 
+            type: '50sq, 3C',
+            occupation: '저압 케이블전공',
+            man_per_day: 0.043,
+            surcharge_ratio: 2
+          },
+          {
+            no: '품-6',
+            name: '케이블 트레이', 
+            type: '단면적 50,000㎟ 이하',
+            occupation: '내선전공',
+            man_per_day: 0.2,
+            surcharge_ratio: 1.44
+          },
+          {
+            no: '품-6',
+            name: '케이블 트레이', 
+            type: '단면적 50,000㎟ 이하',
+            occupation: '내선전공',
+            man_per_day: 0.16,
+            surcharge_ratio: 1.44
+          },
+          {
+            no: '품-7',
+            name: '통신케이블 포설', 
+            type: '지중 인력견인 포설',
+            occupation: '보통인부',
+            man_per_day: 1.41,
+            surcharge_ratio: 1
+          },
+        ],
+        labor_occupation_data:[
+          {
+            name: '저압 케이블전공',
+            unit_price: 290333,
+            adjustment_ratio: 1
+          },
+          {
+            name: '고압 케이블전공',
+            unit_price: 353395,
+            adjustment_ratio: 1
+          },
+          {
+            name: '비계공',
+            unit_price: 281721,
+            adjustment_ratio: 1
+          },
+          {
+            name: '변전전공',
+            unit_price: 451145,
+            adjustment_ratio: 1
+          },
+          {
+            name: '보통인부',
+            unit_price: 161858,
+            adjustment_ratio: 1
+          },
+          {
+            name: '내선전공',
+            unit_price: 269968,
+            adjustment_ratio: 1
+          },
+        ],
+        labor_occupation_list:[
+          {
+            name: '저압 케이블전공',
+            unit_price: 290333,
+            adjustment_ratio: 1
+          },
+          {
+            name: '고압 케이블전공',
+            unit_price: 353395,
+            adjustment_ratio: 1
+          },
+          {
+            name: '비계공',
+            unit_price: 281721,
+            adjustment_ratio: 1
+          },
+          {
+            name: '변전전공',
+            unit_price: 451145,
+            adjustment_ratio: 1
+          },
+          {
+            name: '보통인부',
+            unit_price: 161858,
+            adjustment_ratio: 1
+          },
+          {
+            name: '내선전공',
+            unit_price: 269968,
+            adjustment_ratio: 1
+          },
+        ],
         tab_main_items: [
           '조회', '계산',
         ],
@@ -1866,7 +2207,7 @@ export default {
             no:'품-1',
             name:'고압케이블 포설',
             type:'240㎟, 1C',
-            occupation:'저압 케이블전공',
+            occupation:'고압 케이블전공',
             man_per_day:0.136,
             surcharge_ratio:1.15,
             adjustment_ratio:1,
@@ -2004,7 +2345,7 @@ export default {
             cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
             product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
             no:'품-5',
-            name:'전기실  전원 케이블 포설',
+            name:'전기실 전원 케이블 포설',
             type:'50sq, 3C',
             occupation:'저압 케이블전공',
             man_per_day:0.043,
@@ -2364,20 +2705,150 @@ export default {
     },
 
     saveLabor() {
+      let isValid = true;
       if(this.tab_main === 0){
-        // 유효성 검사 + 서버 통신 성공시 {
+        // 조회
+        // 입력 데이터 기준 데이터 동기화
+        this.labor_cost_data = this.labor_cost_data.map(item => {
+          if (this.labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL'))){
+            item.no = this.labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).no;
+            item.man_per_day = this.labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day;
+            item.surcharge_ratio = this.labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio;
+          }else {
+            isValid = false;
+          }
+
+          if (isValid && this.labor_occupation_data.find(x=> x.name == item.occupation)){
+            item.adjustment_ratio = this.labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio;
+            item.unit_price = this.labor_occupation_data.find(x=> x.name == item.occupation).unit_price;
+          }else {
+            isValid = false;
+          }
+
+          if (isValid){
+            item.man_per_hour = parseFloat((item.man_per_day * item.surcharge_ratio * item.adjustment_ratio).toFixed(3));
+            item.total_amount = (item.man_per_hour * item.unit_price * item.quantity).toFixed(0);
+          }
+
+          return item;
+        });
+        if (!isValid){
+          alert('양식이 잘못되었습니다.');
+          return;
+        }
+
+        // 수량 0행 존재 확인 후, 선택에 따라 모두 삭제
+        let isConfirm = false;
+        for (let i = this.labor_cost_data.length - 1; i >= 0; i--) {
+          if (!this.labor_cost_data[i].quantity || this.labor_cost_data[i].quantity == 0){
+            if (i === 0){
+              alert('모든 행을 삭제할 수 없습니다.');
+              return;
+            }
+            if (!isConfirm){
+              if (confirm('수량이 없는 행을 모두 삭제하시겠습니까?')){
+                isConfirm = true;
+              }else {
+                return;
+              }
+            }
+            this.labor_cost_data.splice(i, 1);
+          }
+        }
+
+        // 중복 데이터(공종, 규격, 직종) 존재 검사
+        for (let i = 0; i < this.labor_cost_data.length; i++) {
+          const laborDataI = this.labor_cost_data[i];
+          for (let j = i+1; j < this.labor_cost_data.length; j++) {
+            const laborDataJ = this.labor_cost_data[j];
+            if (laborDataI.name === laborDataJ.name
+                && laborDataI.type === laborDataJ.type
+                && laborDataI.occupation === laborDataJ.occupation){
+                  alert(`중복 데이터가 존재합니다.\n${laborDataI.no}\n${laborDataI.name} / ${laborDataI.type} / ${laborDataI.occupation}`);
+                  return;
+                }
+          }
+        }
+        
+        // 품번 기준 정렬
+        this.labor_cost_data.sort((a,b) => a.no.localeCompare(b.no));
+        
         this.origin_labor_cost_data = this.labor_cost_data;
         this.searched_datas.labor_cost_calc_detail = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
         this.labor_cost_data.forEach(data => {
           this.searched_datas.labor_cost_calc_detail.push(data);
         });
         this.searchDataCalcProcess(this.searched_datas);
-        // }
+        
       }else {
-        // 유효성 검사 + 서버 통신 성공시 {
+        // 계산
+        // 입력 데이터 기준 데이터 동기화
+        this.labor_cost_list = this.labor_cost_list.map(item => {
+          if (this.labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL'))){
+            item.no = this.labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).no;
+            item.man_per_day = this.labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day;
+            item.surcharge_ratio = this.labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio;
+          }else {
+            isValid = false;
+          }
+
+          if (isValid && this.labor_occupation_list.find(x=> x.name == item.occupation)){
+            item.adjustment_ratio = this.labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio;
+            item.unit_price = this.labor_occupation_list.find(x=> x.name == item.occupation).unit_price;
+          }else {
+            isValid = false;
+          }
+
+          if (isValid){
+            item.man_per_hour = parseFloat((item.man_per_day * item.surcharge_ratio * item.adjustment_ratio).toFixed(3));
+            item.total_amount = (item.man_per_hour * item.unit_price * item.quantity).toFixed(0);
+          }
+
+          return item;
+        });
+        if (!isValid){
+          alert('양식이 잘못되었습니다.');
+          return;
+        }
+        
+        // 수량 0행 존재 확인 후, 선택에 따라 모두 삭제
+        let isConfirm = false;
+        for (let i = this.labor_cost_list.length - 1; i >= 0; i--) {
+          if (!this.labor_cost_list[i].quantity || this.labor_cost_list[i].quantity == 0){
+            if (i === 0){
+              alert('모든 행을 삭제할 수 없습니다.');
+              return;
+            }
+            if (!isConfirm){
+              if (confirm('수량이 없는 행을 모두 삭제하시겠습니까?')){
+                isConfirm = true;
+              }else {
+                return;
+              }
+            }
+            this.labor_cost_list.splice(i, 1);
+          }
+        }
+
+        // 중복 데이터(공종, 규격, 직종) 존재 검사
+        for (let i = 0; i < this.labor_cost_list.length; i++) {
+          const laborDataI = this.labor_cost_list[i];
+          for (let j = i+1; j < this.labor_cost_list.length; j++) {
+            const laborDataJ = this.labor_cost_list[j];
+            if (laborDataI.name === laborDataJ.name
+                && laborDataI.type === laborDataJ.type
+                && laborDataI.occupation === laborDataJ.occupation){
+                  alert(`중복 데이터가 존재합니다.\n${laborDataI.no}\n${laborDataI.name} / ${laborDataI.type} / ${laborDataI.occupation}`);
+                  return;
+                }
+          }
+        }
+        
+        // 품번 기준 정렬
+        this.labor_cost_list.sort((a,b) => a.no.localeCompare(b.no));
         this.origin_labor_cost_list = this.labor_cost_list;
-        // }
       }
+        
       this.dialog_calculate_labor = false;
     },
 
