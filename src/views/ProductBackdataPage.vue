@@ -180,7 +180,7 @@
                         <!-- 원부자재 등록 Modal -->
                           <ModalDialogComponent
                             :dialog-value="material_dialog"
-                            max-width="30%"
+                            max-width="60%"
                             title-class=" "
                             :dialog-transition="'slide-x-transition'"
                             :dialog-custom="'custom-dialog elevation-0 white'"
@@ -225,7 +225,7 @@
                                   clearable
                                   :inputs="registMaterialInputs"
                                 >
-                                  <v-col cols="12" sm="6" align-self="center" v-if="this.registMaterialInputs[this.registMaterialInputs.length-1].value" class="offset-sm-6">
+                                  <!-- <v-col cols="12" sm="6" align-self="center" v-if="this.registMaterialInputs[this.registMaterialInputs.length-1].value" class="offset-sm-6">
                                     <v-img
                                       alt="Pionelectric Logo"
                                       class="shrink mr-2"
@@ -233,9 +233,67 @@
                                       src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
                                       transition="scale-transition"
                                     />
-                                  </v-col>
+                                  </v-col> -->
+
+                                <v-menu
+                                  open-on-hover
+                                  :close-on-content-click="false"
+                                  :nudge-width="100"
+                                  offset-x
+                                  v-if="this.registMaterialInputs[this.registMaterialInputs.length-1].value"
+                                >
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-col cols="12" sm="1" align-self="center" class="pb-0">
+                                      <v-icon
+                                        v-bind="attrs"
+                                        v-on="on"
+                                      >
+                                        mdi-image-multiple-outline
+                                      </v-icon>
+                                    </v-col>
+                                  </template>
+
+                                  <v-card class="pa-0">
+                                    <v-list class="pa-0">
+                                      <v-list-item class="pa-0">
+                                        <v-list-item-content class="pa-3">
+                                          <v-list-item-subtitle>
+                                            제품이미지영역
+                                            <v-img
+                                              alt="Pionelectric Logo"
+                                              class="shrink mr-2"
+                                              contain
+                                              :src="testImg ? testImg : ''"
+                                              transition="scale-transition"
+                                              width="150"
+                                            />
+                                          </v-list-item-subtitle>
+                                        </v-list-item-content>
+                                      </v-list-item>
+                                    </v-list>
+                                  </v-card>
+                                </v-menu>
                                 </InputsFormComponent>
                               </v-form>
+                              <v-divider class="my-7"></v-divider>
+                              <v-row>
+                                <v-col cols="3" class="pb-0">
+                                  <p class="text-h6 font-weight-black mb-0">
+                                    위치 및 재고 설정
+                                    <v-icon small color="primary" class="mr-3" style="cursor:pointer" @click="addSpotInputs('material')">mdi-plus-thick</v-icon>
+                                    <v-icon small color="default" style="cursor:pointer" @click="deleteSpotInputs('material')">mdi-minus-thick</v-icon>
+                                  </p>
+                                </v-col>
+                                <v-col cols="9">
+                                  <InputsFormComponent
+                                    dense
+                                    clearable
+                                    filled
+                                    col_class="py-0"
+                                    :inputs="registMaterialSpotInputs"
+                                  ></InputsFormComponent>
+                                </v-col>
+                              </v-row>
                             </v-container>
                           </ModalDialogComponent>
                       </v-col>
@@ -990,55 +1048,56 @@ export default {
         // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
       ],
       registMaterialInputs:[
-        {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'6', lg:'6',
+        {label:'분류', column_name:'classification', type:'auto', list:['일반', 'GFM', '전력변환기'], value:'', col:'12', sm:'3', lg:'3',
           rules: [
             v => !!v || '분류 입력',
           ]
         },
-        {label:'관리코드', column_name:'item_code',  col:'12', sm:'6', lg:'6', value: '',
+        {label:'관리코드', column_name:'item_code',  col:'12', sm:'3', lg:'3', value: '',
         rules: [
             v => !!v || '관리코드 입력',
           ]
         },
-        {label:'위치', column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'6', lg:'6', value: '',
-        rules: [
-            v => !!v || '위치 선택',
-          ]
-        },
-        {label:'자재명', column_name:'name',  col:'12', sm:'6', lg:'6', value: '',
+        {label:'자재명', column_name:'name',  col:'12', sm:'3', lg:'3', value: '',
           rules: [
             v => !!v || '자재명 입력',
           ]
         },
-        {label:'모델명', column_name:'model',  col:'12', sm:'6', lg:'6', value: '',},
-        {label:'사양', column_name:'spec', col:'12', sm:'6', lg:'6', value: '',
+        {label:'모델명', column_name:'model',  col:'12', sm:'3', lg:'3', value: '',},
+        {label:'사양', column_name:'spec', col:'12', sm:'3', lg:'3', value: '',
           rules: [
             v => !!v || '사양 입력',
           ]
         },
-        {label:'제조사', column_name:'manufacturer', type:'auto', list:['라온코리아', '액트솔루션', '옵토마린', '성민우텍'], col:'12', sm:'6', lg:'6', value: '',
+        {label:'제조사', column_name:'manufacturer', type:'auto', list:['라온코리아', '액트솔루션', '옵토마린', '성민우텍'], col:'12', sm:'3', lg:'3', value: '',
           rules: [
             v => !!v || '제조사 선택',
           ]
         },
-        {label:'재고수량', text_type:'number', column_name:'stock_num', col:'12', sm:'6', lg:'6', value: '',
-          rules: [
-            v => !!v || '재고수량 입력(숫자)',
-          ]
-        },
-        {label:'재고상태', column_name:'condition', type:'auto', col:'12', sm:'6', lg:'6', value:'', list:['G', 'B'],
-          rules: [
-            v => !!v || '재고상태 선택',
-          ]
-        },
-        {label:'PE No.', column_name:'pe_number', col:'12', sm:'6', lg:'6', value: '',},
-        {label:'단가', text_type:'number', column_name:'unit_price', col:'12', sm:'6', lg:'6', value: '',
+        // {label:'위치', column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'6', lg:'6', value: '',
+        // rules: [
+        //     v => !!v || '위치 선택',
+        //   ]
+        // },
+        // {label:'재고수량', text_type:'number', column_name:'stock_num', col:'12', sm:'6', lg:'6', value: '',
+        //   rules: [
+        //     v => !!v || '재고수량 입력(숫자)',
+        //   ]
+        // },
+        // {label:'재고상태', column_name:'condition', type:'auto', col:'12', sm:'6', lg:'6', value:'', list:['G', 'B'],
+        //   rules: [
+        //     v => !!v || '재고상태 선택',
+        //   ]
+        // },
+        {label:'PE No.', column_name:'pe_number', col:'12', sm:'3', lg:'3', value: '',},
+        {label:'단가', text_type:'number', column_name:'unit_price', col:'12', sm:'3', lg:'3', value: '',
           rules: [
             v => !!v || '단가 입력(숫자)',
           ]
         },
-        {label:'사진', column_name:'photo', type:'file', col:'12', sm:'1', lg:'1', value: '', hide_input:false, icon:'mdi-image-edit' },
+        {label:'사진', column_name:'photo', type:'file', col:'12', sm:'1', lg:'1', value: '', hide_input:true, icon:'mdi-image-edit' },
       ],
+      registMaterialSpotInputs: [],
       module_stock_more_0: true,
       searchModuleCardInputs:[
         {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'3'},
@@ -1221,31 +1280,34 @@ export default {
         type:'원부자재',
         classification:'',
         item_code: '',
-        spot:'',
         name: '',
         model: '',
         spec: '',
         manufacturer: '',
-        stock_num: '',
-        condition: '',
+        // spot:'',
+        // stock_num: '',
+        // condition: '',
         pe_number: '',
         inbound_date: '',
         unit_price: '',
+        spot_stock:[],
         photo:'',
       },
       defaultMaterialItem: {
         classification:'',
         item_code: '',
-        spot:'',
         name: '',
         model: '',
         spec: '',
         manufacturer: '',
-        stock_num: '',
-        condition: '',
+        // spot:'',
+        // stock_num: '',
+        // condition: '',
         pe_number: '',
         inbound_date: '',
         unit_price: '',
+        spot_stock:[],
+        photo:'',
       },
       editRegistModule: {
         type:'반제품',
@@ -2167,7 +2229,7 @@ export default {
     },
     initialize () {
       this.material_data = [
-      {
+        {
           classification:'일반',
           item_code: '공장2F_E-09-01',
           spot:'공장동 2층',
@@ -2183,20 +2245,38 @@ export default {
           stock_price: '1',
           photo:'photoName'
         },
-        // {
-        //   classification:'일반',
-        //   item_code: '공장2F_E-09-02',
-        //   name: 'SPD, 퓨즈',
-        //   model: '',
-        //   spec: '',
-        //   manufacturer: '파이온일렉트릭',
-        //   item_num: '1',
-        //   condition: 'G',
-        //   pe_number: '',
-        //   inbound_date: '2024-03-11',
-        //   unit_price: '',
-        //   product_price: '',
-        // },
+        {
+          classification:'일반',
+          item_code: '공장2F_E-09-01',
+          spot:'공장동 1층',
+          name: 'IGBT & SMPS',
+          model: '모델1',
+          spec: '사양1',
+          manufacturer: '파이온일렉트릭',
+          stock_num: '4',
+          condition: 'G',
+          pe_number: 'PE240101-001',
+          inbound_date: '2024-03-11',
+          unit_price: '1',
+          stock_price: '4',
+          photo:'photoName'
+        },
+        {
+          classification:'일반',
+          item_code: '공장2F_E-09-02',
+          spot:'세종 사무실',
+          name: 'SPD, 퓨즈',
+          model: '',
+          spec: '사양2',
+          manufacturer: '파이온일렉트릭',
+          stock_num: '10',
+          condition: 'G',
+          pe_number: 'PE240101-002',
+          inbound_date: '2024-03-14',
+          unit_price: '2',
+          stock_price: '20',
+          photo:'photoName'
+        },
         // {
         //   classification:'일반',
         //   item_code: '공장2F_E-09-03',
@@ -2274,6 +2354,15 @@ export default {
     editMaterialItem (item) {
       this.editedIndex = this.material_data.indexOf(item)
       let material_input = this.registMaterialInputs;
+      let stock_spot_arr = this.material_data.filter(datas => datas.item_code === item.item_code);
+      let spot_input = this.registMaterialSpotInputs;
+
+      for(let i=0; i<stock_spot_arr.length; i++){
+        spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
+        spot_input.push( {label:'재고수량'+[i+1], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].stock_num},)
+        spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'condition', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].condition},)
+      }
+
       material_input.forEach(data =>{
         if(data.column_name == 'item_code'){
           data.disabled = true
@@ -2292,8 +2381,30 @@ export default {
       // 수정, 등록 둘 다 editRegistMaterial 요청, editedIndex에 따라 구분
       let material_input = this.registMaterialInputs;
       let item = this.editRegistMaterial;
+      let stock_input = this.registMaterialSpotInputs;
+      let stock_item = this.editRegistMaterial.spot_stock;
       const validate = this.$refs.materialForm.validate();
       if(validate){
+        let stock_spot_arr=[];
+        let stock_num_arr=[];
+        let stock_condition_arr=[];
+        for(let i = 0; i < stock_input.length; i++){
+          if(stock_input[i].column_name == 'spot'){
+            stock_spot_arr.push(stock_input[i].value ? stock_input[i].value : '');
+          }else if(stock_input[i].column_name == 'stock_num'){
+            stock_num_arr.push(stock_input[i].value ? stock_input[i].value : 0);
+          }else if(stock_input[i].column_name == 'condition'){
+            stock_condition_arr.push(stock_input[i].value ? stock_input[i].value : '');
+          }
+        }
+
+        for(let x=0; x<stock_spot_arr.length; x++){
+          if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_condition_arr[x] === ''){
+            continue
+          }else{
+            stock_item.push({spot:stock_spot_arr[x], stock_num:stock_num_arr[x], condition:stock_condition_arr[x]});
+          }
+        }
         material_input.forEach(data =>{
           for(let i=0; i<Object.keys(item).length; i++){
             if(data.column_name == Object.keys(item)[i]){
@@ -2309,6 +2420,7 @@ export default {
           this.editRegistMaterial.modifier = 'user_id';
           alert('원부자재 수정이 완료되었습니다');
         }
+        console.log('원부자재 데이터 : ' + JSON.stringify(this.editRegistMaterial));
       }
 
       //editRegistMaterial를 전달 Back으로 전달
@@ -2538,7 +2650,9 @@ export default {
 
     addSpotInputs(type){
       let spot_input
-      if(type === 'module'){
+      if(type === 'material'){
+        spot_input = this.registMaterialSpotInputs
+      }else if(type === 'module'){
         spot_input = this.registModuleSpotInputs
       }else if(type === 'product'){
         spot_input = this.registProductSpotInputs
@@ -2557,7 +2671,9 @@ export default {
 
     deleteSpotInputs(type){
       let spot_input
-      if(type === 'module'){
+      if(type === 'material'){
+        spot_input = this.registMaterialSpotInputs
+      }else if(type === 'module'){
         spot_input = this.registModuleSpotInputs
       }else if(type === 'product'){
         spot_input = this.registProductSpotInputs
@@ -2619,6 +2735,7 @@ export default {
       this.dialog_excel = false
       this.registProductSpotInputs = [];
       this.registModuleSpotInputs = [];
+      this.registMaterialSpotInputs = [];
       this.$nextTick(() => {
         this.editRegistMaterial = Object.assign({}, this.defaultMaterialItem)
         this.editedIndex = -1
