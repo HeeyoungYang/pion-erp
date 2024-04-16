@@ -243,7 +243,7 @@
                                   v-if="this.registMaterialInputs[this.registMaterialInputs.length-1].value"
                                 >
                                   <template v-slot:activator="{ on, attrs }">
-                                    <v-col cols="12" sm="1" align-self="center" class="pb-0">
+                                    <v-col cols="12" sm="1" align-self="center">
                                       <v-icon
                                         v-bind="attrs"
                                         v-on="on"
@@ -304,11 +304,13 @@
                           :headers="material_headers"
                           :items="material_data"
                           show-photo
+                          show-item-details
                           editable
                           deletable
                           dense
                           @edit="editMaterialItem"
                           @delete="deleteItem"
+                          @itemDetials="detailInfoItem"
                         />
                         <ModalDialogComponent
                           :dialog-value="delete_dialog"
@@ -407,14 +409,14 @@
                           text-color="white"
                           small
                         >
-                          총 재고 : {{ module_total_stock_num }}
+                          반제품 총 재고 : {{ module_total_stock_num }}
                         </v-chip>
                         <v-chip
                           color="indigo"
                           text-color="white"
                           small
                         >
-                          총 금액 : {{ module_total_stock_price }}
+                          반제품 총 금액 : {{ module_total_stock_price }}
                         </v-chip>
                       </v-col>
                       <v-col
@@ -631,6 +633,10 @@
                             @edit="editModuleItem"
                             @delete="deleteItem"
                             show-photo
+                            stockNumInfo
+                            itemNumInfoBelong
+                            show-item-details
+                            @itemDetials="detailInfoItem"
                         />
                       </v-col>
                     </v-row>
@@ -978,6 +984,10 @@
                               table-style=""
                               show-photo
                               dense
+                              itemNumInfo
+                              itemNumInfoBelong
+                              show-item-details
+                              @itemDetials="detailInfoItem"
                             />
                           </v-col>
                         </v-row>
@@ -990,6 +1000,39 @@
           </v-tabs-items>
         </v-col>
       </v-row>
+        <ModalDialogComponent
+        :dialog-value="detail_dialog"
+        max-width="50%"
+        title-class="display-none"
+        :dialog-transition="'slide-x-transition'"
+        :dialog-custom="'custom-dialog elevation-0 white'"
+        :card-elevation="'0'"
+        :hide-overlay="true"
+        @close="closeDetail"
+        >
+          <v-row>
+            <v-col cols="12" sm="6">
+              <p class="text-h6 font-weight-bold primary--text">재고 정보</p>
+              <DataTableComponent
+                :headers="stock_detail_header"
+                :items="stockDetails"
+                hide-default-footer
+                disable-pagination
+                dense
+              />
+            </v-col>
+            <v-col cols="12" sm="6">
+              <p class="text-h6 font-weight-bold primary--text">입고 정보</p>
+              <DataTableComponent
+                :headers="inbound_detail_header"
+                :items="inboundDetails"
+                hide-default-footer
+                disable-pagination
+                dense
+              />
+            </v-col>
+          </v-row>
+        </ModalDialogComponent>
     </v-main>
   </div>
 </template>
@@ -1029,6 +1072,8 @@ export default {
 
       product_dialog: false,
       product_dialog_delete: false,
+
+      detail_dialog: false,
 
       material_stock_more_0: true,
 
@@ -1072,6 +1117,11 @@ export default {
         {label:'제조사', column_name:'manufacturer', type:'auto', list:['라온코리아', '액트솔루션', '옵토마린', '성민우텍'], col:'12', sm:'3', lg:'3', value: '',
           rules: [
             v => !!v || '제조사 선택',
+          ]
+        },
+        {label:'단가', text_type:'number', column_name:'unit_price', col:'12', sm:'3', lg:'3', value: '',
+          rules: [
+            v => !!v || '단가 입력(숫자)',
           ]
         },
         // {label:'위치', column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'6', lg:'6', value: '',
@@ -1232,13 +1282,11 @@ export default {
       material_headers: [
         { text: '분류', align: 'center', value: 'classification', },
         { text: '관리코드', align: 'center', value: 'item_code', },
-        { text: '위치', align: 'center', value: 'spot', },
         { text: '제품명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '재고', align: 'center', value: 'stock_num', },
-        { text: '상태', align: 'center', value: 'condition', },
+        { text: '총 재고', align: 'center', value: 'total_stock', },
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '재고 총액', align: 'center', value: 'stock_price', },
       ],
@@ -1330,16 +1378,11 @@ export default {
         { text: '', align: 'center', value: '', },
         { text: '분류', align: 'center', value: 'classification', },
         { text: '관리코드', align: 'center', value: 'item_code', },
-        { text: '위치', align: 'center', value: 'spot', },
         { text: '제품명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '필요수량', align: 'center', value: 'item_num', },
-        { text: '재고', align: 'center', value: 'stock_num', },
-        { text: '상태', align: 'center', value: 'condition', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'item_price', },
       ],
 
       module_search_material_headers: [
@@ -1350,7 +1393,6 @@ export default {
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
       ],
       module_set_material_headers: [
         { text: '분류', align: 'center', value: 'classification', },
@@ -1403,10 +1445,10 @@ export default {
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '필요수량', align: 'center', value: 'item_num', },
-        { text: '재고', align: 'center', value: 'stock_num', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'product_price', },
+        // { text: '필요수량', align: 'center', value: 'item_num', },
+        // { text: '총액', align: 'center', value: 'product_price', },
+        // { text: '총 재고', align: 'center', value: 'total_stock', },
       ],
       product_search_item_headers: [
         { text: '종류', align: 'center', value: 'type', },
@@ -1479,390 +1521,71 @@ export default {
       module_data: [
         {
           classification: 'GFM',
-          item_code: '공장2F_E-01-01',
-          spot:'공장동 1층',
+          item_code: 'PE-반제품-01',
           name: 'PCS Ass`Y',
           model: '반제품모델1',
           spec: '반제품스펙1',
           manufacturer: '파이온일렉트릭',
           item_num: '',
-          stock_num: '10',
-          condition: 'G',
-          inbound_date: '',
-          unit_price: '',
+          total_stock: 100,
+          unit_price: 2,
+          item_price: 100,
           photo: 'testt.jpg',
+          spot_stock:[
+            {spot: '공장동 1층', stock_num: 40, condition: 'G'},
+            {spot: '공장동 2층', stock_num: 60, condition: 'G'},
+          ],
           belong_data:[
             {
               classification: 'GFM',
-              item_code: '공장2F_E-09-01',
-              spot:'',
+              item_code: 'PE-원부자재-01',
               name: 'IGBT & SMPS',
-              model: '',
-              spec: '',
+              model: '원부자재모델1',
+              spec: '원부자재사양1',
               manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
+              item_num: 400,
+              total_stock: 1000,
+              unit_price: 3,
+              item_price: 1000,
+              spot_stock:[
+                {spot: '세종사무실', stock_num: 1000, condition: 'G'},
+              ],
             },
             {
               classification: 'GFM',
-              item_code: '공장2F_E-09-02',
-              spot:'',
+              item_code: 'PE-원부자재-02',
               name: 'SPD, 퓨즈',
-              model: '',
-              spec: '',
+              model: '원부자재모델2',
+              spec: '원부자재사양2',
               manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-03',
-              spot:'',
-              name: '쿨링팬',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-04',
-              spot:'',
-              name: '보호회로',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-05',
-              spot:'',
-              name: '리액터',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-06',
-              spot:'',
-              name: 'MCCB',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-07',
-              spot:'',
-              name: 'EMC',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-08',
-              spot:'',
-              name: 'DC Capacitor',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-09',
-              spot:'',
-              name: '외함 및 기구',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
+              item_num: 200,
+              total_stock: 100,
+              unit_price: 4,
+              item_price: 900,
+              spot_stock:[
+                {spot: '세종사무실', stock_num: 450, condition: 'G'},
+                {spot: '공장동 1층', stock_num: 450, condition: 'G'},
+              ],
             },
           ]
         },
         {
           classification: 'GFM',
-          item_code: '공장2F_E-01-01',
-          spot:'세종 사무실',
-          name: 'PCS Ass`Y',
-          model: '반제품모델1',
-          spec: '반제품스펙1',
-          manufacturer: '파이온일렉트릭',
-          item_num: '',
-          stock_num: '3',
-          condition: 'B',
-          inbound_date: '',
-          unit_price: '',
-          photo: 'testt.jpg',
-          belong_data:[
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-01',
-              spot:'',
-              name: 'IGBT & SMPS',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-02',
-              spot:'',
-              name: 'SPD, 퓨즈',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-03',
-              spot:'',
-              name: '쿨링팬',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-04',
-              spot:'',
-              name: '보호회로',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-05',
-              spot:'',
-              name: '리액터',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-06',
-              spot:'',
-              name: 'MCCB',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-07',
-              spot:'',
-              name: 'EMC',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-08',
-              spot:'',
-              name: 'DC Capacitor',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-09',
-              spot:'',
-              name: '외함 및 기구',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              unit_price: '',
-            },
-          ]
-        },
-        {
-          classification: 'GFM',
-          item_code: '공장2F_E-02-01',
-          spot:'공장동 2층',
+          item_code: 'PE-반제품-02',
           name: '제어기 Ass`Y',
-          model: '',
-          spec: '',
+          model: '반제품모델2',
+          spec: '반제품스펙2',
           manufacturer: '파이온일렉트릭',
           item_num: '',
-          stock_num: '10',
-          condition: '',
-          inbound_date: '',
-          unit_price: '',
-          belong_data:
-          [
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-11',
-              spot:'',
-              name: '제어기(LK11)',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-12',
-              spot:'',
-              name: '인터페이스보드',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-13',
-              spot:'',
-              name: 'SMPS(15VDC)',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-14',
-              spot:'',
-              name: 'SMPS Bracket',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-15',
-              spot:'',
-              name: 'HMI PC',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-16',
-              spot:'',
-              name: 'PLC',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
-            },
-            {
-              classification: 'GFM',
-              item_code: '공장2F_E-09-17',
-              spot:'',
-              name: '통신케이블',
-              model: '',
-              spec: '',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
-            },
-          ]
+          total_stock: 120,
+          unit_price: 1,
+          item_price: 120,
+          photo: 'testt.jpg',
+          spot_stock:[
+            {spot: '공장동 1층', stock_num: 50, condition: 'G'},
+            {spot: '공장동 2층', stock_num: 70, condition: 'G'},
+          ],
+          belong_data:[]
         },
       ],
       product_stock_data: [
@@ -1886,135 +1609,50 @@ export default {
           belong_data: [
             {
               type:'반제품',
-              classification: '일반',
+              classification: 'GFM',
               product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01',
-              item_code:'반제품01_001',
+              item_code: 'PE-반제품-01',
               name: 'PCS Ass`Y',
-              model: '',
-              spec: '',
+              model: '반제품모델1',
+              spec: '반제품스펙1',
               manufacturer: '파이온일렉트릭',
               item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
+              total_stock: 100,
+              unit_price: 2,
+              item_price: 100,
+              spot_stock:[
+                {spot: '공장동 1층', stock_num: 40, condition: 'G'},
+                {spot: '공장동 2층', stock_num: 60, condition: 'G'},
+              ],
               belong_data:[
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-01',
                   item_code: '원부자재01_001',
                   name: 'IGBT & SMPS',
-                  model: '',
-                  spec: '',
+                  model: '원부자재모델1',
+                  spec: '원부자재사양1',
                   manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
+                  item_num: 400,
+                  total_stock: 1000,
+                  unit_price: 3,
+                  spot_stock:[
+                    {spot: '세종사무실', stock_num: 1000, condition: 'G'},
+                  ],
                 },
                 {
                   product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-02',
                   item_code: '원부자재01_002',
                   name: 'SPD, 퓨즈',
-                  model: '',
-                  spec: '',
+                  model: '원부자재모델2',
+                  spec: '원부자재사양2',
                   manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-03',
-                  item_code: '원부자재01_003',
-                  name: '쿨링팬',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-04',
-                  item_code: '원부자재01_004',
-                  name: '보호회로',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-05',
-                  item_code: '원부자재01_005',
-                  name: '리액터',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-06',
-                  item_code: '원부자재01_006',
-                  name: 'MCCB',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-07',
-                  item_code: '원부자재01_007',
-                  name: 'EMC',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-08',
-                  item_code: '원부자재01_008',
-                  name: 'DC Capacitor',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-09',
-                  item_code: '원부자재01_009',
-                  name: '외함 및 기구',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
+                  item_num: 200,
+                  total_stock: 100,
+                  unit_price: 4,
+                  spot_stock:[
+                    {spot: '세종사무실', stock_num: 450, condition: 'G'},
+                    {spot: '공장동 1층', stock_num: 450, condition: 'G'},
+                  ],
                 },
               ]
             },
@@ -2024,112 +1662,34 @@ export default {
               classification: '일반',
               type:'반제품',
               name: '제어기 Ass`Y',
-              model: '',
-              spec: '',
+              model: '반제품모델2',
+              spec: '반제품스펙2',
               manufacturer: '파이온일렉트릭',
               item_num: '1',
-              stock_num: '10',
-              condition: '',
-              inbound_date: '',
-              unit_price: '',
-              belong_data:
-              [
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-01',
-                  item_code: '원부자재02_001',
-                  name: '제어기(LK11)',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-02',
-                  item_code: '원부자재02_002',
-                  name: '인터페이스보드',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-03',
-                  item_code: '원부자재02_003',
-                  name: 'SMPS(15VDC)',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-04',
-                  item_code: '원부자재02_004',
-                  name: 'SMPS Bracket',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-05',
-                  item_code: '원부자재02_005',
-                  name: 'HMI PC',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-06',
-                  item_code: '원부자재02_006',
-                  name: 'PLC',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02-07',
-                  item_code: '원부자재02_007',
-                  name: '통신케이블',
-                  model: '',
-                  spec: '',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: '1',
-                  stock_num: '10',
-                  condition: '',
-                  inbound_date: '',
-                  unit_price: '',
-                },
-              ]
+              total_stock: 120,
+              unit_price: 1,
+              item_price: 120,
+              spot_stock:[
+                {spot: '공장동 1층', stock_num: 50, condition: 'G'},
+                {spot: '공장동 2층', stock_num: 70, condition: 'G'},
+              ],
+              belong_data:[]
             },
           ],
         },
       ],
+      stock_detail_header:[
+        { text: '위치', align: 'center', value: 'spot', },
+        { text: '수량', align: 'center', value: 'stock_num', },
+        { text: '상태', align: 'center', value: 'condition', },
+      ],
+      inbound_detail_header:[
+        { text: '위치', align: 'center', value: 'spot', },
+        { text: '수량', align: 'center', value: 'inbound_num', },
+        { text: '입고일자', align: 'center', value: 'inbound_date', },
+      ],
+      stockDetails:[],
+      inboundDetails:[],
     }
   },
 
@@ -2146,6 +1706,9 @@ export default {
     delete_dialog (val) {
       val || this.closeDelete()
     },
+    detail_dialog (val) {
+      val || this.closeDetail()
+    },
   },
 
   created () {
@@ -2161,46 +1724,53 @@ export default {
         {
           classification:'일반',
           item_code: '공장2F_E-09-01',
-          spot:'공장동 2층',
           name: 'IGBT & SMPS',
           model: '모델1',
           spec: '사양1',
           manufacturer: '파이온일렉트릭',
-          stock_num: '1',
-          condition: 'G',
+          total_stock: 100,
           inbound_date: '2024-03-11',
-          unit_price: '1',
-          stock_price: '1',
-          photo:'photoName'
-        },
-        {
-          classification:'일반',
-          item_code: '공장2F_E-09-01',
-          spot:'공장동 1층',
-          name: 'IGBT & SMPS',
-          model: '모델1',
-          spec: '사양1',
-          manufacturer: '파이온일렉트릭',
-          stock_num: '4',
-          condition: 'G',
-          inbound_date: '2024-03-11',
-          unit_price: '1',
-          stock_price: '4',
+          unit_price: 1,
+          stock_price: 100,
+          spot_stock:[
+            {spot: '공장동 1층', stock_num: 40, condition: 'G'},
+            {spot: '공장동 2층', stock_num: 60, condition: 'G'},
+          ],
           photo:'photoName'
         },
         {
           classification:'일반',
           item_code: '공장2F_E-09-02',
-          spot:'세종 사무실',
-          name: 'SPD, 퓨즈',
-          model: '',
+          name: '쿨링팬',
+          model: '모델2',
           spec: '사양2',
           manufacturer: '파이온일렉트릭',
-          stock_num: '10',
-          condition: 'G',
+          total_stock: 40,
+          inbound_date: '2024-03-11',
+          unit_price: 1,
+          stock_price: 40,
+          spot_stock:[
+            {spot: '공장동 1층', stock_num: 30, condition: 'G'},
+            {spot: '공장동 2층', stock_num: 10, condition: 'G'},
+          ],
+          photo:'photoName'
+        },
+        {
+          classification:'일반',
+          item_code: '공장2F_E-09-03',
+          name: 'SPD, 퓨즈',
+          model: '',
+          spec: '사양3',
+          manufacturer: '파이온일렉트릭',
+          total_stock: 1200,
           inbound_date: '2024-03-14',
-          unit_price: '2',
-          stock_price: '20',
+          unit_price: 2,
+          stock_price: 2400,
+          spot_stock:[
+            {spot: '공장동 1층', stock_num: 600, condition: 'G'},
+            {spot: '공장동 2층', stock_num: 100, condition: 'G'},
+            {spot: '세종사무실', stock_num: 500, condition: 'G'},
+          ],
           photo:'photoName'
         },
         // {
@@ -2276,7 +1846,8 @@ export default {
     editMaterialItem (item) {
       this.editedIndex = this.material_data.indexOf(item)
       let material_input = this.registMaterialInputs;
-      let stock_spot_arr = this.material_data.filter(datas => datas.item_code === item.item_code);
+      // let stock_spot_arr = this.material_data.filter(datas => datas.item_code === item.item_code);
+      let stock_spot_arr = item.spot_stock;
       let spot_input = this.registMaterialSpotInputs;
 
       for(let i=0; i<stock_spot_arr.length; i++){
@@ -2377,7 +1948,8 @@ export default {
     editModuleItem(item){
       this.editedIndex = this.module_data.indexOf(item)
       let module_input = this.registModuleInputs;
-      let stock_spot_arr = this.module_data.filter(datas => datas.item_code === item.item_code);
+      // let stock_spot_arr = this.module_data.filter(datas => datas.item_code === item.item_code);
+      let stock_spot_arr = item.spot_stock;
       let spot_input = this.registModuleSpotInputs;
       // alert (JSON.stringify(stock_spot_arr));
 
@@ -2398,8 +1970,10 @@ export default {
           }
         }
       })
-      for(let d=0; d<item.belong_data.length; d++){
-        this.module_set_material_data.push(item.belong_data[d])
+      if(item.belong_data.length > 0){
+        for(let d=0; d<item.belong_data.length; d++){
+          this.module_set_material_data.push(item.belong_data[d])
+        }
       }
       // this.module_set_material_data= item.belong_data
       this.module_dialog = true;
@@ -2570,6 +2144,11 @@ export default {
       }
     },
 
+    detailInfoItem(item){
+      this.detail_dialog = true;
+      this.stockDetails = item.spot_stock
+    },
+
     addSpotInputs(type){
       let spot_input
       if(type === 'material'){
@@ -2655,6 +2234,8 @@ export default {
       this.module_dialog = false
       this.product_dialog = false
       this.dialog_excel = false
+      this.module_set_material_data = [];
+      this.product_set_items_data = [];
       this.registProductSpotInputs = [];
       this.registModuleSpotInputs = [];
       this.registMaterialSpotInputs = [];
@@ -2670,6 +2251,9 @@ export default {
         this.editRegistMaterial = Object.assign({}, this.defaultMaterialItem)
         this.editedIndex = -1
       })
+    },
+    closeDetail () {
+      this.detail_dialog = false
     },
     resetData(type){
       if(type == 'module'){
@@ -2760,7 +2344,7 @@ export default {
       }
 
       this.material_data.forEach(data =>{
-        this.material_total_stock_num += data.stock_num
+        this.material_total_stock_num += data.total_stock
         this.material_total_stock_price += data.stock_price
       })
     },

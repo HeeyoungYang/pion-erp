@@ -248,6 +248,39 @@
                   </v-btn>
                   {{ Object.keys(item).includes(header.value) && (!groupBy || header.value !== groupBy) ? item[header.value] : '' }}
                 </td>
+                <td v-if="stockNumInfo || itemNumInfo" align="center">
+                  <p v-if="stockNumInfo" class="my-2">
+                    <v-chip
+                      class="mr-2"
+                      color="yellow lighten-4"
+                      small
+                    >총 재고 : {{ item.total_stock }}</v-chip>
+                    <v-chip
+                      class="mr-2"
+                      color="yellow lighten-4"
+                      small
+                    >재고 총액 : {{ item.total_stock * item.unit_price }}</v-chip>
+                  </p>
+                  <p v-if="itemNumInfo" class="my-2">
+                    <v-chip
+                      class="mr-2"
+                      color="yellow lighten-4"
+                      small
+                    >필요수량 : {{ item.item_num }}</v-chip>
+                    <v-chip
+                      class="mr-2"
+                      color="yellow lighten-4"
+                      small
+                    >금액 : {{ item.item_num * item.unit_price }}</v-chip>
+                  </p>
+                </td>
+                <td v-if="showItemDetails" align="center">
+                  <v-icon
+                    @click="detailItem(item)"
+                  >
+                    mdi-magnify
+                  </v-icon>
+                </td>
                 <td v-if="editable || deletable" align="center">
                   <v-icon v-if="editable"
                     small
@@ -416,6 +449,38 @@
                     mdi-delete
                   </v-icon>
                 </td>
+                <td v-if="stockNumInfoBelong || itemNumInfoBelong" align="center">
+                  <p v-if="stockNumInfoBelong" class="my-2">
+                    <v-chip
+                      class="mr-2"
+                      color="white"
+                      small
+                    >총 재고 : {{ data.total_stock }}</v-chip>
+                    <v-chip
+                      class="mr-2"
+                      color="white"
+                      small
+                    >재고 총액 : {{ data.total_stock * data.unit_price }}</v-chip>
+                  </p>
+                  <p v-if="itemNumInfoBelong" class="my-2">
+                    <v-chip
+                      class="mr-2"
+                      color="white"
+                      small
+                    >필요수량 : {{ data.item_num }}</v-chip>
+                    <v-chip
+                      class="mr-2 white"
+                      small
+                    >금액 : {{ data.item_num * data.unit_price }}</v-chip>
+                  </p>
+                </td>
+                <td v-if="showItemDetails" align="center">
+                  <v-icon
+                    @click="detailItem(item.belong_data[idx])"
+                  >
+                    mdi-magnify
+                  </v-icon>
+                </td>
                 <td v-if="notEditableBelong"></td>
                 <td v-if="showPhoto" align="center">
                   <v-menu
@@ -501,6 +566,11 @@
  * @property {Boolean} [approval] - 승인 노출 여부(default:false)
  * @property {Boolean} [showFiles] - 첨부파일 노출 여부(default:false)
  * @property {Boolean} [showAuthority] - 권한 설정 여부(default:false)
+ * @property {Boolean} [showItemDetails] - 자재 상세 내역 노출 여부(default:false)
+ * @property {Boolean} [stockNumInfo] - 자재 수량 정보 노출 여부(default:false)
+ * @property {Boolean} [itemNumInfo] - 필요 수량 정보 노출 여부(default:false)
+ * @property {Boolean} [stockNumInfoBelong] - 내부 항목 자재 수량 정보 노출 여부(default:false)
+ * @property {Boolean} [itemNumInfoBelong] - 내부 항목 필요 수량 정보 노출 여부(default:false)
  * @property {String} [tableStyle] - 테이블 style(default:'')
  * @property {Boolean} [hideDefaultFooter] - 기본 footer 숨기기 여부(default:false)
  * @property {Boolean} [disablePagination] - 페이징 방지 여부(default:false)
@@ -555,6 +625,11 @@ export default {
     approval: Boolean,
     showFiles: Boolean,
     showAuthority: Boolean,
+    showItemDetails: Boolean,
+    stockNumInfo: Boolean,
+    itemNumInfo: Boolean,
+    stockNumInfoBelong: Boolean,
+    itemNumInfoBelong: Boolean,
     tableStyle: String,
     hideDefaultFooter: Boolean,
     disablePagination: Boolean,
@@ -588,6 +663,12 @@ export default {
     this.addedHeaders = this.headers.map((obj)=>{
           return obj;
     }).filter(element => element);
+    if (this.stockNumInfo || this.itemNumInfo || this.stockNumInfoBelong || this.itemNumInfoBelong ){
+      this.addedHeaders.push({ text: '수량', align: 'center', value: 'details', sortable: false });
+    }
+    if (this.showItemDetails){
+      this.addedHeaders.push({ text: '상세', align: 'center', value: 'details', sortable: false });
+    }
     if (this.editableGroup || this.deletableGroup
     || this.editable || this.deletable
     || this.editableBelong || this.deletableBelong){
@@ -644,6 +725,9 @@ export default {
     },
     clickTr(item){
       this.$emit("clickTr", item);
+    },
+    detailItem(item){
+      this.$emit("itemDetials", item);
     },
     closeAll () {
         Object.keys(this.$refs).forEach(k => {
