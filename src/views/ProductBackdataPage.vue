@@ -1000,39 +1000,39 @@
           </v-tabs-items>
         </v-col>
       </v-row>
-        <ModalDialogComponent
-        :dialog-value="detail_dialog"
-        max-width="50%"
-        title-class="display-none"
-        :dialog-transition="'slide-x-transition'"
-        :dialog-custom="'custom-dialog elevation-0 white'"
-        :card-elevation="'0'"
-        :hide-overlay="true"
-        @close="closeDetail"
-        >
-          <v-row>
-            <v-col cols="12" sm="6">
-              <p class="text-h6 font-weight-bold primary--text">재고 정보</p>
-              <DataTableComponent
-                :headers="stock_detail_header"
-                :items="stockDetails"
-                hide-default-footer
-                disable-pagination
-                dense
-              />
-            </v-col>
-            <v-col cols="12" sm="6">
-              <p class="text-h6 font-weight-bold primary--text">입고 정보</p>
-              <DataTableComponent
-                :headers="inbound_detail_header"
-                :items="inboundDetails"
-                hide-default-footer
-                disable-pagination
-                dense
-              />
-            </v-col>
-          </v-row>
-        </ModalDialogComponent>
+      <ModalDialogComponent
+      :dialog-value="detail_dialog"
+      max-width="50%"
+      title-class="display-none"
+      :dialog-transition="'slide-x-transition'"
+      :dialog-custom="'custom-dialog elevation-0 white'"
+      :card-elevation="'0'"
+      :hide-overlay="true"
+      @close="closeDetail"
+      >
+        <v-row>
+          <v-col cols="12" sm="6">
+            <p class="text-h6 font-weight-bold primary--text">재고 정보</p>
+            <DataTableComponent
+              :headers="stock_detail_header"
+              :items="stockDetails"
+              hide-default-footer
+              disable-pagination
+              dense
+            />
+          </v-col>
+          <v-col cols="12" sm="6">
+            <p class="text-h6 font-weight-bold primary--text">입고 정보</p>
+            <DataTableComponent
+              :headers="inbound_detail_header"
+              :items="inboundDetails"
+              hide-default-footer
+              disable-pagination
+              dense
+            />
+          </v-col>
+        </v-row>
+      </ModalDialogComponent>
     </v-main>
   </div>
 </template>
@@ -1587,10 +1587,6 @@ export default {
           ],
           belong_data:[]
         },
-      ],
-      product_stock_data: [
-        {spot:'공장동 2층', stock_num:'4', condition: 'G'},
-        {spot:'공장동 1층', stock_num:'2', condition: 'G'},
       ],
       product_data: [
         {

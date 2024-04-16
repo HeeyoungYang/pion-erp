@@ -90,6 +90,8 @@
                     :item-key="product_data._code"
                     show-photo
                     dense
+                    show-item-details
+                    @itemDetials="detailInfoItem"
                   />
                 </v-col>
               </v-row>
@@ -101,6 +103,39 @@
           </v-card>
         </v-col>
       </v-row>
+      <ModalDialogComponent
+      :dialog-value="detail_dialog"
+      max-width="50%"
+      title-class="display-none"
+      :dialog-transition="'slide-x-transition'"
+      :dialog-custom="'custom-dialog elevation-0 white'"
+      :card-elevation="'0'"
+      :hide-overlay="true"
+      @close="closeDetail"
+      >
+        <v-row>
+          <v-col cols="12" sm="6">
+            <p class="text-h6 font-weight-bold primary--text">재고 정보</p>
+            <DataTableComponent
+              :headers="stock_detail_header"
+              :items="stockDetails"
+              hide-default-footer
+              disable-pagination
+              dense
+            />
+          </v-col>
+          <v-col cols="12" sm="6">
+            <p class="text-h6 font-weight-bold primary--text">입고 정보</p>
+            <DataTableComponent
+              :headers="inbound_detail_header"
+              :items="inboundDetails"
+              hide-default-footer
+              disable-pagination
+              dense
+            />
+          </v-col>
+        </v-row>
+      </ModalDialogComponent>
     </v-main>
   </div>
 </template>
@@ -109,6 +144,7 @@ import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
+import ModalDialogComponent from "@/components/ModalDialogComponent";
 import mux from "@/mux";
 
 export default {
@@ -117,12 +153,26 @@ export default {
                 DataTableComponent,
                 CardComponent,
                 InputsFormComponent,
+                ModalDialogComponent,
               },
   data(){
     return{
       total_stock_num:0,
       total_stock_price:0,
       stock_more_0: true,
+      detail_dialog: false,
+      stockDetails:[],
+      inboundDetails:[],
+      stock_detail_header:[
+        { text: '위치', align: 'center', value: 'spot', },
+        { text: '수량', align: 'center', value: 'stock_num', },
+        { text: '상태', align: 'center', value: 'condition', },
+      ],
+      inbound_detail_header:[
+        { text: '위치', align: 'center', value: 'spot', },
+        { text: '수량', align: 'center', value: 'inbound_num', },
+        { text: '입고일자', align: 'center', value: 'inbound_date', },
+      ],
 
       searchCardInputs:[
         {label:'종류', type:'auto', col:'12', sm:'4', lg:'2', value:'All', list:['All', '원부자재', '반제품', '완제품']},
@@ -136,147 +186,63 @@ export default {
         // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
       ],
       headers: [
+        // { text: '종류', align: 'center', value: 'type', },
+        // { text: '분류', align: 'center', value: 'classification', },
+        // { text: '관리코드', align: 'center', value: '_code', },
+        // { text: '위치', align: 'center', value: 'spot', },
+        // { text: '제품명', align: 'center', value: 'name', },
+        // { text: '모델명', align: 'center', value: 'model', },
+        // { text: '사양', align: 'center', value: 'spec', },
+        // { text: '제조사', align: 'center', value: 'manufacturer', },
+        // { text: '재고', align: 'center', value: 'stock_num', },
+        // { text: '상태', align: 'center', value: 'condition', },
+        // { text: '입고일자', align: 'center', value: 'inbound_date', },
+        // { text: '단가', align: 'center', value: 'unit_price', },
+        // { text: '총액', align: 'center', value: 'stock_price', },
         { text: '종류', align: 'center', value: 'type', },
         { text: '분류', align: 'center', value: 'classification', },
         { text: '관리코드', align: 'center', value: '_code', },
-        { text: '위치', align: 'center', value: 'spot', },
         { text: '제품명', align: 'center', value: 'name', },
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '재고', align: 'center', value: 'stock_num', },
-        { text: '상태', align: 'center', value: 'condition', },
-        { text: '입고일자', align: 'center', value: 'inbound_date', },
+        { text: '총 재고', align: 'center', value: 'total_stock', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '총액', align: 'center', value: 'stock_price', },
+        { text: '재고 총액', align: 'center', value: 'stock_price', },
       ],
 
       product_data: [
         // {
         //   type:'원부자재',
         //   classification:'일반',
-        //   product_code: '공장2F_E-09-01',
+        //   _code: '공장2F_E-09-01',
         //   name: 'IGBT & SMPS',
-        //   model: '',
-        //   spec: '',
+        //   model: '원부자재 모델1',
+        //   spec: '원부자재 사양1',
         //   manufacturer: '파이온일렉트릭',
-        //   stock_num: '1',
-        //   condition: 'G',
-        //   inbound_date: '2024-03-11',
-        //   unit_price: '',
-        //   stock_price: '',
+        //   total_stock: 1000,
+        //   unit_price: 2,
+        //   stock_price: 2000,
+        //   spot_stock:[
+        //     {spot: '공장동 1층', stock_num: 400, condition: 'G'},
+        //     {spot: '공장동 2층', stock_num: 600, condition: 'G'},
+        //   ],
         // },
         // {
         //   type:'원부자재',
         //   classification:'일반',
-        //   product_code: '공장2F_E-09-02',
-        //   name: 'SPD, 퓨즈',
-        //   model: '',
-        //   spec: '',
-        //   manufacturer: '파이온일렉트릭',
-        //   stock_num: '1',
-        //   condition: 'G',
-        //   inbound_date: '2024-03-11',
-        //   unit_price: '',
-        //   stock_price: '',
-        // },
-        // {
-        //   type:'원부자재',
-        //   classification:'일반',
-        //   product_code: '공장2F_E-09-03',
+        //   _code: '공장2F_E-09-02',
         //   name: '쿨링팬',
-        //   model: '',
-        //   spec: '',
+        //   model: '원부자재 모델2',
+        //   spec: '원부자재 사양2',
         //   manufacturer: '파이온일렉트릭',
-        //   stock_num: '1',
-        //   condition: 'G',
-        //   inbound_date: '2024-03-11',
-        //   unit_price: '',
-        //   stock_price: '',
-        // },
-        // {
-        //   type:'원부자재',
-        //   classification:'일반',
-        //   product_code: '공장2F_E-09-04',
-        //   name: '보호회로',
-        //   model: '',
-        //   spec: '',
-        //   manufacturer: '파이온일렉트릭',
-        //   stock_num: '1',
-        //   condition: 'G',
-        //   inbound_date: '2024-03-11',
-        //   unit_price: '',
-        //   stock_price: '',
-        // },
-        // {
-        //   type:'원부자재',
-        //   classification:'일반',
-        //   product_code: '공장2F_E-09-04',
-        //   name: '리액터',
-        //   model: '',
-        //   spec: '',
-        //   manufacturer: '파이온일렉트릭',
-        //   stock_num: '1',
-        //   condition: 'G',
-        //   inbound_date: '2024-03-11',
-        //   unit_price: '',
-        //   stock_price: '',
-        // },
-        // {
-        //   type:'원부자재',
-        //   classification:'일반',
-        //   product_code: '공장2F_E-09-04',
-        //   name: 'MCCB',
-        //   model: '',
-        //   spec: '',
-        //   manufacturer: '파이온일렉트릭',
-        //   stock_num: '1',
-        //   condition: 'G',
-        //   inbound_date: '2024-03-11',
-        //   unit_price: '',
-        //   stock_price: '',
-        // },
-        // {
-        //   type:'반제품',
-        //   classification:'일반',
-        //   product_code: '공장2F_E-09-06',
-        //   name: 'PCS Ass`Y',
-        //   model: '',
-        //   spec: '',
-        //   manufacturer: '파이온일렉트릭',
-        //   stock_num: '1',
-        //   condition: 'G',
-        //   inbound_date: '2024-03-11',
-        //   unit_price: '',
-        //   stock_price: '',
-        // },
-        // {
-        //   type:'반제품',
-        //   classification:'일반',
-        //   product_code: '공장2F_E-09-06',
-        //   name: '제어기 Ass`Y',
-        //   model: '',
-        //   spec: '',
-        //   manufacturer: '파이온일렉트릭',
-        //   stock_num: '1',
-        //   condition: 'G',
-        //   inbound_date: '2024-03-11',
-        //   unit_price: '',
-        //   stock_price: '',
-        // },
-        // {
-        //   type:'완제품',
-        //   classification:'일반',
-        //   product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-        //   name: 'ESS GFM용 PCS',
-        //   model: '',
-        //   spec: '380VAC 500kW',
-        //   manufacturer: '파이온일렉트릭',
-        //   stock_num: '1',
-        //   condition: 'G',
-        //   inbound_date: '2024-03-11',
-        //   unit_price: '',
-        //   stock_price: '',
+        //   total_stock: 400,
+        //   unit_price: 10,
+        //   stock_price: 4000,
+        //   spot_stock:[
+        //     {spot: '공장동 1층', stock_num: 300, condition: 'G'},
+        //     {spot: '공장동 2층', stock_num: 100, condition: 'G'},
+        //   ],
         // },
       ],
     }
@@ -285,7 +251,21 @@ export default {
   computed: {
 
   },
+
+  watch: {
+    detail_dialog (val) {
+      val || this.closeDetail()
+    },
+  },
   methods: {
+
+    detailInfoItem(item){
+      this.detail_dialog = true;
+      this.stockDetails = item.spot_stock
+    },
+    closeDetail () {
+      this.detail_dialog = false
+    },
     async searchButton() {
       this.total_stock_num = 0;
       this.total_stock_price = 0;
@@ -372,7 +352,7 @@ export default {
           //       "value": searchType
           //     },
           //     {
-          //       "key":"product_code",
+          //       "key":"_code",
           //       "type":"string",
           //       "value": searchProductCode
           //     },
@@ -399,7 +379,7 @@ export default {
       }
 
       this.product_data.forEach(data =>{
-        this.total_stock_num += data.stock_num
+        this.total_stock_num += data.total_stock
         this.total_stock_price += data.stock_price
       })
 
