@@ -146,6 +146,7 @@ import DataTableComponent from "@/components/DataTableComponent";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
+import MaterialSearchPageConfig from "@/configure/MaterialSearchPageConfig.json";
 import mux from "@/mux";
 
 export default {
@@ -164,94 +165,13 @@ export default {
       detail_dialog: false,
       stockDetails:[],
       inboundDetails:[],
-      stock_detail_header:[
-        { text: '위치', align: 'center', value: 'spot', },
-        { text: '수량', align: 'center', value: 'stock_num', },
-        { text: '상태', align: 'center', value: 'condition', },
-      ],
-      inbound_detail_header:[
-        { text: '위치', align: 'center', value: 'spot', },
-        { text: '수량', align: 'center', value: 'inbound_num', },
-        { text: '입고일자', align: 'center', value: 'inbound_date', },
-      ],
 
-      searchCardInputs:[
-        {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'3'},
-        {label:'상태', type:'auto', col:'12', sm:'4', lg:'3', value:'All', list:['All', 'G', 'B']},
-        {label:'관리코드', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'제품명', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'모델명', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'제조사', col:'12', sm:'4', lg:'3', value: ''},
-        // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
-      ],
-
-      headers: [
-        { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: 'material_code', },
-        { text: '제품명', align: 'center', value: 'name', },
-        { text: '모델명', align: 'center', value: 'model', },
-        { text: '사양', align: 'center', value: 'spec', },
-        { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '단가', align: 'center', value: 'unit_price', },
-        // { text: '총 재고', align: 'center', value: 'total_stock', },
-        // { text: '재고 총액', align: 'center', value: 'stock_price', },
-      ],
-
-      product_data: [
-      {
-          classification:'일반',
-          material_code: '공장2F_E-09-01',
-          name: 'IGBT & SMPS',
-          model: '모델1',
-          spec: '사양1',
-          manufacturer: '파이온일렉트릭',
-          total_stock: 100,
-          inbound_date: '2024-03-11',
-          unit_price: 1,
-          stock_price: 100,
-          spot_stock:[
-            {spot: '공장동 1층', stock_num: 40, condition: 'G'},
-            {spot: '공장동 2층', stock_num: 60, condition: 'G'},
-          ],
-          photo:'photoName'
-        },
-        {
-          classification:'일반',
-          material_code: '공장2F_E-09-02',
-          name: '쿨링팬',
-          model: '모델2',
-          spec: '사양2',
-          manufacturer: '파이온일렉트릭',
-          total_stock: 40,
-          inbound_date: '2024-03-11',
-          unit_price: 1,
-          stock_price: 40,
-          spot_stock:[
-            {spot: '공장동 1층', stock_num: 30, condition: 'G'},
-            {spot: '공장동 2층', stock_num: 10, condition: 'G'},
-          ],
-          photo:'photoName'
-        },
-        {
-          classification:'일반',
-          material_code: '공장2F_E-09-03',
-          name: 'SPD, 퓨즈',
-          model: '',
-          spec: '사양3',
-          manufacturer: '파이온일렉트릭',
-          total_stock: 1200,
-          inbound_date: '2024-03-14',
-          unit_price: 2,
-          stock_price: 2400,
-          spot_stock:[
-            {spot: '공장동 1층', stock_num: 600, condition: 'G'},
-            {spot: '공장동 2층', stock_num: 100, condition: 'G'},
-            {spot: '세종사무실', stock_num: 500, condition: 'G'},
-          ],
-          photo:'photoName'
-        },
-      ],
+      stock_detail_header:MaterialSearchPageConfig.stock_detail_header,
+      inbound_detail_header:MaterialSearchPageConfig.stock_detail_header,
+      searchCardInputs:MaterialSearchPageConfig.searchCardInputs,
+      headers:MaterialSearchPageConfig.headers,
+      product_data:MaterialSearchPageConfig.test_product_data,
+      // product_data:[],
     }
   },
 
