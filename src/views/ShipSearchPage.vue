@@ -54,7 +54,6 @@
                     item-key="product_code"
                     approval="ship"
                     dense
-                    show-files
                     @clickTr="clickApproveData"
                   />
                 </v-card-text>
@@ -93,21 +92,10 @@
       :dialog-custom="'custom-dialog elevation-0 white'"
       :card-elevation="'0'"
       :hide-overlay="true"
-      :persistent="true"
+      @close="closeProductList"
     >
       <v-container>
         <v-row>
-          <v-col cols="12">
-            <v-btn
-              x-small
-              fab
-              color="blue-grey darken-1"
-              class="float-right elevation-0 white--text"
-              @click="ship_product_list_dialog = false"
-            >
-              <v-icon>mdi-close-thick</v-icon>
-            </v-btn>
-          </v-col>
           <v-col cols="12">
             <DataTableComponent
               :headers="ship_product_list_headers"
@@ -116,6 +104,37 @@
               dense
               show-photo
             />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" class="pt-0">
+            <table style="width:100%">
+              <tr>
+                <td class="approve_title" style="width:15%">비고</td>
+                <td class="approve_text" style="width:85%">
+                  {{  ship_info_data.note }}
+                </td>
+              </tr>
+            </table>
+          </v-col>
+        </v-row>
+        <v-row>
+
+          <v-col cols="12" sm="4">
+            <p class="font-weight-bold primary--text mb-0">▼ 시험성적서</p>
+            <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+ship_info_data.inspection_report"></iframe>
+          </v-col>
+          <v-col cols="12" sm="4">
+            <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
+            <v-chip
+             color="grey lighten-2"
+             class="ma-2"
+              v-for="(file, i) in ship_info_data.files"
+              :key="i"
+              :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+file"
+            >
+              {{ file }}
+            </v-chip>
           </v-col>
         </v-row>
       </v-container>
@@ -155,6 +174,7 @@ export default {
         { text: '신청자', align: 'center', value: 'creater', },
         { text: '작성일', align: 'center', value: 'created_time', },
         { text: '프로젝트', align: 'center', value: 'project', },
+        { text: '출하장소', align: 'center', value: 'ship_place', },
         { text: '출고요청일', align: 'center', value: 'ship_date', },
         { text: '출고목적', align: 'center', value: 'purpose', },
       ],
@@ -167,7 +187,6 @@ export default {
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
         { text: '출고수량', align: 'center', value: 'ship_num', },
-        { text: 'PE No.', align: 'center', value: 'pe_number', },
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '총액', align: 'center', value: 'product_price', },
       ],
@@ -182,25 +201,25 @@ export default {
           approver:'윤광희',
           return_reason:'',
           receiving_inspection:'',
-          inspection_report:'시험성적서파일명.pdf',
+          inspection_report:'2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
           note:'비고 작성한 내용 노출',
-          warehouse:'광주공장',
-          ship_place:'',
+          // warehouse:'광주공장',
+          ship_place:'Palce A',
           purpose:'TSC밸브 수리',
-          files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
+          files:'warehouse.jpg',
           belong_data:[
             {
               type:'원부자재',
               classification:'일반',
               product_code: '공장2F_E-09-01',
               name: 'IGBT & SMPS',
-              model: '',
-              spec: '',
+              model: '모델1',
+              spec: '스펙1',
               manufacturer: '파이온일렉트릭',
-              ship_num: '1',
-              pe_number: '',
-              unit_price: '',
-              product_price: '',
+              ship_num: 20,
+              unit_price: 1,
+              product_price: 20,
+              spot:'공장동 1층',
               files:''
             },
             {
@@ -208,13 +227,13 @@ export default {
               classification:'일반',
               product_code: '공장2F_E-09-01',
               name: 'IGBT & SMPS',
-              model: '',
-              spec: '',
+              model: '모델2',
+              spec: '스펙2',
               manufacturer: '파이온일렉트릭',
-              ship_num: '1',
-              pe_number: '',
-              unit_price: '',
-              product_price: '',
+              ship_num: 11,
+              unit_price: 3,
+              product_price: 33,
+              spot:'공장동 2층',
               files:''
             },
             {
@@ -222,13 +241,26 @@ export default {
               classification:'일반',
               product_code: '공장2F_E-09-01',
               name: 'IGBT & SMPS',
-              model: '',
-              spec: '',
+              model: '모델3',
+              spec: '스펙3',
               manufacturer: '파이온일렉트릭',
-              ship_num: '1',
-              pe_number: '',
-              unit_price: '',
-              product_price: '',
+              ship_num: 40,
+              unit_price: 2,
+              product_price: 80,
+              spot:'세종 사무실',
+            },
+            {
+              type:'원부자재',
+              classification:'GFM',
+              product_code: '공장2F_E-09-03',
+              name: '쿨링팬',
+              model: '모델4',
+              spec: '스펙4',
+              manufacturer: '파이온일렉트릭',
+              ship_num: 100,
+              unit_price: 2,
+              product_price: 200,
+              spot:'세종 사무실',
             },
           ],
         },
@@ -242,10 +274,10 @@ export default {
           approver:'',
           return_reason:'',
           receiving_inspection:'',
-          inspection_report:'시험성적서파일명.pdf',
+          inspection_report:'2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
           note:'비고 작성한 내용 노출',
           warehouse:'광주공장',
-          ship_place:'',
+          ship_place:'Palce B',
           purpose:'TSC밸브 수리',
           files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
           belong_data:[
@@ -261,6 +293,7 @@ export default {
               pe_number: '',
               unit_price: '',
               product_price: '',
+              spot:'공장동 1층',
             },
             {
               type:'원부자재',
@@ -274,6 +307,7 @@ export default {
               pe_number: '',
               unit_price: '',
               product_price: '',
+              spot:'공장동 1층',
               files:''
             },
             {
@@ -288,6 +322,7 @@ export default {
               pe_number: '',
               unit_price: '',
               product_price: '',
+              spot:'공장동 1층',
             },
           ],
         },
@@ -301,10 +336,10 @@ export default {
           approver:'윤광희',
           return_reason:'반려사유노출영역',
           receiving_inspection:'',
-          inspection_report:'시험성적서파일명.pdf',
+          inspection_report:'2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
           note:'비고 작성한 내용 노출',
           warehouse:'광주공장',
-          ship_place:'',
+          ship_place:'Palce C',
           purpose:'TSC밸브 수리',
           files:'warehouse.jpg,2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf',
           belong_data:[
@@ -320,6 +355,7 @@ export default {
               pe_number: '',
               unit_price: '',
               product_price: '',
+              spot:'공장동 1층',
             },
             {
               type:'원부자재',
@@ -333,6 +369,7 @@ export default {
               pe_number: '',
               unit_price: '',
               product_price: '',
+              spot:'공장동 1층',
               files:''
             },
             {
@@ -347,11 +384,13 @@ export default {
               pe_number: '',
               unit_price: '',
               product_price: '',
+              spot:'공장동 1층',
               files:''
             },
           ],
         },
       ],
+      ship_info_data:{},
       ship_product_list_data:[],
     }
   },
@@ -361,13 +400,27 @@ export default {
       return this.dates.join(' ~ ')
     },
   },
+  watch:{
+    ship_product_list_dialog(val){
+      val || this.closeProductList()
+    },
+  },
   methods:{
+    closeProductList(){
+      this.ship_product_list_dialog = false;
+    },
     clickApproveData(item){
       let belong_datas = item.belong_data
       this.ship_product_list_data = [];
+      this.ship_info_data = {};
       belong_datas.forEach(data =>{
         this.ship_product_list_data.push(data);
       })
+      this.ship_info_data = {
+        inspection_report : item.inspection_report,
+        note: item.note,
+        files: item.files.split(','),
+      }
       this.ship_product_list_dialog = true;
     },
   },

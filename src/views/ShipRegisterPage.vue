@@ -47,7 +47,7 @@
                   v-model="product_ship_data"
                   :headers="product_search_headers"
                   :items="product_search_data"
-                  item-key="product_code"
+                  item-key="product_info"
                   show-select
                   show-photo
                   />
@@ -89,7 +89,7 @@
                   dense
                   :headers="product_ship_headers"
                   :items="product_ship_data"
-                  item-key="product_code"
+                  item-key="product_info"
                   class="elevation-1"
                 >
                   <template v-slot:item="{ item }">
@@ -101,18 +101,20 @@
                       <td align="center">
                         <v-text-field
                           dense
-                          hide-details
                           filled
                           type="number"
                           style="max-width:150px"
                           v-model="item.product_ship_num"
+                          @click="check_stock_num = item.stock_num"
+                          :rules="shipNumRules"
                         >
                         </v-text-field>
                       </td>
                       <td align="center">{{  item.product_model }}</td>
                       <td align="center">{{  item.product_spec }}</td>
                       <td align="center">{{  item.manufacturer }}</td>
-                      <td align="center">{{  item.pe_number }}</td>
+                      <td align="center">{{  item.spot }}</td>
+                      <td align="center">{{  item.stock_num }}</td>
                       <td align="center">{{  item.unit_price }}</td>
                       <td align="center">{{  item.photo }}</td>
                     </tr>
@@ -272,6 +274,7 @@ export default {
       product_condition_list: ['All', 'G', 'B'],
       dates: [],
       menu: false,
+      check_stock_num:0,
 
 
       searchCardInputs:[
@@ -290,12 +293,13 @@ export default {
 
       shipCardInputs:[
         {label:'프로젝트', col:'12', sm:'4', lg:'2', value: ''},
-        {label:'출고(반출)요청일', type:'date', range:true, value:[], col:'12', sm:'4', lg:'2'},
-        {label:'출고처', col:'12', sm:'4', lg:'2', value: ''},
         {label:'출하장소', col:'12', sm:'4', lg:'2', value: ''},
-        {label:'출고목적', col:'12', sm:'4', lg:'4', value: ''},
+        {label:'출고(반출)요청일', type:'date', range:true, value:[], col:'12', sm:'4', lg:'2'},
         {label:'시험성적서', type:'file', col:'12', sm:'4', lg:'2', value: '', icon:'', appendIcon:'mdi-paperclip', smallChips:true,},
-        {label:'비고', type:'textarea', col:'12', sm:'4', lg:'6', value: ''},
+        {label:'기타', type:'file', col:'12', sm:'4', lg:'4', value: '', icon:'', appendIcon:'mdi-paperclip', smallChips:true,},
+        // {label:'출고처', col:'12', sm:'4', lg:'2', value: ''},
+        {label:'출고목적', col:'12', sm:'4', lg:'4', value: ''},
+        {label:'비고', type:'textarea', col:'12', sm:'4', lg:'4', value: ''},
       ],
 
 
@@ -308,7 +312,8 @@ export default {
         { text: '모델명', align: 'center', value: 'product_model', },
         { text: '사양', align: 'center', value: 'product_spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: 'PE No.', align: 'center', value: 'pe_number', },
+        { text: '위치', align: 'center', value: 'spot', },
+        { text: '재고', align: 'center', value: 'stock_num', },
         { text: '단가', align: 'center', value: 'unit_price', },
         { text: '사진', align: 'center', value: 'photo', },
       ],
@@ -324,119 +329,100 @@ export default {
         { text: '모델명', align: 'center', value: 'product_model', },
         { text: '사양', align: 'center', value: 'product_spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: 'PE No.', align: 'center', value: 'pe_number', },
+        { text: '위치', align: 'center', value: 'spot', },
+        { text: '재고', align: 'center', value: 'stock_num', },
         { text: '단가', align: 'center', value: 'unit_price', },
       ],
 
       product_search_data: [
         {
+          product_info:'공장2F_E-09-01/공장동 1층',
           product_type:'원부자재',
           product_classification:'일반',
           product_code: '공장2F_E-09-01',
           product_name: 'IGBT & SMPS',
-          product_model: '',
-          product_spec: '111',
+          product_model: '모델1',
+          product_spec: '사양1',
           manufacturer: '파이온일렉트릭',
-          pe_number: '',
-          unit_price: '',
+          spot: '공장동 1층',
+          stock_num:100,
+          unit_price: 1,
           photo:'',
         },
         {
+          product_info:'공장2F_E-09-01/공장동 2층',
           product_type:'원부자재',
           product_classification:'일반',
-          product_code: '공장2F_E-09-02',
-          product_name: 'SPD, 퓨즈',
-          product_model: '',
-          product_spec: '2222',
+          product_code: '공장2F_E-09-01',
+          product_name: 'IGBT & SMPS',
+          product_model: '모델1',
+          product_spec: '사양1',
           manufacturer: '파이온일렉트릭',
-          pe_number: '',
-          unit_price: '',
+          spot: '공장동 2층',
+          stock_num:150,
+          unit_price: 1,
           photo:'',
         },
         {
+          product_info:'공장2F_E-09-01/세종 사무실',
           product_type:'원부자재',
           product_classification:'일반',
-          product_code: '공장2F_E-09-03',
-          product_name: '쿨링팬',
-          product_model: '',
-          product_spec: '',
+          product_code: '공장2F_E-09-01',
+          product_name: 'IGBT & SMPS',
+          product_model: '모델1',
+          product_spec: '사양1',
           manufacturer: '파이온일렉트릭',
-          pe_number: '',
-          unit_price: '',
+          spot: '세종 사무실',
+          stock_num:10,
+          unit_price: 1,
           photo:'',
         },
         {
-          product_type:'원부자재',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-04',
-          product_name: '보호회로',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          pe_number: '',
-          unit_price: '',
-          photo:'',
-        },
-        {
-          product_type:'원부자재',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-05',
-          product_name: '리액터',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          pe_number: '',
-          unit_price: '',
-          photo:'',
-        },
-        {
-          product_type:'원부자재',
-          product_classification:'일반',
-          product_code: '공장2F_E-09-06',
-          product_name: 'MCCB',
-          product_model: '',
-          product_spec: '',
-          manufacturer: '파이온일렉트릭',
-          pe_number: '',
-          unit_price: '',
-          photo:'',
-        },
-        {
+          product_info:'PE-반제품-1/공장동 1층',
           product_type:'반제품',
           product_classification:'일반',
-          product_code: '공장2F_E-09-07',
+          product_code: 'PE-반제품-1',
           product_name: 'PCS Ass`Y',
-          product_model: '',
-          product_spec: '',
+          product_model: '모델2',
+          product_spec: '사양2',
           manufacturer: '파이온일렉트릭',
-          pe_number: '',
-          unit_price: '',
+          spot: '공장동 1층',
+          stock_num:90,
+          unit_price: 100,
           photo:'',
         },
         {
+          product_info:'PE-반제품-2/세종 사무실',
           product_type:'반제품',
           product_classification:'일반',
-          product_code: '공장2F_E-09-08',
+          product_code: 'PE-반제품-2',
           product_name: '제어기 Ass`Y',
-          product_model: '',
-          product_spec: '',
+          product_model: '모델3',
+          product_spec: '사양3',
           manufacturer: '파이온일렉트릭',
-          pe_number: '',
-          unit_price: '',
+          spot: '세종 사무실',
+          stock_num:10,
+          unit_price: 12,
           photo:'',
         },
         {
+          product_info:'P-ESS-PC-380V500K60H-RT-24-R1/세종 사무실',
           product_type:'완제품',
           product_classification:'일반',
           product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
           product_name: 'ESS GFM용 PCS',
-          product_model: '',
+          product_model: '모델4',
           product_spec: '380VAC 500kW',
           manufacturer: '파이온일렉트릭',
-          pe_number: '',
-          unit_price: '',
+          spot: '세종 사무실',
+          stock_num:11,
+          unit_price: 22,
           photo:'',
         },
+      ],
+      shipNumRules: [
+        v => !!v || '출하 수량 입력',
+        v => !!( v <= this.check_stock_num) || '출하 수량 > 재고 수량',
       ],
     }
   },

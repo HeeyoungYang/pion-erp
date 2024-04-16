@@ -50,23 +50,23 @@
             <td class="approve_text">{{ shipData.ship_date}}</td>
           </tr>
           <tr>
-            <td class="approve_title">출고처</td>
-            <td class="approve_text">{{ shipData.warehouse}}</td>
+            <!-- <td class="approve_title">출고처</td>
+            <td class="approve_text">{{ shipData.warehouse}}</td> -->
+            <td class="approve_title">출고목적</td>
+            <td class="approve_text">{{ shipData.purpose}}</td>
             <td class="approve_title">출하장소</td>
             <td class="approve_text">{{ shipData.ship_place}}</td>
           </tr>
           <tr>
-            <td class="approve_title">출고목적</td>
-            <td class="approve_text">{{ shipData.purpose}}</td>
             <td class="approve_title">시험성적서</td>
-            <td class="approve_text">
+            <td class="approve_text" colspan="3">
               {{ shipData.inspection_report ? '■ 유   □무' : '□ 유   ■무' }}
             </td>
           </tr>
           <tr>
-            <td class="approve_title">품목코드 및 수량</td>
+            <td class="approve_title">품목코드</td>
             <td class="approve_text" colspan="3">
-              <p class="mb-0" v-for="(dta, i) in belongData" :key="i">{{ i+1 }}. {{ dta.product_code }} : {{ dta.ship_num }}EA </p>
+              <p class="mb-0" v-for="(dta, i) in belongData" :key="i">{{ i+1 }}. {{ dta.product_code }} ({{ dta.spot }}): {{ dta.ship_num }}EA </p>
             </td>
           </tr>
           <tr>

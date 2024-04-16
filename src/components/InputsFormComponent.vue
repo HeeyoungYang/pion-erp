@@ -69,6 +69,7 @@
         :append-icon="input.appendIcon"
         :label="input.label"
         :disabled="input.disabled"
+        :accept="input.accept"
       ></v-file-input>
       <v-menu v-else-if="input.type === 'date' || input.type === 'date-picker' || input.type === 'datepicker'"
         :ref="'menu'+index"
