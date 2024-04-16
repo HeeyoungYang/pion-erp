@@ -544,6 +544,7 @@
               <v-btn
                 color="primary"
                 elevation="2"
+                @click="searchProduct"
               >
                 <v-icon>mdi-magnify</v-icon>검색
               </v-btn>
@@ -739,6 +740,7 @@ import DataTableComponent from "@/components/DataTableComponent";
 import CostTableComponent from "@/components/CostTableComponent";
 import mux from "@/mux";
 import Vue from 'vue';
+import ProductCostPageConfig from "@/configure/ProductCostPageConfig.json";
 
 export default {
   components: {
@@ -749,1032 +751,490 @@ export default {
               },
   data(){
     return{
-        mux: mux,
-        todayDate: '',
-        username: '',
-        searching_product_name: '',
-        searched_datas: {},
-        tab_main: null,
-        tab_search: null,
-        tab_calculate: null,
-        search_complete_product_code: '',
-        search_complete_product_name: '',
-        search_product_capacity: '',
-        dialog_search_product: false,
-        dialog_calculate_labor: false,
-        dialogDelete: false,
-        // edit_labor_cost_data: true,
-        edit_survey_cost_num_disabled: true,
-        edit_buttons_show: false,
-        print_labor_table: false,
-        editedIndex: -1,
-        content_save_items: [
-          {title:'출력', click:'print'},
-          {title:'엑셀', click:'excel'},
-          {title:'PDF', click:'pdf'},
-        ],
-        labor_selectable: [],
-        labor_occupation_selectable: [],
-        labor_data:[
-          {
-            no: '품-1',
-            name: '고압케이블 포설',
-            type: '240㎟, 1C',
-            occupation: '고압 케이블전공',
-            man_per_day: 0.136,
-            surcharge_ratio: 1.15
-          },
-          {
-            no: '품-2',
-            name: '저압케이블 포설', 
-            type: '6㎟, 2C',
-            occupation: '저압 케이블전공',
-            man_per_day: 0.018,
-            surcharge_ratio: 1.2
-          },
-          {
-            no: '품-2',
-            name: '저압케이블 포설', 
-            type: '2.5㎟, 6C',
-            occupation: '저압 케이블전공',
-            man_per_day: 0.035,
-            surcharge_ratio: 1.2
-          },
-          {
-            no: '품-3',
-            name: '전력케이블 단말처리', 
-            type: '240㎟, 1C',
-            occupation: 'ALL',
-            man_per_day: 1.17,
-            surcharge_ratio: 1.2
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '6㎥, 1.5 Ton이하',
-            occupation: '비계공',
-            man_per_day: 2,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '6㎥, 1.5 Ton이하',
-            occupation: '변전전공',
-            man_per_day: 4.05,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '6㎥, 1.5 Ton이하',
-            occupation: '보통인부',
-            man_per_day: 3.3,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '10㎥, 3 Ton 이하',
-            occupation: '비계공',
-            man_per_day: 4,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '10㎥, 3 Ton 이하',
-            occupation: '변전전공',
-            man_per_day: 7.05,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '10㎥, 3 Ton 이하',
-            occupation: '보통인부',
-            man_per_day: 5.6,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-5',
-            name: '전기실 전원 케이블 포설', 
-            type: '50sq, 3C',
-            occupation: '저압 케이블전공',
-            man_per_day: 0.043,
-            surcharge_ratio: 2
-          },
-          {
-            no: '품-6',
-            name: '케이블 트레이', 
-            type: '단면적 50,000㎟ 이하',
-            occupation: '내선전공',
-            man_per_day: 0.2,
-            surcharge_ratio: 1.44
-          },
-          {
-            no: '품-6',
-            name: '케이블 트레이', 
-            type: '단면적 50,000㎟ 이하',
-            occupation: '내선전공',
-            man_per_day: 0.16,
-            surcharge_ratio: 1.44
-          },
-          {
-            no: '품-7',
-            name: '통신케이블 포설', 
-            type: '지중 인력견인 포설',
-            occupation: '보통인부',
-            man_per_day: 1.41,
-            surcharge_ratio: 1
-          },
-        ],
-        labor_list:[
+      mux: mux,
+      todayDate: '',
+      username: '',
+      searching_product_name: '',
+      searched_datas: {},
+      tab_main: null,
+      tab_search: null,
+      tab_calculate: null,
+      search_complete_product_code: '',
+      search_complete_product_name: '',
+      search_product_capacity: '',
+      dialog_search_product: false,
+      dialog_calculate_labor: false,
+      dialogDelete: false,
+      // edit_labor_cost_data: true,
+      edit_survey_cost_num_disabled: true,
+      edit_buttons_show: false,
+      print_labor_table: false,
+      editedIndex: -1,
+      content_save_items: ProductCostPageConfig.content_save_items,
+      labor_selectable: [],
+      labor_occupation_selectable: [],
+
+      labor_data:[],
+      labor_list:[],
+      labor_occupation_list:[],
+
+      tab_main_items: ProductCostPageConfig.tab_main_items,
+      search_tab_items: ProductCostPageConfig.search_tab_items,
+      calculate_tab_items: ProductCostPageConfig.calculate_tab_items,
+      search_cost_headers: ProductCostPageConfig.search_cost_headers,
+      survey_cost_headers: ProductCostPageConfig.survey_cost_headers,
+      labor_cost_headers: ProductCostPageConfig.labor_cost_headers,
+      labor_list_headers: ProductCostPageConfig.labor_list_headers,
+      dialog_search_product_headers: ProductCostPageConfig.dialog_search_product_headers,
+      dialog_labor_cost_headers: ProductCostPageConfig.dialog_labor_cost_headers,
+
+      dialog_search_product_data:[],
+      dialog_selected_product_data:[],
+      search_cost_data: [
+        
+      ],
+
+      calc_cost_detail_data: [
         {
-            no: '품-1',
-            name: '고압케이블 포설',
-            type: '240㎟, 1C',
-            occupation: '고압 케이블전공',
-            man_per_day: 0.136,
-            surcharge_ratio: 1.15
-          },
-          {
-            no: '품-2',
-            name: '저압케이블 포설', 
-            type: '6㎟, 2C',
-            occupation: '저압 케이블전공',
-            man_per_day: 0.018,
-            surcharge_ratio: 1.2
-          },
-          {
-            no: '품-2',
-            name: '저압케이블 포설', 
-            type: '2.5㎟, 6C',
-            occupation: '저압 케이블전공',
-            man_per_day: 0.035,
-            surcharge_ratio: 1.2
-          },
-          {
-            no: '품-3',
-            name: '전력케이블 단말처리', 
-            type: '240㎟, 1C',
-            occupation: 'ALL',
-            man_per_day: 1.17,
-            surcharge_ratio: 1.2
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '6㎥, 1.5 Ton이하',
-            occupation: '비계공',
-            man_per_day: 2,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '6㎥, 1.5 Ton이하',
-            occupation: '변전전공',
-            man_per_day: 4.05,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '6㎥, 1.5 Ton이하',
-            occupation: '보통인부',
-            man_per_day: 3.3,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '10㎥, 3 Ton 이하',
-            occupation: '비계공',
-            man_per_day: 4,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '10㎥, 3 Ton 이하',
-            occupation: '변전전공',
-            man_per_day: 7.05,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-4',
-            name: 'Cubicle 설치', 
-            type: '10㎥, 3 Ton 이하',
-            occupation: '보통인부',
-            man_per_day: 5.6,
-            surcharge_ratio: 1
-          },
-          {
-            no: '품-5',
-            name: '전기실 전원 케이블 포설', 
-            type: '50sq, 3C',
-            occupation: '저압 케이블전공',
-            man_per_day: 0.043,
-            surcharge_ratio: 2
-          },
-          {
-            no: '품-6',
-            name: '케이블 트레이', 
-            type: '단면적 50,000㎟ 이하',
-            occupation: '내선전공',
-            man_per_day: 0.2,
-            surcharge_ratio: 1.44
-          },
-          {
-            no: '품-6',
-            name: '케이블 트레이', 
-            type: '단면적 50,000㎟ 이하',
-            occupation: '내선전공',
-            man_per_day: 0.16,
-            surcharge_ratio: 1.44
-          },
-          {
-            no: '품-7',
-            name: '통신케이블 포설', 
-            type: '지중 인력견인 포설',
-            occupation: '보통인부',
-            man_per_day: 1.41,
-            surcharge_ratio: 1
-          },
-        ],
-        labor_occupation_data:[
-          {
-            name: '저압 케이블전공',
-            unit_price: 290333,
-            adjustment_ratio: 1
-          },
-          {
-            name: '고압 케이블전공',
-            unit_price: 353395,
-            adjustment_ratio: 1
-          },
-          {
-            name: '비계공',
-            unit_price: 281721,
-            adjustment_ratio: 1
-          },
-          {
-            name: '변전전공',
-            unit_price: 451145,
-            adjustment_ratio: 1
-          },
-          {
-            name: '보통인부',
-            unit_price: 161858,
-            adjustment_ratio: 1
-          },
-          {
-            name: '내선전공',
-            unit_price: 269968,
-            adjustment_ratio: 1
-          },
-        ],
-        labor_occupation_list:[
-          {
-            name: '저압 케이블전공',
-            unit_price: 290333,
-            adjustment_ratio: 1
-          },
-          {
-            name: '고압 케이블전공',
-            unit_price: 353395,
-            adjustment_ratio: 1
-          },
-          {
-            name: '비계공',
-            unit_price: 281721,
-            adjustment_ratio: 1
-          },
-          {
-            name: '변전전공',
-            unit_price: 451145,
-            adjustment_ratio: 1
-          },
-          {
-            name: '보통인부',
-            unit_price: 161858,
-            adjustment_ratio: 1
-          },
-          {
-            name: '내선전공',
-            unit_price: 269968,
-            adjustment_ratio: 1
-          },
-        ],
-        tab_main_items: [
-          '조회', '계산',
-        ],
-        search_tab_items: [
-          '계산서', '산출내역서', '노무비 산출'
-        ],
-        calculate_tab_items: [
-          '산출내역서', '노무비 산출'
-        ],
-        search_cost_headers: [
-          { text: '제품명', align: 'center', value: 'product_name', },
-          { text: '작성일', align: 'center', value: 'cost_created_time', },
-          { text: '작성자', align: 'center', value: 'cost_creater', },
-          { text: '총액', align: 'center', value: 'cost_total_amount', },
-        ],
-        survey_cost_headers: [
-          { text: 'No.', align: 'center', value: '', },
-          { text: '항목', align: 'center', value: 'cost_list', },
-          { text: '단위', align: 'center', value: 'cost_unit', },
-          { text: '수량', align: 'center', value: 'cost_num', },
-          { text: '단가', align: 'center', value: 'cost_unit_price', },
-          { text: '합계', align: 'center', value: 'cost_total', },
-        ],
-        labor_cost_headers: [
-          { text: '품번', align: 'center', value: 'no'},
-          { text: '공종', align: 'center', value: 'name', },
-          { text: '규격', align: 'center', value: 'type', },
-          { text: '직종', align: 'center', value: 'occupation', },
-          { text: '공량(M/D)', align: 'center', value: 'man_per_day', },
-          { text: '할증율', align: 'center', value: 'surcharge_ratio', },
-          { text: '설계조정률', align: 'center', value: 'adjustment_ratio', },
-          { text: '공량(M/H)', align: 'center', value: 'man_per_hour', },
-          { text: '단가(M/D)', align: 'center', value: 'unit_price', },
-          { text: '수량', align: 'center', value: 'quantity', },
-          { text: '금액', align: 'center', value: 'total_amount', },
-          { text: '공정별 금액', align: 'center', value: 'no_total_amount', },
-        ],
-        labor_list_headers: [
-          { text: '품번', align: 'center', value: 'no'},
-          { text: '공종', align: 'center', value: 'name', },
-          { text: '규격', align: 'center', value: 'type', },
-          { text: '직종', align: 'center', value: 'occupation', },
-          { text: '공량(M/D)', align: 'center', value: 'man_per_day', },
-          { text: '할증율', align: 'center', value: 'surcharge_ratio', },
-          { text: '설계조정률', align: 'center', value: 'adjustment_ratio', },
-          { text: '공량(M/H)', align: 'center', value: 'man_per_hour', },
-          { text: '단가(M/D)', align: 'center', value: 'unit_price', },
-          { text: '수량', align: 'center', value: 'quantity', },
-          { text: '금액', align: 'center', value: 'total_amount', },
-          { text: '추가', align: 'center', value: '', },
-        ],
-        dialog_search_product_headers:[
-          { text: '', align: 'center', value:'actions'},
-          { text: '제품코드', align: 'center', value: 'product_code', },
-          { text: '제품명', align: 'center', value: 'complete_product_name', },
-          { text: '모델명', align: 'center', value: 'product_model', },
-          { text: '사양', align: 'center', value: 'product_spec', },
-          { text: '제조사', align: 'center', value: 'manufacturer', },
-          { text: '단가', align: 'center', value: 'unit_price', },
-          { text: '총액', align: 'center', value: 'product_price', },
-        ],
+          cost_list: '재료비',
+          cost_list_colspan: 4,
 
-        dialog_labor_cost_headers: [
-          { text: '품번', align: 'center', value: 'no'},
-          { text: '공종', align: 'center', value: 'name', },
-          { text: '규격', align: 'center', value: 'type', },
-          { text: '직종', align: 'center', value: 'occupation', },
-          { text: '공량(M/D)', align: 'center', value: 'man_per_day', },
-          { text: '할증율', align: 'center', value: 'surcharge_ratio', },
-          { text: '설계조정률', align: 'center', value: 'adjustment_ratio', },
-          { text: '공량(M/H)', align: 'center', value: 'man_per_hour', },
-          { text: '단가(M/D)', align: 'center', value: 'unit_price', },
-          { text: '수량', align: 'center', value: 'quantity', },
-          { text: '금액', align: 'center', value: 'total_amount', },
-          { text: '삭제', align: 'center', value: 'actions', },
-        ],
-        dialog_search_product_data:[
-          {
-            product_code:'P-ESS-PC-380V500K60H-RT-24-R1',
-            complete_product_name:'ESS GFM용 PCS',
-            product_model:'a',
-            product_spec:'380VAC 500kW',
-            manufacturer:'a',
-            unit_price:'a',
-            product_price:'a',
-            belong_data:[
-              {cost_list : 'PCS Ass`Y', cost_unit:'SET', cost_num: 1, cost_unit_price: 100},
-              {cost_list : '제어기 Ass`Y', cost_unit:'SET', cost_num: 1, cost_unit_price: 100},
-            ]
-          },
-        ],
-        dialog_selected_product_data:[
-
-        ],
-        dialog_labor_cost_data:[
-          {
-            idx:0,
-            no:'',
-            name:'',
-            type:'',
-            occupation:'',
-            man_per_day:'',
-            surcharge_ratio:'',
-            adjustment_ratio:'',
-            man_per_hour:'',
-            unit_price:'',
-            quantity:'',
-            total_amount:'',
-            no_total_amount:'',
-          },
-        ],
-        search_cost_data: [
-          
-        ],
-
-        calc_cost_detail_data: [
-          {
-            cost_list: '재료비',
-            cost_list_colspan: 4,
-
-            belong_data: []
-          },
-          {
-            cost_list: '노무비',
-            cost_list_colspan: 4,
-            belong_data: [
-              {
-                cost_list: '가. 직접 노무비',
-                cost_list_colspan: 4,
-                belong_data: []
-              },
-              {
-                cost_list: '나. 간접 노무비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            cost_list: '경비',
-            cost_list_colspan: 4,
-            belong_data: [
-              {
-                cost_list: '가. 고용보험료',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '나. 공구손료',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '다. 여비교통 통신비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '라. 산재보험료',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '마. 세금과공과',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '바. 복리후생비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '사. 퇴직공제 부금비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '아. 소모품비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 	0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '자. 산업안전보건관리비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            cost_list: '일반관리비',
-            cost_unit: '식',
-            cost_num: 1,
-            cost_unit_price: 0,
-            cost_num_editable: true,
-            allow_edit_decimal_point: true,
-            belong_data: [
-              {
-                cost_list: '',
-                cost_list_colspan: 5
-              }
-            ]
-          },
-          {
-            cost_list: '이윤',
-            cost_unit: '식',
-            cost_num: 1,
-            cost_num_editable: true,
-            allow_edit_decimal_point: true,
-            cost_unit_price: 0,
-            belong_data: [
-              {
-                cost_list: '',
-                cost_list_colspan: 5
-              }
-            ]
-          }
-
-        ],
-
-
-        calc_cost_detail_data2: [
-          {
-            cost_list: '재료비',
-            cost_list_colspan: 4,
-            costListBtn: {
-              text: '제품 불러오기',
-              click: ()=>{this.dialog_search_product = true}
+          belong_data: []
+        },
+        {
+          cost_list: '노무비',
+          cost_list_colspan: 4,
+          belong_data: [
+            {
+              cost_list: '가. 직접 노무비',
+              cost_list_colspan: 4,
+              belong_data: []
             },
-            belong_data: []
-          },
-          {
-            cost_list: '노무비',
-            cost_list_colspan: 4,
-            belong_data: [
-              {
-                cost_list: '가. 직접 노무비',
-                cost_list_colspan: 4,
-                costListBtn: {
-                  text: '산출',
-                  click: ()=>{this.dialog_calculate_labor = true}
-                },
-                belong_data: [
-                  
-                ]
-              },
-              {
-                cost_list: '나. 간접 노무비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            cost_list: '경비',
-            cost_list_colspan: 4,
-            belong_data: [
-              {
-                cost_list: '가. 고용보험료',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '나. 공구손료',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '다. 여비교통 통신비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '라. 산재보험료',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '마. 세금과공과',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '바. 복리후생비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '사. 퇴직공제 부금비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '아. 소모품비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 	0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              },
-              {
-                cost_list: '자. 산업안전보건관리비',
-                cost_unit: '식',
-                cost_num: 1,
-                cost_num_editable: true,
-                cost_unit_price: 0,
-                belong_data: [
-                  {
-                    cost_list: '',
-                    cost_list_colspan: 5
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            cost_list: '일반관리비',
-            cost_unit: '식',
-            cost_num: 1,
-            cost_unit_price: 0,
-            cost_num_editable: true,
-            allow_edit_decimal_point: true,
-            belong_data: [
-              {
-                cost_list: '',
-                cost_list_colspan: 5
-              }
-            ]
-          },
-          {
-            cost_list: '이윤',
-            cost_unit: '식',
-            cost_num: 1,
-            cost_num_editable: true,
-            allow_edit_decimal_point: true,
-            cost_unit_price: 0,
-            belong_data: [
-              {
-                cost_list: '',
-                cost_list_colspan: 5
-              }
-            ]
-          }
+            {
+              cost_list: '나. 간접 노무비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          cost_list: '경비',
+          cost_list_colspan: 4,
+          belong_data: [
+            {
+              cost_list: '가. 고용보험료',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '나. 공구손료',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '다. 여비교통 통신비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '라. 산재보험료',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '마. 세금과공과',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '바. 복리후생비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '사. 퇴직공제 부금비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '아. 소모품비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 	0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '자. 산업안전보건관리비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          cost_list: '일반관리비',
+          cost_unit: '식',
+          cost_num: 1,
+          cost_unit_price: 0,
+          cost_num_editable: true,
+          allow_edit_decimal_point: true,
+          belong_data: [
+            {
+              cost_list: '',
+              cost_list_colspan: 5
+            }
+          ]
+        },
+        {
+          cost_list: '이윤',
+          cost_unit: '식',
+          cost_num: 1,
+          cost_num_editable: true,
+          allow_edit_decimal_point: true,
+          cost_unit_price: 0,
+          belong_data: [
+            {
+              cost_list: '',
+              cost_list_colspan: 5
+            }
+          ]
+        }
 
-        ],
-
-        labor_cost_data: [],
-        merged_labor_cost_data: [],
-
-        labor_cost_list: [
-          {
-            no:'품-1',
-            name:'고압케이블 포설',
-            type:'240㎟, 1C',
-            occupation:'',
-            man_per_day:'0.136',
-            surcharge_ratio:'1.15',
-            adjustment_ratio:'',
-            man_per_hour:'',
-            unit_price:'',
-            quantity:'',
-            total_amount:'',
-            no_total_amount:'',
-          },
-          {
-            no:'품-2',
-            name:'저압케이블 포설',
-            type:'6㎟, 2C',
-            occupation:'',
-            man_per_day:'0.018',
-            surcharge_ratio:'1.20',
-            adjustment_ratio:'',
-            man_per_hour:'',
-            unit_price:'',
-            quantity:'',
-            total_amount:'',
-            no_total_amount:'',
-          },
-          {
-            no:'품-2',
-            name:'저압케이블 포설',
-            type:'2.5㎟, 6C',
-            occupation:'',
-            man_per_day:'0.035',
-            surcharge_ratio:'1.20',
-            adjustment_ratio:'',
-            man_per_hour:'',
-            unit_price:'',
-            quantity:'',
-            total_amount:'',
-            no_total_amount:'',
-          },
-          {
-            no:'품-3',
-            name:'전력케이블 단말처리',
-            type:'240㎟, 1C',
-            occupation:'',
-            man_per_day:'1.170',
-            surcharge_ratio:'1.20',
-            adjustment_ratio:'',
-            man_per_hour:'',
-            unit_price:'',
-            quantity:'',
-            total_amount:'',
-            no_total_amount:'',
-          },
-          {
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'6㎥, 1.5 Ton이하',
-            occupation:'',
-            man_per_day:'2.00',
-            surcharge_ratio:'1',
-            adjustment_ratio:'',
-            man_per_hour:'',
-            unit_price:'',
-            quantity:'',
-            total_amount:'',
-            no_total_amount:'',
-          },
-          {
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'10㎥, 3 Ton 이하',
-            occupation:'',
-            man_per_day:'4.00',
-            surcharge_ratio:'1',
-            adjustment_ratio:'',
-            man_per_hour:'',
-            unit_price:'',
-            quantity:'',
-            total_amount:'',
-            no_total_amount:'',
-          },
-          {
-            no:'품-5',
-            name:'전기실  전원 케이블 포설',
-            type:'50sq, 3C',
-            occupation:'',
-            man_per_day:'0.043',
-            surcharge_ratio:'2',
-            adjustment_ratio:'',
-            man_per_hour:'',
-            unit_price:'',
-            quantity:'',
-            total_amount:'',
-            no_total_amount:'',
-          },
-          {
-            no:'품-6',
-            name:'케이블 트레이',
-            type:'단면적 50,000㎟ 이하',
-            occupation:'',
-            man_per_day:'0.200',
-            surcharge_ratio:'1.44',
-            adjustment_ratio:'',
-            man_per_hour:'',
-            unit_price:'',
-            quantity:'',
-            total_amount:'',
-            no_total_amount:'',
-          },
-          {
-            no:'품-6',
-            name:'케이블 트레이',
-            type:'단면적 30,000㎟ 이하',
-            occupation:'',
-            man_per_day:'0.160',
-            surcharge_ratio:'1.44',
-            adjustment_ratio:'',
-            man_per_hour:'',
-            unit_price:'',
-            quantity:'',
-            total_amount:'',
-            no_total_amount:'',
-          },
-          {
-            no:'품-7',
-            name:'통신케이블 포설',
-            type:'지중 인력견인 포설',
-            occupation:'',
-            man_per_day:'1.410',
-            surcharge_ratio:'1',
-            adjustment_ratio:'',
-            man_per_hour:'',
-            unit_price:'',
-            quantity:'',
-            total_amount:'',
-            no_total_amount:'',
-          },
-        ],
-        merged_labor_cost_list: [],
-
-        wage_unit_price_list:[
-          {occupation : '저압 케이블전공', unit_price:'290333', adjustment_ratio:'1.0000'},
-          {occupation : '고압 케이블전공', unit_price:'353395', adjustment_ratio:'1.0000'},
-          {occupation : '비계공', unit_price:'281721', adjustment_ratio:'1.0000'},
-          {occupation : '변전전공', unit_price:'451145', adjustment_ratio:'1.0000'},
-          {occupation : '보통인부', unit_price:'161858', adjustment_ratio:'1.0000'},
-          {occupation : '내선전공', unit_price:'269968', adjustment_ratio:'1.0000'},
-        ],
+      ],
 
 
-        clickedProductCost: {},
+      calc_cost_detail_data2: [
+        {
+          cost_list: '재료비',
+          cost_list_colspan: 4,
+          costListBtn: {
+            text: '제품 불러오기',
+            click: ()=>{this.dialog_search_product = true}
+          },
+          belong_data: []
+        },
+        {
+          cost_list: '노무비',
+          cost_list_colspan: 4,
+          belong_data: [
+            {
+              cost_list: '가. 직접 노무비',
+              cost_list_colspan: 4,
+              costListBtn: {
+                text: '산출',
+                click: ()=>{this.dialog_calculate_labor = true}
+              },
+              belong_data: [
+                
+              ]
+            },
+            {
+              cost_list: '나. 간접 노무비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          cost_list: '경비',
+          cost_list_colspan: 4,
+          belong_data: [
+            {
+              cost_list: '가. 고용보험료',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '나. 공구손료',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '다. 여비교통 통신비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '라. 산재보험료',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '마. 세금과공과',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '바. 복리후생비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '사. 퇴직공제 부금비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '아. 소모품비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 	0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            },
+            {
+              cost_list: '자. 산업안전보건관리비',
+              cost_unit: '식',
+              cost_num: 1,
+              cost_num_editable: true,
+              cost_unit_price: 0,
+              belong_data: [
+                {
+                  cost_list: '',
+                  cost_list_colspan: 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          cost_list: '일반관리비',
+          cost_unit: '식',
+          cost_num: 1,
+          cost_unit_price: 0,
+          cost_num_editable: true,
+          allow_edit_decimal_point: true,
+          belong_data: [
+            {
+              cost_list: '',
+              cost_list_colspan: 5
+            }
+          ]
+        },
+        {
+          cost_list: '이윤',
+          cost_unit: '식',
+          cost_num: 1,
+          cost_num_editable: true,
+          allow_edit_decimal_point: true,
+          cost_unit_price: 0,
+          belong_data: [
+            {
+              cost_list: '',
+              cost_list_colspan: 5
+            }
+          ]
+        }
 
-        new_cost_calc_code: '',
-        new_product_code: '',
-        new_product_name: '',
-        new_product_spec: '',
-        new_indirect_labor_num: 1,
-        new_indirect_labor_ratio: 0.122,
-        new_indirect_labor_formula: '직접노무비X12.2%',
-        new_employment_insurance_num: 1,
-        new_employment_insurance_ratio: 0.0101,
-        new_employment_insurance_formula: '노무비X1.01%',
-        new_tool_rent_fee_num: 1,
-        new_tool_rent_fee_ratio: 0.03,
-        new_tool_rent_fee_formula: '직접노무비X3%',
-        new_transportation_fee_num: 1,
-        new_transportation_fee_ratio: 0.00418,
-        new_transportation_fee_formula: '노무비X0.418%',
-        new_industrial_accident_num: 1,
-        new_industrial_accident_ratio: 0.037,
-        new_industrial_accident_formula: '노무비X3.7%',
-        new_taxes_dues_num: 1,
-        new_taxes_dues_ratio: 0.0013,
-        new_taxes_dues_formula: '노무비X0.13%',
-        new_welfare_benefits_num: 1,
-        new_welfare_benefits_ratio: 0.02397,
-        new_welfare_benefits_formula: '노무비X2.397%',
-        new_retirement_num: 1,
-        new_retirement_ratio: 0.023,
-        new_retirement_formula: '직접노무비X2.3%',
-        new_expendables_num: 1,
-        new_expendables_ratio: 0.01479,
-        new_expendables_formula: '노무비X1.479%',
-        new_industrial_safety_num: 1,
-        new_industrial_safety_ratio: 0.0222,
-        new_industrial_safety_formula: '직접노무비X1.85%X1.2',
-        new_normal_maintenance_fee_num: 1,
-        new_normal_maintenance_fee_ratio: 0.06,
-        new_normal_maintenance_fee_formula: '(재료비+노무비+경비)X6%',
-        new_profite_num: 1,
-        new_profite_ratio: 0.15,
-        new_profite_formula: '(노무비+경비+일반관리비)X15%',
-      //   labor_cost:[
-      //   {
-      //     no: '',
-      //     name: '',
-      //     type: '',
-      //     man_per_day: '',
-      //     surcharge_ratio: 0,
-      //   },
-      // ],
-      // labor_current_unit_price: [
-      //   {
-      //     occupation: '',
-      //     unit_price: '',
-      //     adjustment_ratio : 2024-03-11,
-      //   }
-      // ]
+      ],
+
+      labor_cost_data: [],
+      merged_labor_cost_data: [],
+
+      labor_cost_list: [
+        {
+          no:'',
+          name:'',
+          type:'',
+          occupation:'',
+          man_per_day:0,
+          surcharge_ratio:0,
+          adjustment_ratio:0,
+          man_per_hour:0,
+          unit_price:0,
+          quantity:0,
+          total_amount:0,
+          no_total_amount:0,
+        }
+      ],
+      merged_labor_cost_list: [],
+
+      clickedProductCost: {},
+
+      new_cost_calc_code: '',
+      new_product_code: '',
+      new_product_name: '',
+      new_product_spec: '',
+      new_indirect_labor_num: 1,
+      new_indirect_labor_ratio: 0.122,
+      new_indirect_labor_formula: '직접노무비X12.2%',
+      new_employment_insurance_num: 1,
+      new_employment_insurance_ratio: 0.0101,
+      new_employment_insurance_formula: '노무비X1.01%',
+      new_tool_rent_fee_num: 1,
+      new_tool_rent_fee_ratio: 0.03,
+      new_tool_rent_fee_formula: '직접노무비X3%',
+      new_transportation_fee_num: 1,
+      new_transportation_fee_ratio: 0.00418,
+      new_transportation_fee_formula: '노무비X0.418%',
+      new_industrial_accident_num: 1,
+      new_industrial_accident_ratio: 0.037,
+      new_industrial_accident_formula: '노무비X3.7%',
+      new_taxes_dues_num: 1,
+      new_taxes_dues_ratio: 0.0013,
+      new_taxes_dues_formula: '노무비X0.13%',
+      new_welfare_benefits_num: 1,
+      new_welfare_benefits_ratio: 0.02397,
+      new_welfare_benefits_formula: '노무비X2.397%',
+      new_retirement_num: 1,
+      new_retirement_ratio: 0.023,
+      new_retirement_formula: '직접노무비X2.3%',
+      new_expendables_num: 1,
+      new_expendables_ratio: 0.01479,
+      new_expendables_formula: '노무비X1.479%',
+      new_industrial_safety_num: 1,
+      new_industrial_safety_ratio: 0.0222,
+      new_industrial_safety_formula: '직접노무비X1.85%X1.2',
+      new_normal_maintenance_fee_num: 1,
+      new_normal_maintenance_fee_ratio: 0.06,
+      new_normal_maintenance_fee_formula: '(재료비+노무비+경비)X6%',
+      new_profite_num: 1,
+      new_profite_ratio: 0.15,
+      new_profite_formula: '(노무비+경비+일반관리비)X15%',
     }
   },
   
@@ -1783,6 +1243,9 @@ export default {
     dialog_calculate_labor(show) {
       if(this.tab_main === 0){
         if(show){
+          this.labor_data = ProductCostPageConfig.labor_data;
+          this.labor_occupation_data = ProductCostPageConfig.labor_occupation_data;
+
           this.origin_labor_cost_data = JSON.parse(JSON.stringify(this.labor_cost_data));
         }else {
           this.labor_cost_data = this.origin_labor_cost_data;
@@ -2023,6 +1486,10 @@ export default {
     // this.new_normal_maintenance_fee_formula = current_data.cost_ratio.find(x=> x.type === '일반관리비').formula;
     // this.new_profite_ratio = current_data.cost_ratio.find(x=> x.type === '이윤').ratio;
     // this.new_profite_formula = current_data.cost_ratio.find(x=> x.type === '이윤').formula;
+
+    this.labor_list = ProductCostPageConfig.labor_list;
+    this.labor_occupation_list = ProductCostPageConfig.labor_occupation_list;
+
     // set num
     this.calc_cost_detail_data_employment_insurance2.cost_num = this.new_employment_insurance_num;
     this.calc_cost_detail_data_tool_rent_fee2.cost_num = this.new_tool_rent_fee_num;
@@ -2055,354 +1522,21 @@ export default {
       const keyword = this.searching_product_name.trim();
       console.log('keyword :>> ', keyword);
 
-      const searchResult = {
-        product_cost:[
-          {
-            cost_created_time: '2024-03-27',
-            cost_creater: '박OO',
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            product_name: 'ESS GFM용 PCS',
-            product_spec: '380VAC 500kW',
-            indirect_labor_num: 1,
-            indirect_labor_ratio: 0.122,
-            indirect_labor_formula: '직접노무비X12.2%',
-            employment_insurance_num: 1,
-            employment_insurance_ratio: 0.0101,
-            employment_insurance_formula: '노무비X1.01%',
-            tool_rent_fee_num: 1,
-            tool_rent_fee_ratio: 0.03,
-            tool_rent_fee_formula: '직접노무비X3%',
-            transportation_fee_num: 1,
-            transportation_fee_ratio: 0.00418,
-            transportation_fee_formula: '노무비X0.418%',
-            industrial_accident_num: 1,
-            industrial_accident_ratio: 0.037,
-            industrial_accident_formula: '노무비X3.7%',
-            taxes_dues_num: 1,
-            taxes_dues_ratio: 0.0013,
-            taxes_dues_formula: '노무비X0.13%',
-            welfare_benefits_num: 1,
-            welfare_benefits_ratio: 0.02397,
-            welfare_benefits_formula: '노무비X2.397%',
-            retirement_num: 1,
-            retirement_ratio: 0.023,
-            retirement_formula: '직접노무비X2.3%',
-            expendables_num: 1,
-            expendables_ratio: 0.01479,
-            expendables_formula: '노무비X1.479%',
-            industrial_safety_num: 1,
-            industrial_safety_ratio: 0.0222,
-            industrial_safety_formula: '직접노무비X1.85%X1.2',
-            normal_maintenance_fee_num: 1,
-            normal_maintenance_fee_ratio: 0.06,
-            normal_maintenance_fee_formula: '(재료비+노무비+경비)X6%',
-            profite_num: 1,
-            profite_ratio: 0.15,
-            profite_formula: '(노무비+경비+일반관리비)X15%',
-          },
-        ],
-        product_cost_calc_detail:[
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            product_name: 'ESS GFM용 PCS',
-            product_spec: '380VAC 500kW',
-            module_name: '공장2F_반제품-001',
-            module_num: 10,
-            module_unit_price: 100,
-            material_name: '',
-            material_num: '',
-            material_unit_price: '',
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            product_name: 'ESS GFM용 PCS',
-            product_spec: '380VAC 500kW',
-            module_name: '공장2F_반제품-002',
-            module_num: 22,
-            module_unit_price: 200,
-            material_name: '',
-            material_num: '',
-            material_unit_price: '',
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            product_name: 'ESS GFM용 PCS',
-            product_spec: '380VAC 500kW',
-            module_name: '공장2F_반제품-003',
-            module_num: 15,
-            module_unit_price: 300,
-            material_name: '',
-            material_num: '',
-            material_unit_price: '',
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            product_name: 'ESS GFM용 PCS',
-            product_spec: '380VAC 500kW',
-            module_name: '공장2F_반제품-004',
-            module_num: 21,
-            module_unit_price: 150,
-            material_name: '',
-            material_num: '',
-            material_unit_price: '',
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            product_name: 'ESS GFM용 PCS',
-            product_spec: '380VAC 500kW',
-            module_name: '',
-            module_num: 0,
-            module_unit_price: 0,
-            material_name: '공장2F_원부자재-001',
-            material_num: 10,
-            material_unit_price: 3,
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            product_name: 'ESS GFM용 PCS',
-            product_spec: '380VAC 500kW',
-            module_name: '',
-            module_num: 0,
-            module_unit_price: 0,
-            material_name: '공장2F_원부자재-002',
-            material_num: 22,
-            material_unit_price: 2,
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            product_name: 'ESS GFM용 PCS',
-            product_spec: '380VAC 500kW',
-            module_name: '',
-            module_num: 0,
-            module_unit_price: 0,
-            material_name: '공장2F_원부자재-003',
-            material_num: 15,
-            material_unit_price: 1,
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            product_name: 'ESS GFM용 PCS',
-            product_spec: '380VAC 500kW',
-            module_name: '',
-            module_num: 0,
-            module_unit_price: 0,
-            material_name: '공장2F_원부자재-004',
-            material_num: 21,
-            material_unit_price: 3,
-          },
-        ],
-        labor_cost_calc_detail: [
-        {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-1',
-            name:'고압케이블 포설',
-            type:'240㎟, 1C',
-            occupation:'고압 케이블전공',
-            man_per_day:0.136,
-            surcharge_ratio:1.15,
-            adjustment_ratio:1,
-            man_per_hour:0.156,
-            unit_price:290333,
-            quantity:2280
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-2',
-            name:'저압케이블 포설',
-            type:'6㎟, 2C',
-            occupation:'저압 케이블전공',
-            man_per_day:0.018,
-            surcharge_ratio:1.2,
-            adjustment_ratio:1,
-            man_per_hour:0.022,
-            unit_price:290333,
-            quantity:880
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-2',
-            name:'저압케이블 포설',
-            type:'2.5㎟, 6C',
-            occupation:'저압 케이블전공',
-            man_per_day:0.035,
-            surcharge_ratio:1.2,
-            adjustment_ratio:1,
-            man_per_hour:0.042,
-            unit_price:290333,
-            quantity:1240
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-3',
-            name:'전력케이블 단말처리',
-            type:'240㎟, 1C',
-            occupation:'고압 케이블전공',
-            man_per_day:1.17,
-            surcharge_ratio:1.2,
-            adjustment_ratio:1,
-            man_per_hour:1.404,
-            unit_price:353395,
-            quantity:12
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'6㎥, 1.5 Ton이하',
-            occupation:'비계공',
-            man_per_day:2,
-            surcharge_ratio:1,
-            adjustment_ratio:1,
-            man_per_hour:2,
-            unit_price:281721,
-            quantity:3
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'6㎥, 1.5 Ton이하',
-            occupation:'변전전공',
-            man_per_day:4.05,
-            surcharge_ratio:1,
-            adjustment_ratio:1,
-            man_per_hour:4.05,
-            unit_price:451145,
-            quantity:3
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'6㎥, 1.5 Ton이하',
-            occupation:'보통인부',
-            man_per_day:3.3,
-            surcharge_ratio:1,
-            adjustment_ratio:1,
-            man_per_hour:3.3,
-            unit_price:161858,
-            quantity:3
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'10㎥, 3 Ton 이하',
-            occupation:'비계공',
-            man_per_day:4,
-            surcharge_ratio:1,
-            adjustment_ratio:1,
-            man_per_hour:4,
-            unit_price:281721,
-            quantity:8
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'10㎥, 3 Ton 이하',
-            occupation:'변전전공',
-            man_per_day:7.05,
-            surcharge_ratio:1,
-            adjustment_ratio:1,
-            man_per_hour:7.05,
-            unit_price:451145,
-            quantity:8
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'10㎥, 3 Ton 이하',
-            occupation:'보통인부',
-            man_per_day:5.6,
-            surcharge_ratio:1,
-            adjustment_ratio:1,
-            man_per_hour:5.6,
-            unit_price:161858,
-            quantity:8
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-5',
-            name:'전기실 전원 케이블 포설',
-            type:'50sq, 3C',
-            occupation:'저압 케이블전공',
-            man_per_day:0.043,
-            surcharge_ratio:2,
-            adjustment_ratio:1,
-            man_per_hour:0.086,
-            unit_price:290333,
-            quantity:240
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-6',
-            name:'케이블 트레이',
-            type:'단면적 50,000㎟ 이하',
-            occupation:'내선전공',
-            man_per_day:0.2,
-            surcharge_ratio:1.44,
-            adjustment_ratio:1,
-            man_per_hour:0.288,
-            unit_price:269968,
-            quantity:105
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-6',
-            name:'케이블 트레이',
-            type:'단면적 30,000㎟ 이하',
-            occupation:'내선전공',
-            man_per_day:0.16,
-            surcharge_ratio:1.44,
-            adjustment_ratio:1,
-            man_per_hour:0.23,
-            unit_price:269968,
-            quantity:15
-          },
-          {
-            cost_calc_code: 'P-ESS-PC-380V500K60H-RT-24-R1-1',
-            product_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-            no:'품-7',
-            name:'통신케이블 포설',
-            type:'지중 인력견인 포설',
-            occupation:'보통인부',
-            man_per_day:1.410,
-            surcharge_ratio:1,
-            adjustment_ratio:1,
-            man_per_hour:1.41,
-            unit_price:161858,
-            quantity:2.8
-          }
-        ]
-      };
+      const searchResult = ProductCostPageConfig.search_result;
 
       this.clearClicked();
       this.searchDataCalcProcess(searchResult, true);
 
+    },
+    searchProduct(){
+      const product_code = this.search_complete_product_code.trim();
+      const product_name = this.search_complete_product_name.trim();
+      const product_capacity = this.search_product_capacity.trim();
+      console.log(`${product_code} / ${product_name} / ${product_capacity}`);
+
+      const searchResult = ProductCostPageConfig.dialog_search_product_data;
+      
+      this.dialog_search_product_data = searchResult;
     },
     searchDataCalcProcess(searchResult, isFirst){
       const productTotalCost = searchResult.product_cost_calc_detail.reduce((a,b)=>{
@@ -2457,9 +1591,14 @@ export default {
       this.calc_cost_detail_data2[0].belong_data = item.belong_data;
     },
     selectOccupationFunc(item, data){
-      let wage_list = this.wage_unit_price_list
+      let wage_list;
+      if (this.tab_main == 0){
+        wage_list = this.labor_occupation_data;
+      }else {
+        wage_list = this.labor_occupation_list;
+      }
       for(let i = 0; i < wage_list.length; i++){
-        if(data == wage_list[i].occupation){
+        if(data == wage_list[i].name){
           item.unit_price = wage_list[i].unit_price
           item.adjustment_ratio = wage_list[i].adjustment_ratio
           item.man_per_hour =  (item.man_per_day * item.surcharge_ratio * item.adjustment_ratio).toFixed(3);
@@ -2742,11 +1881,11 @@ export default {
         for (let i = this.labor_cost_data.length - 1; i >= 0; i--) {
           if (!this.labor_cost_data[i].quantity || this.labor_cost_data[i].quantity == 0){
             if (i === 0){
-              alert('모든 행을 삭제할 수 없습니다.');
+              alert('최소 한 개의 행은 수량이 입력되어야 합니다.');
               return;
             }
             if (!isConfirm){
-              if (confirm('수량이 없는 행을 모두 삭제하시겠습니까?')){
+              if (confirm('수량이 없는 행이 존재합니다.\n수량이 없는 행을 삭제하시겠습니까?')){
                 isConfirm = true;
               }else {
                 return;
@@ -2816,11 +1955,11 @@ export default {
         for (let i = this.labor_cost_list.length - 1; i >= 0; i--) {
           if (!this.labor_cost_list[i].quantity || this.labor_cost_list[i].quantity == 0){
             if (i === 0){
-              alert('모든 행을 삭제할 수 없습니다.');
+              alert('최소 한 개의 행은 수량이 입력되어야 합니다.');
               return;
             }
             if (!isConfirm){
-              if (confirm('수량이 없는 행을 모두 삭제하시겠습니까?')){
+              if (confirm('수량이 없는 행이 존재합니다.\n수량이 없는 행을 삭제하시겠습니까?')){
                 isConfirm = true;
               }else {
                 return;
