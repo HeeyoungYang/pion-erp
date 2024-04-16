@@ -146,6 +146,7 @@ import DataTableComponent from "@/components/DataTableComponent";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
+import StockSearchPageConfig from "@/configure/StockSearchPageConfig.json";
 import mux from "@/mux";
 
 export default {
@@ -164,86 +165,12 @@ export default {
       detail_dialog: false,
       stockDetails:[],
       inboundDetails:[],
-      stock_detail_header:[
-        { text: '위치', align: 'center', value: 'spot', },
-        { text: '수량', align: 'center', value: 'stock_num', },
-        { text: '상태', align: 'center', value: 'condition', },
-      ],
-      inbound_detail_header:[
-        { text: '위치', align: 'center', value: 'spot', },
-        { text: '수량', align: 'center', value: 'inbound_num', },
-        { text: '입고일자', align: 'center', value: 'inbound_date', },
-      ],
-
-      searchCardInputs:[
-        {label:'종류', type:'auto', col:'12', sm:'4', lg:'2', value:'All', list:['All', '원부자재', '반제품', '완제품']},
-        {label:'분류', type:'auto', list:['All', '일반', 'GFM', '전력변환기'], value:'All', col:'12', sm:'4', lg:'2'},
-        {label:'상태', type:'auto', col:'12', sm:'4', lg:'2', value:'All', list:['All', 'G', 'B']},
-        {label:'관리코드', col:'12', sm:'4', lg:'3', value: '',},
-        {label:'제품명', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'모델명', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'제조사', col:'12', sm:'4', lg:'3', value: ''},
-        // {label:'일자', type:'date', range:true, value:[], col:'12', sm:'4', lg:'3'}
-      ],
-      headers: [
-        // { text: '종류', align: 'center', value: 'type', },
-        // { text: '분류', align: 'center', value: 'classification', },
-        // { text: '관리코드', align: 'center', value: '_code', },
-        // { text: '위치', align: 'center', value: 'spot', },
-        // { text: '제품명', align: 'center', value: 'name', },
-        // { text: '모델명', align: 'center', value: 'model', },
-        // { text: '사양', align: 'center', value: 'spec', },
-        // { text: '제조사', align: 'center', value: 'manufacturer', },
-        // { text: '재고', align: 'center', value: 'stock_num', },
-        // { text: '상태', align: 'center', value: 'condition', },
-        // { text: '입고일자', align: 'center', value: 'inbound_date', },
-        // { text: '단가', align: 'center', value: 'unit_price', },
-        // { text: '총액', align: 'center', value: 'stock_price', },
-        { text: '종류', align: 'center', value: 'type', },
-        { text: '분류', align: 'center', value: 'classification', },
-        { text: '관리코드', align: 'center', value: '_code', },
-        { text: '제품명', align: 'center', value: 'name', },
-        { text: '모델명', align: 'center', value: 'model', },
-        { text: '사양', align: 'center', value: 'spec', },
-        { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '단가', align: 'center', value: 'unit_price', },
-      ],
-
-      product_data: [
-        // {
-        //   type:'원부자재',
-        //   classification:'일반',
-        //   _code: '공장2F_E-09-01',
-        //   name: 'IGBT & SMPS',
-        //   model: '원부자재 모델1',
-        //   spec: '원부자재 사양1',
-        //   manufacturer: '파이온일렉트릭',
-        //   total_stock: 1000,
-        //   unit_price: 2,
-        //   stock_price: 2000,
-        //   spot_stock:[
-        //     {spot: '공장동 1층', stock_num: 400, condition: 'G'},
-        //     {spot: '공장동 2층', stock_num: 600, condition: 'G'},
-        //   ],
-        // },
-        // {
-        //   type:'원부자재',
-        //   classification:'일반',
-        //   _code: '공장2F_E-09-02',
-        //   name: '쿨링팬',
-        //   model: '원부자재 모델2',
-        //   spec: '원부자재 사양2',
-        //   manufacturer: '파이온일렉트릭',
-        //   total_stock: 400,
-        //   unit_price: 10,
-        //   stock_price: 4000,
-        //   spot_stock:[
-        //     {spot: '공장동 1층', stock_num: 300, condition: 'G'},
-        //     {spot: '공장동 2층', stock_num: 100, condition: 'G'},
-        //   ],
-        // },
-      ],
+      stock_detail_header:StockSearchPageConfig.stock_detail_header,
+      inbound_detail_header:StockSearchPageConfig.inbound_detail_header,
+      searchCardInputs:StockSearchPageConfig.searchCardInputs,
+      headers:StockSearchPageConfig.headers,
+      product_data:[],
+      // product_data:StockSearchPageConfig.test_product_data,
     }
   },
 
