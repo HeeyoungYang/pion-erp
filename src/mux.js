@@ -1542,8 +1542,8 @@ mux.Excel = {
    */
   updateTableData(headers, items, jsonData) {
     let arrExcelColIndex = [];
-    jsonData[0].forEach(excelColName => {
-      const index = headers.findIndex(h=>h.text === excelColName);
+    headers.forEach(h => {
+      const index = jsonData[0].findIndex(colName => colName === h.text);
       if(index >= 0){
         arrExcelColIndex.push(index);
       }
