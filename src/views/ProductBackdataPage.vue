@@ -308,6 +308,7 @@
                           editable
                           deletable
                           dense
+                          stockNumInfo
                           @edit="editMaterialItem"
                           @delete="deleteItem"
                           @itemDetials="detailInfoItem"
@@ -1286,9 +1287,7 @@ export default {
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '총 재고', align: 'center', value: 'total_stock', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '재고 총액', align: 'center', value: 'stock_price', },
       ],
       material_excel_headers: [
         { text: '분류', align: 'center', value: 'classification', },

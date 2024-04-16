@@ -89,6 +89,7 @@
                     :item-key="product_data.material_code"
                     show-photo
                     dense
+                    stockNumInfo
                     show-item-details
                     @itemDetials="detailInfoItem"
                   />
@@ -192,9 +193,9 @@ export default {
         { text: '모델명', align: 'center', value: 'model', },
         { text: '사양', align: 'center', value: 'spec', },
         { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '총 재고', align: 'center', value: 'total_stock', },
         { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '재고 총액', align: 'center', value: 'stock_price', },
+        // { text: '총 재고', align: 'center', value: 'total_stock', },
+        // { text: '재고 총액', align: 'center', value: 'stock_price', },
       ],
 
       product_data: [
