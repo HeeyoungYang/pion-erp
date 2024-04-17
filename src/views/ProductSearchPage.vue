@@ -178,6 +178,7 @@ import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
+import ProductSearchPageConfig from "@/configure/ProductSearchPageConfig.json";
 
 export default {
   components: {
@@ -197,123 +198,13 @@ export default {
       detail_dialog: false,
       stockDetails:[],
       inboundDetails:[],
-      stock_detail_header:[
-        { text: '위치', align: 'center', value: 'spot', },
-        { text: '수량', align: 'center', value: 'stock_num', },
-        { text: '상태', align: 'center', value: 'condition', },
-      ],
-      inbound_detail_header:[
-        { text: '위치', align: 'center', value: 'spot', },
-        { text: '수량', align: 'center', value: 'inbound_num', },
-        { text: '입고일자', align: 'center', value: 'inbound_date', },
-      ],
 
-      searchCardInputs:[
-        {label:'제품코드', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'제품명', col:'12', sm:'4', lg:'3', value: ''},
-        {label:'사양', col:'12', sm:'4', lg:'3', value: ''},
-      ],
-      headers: [
-        { text: '', align: 'center', value: '', },
-        { text: '제품코드', align: 'center', value: 'item_code', },
-        { text: '제품명', align: 'center', value: 'name', },
-        { text: '모델명', align: 'center', value: 'model', },
-        { text: '사양', align: 'center', value: 'spec', },
-        { text: '제조사', align: 'center', value: 'manufacturer', },
-        { text: '단가', align: 'center', value: 'unit_price', },
-        // { text: '필요수량', align: 'center', value: 'module_material_num', },
-        // { text: '재고', align: 'center', value: 'stock_num', },
-        // { text: '총액', align: 'center', value: 'total_price', },
-      ],
-      expanded: [],
-      singleExpand: true,
-      product_data: [
-        {
-          item_code: 'P-ESS-PC-380V500K60H-RT-24-R1',
-          classification: 'GFM',
-          model: '완제품모델1',
-          manufacturer: '제조사2',
-          name: 'ESS GFM용 PCS',
-          spec: '380VAC 500kW',
-          unit_price: '1000',
-          photo:'productphoto.jpg',
-          spot_stock: [
-            {spot:'공장동 2층', stock_num:'4', condition: 'G'},
-            {spot:'공장동 1층', stock_num:'2', condition: 'G'},
-          ],
-          belong_data: [
-            {
-              type:'반제품',
-              classification: 'GFM',
-              product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01',
-              item_code: 'PE-반제품-01',
-              name: 'PCS Ass`Y',
-              model: '반제품모델1',
-              spec: '반제품스펙1',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              total_stock: 100,
-              unit_price: 2,
-              item_price: 100,
-              spot_stock:[
-                {spot: '공장동 1층', stock_num: 40, condition: 'G'},
-                {spot: '공장동 2층', stock_num: 60, condition: 'G'},
-              ],
-              belong_data:[
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-01',
-                  item_code: '원부자재01_001',
-                  name: 'IGBT & SMPS',
-                  model: '원부자재모델1',
-                  spec: '원부자재사양1',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: 400,
-                  total_stock: 1000,
-                  unit_price: 3,
-                  spot_stock:[
-                    {spot: '세종사무실', stock_num: 1000, condition: 'G'},
-                  ],
-                },
-                {
-                  product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-01-02',
-                  item_code: '원부자재01_002',
-                  name: 'SPD, 퓨즈',
-                  model: '원부자재모델2',
-                  spec: '원부자재사양2',
-                  manufacturer: '파이온일렉트릭',
-                  item_num: 200,
-                  total_stock: 100,
-                  unit_price: 4,
-                  spot_stock:[
-                    {spot: '세종사무실', stock_num: 450, condition: 'G'},
-                    {spot: '공장동 1층', stock_num: 450, condition: 'G'},
-                  ],
-                },
-              ]
-            },
-            {
-              product_item_code:'P-ESS-PC-380V500K60H-RT-24-R1-02',
-              item_code:'반제품02_002',
-              classification: '일반',
-              type:'반제품',
-              name: '제어기 Ass`Y',
-              model: '반제품모델2',
-              spec: '반제품스펙2',
-              manufacturer: '파이온일렉트릭',
-              item_num: '1',
-              total_stock: 120,
-              unit_price: 1,
-              item_price: 120,
-              spot_stock:[
-                {spot: '공장동 1층', stock_num: 50, condition: 'G'},
-                {spot: '공장동 2층', stock_num: 70, condition: 'G'},
-              ],
-              belong_data:[]
-            },
-          ],
-        },
-      ],
-
+      stock_detail_header:ProductSearchPageConfig.stock_detail_header,
+      inbound_detail_header:ProductSearchPageConfig.inbound_detail_header,
+      searchCardInputs:ProductSearchPageConfig.searchCardInputs,
+      headers:ProductSearchPageConfig.headers,
+      product_data:ProductSearchPageConfig.test_product_data
+      // product_data: []
     }
   },
 
