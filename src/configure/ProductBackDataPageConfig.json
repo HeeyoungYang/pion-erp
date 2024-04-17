@@ -1,4 +1,6 @@
 { 
+  "tab_items":["원부자재 정보", "반제품 정보", "완제품 정보"],
+
   "searchMaterialCardInputs":[
     {"label":"분류", "type":"auto", "list":["All", "일반", "GFM", "전력변환기"], "value":"All", "col":"12", "sm":"4", "lg":"3"},
     {"label":"상태", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All", "G", "B"]},

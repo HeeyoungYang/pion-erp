@@ -220,6 +220,7 @@ import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
+import LaborCostBackDataPageConfig from "@/configure/LaborCostBackDataPageConfig.json";
 
 export default {
   components: {
@@ -230,136 +231,49 @@ export default {
   },
   data() {
     return {
+      occupation_list:[],
+      deleteDataList:{},
+
+      //tabs
       tab_main: null,
-      tab_items:['노무비 산출 정보', '시중노임단가 정보', '산출비율 정보'],
+      tab_items:LaborCostBackDataPageConfig.tab_items,
+
+      //키워드 필터(검색)
       search_labor: '',
       search_wage: '',
       search_ratio: '',
+
+      //Dialog
       laborDialog: false,
       DialogDelete: false,
       wageDialog: false,
       ratioDialog: false,
       // wageDialogDelete: false,
-      occupation_list:[],
-      registLaborInputs:[
-        {label:'품번', column_name:'no',  col:'12', sm:'6', lg:'6', value: '',
-          rules: [
-            v => !!v || '품번 입력',
-          ]
-        },
-        {label:'공종', column_name:'name',  col:'12', sm:'6', lg:'6', value: '',
-          rules: [
-            v => !!v || '공종 입력',
-          ]
-        },
-        {label:'규격', column_name:'type',  col:'12', sm:'6', lg:'6', value: '',
-          rules: [
-            v => !!v || '규격 입력',
-          ]
-        },
-        {label:'직종', column_name:'occupation', type:'select', list:[], value:'', col:'12', sm:'6', lg:'6',
-          rules: [
-            v => !!v || '직종 선택',
-          ]
-        },
-        {label:'공량(M/D)', column_name:'man_per_day', text_type:'number', col:'12', sm:'6', lg:'6', value: '',
-          rules: [
-            v => !!v || '공량 입력(숫자)',
-          ]
-        },
-        {label:'할증율', column_name:'surcharge_ratio', text_type:'number', col:'12', sm:'6', lg:'6', value: '', suffix: '%',
-          rules: [
-            v => !!v || '할증율 입력(숫자)',
-          ]
-        },
-      ],
-      registWageInputs:[
-        {label:'직종', column_name:'occupation', value:'', col:'12', sm:'6', lg:'6',
-          rules: [
-            v => !!v || '직종 입력',
-          ]
-        },
-        {label:'단가', column_name:'unit_price', text_type:'number',  col:'12', sm:'6', lg:'6', value: '',
-          rules: [
-            v => !!v || '단가 입력(숫자)',
-          ]
-        },
-        {label:'설계 조정율', column_name:'adjustment_ratio', text_type:'number', col:'12', sm:'6', lg:'6', value: '',
-          rules: [
-            v => !!v || '설계 조정율 입력(숫자)',
-          ]
-        },
-      ],
-      registRatioInputs:[
-        {label:'종류', column_name:'type', value:'', col:'12', sm:'12', lg:'12',},
-        {label:'', column_name:'formula1', col:'12', sm:'6', lg:'6', value: '', suffix: 'X',},
-        {label:'', column_name:'formula2', col:'12', sm:'3', lg:'3', value: '', suffix: '',
-          rules: [
-            v => !!v || '백분율(%) 혹은 숫자 입력',
-          ]
-        },
-      ],
-      labor_headers: [
-        { text: '품번', align: 'center', value: 'no'},
-        { text: '공종', align: 'center', value: 'name', },
-        { text: '규격', align: 'center', value: 'type', },
-        { text: '직종', align: 'center', value: 'occupation', },
-        { text: '공량(M/D)', align: 'center', value: 'man_per_day', },
-        { text: '할증율', align: 'center', value: 'surcharge_ratio', },
-      ],
-      wage_headers: [
-        { text: '직종', align: 'center', value: 'occupation'},
-        { text: '단가', align: 'center', value: 'unit_price', },
-        { text: '설계 조정률', align: 'center', value: 'adjustment_ratio', },
-      ],
-      ratio_headers: [
-        { text: '종류', align: 'center', value: 'type'},
-        { text: '계산식', align: 'center', value: 'formula', },
-      ],
+
+
+      //노무비 산출 정보
       labor_data: [],
-      wage_data: [],
-      ratio_data: [],
       editedLaborIndex: -1,
-      editedLaborItem: {
-        code:'',
-        no:'',
-        name: '',
-        type: '',
-        occupation: '',
-        man_per_day: '',
-        surcharge_ratio: '',
-      },
-      defaultLaborItem: {
-        code:'',
-        no:'',
-        name: '',
-        type: '',
-        man_per_day: '',
-        surcharge_ratio: '',
-      },
+      registLaborInputs:LaborCostBackDataPageConfig.registLaborInputs,
+      labor_headers:LaborCostBackDataPageConfig.labor_headers,
+      editedLaborItem: LaborCostBackDataPageConfig.editedLaborItem,
+      defaultLaborItem:LaborCostBackDataPageConfig.defaultLaborItem,
+
+      //시중노임단가 정보
+      wage_data: [],
       editedWageIndex: -1,
-      editedWageItem: {
-        occupation:'',
-        unit_price: '',
-        adjustment_ratio: '',
-      },
-      defaultWageItem: {
-        occupation:'',
-        unit_price: '',
-        adjustment_ratio: '',
-      },
+      registWageInputs:LaborCostBackDataPageConfig.registWageInputs,
+      wage_headers:LaborCostBackDataPageConfig.wage_headers,
+      editedWageItem:LaborCostBackDataPageConfig.editedWageItem,
+      defaultWageItem: LaborCostBackDataPageConfig.defaultWageItem,
+
+      //산출비율 정보
+      ratio_data: [],
       editedRatioIndex: -1,
-      editedRatioItem: {
-        type:'',
-        formula: '',
-        ratio: '',
-      },
-      defaultRatioItem: {
-        type:'',
-        formula: '',
-        ratio: '',
-      },
-      deleteDataList:{},
+      registRatioInputs:LaborCostBackDataPageConfig.registRatioInputs,
+      ratio_headers: LaborCostBackDataPageConfig.ratio_headers,
+      editedRatioItem: LaborCostBackDataPageConfig.editedRatioItem,
+      defaultRatioItem: LaborCostBackDataPageConfig.defaultRatioItem,
     }
   },
 
@@ -408,216 +322,9 @@ export default {
 
   methods: {
     initialize () {
-      this.labor_data = [
-          {
-            code:'code1',
-            no:'품-1',
-            name:'고압케이블 포설',
-            type:'240㎟, 1C',
-            occupation:'고압 케이블전공',
-            man_per_day:'0.136',
-            surcharge_ratio:'115%',
-          },
-          {
-            code:'code2',
-            no:'품-2',
-            name:'저압케이블 포설',
-            type:'6㎟, 2C',
-            occupation:'저압 케이블전공',
-            man_per_day:'0.018',
-            surcharge_ratio:'120%',
-          },
-          {
-            code:'code3',
-            no:'품-2',
-            name:'저압케이블 포설',
-            type:'2.5㎟, 6C',
-            occupation:'저압 케이블전공',
-            man_per_day:'0.035',
-            surcharge_ratio:'120%',
-          },
-          {
-            code:'code4',
-            no:'품-3',
-            name:'전력케이블 단말처리',
-            type:'240㎟, 1C',
-            occupation:'ALL',
-            man_per_day:'1.170',
-            surcharge_ratio:'120%',
-          },
-          {
-            code:'code5',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'6㎥, 1.5 Ton이하',
-            occupation:'비계공',
-            man_per_day:'2.00',
-            surcharge_ratio:'100%',
-          },
-          {
-            code:'code6',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'6㎥, 1.5 Ton이하',
-            occupation:'변전전공',
-            man_per_day:'4.05',
-            surcharge_ratio:'100%',
-          },
-          {
-            code:'code7',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'6㎥, 1.5 Ton이하',
-            occupation:'보통인부',
-            man_per_day:'3.3',
-            surcharge_ratio:'100%',
-          },
-          {
-            code:'code8',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'10㎥이하,3 Ton이하',
-            occupation:'비계공',
-            man_per_day:'4.00',
-            surcharge_ratio:'100%',
-          },
-          {
-            code:'code9',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'10㎥이하,3 Ton이하',
-            occupation:'변전전공',
-            man_per_day:'7.05',
-            surcharge_ratio:'100%',
-          },
-          {
-            code:'code10',
-            no:'품-4',
-            name:'Cubicle 설치',
-            type:'10㎥이하,3 Ton이하',
-            occupation:'보통인부',
-            man_per_day:'5.6',
-            surcharge_ratio:'100%',
-          },
-          {
-            code:'code11',
-            no:'품-5',
-            name:'전기실 전원 케이블 포설',
-            type:'50sq, 3C',
-            occupation:'저압 케이블전공',
-            man_per_day:'0.043',
-            surcharge_ratio:'200%',
-          },
-          {
-            code:'code12',
-            no:'품-6',
-            name:'케이블 트레이',
-            type:'단면적 50,000㎟ 이하',
-            occupation:'내선전공',
-            man_per_day:'0.200',
-            surcharge_ratio:'144%',
-          },
-          {
-            code:'code13',
-            no:'품-6',
-            name:'케이블 트레이',
-            type:'단면적 30,000㎟ 이하',
-            occupation:'내선전공',
-            man_per_day:'0.16',
-            surcharge_ratio:'144%',
-          },
-          {
-            code:'code14',
-            no:'품-7',
-            name:'통신케이블 포설',
-            type:'지중 인력견인 포설',
-            occupation:'보통인부',
-            man_per_day:'1.410',
-            surcharge_ratio:'100%',
-          },
-      ]
-      this.wage_data = [
-          {
-            occupation:'저압 케이블전공',
-            unit_price: '290333',
-            adjustment_ratio: '1.0000',
-          },
-          {
-            occupation:'고압 케이블전공',
-            unit_price: '353395',
-            adjustment_ratio: '1.0000',
-          },
-          {
-            occupation:'비계공',
-            unit_price: '281721',
-            adjustment_ratio: '1.0000',
-          },
-          {
-            occupation:'변전전공',
-            unit_price: '451145',
-            adjustment_ratio: '1.0000',
-          },
-          {
-            occupation:'보통인부',
-            unit_price: '161858',
-            adjustment_ratio: '1.0000',
-          },
-          {
-            occupation:'내선전공',
-            unit_price: '269968',
-            adjustment_ratio: '1.0000',
-          },
-      ]
-      this.ratio_data = [
-          {
-            type:'간접 노무비',
-            formula:'직접노무비X12.2%'
-          },
-          {
-            type:'고용보험료',
-            formula:'노무비X1.01%'
-          },
-          {
-            type:'공구손료',
-            formula:'직접노무비X3%'
-          },
-          {
-            type:'여비교통 통신비',
-            formula:'노무비X0.418%'
-          },
-          {
-            type:'산재보험료',
-            formula:'노무비X3.7%'
-          },
-          {
-            type:'세금과공과',
-            formula:'노무비X0.13%'
-          },
-          {
-            type:'복리후생비',
-            formula:'노무비X2.397%'
-          },
-          {
-            type:'퇴직공제 부금비',
-            formula:'직접노무비X2.3%'
-          },
-          {
-            type:'소모품비',
-            formula:'노무비X1.479%'
-          },
-          {
-            type:'산업안전보건관리비',
-            formula:'직접노무비X1.85%X1.2'
-          },
-          {
-            type:'일반관리비',
-            formula:'(재료비+노무비+경비)X6%'
-          },
-          {
-            type:'이윤',
-            formula:'(노무비+경비+일반관리비)X15%'
-          },
-      ]
+      this.labor_data = LaborCostBackDataPageConfig.test_labor_data
+      this.wage_data = LaborCostBackDataPageConfig.test_wage_data
+      this.ratio_data = LaborCostBackDataPageConfig.test_ratio_data
 
       this.occupation_list.push('All');
       for(let d=0; d<this.wage_data.length; d++){
@@ -634,9 +341,21 @@ export default {
         }
       })
     },
+    rulesSet(inputs){
+      inputs.forEach(input =>{
+        if(input.column_name == 'formula2'){
+            input.rules =  [v => !!v || '백분율(%) 혹은 숫자 입력']
+        }else if(input.text_type == 'number'){
+          input.rules =  [v => !!v || input.label + " 입력(숫자)"]
+        }else{
+          input.rules =  [v => !!v || input.label + " 입력"]
+        }
+      })
+    },
     registLaborItem(item){
       this.editedLaborIndex = this.labor_data.indexOf(item)
       let labor_input = this.registLaborInputs;
+      this.rulesSet(labor_input);
       labor_input.forEach(data =>{
         if(data.column_name == 'name' || data.column_name == 'type' || data.column_name == 'no'){
           data.disabled = false
@@ -650,6 +369,7 @@ export default {
       this.editedLaborIndex = this.labor_data.indexOf(item)
       // this.editedLaborItem = Object.assign({}, item)
       let labor_input = this.registLaborInputs;
+      this.rulesSet(labor_input);
       labor_input.forEach(data =>{
         for(let i=0; i<Object.keys(item).length; i++){
           if(data.column_name == Object.keys(item)[i]){
@@ -698,6 +418,7 @@ export default {
       this.editedWageIndex = this.wage_data.indexOf(item)
       // this.editedWageItem = Object.assign({}, item)
       let wage_input = this.registWageInputs;
+      this.rulesSet(wage_input);
       wage_input.forEach(data =>{
         if(data.column_name == 'occupation'){
           data.disabled = true
@@ -713,6 +434,7 @@ export default {
     registWageItem(item){
       this.editedWageIndex = this.wage_data.indexOf(item)
       let wage_input = this.registWageInputs;
+      this.rulesSet(wage_input);
       wage_input.forEach(data =>{
         if(data.column_name == 'occupation'){
           data.disabled = false
@@ -747,6 +469,7 @@ export default {
     editRatioItem (item) {
       this.editedRatioIndex = this.ratio_data.indexOf(item)
       let ratio_input = this.registRatioInputs;
+      this.rulesSet(ratio_input);
       let split_formula = item.formula.split('X');
       item.formula1 = split_formula[0]
       item.formula2 = split_formula[1]
@@ -804,7 +527,7 @@ export default {
             split_formula.splice(i, 1, change_percent);
           }
         }
-        
+
         if(split_formula.length == 2){
           item.ratio = split_formula[1]
         }else{

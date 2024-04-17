@@ -1046,8 +1046,8 @@ import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import InputsDataTableComponent from "@/components/InputsDataTableComponent.vue";
-import mux from "@/mux";
 import ProductBackDataPageConfig from "@/configure/ProductBackDataPageConfig.json";
+import mux from "@/mux";
 
 export default {
   components: {
@@ -1063,12 +1063,14 @@ export default {
     return {
       mux: mux,
       testImg: '',
-      tab_main: null,
-      tab_items:['원부자재 정보', '반제품 정보', '완제품 정보'],
       menu: false,
       editedIndex: -1,
       deleteItemList:{},
       excel_photos: [],
+
+      //tabs
+      tab_main: null,
+      tab_items:ProductBackDataPageConfig.tab_items,
 
       //Dialog
       dialog_excel: false,
