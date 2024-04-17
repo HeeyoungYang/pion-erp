@@ -48,6 +48,7 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
+import AuthorizationPageConfig from "@/configure/AuthorizationPageConfig.json";
 // import ModalDialogComponent from "@/components/ModalDialogComponent";
 
 export default {
@@ -59,28 +60,8 @@ export default {
   data() {
     return {
       search: '',
-      headers: [
-        {text: 'ID', align: 'center', value: 'user_id'},
-        {text: '이름', align: 'center', value: 'name'},
-        {text: '부서', align: 'center', value: 'department'},
-        {text: '직책', align: 'center', value: 'position'},
-      ],
-      members: [
-        {
-          user_id: 'yjs',
-          name: '윤준수',
-          department: '기획관리',
-          position: '매니저',
-          authority:['관리자']
-        },
-        {
-          user_id: 'kcs',
-          name: '김철수',
-          department: '영업팀',
-          position: '대리',
-          authority:['노무비정보관리','원가계산']
-        },
-      ],
+      headers: AuthorizationPageConfig.headers,
+      members: AuthorizationPageConfig.test_members
     }
   },
 }
