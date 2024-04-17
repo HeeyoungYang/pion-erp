@@ -1,0 +1,58 @@
+{
+  "tab_items":["자재 기본 정보"],
+
+  "ProductInfoInputsList":[
+    {"label":"자재 분류", "column_name":"classification",  "col":"12", "sm":"12", "lg":"12", "value": ""},
+    {"label":"제조사", "column_name":"manufacturer",  "col":"12", "sm":"12", "lg":"12", "value": ""},
+    {"label":"위치", "column_name":"spot",  "col":"12", "sm":"12", "lg":"12", "value": ""}
+  ],
+
+  "classification_headers": [
+    { "text": "자재 분류", "align": "center", "value": "classification"}
+  ],
+
+  "manufacturer_headers": [
+    { "text": "제조사", "align": "center", "value": "manufacturer"}
+  ],
+
+  "spot_headers": [
+    { "text": "위치", "align": "center", "value": "spot"}
+  ],
+  
+  "test_classification_data":[    
+    {
+      "classification":"전력변환기"
+    },
+    {
+      "classification":"GFM"
+    }
+  ],
+
+  "test_manufacturer_data": [
+    {
+      "manufacturer":"라온코리아"
+    },
+    {
+      "manufacturer":"액트솔루션"
+    },
+    {
+      "manufacturer":"옵토마린"
+    },
+    {
+      "manufacturer":"성민우텍"
+    }
+  ],
+
+  "test_spot_data": [
+    {
+      "spot":"세종 사무실"
+    },
+    {
+      "spot":"공장동 1층"
+    },
+    {
+      "spot":"공장동 2층"
+    }
+  ]
+
+}

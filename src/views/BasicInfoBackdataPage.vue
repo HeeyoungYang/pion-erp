@@ -216,7 +216,9 @@
 import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent";
-import InputsFormComponent from "@/components/InputsFormComponent.vue";import CardComponent from "@/components/CardComponent.vue";
+import InputsFormComponent from "@/components/InputsFormComponent.vue";
+import CardComponent from "@/components/CardComponent.vue";
+import BasicInfoBackDataPageConfig from "@/configure/BasicInfoBackDataPageConfig.json";
 
 
 export default {
@@ -230,55 +232,30 @@ export default {
   data() {
     return {
       tab_main: null,
-      tab_items:['자재 기본 정보'],
+      tab_items:BasicInfoBackDataPageConfig.tab_items,
+
       search_classification: '',
       search_manufacturer: '',
       search_spot: '',
+
       productInfoDialog: false,
       DialogDelete: false,
+
+      editedBasicInfo: {},
+      defaultBasicInfo: {},
+      deleteBasicInfo:{},
       deleteInfo:'',
 
-      ProductInfoInputsList:[
-        {label:'자재 분류', column_name:'classification',  col:'12', sm:'12', lg:'12', value: '',
-          rules: [
-            v => !!v || '분류 입력',
-          ]
-        },
-        {label:'제조사', column_name:'manufacturer',  col:'12', sm:'12', lg:'12', value: '',
-          rules: [
-            v => !!v || '제조사 입력',
-          ]
-        },
-        {label:'위치', column_name:'spot',  col:'12', sm:'12', lg:'12', value: '',
-          rules: [
-            v => !!v || '위치 입력',
-          ]
-        },
-      ],
-
-      registProductInfoInputs:[],
-      editedBasicInfoIndex: -1,
-
-      classification_headers: [
-        { text: '자재 분류', align: 'center', value: 'classification'},
-      ],
-      classification_data: [],
-      manufacturer_headers: [
-        { text: '제조사', align: 'center', value: 'manufacturer'},
-      ],
-      manufacturer_data: [],
-
-      spot_headers: [
-        { text: '위치', align: 'center', value: 'spot'},
-      ],
       spot_data: [],
+      manufacturer_data: [],
+      classification_data: [],
 
-      editedBasicInfo: {
-      },
-      defaultBasicInfo: {
-      },
-
-      deleteBasicInfo:{},
+      editedBasicInfoIndex: -1,
+      registProductInfoInputs:[],
+      ProductInfoInputsList:BasicInfoBackDataPageConfig.ProductInfoInputsList,
+      classification_headers: BasicInfoBackDataPageConfig.classification_headers,
+      manufacturer_headers:BasicInfoBackDataPageConfig.manufacturer_headers,
+      spot_headers: BasicInfoBackDataPageConfig.spot_headers,
     }
   },
 
@@ -303,45 +280,23 @@ export default {
 
   methods: {
     initialize () {
-      this.classification_data = [
-          {
-            classification:'전력변환기',
-          },
-          {
-            classification:'GFM',
-          },
-      ]
-
-      this.manufacturer_data = [
-          {
-            manufacturer:'라온코리아',
-          },
-          {
-            manufacturer:'액트솔루션',
-          },
-          {
-            manufacturer:'옵토마린',
-          },
-          {
-            manufacturer:'성민우텍',
-          },
-      ]
-
-      this.spot_data = [
-          {
-            spot:'세종 사무실',
-          },
-          {
-            spot:'공장동 1층',
-          },
-          {
-            spot:'공장동 2층',
-          },
-      ]
+      this.classification_data = BasicInfoBackDataPageConfig.test_classification_data
+      this.manufacturer_data = BasicInfoBackDataPageConfig.test_manufacturer_data
+      this.spot_data = BasicInfoBackDataPageConfig.test_spot_data
+    },
+    rulesSet(inputs){
+      inputs.forEach(input =>{
+        if(input.text_type == 'number'){
+          input.rules =  [v => !!v || input.label + " 입력(숫자)"]
+        }else{
+          input.rules =  [v => !!v || input.label + " 입력"]
+        }
+      })
     },
     registProductInfo(type){
       this.registProductInfoInputs = [];
       let product_input = this.ProductInfoInputsList;
+      this.rulesSet(product_input);
       this.editedBasicInfoIndex = -1
       product_input.forEach(data =>{
           data.value = '';
@@ -354,6 +309,7 @@ export default {
     editProductInfo (item) {
       this.registProductInfoInputs = [];
       let product_input = this.ProductInfoInputsList;
+      this.rulesSet(product_input);
       product_input.forEach(data =>{
         if(data.column_name == Object.keys(item)){
           if(data.column_name == 'classification'){
