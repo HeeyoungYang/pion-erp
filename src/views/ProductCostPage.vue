@@ -1880,7 +1880,7 @@ export default {
         let isConfirm = false;
         for (let i = this.labor_cost_data.length - 1; i >= 0; i--) {
           if (!this.labor_cost_data[i].quantity || this.labor_cost_data[i].quantity == 0){
-            if (i === 0){
+            if (i === 0 && this.labor_cost_data.length === 1){
               alert('최소 한 개의 행은 수량이 입력되어야 합니다.');
               return;
             }
@@ -1954,7 +1954,7 @@ export default {
         let isConfirm = false;
         for (let i = this.labor_cost_list.length - 1; i >= 0; i--) {
           if (!this.labor_cost_list[i].quantity || this.labor_cost_list[i].quantity == 0){
-            if (i === 0){
+            if (i === 0 && this.labor_cost_list.length === 1){
               alert('최소 한 개의 행은 수량이 입력되어야 합니다.');
               return;
             }
