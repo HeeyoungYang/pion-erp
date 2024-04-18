@@ -179,6 +179,7 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import ProductSearchPageConfig from "@/configure/ProductSearchPageConfig.json";
+// import mux from "@/mux";
 
 export default {
   components: {
@@ -203,8 +204,8 @@ export default {
       inbound_detail_header:ProductSearchPageConfig.inbound_detail_header,
       searchCardInputs:ProductSearchPageConfig.searchCardInputs,
       headers:ProductSearchPageConfig.headers,
-      product_data:ProductSearchPageConfig.test_product_data
-      // product_data: []
+      product_data: []
+      // product_data:ProductSearchPageConfig.test_product_data
     }
   },
 
@@ -222,6 +223,50 @@ export default {
     closeDetail () {
       this.detail_dialog = false
     },
+
+    async searchButton() {
+
+      // let searchProductCode = this.searchCardInputs.find(x=>x.label === '제품코드').value;
+      // let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
+      // let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
+
+      // try {
+      //   let result = await mux.Server.post({
+      //     path: '/api/sample_rest_api/',
+      //     "query_info":{
+      //       "script_file_name":"rooting_material_table_stock_table_root_json_2024_03_18_17_49_52.json",
+      //       "params": [
+      //         {
+      //             "key": "spec",
+      //             "type":"string",
+      //             "value": searchSpec
+      //         },
+      //         {
+      //             "key": "name",
+      //             "type":"string",
+      //             "value": searchName
+      //         },
+      //         {
+      //             "key": "_code",
+      //             "type":"string",
+      //             "value": searchProductCode
+      //         },
+      //       ]
+      //     }
+      //   });
+
+      //   if (typeof result === 'string'){
+      //     result = JSON.parse(result);
+      //   }
+      //   this.product_data = result;
+
+      // } catch (error) {
+      //   alert(error);
+      // }
+
+      this.product_data = ProductSearchPageConfig.test_product_data;
+
+    }
   },
   computed: {
   },

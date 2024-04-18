@@ -152,6 +152,7 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import ModuleSearchPageConfig from "@/configure/ModuleSearchPageConfig.json";
+// import mux from "@/mux";
 
 export default {
   components: {
@@ -174,8 +175,7 @@ export default {
       inbound_detail_header:ModuleSearchPageConfig.inbound_detail_header,
       searchCardInputs:ModuleSearchPageConfig.searchCardInputs,
       headers:ModuleSearchPageConfig.headers,
-      product_data: ModuleSearchPageConfig.test_product_data
-      // product_data: []
+      product_data: []
     }
   },
 
@@ -195,19 +195,91 @@ export default {
       this.detail_dialog = false
     },
 
-    searchButton() {
+
+    async searchButton() {
       //검색 시 총 재고, 총 금액 초기화
       this.total_stock_num = 0;
       this.total_stock_price = 0;
 
+      // let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
+      // if (searchClassification === 'All')
+      // searchClassification = '';
+      // let searchCondition = this.searchCardInputs.find(x=>x.label === '상태').value;
+      // if (searchCondition === 'All')
+      //   searchCondition = '';
+      // let searchModuleCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+      // let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
+      // let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
+      // let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
+      // let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
 
+      // try {
+      //   let result = await mux.Server.post({
+      //     path: '/api/sample_rest_api/',
+      //     "query_info":{
+      //       "script_file_name":"rooting_material_table_stock_table_root_json_2024_03_18_17_49_52.json",
+      //       "params": [
+      //         {
+      //             "key": "manufacturer",
+      //             "type":"string",
+      //             "value": searchManufacturer
+      //         },
+      //         {
+      //             "key": "spec",
+      //             "type":"string",
+      //             "value": searchSpec
+      //         },
+      //         {
+      //             "key": "model",
+      //             "type":"string",
+      //             "value": searchModel
+      //         },
+      //         {
+      //             "key": "name",
+      //             "type":"string",
+      //             "value": searchName
+      //         },
+      //         {
+      //             "key": "_code",
+      //             "type":"string",
+      //             "value": searchModuleCode
+      //         },
+      //         {
+      //             "key": "condition",
+      //             "type":"string",
+      //             "value": searchCondition
+      //         },
+      //         {
+      //             "key": "classification",
+      //             "type":"string",
+      //             "value": searchClassification
+      //         }
+      //       ]
+      //     }
+      //   });
 
+      //   if (typeof result === 'string'){
+      //     result = JSON.parse(result);
+      //   }
+      //   this.product_data = result;
 
-      //검색 후 총 재고, 총 금액 계산
+      // } catch (error) {
+      //   alert(error);
+      // }
+
+      this.product_data = ModuleSearchPageConfig.test_product_data;
+
       this.product_data.forEach(data =>{
-        this.total_stock_num += data.stock_num
-        this.total_stock_price += data.stock_price
+        let stock_calc = 0;
+        for(let d=0; d<data.spot_stock.length; d++){
+          stock_calc += data.spot_stock[d].stock_num;
+        }
+        data.total_stock = stock_calc
+        data.item_price = data.unit_price * data.total_stock
+        this.total_stock_num += data.total_stock
+        this.total_stock_price += data.item_price
       })
+
     }
   }
 }

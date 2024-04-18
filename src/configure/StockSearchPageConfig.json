@@ -41,9 +41,8 @@
       "model": "원부자재 모델1",
       "spec": "원부자재 사양1",
       "manufacturer": "파이온일렉트릭",
-      "total_stock": 1000,
       "unit_price": 2,
-      "stock_price": 2000,
+      "thumbnail":"",
       "spot_stock":[
         {"spot": "공장동 1층", "stock_num": 400, "condition": "G"},
         {"spot": "공장동 2층", "stock_num": 600, "condition": "G"}
@@ -57,9 +56,8 @@
       "model": "원부자재 모델2",
       "spec": "원부자재 사양2",
       "manufacturer": "파이온일렉트릭",
-      "total_stock": 400,
-      "unit_price": 10,
-      "stock_price": 4000,
+      "unit_price": 2,
+      "thumbnail":"",
       "spot_stock":[
         {"spot": "공장동 1층", "stock_num": 300, "condition": "G"},
         {"spot": "공장동 2층", "stock_num": 100, "condition": "G"}

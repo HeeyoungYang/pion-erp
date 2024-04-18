@@ -147,7 +147,7 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import MaterialSearchPageConfig from "@/configure/MaterialSearchPageConfig.json";
-import mux from "@/mux";
+// import mux from "@/mux";
 
 export default {
   components: {
@@ -170,8 +170,7 @@ export default {
       inbound_detail_header:MaterialSearchPageConfig.stock_detail_header,
       searchCardInputs:MaterialSearchPageConfig.searchCardInputs,
       headers:MaterialSearchPageConfig.headers,
-      product_data:MaterialSearchPageConfig.test_product_data,
-      // product_data:[],
+      product_data:[],
     }
   },
 
@@ -193,77 +192,87 @@ export default {
       this.detail_dialog = false
     },
     async searchButton() {
-      // alert(this.searchCardInputs.find(x=>x.label === '일자').value.sort());
+      //검색 시 총 재고, 총 금액 초기화
+      this.total_stock_num = 0;
+      this.total_stock_price = 0;
+      
+      // let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
+      // if (searchClassification === 'All')
+      // searchClassification = '';
+      // let searchCondition = this.searchCardInputs.find(x=>x.label === '상태').value;
+      // if (searchCondition === 'All')
+      //   searchCondition = '';
+      // let searchMaterialCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+      // let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
+      // let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
+      // let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
+      // let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
 
-      let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
-      if (searchClassification === 'All')
-      searchClassification = '';
-      let searchCondition = this.searchCardInputs.find(x=>x.label === '상태').value;
-      if (searchCondition === 'All')
-        searchCondition = '';
-      let searchMaterialCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
-      let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
-      let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
-      let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
-      let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
+      // try {
+      //   let result = await mux.Server.post({
+      //     path: '/api/sample_rest_api/',
+      //     "query_info":{
+      //       "script_file_name":"rooting_material_table_stock_table_root_json_2024_03_18_17_49_52.json",
+      //       "params": [
+      //         {
+      //             "key": "manufacturer",
+      //             "type":"string",
+      //             "value": searchManufacturer
+      //         },
+      //         {
+      //             "key": "spec",
+      //             "type":"string",
+      //             "value": searchSpec
+      //         },
+      //         {
+      //             "key": "model",
+      //             "type":"string",
+      //             "value": searchModel
+      //         },
+      //         {
+      //             "key": "name",
+      //             "type":"string",
+      //             "value": searchName
+      //         },
+      //         {
+      //             "key": "material_code",
+      //             "type":"string",
+      //             "value": searchMaterialCode
+      //         },
+      //         {
+      //             "key": "condition",
+      //             "type":"string",
+      //             "value": searchCondition
+      //         },
+      //         {
+      //             "key": "classification",
+      //             "type":"string",
+      //             "value": searchClassification
+      //         }
+      //       ]
+      //     }
+      //   });
 
-      try {
-        let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
-          "query_info":{
-            "script_file_name":"rooting_material_table_stock_table_root_json_2024_03_18_17_49_52.json",
-            "params": [
-              {
-                  "key": "manufacturer",
-                  "type":"string",
-                  "value": searchManufacturer
-              },
-              {
-                  "key": "spec",
-                  "type":"string",
-                  "value": searchSpec
-              },
-              {
-                  "key": "model",
-                  "type":"string",
-                  "value": searchModel
-              },
-              {
-                  "key": "name",
-                  "type":"string",
-                  "value": searchName
-              },
-              {
-                  "key": "material_code",
-                  "type":"string",
-                  "value": searchMaterialCode
-              },
-              {
-                  "key": "condition",
-                  "type":"string",
-                  "value": searchCondition
-              },
-              {
-                  "key": "classification",
-                  "type":"string",
-                  "value": searchClassification
-              }
-            ]
-          }
-        });
+      //   if (typeof result === 'string'){
+      //     result = JSON.parse(result);
+      //   }
+      //   this.product_data = result;
 
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        this.product_data = result;
+      // } catch (error) {
+      //   alert(error);
+      // }
 
-      } catch (error) {
-        alert(error);
-      }
+      this.product_data = MaterialSearchPageConfig.test_product_data;
 
       this.product_data.forEach(data =>{
+        let stock_calc = 0;
+        for(let d=0; d<data.spot_stock.length; d++){
+          stock_calc += data.spot_stock[d].stock_num;
+        }
+        data.total_stock = stock_calc
+        data.item_price = data.unit_price * data.total_stock
         this.total_stock_num += data.total_stock
-        this.total_stock_price += data.stock_price
+        this.total_stock_price += data.item_price
       })
 
     }

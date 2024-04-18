@@ -39,15 +39,12 @@
       "model": "모델1",
       "spec": "사양1",
       "manufacturer": "파이온일렉트릭",
-      "total_stock": 100,
-      "inbound_date": "2024-03-11",
       "unit_price": 1,
-      "stock_price": 100,
       "spot_stock":[
         {"spot": "공장동 1층", "stock_num": 40, "condition": "G"},
         {"spot": "공장동 2층", "stock_num": 60, "condition": "G"}
       ],
-      "photo":"photoName"
+      "thumbnail": ""
     },
     {
       "classification":"일반",
@@ -56,15 +53,12 @@
       "model": "모델2",
       "spec": "사양2",
       "manufacturer": "파이온일렉트릭",
-      "total_stock": 40,
-      "inbound_date": "2024-03-11",
       "unit_price": 1,
-      "stock_price": 40,
       "spot_stock":[
         {"spot": "공장동 1층", "stock_num": 30, "condition": "G"},
         {"spot": "공장동 2층", "stock_num": 10, "condition": "G"}
       ],
-      "photo":"photoName"
+      "thumbnail": ""
     },
     {
       "classification":"일반",
@@ -73,16 +67,13 @@
       "model": "",
       "spec": "사양3",
       "manufacturer": "파이온일렉트릭",
-      "total_stock": 1200,
-      "inbound_date": "2024-03-14",
       "unit_price": 2,
-      "stock_price": 2400,
       "spot_stock":[
         {"spot": "공장동 1층", "stock_num": 600, "condition": "G"},
         {"spot": "공장동 2층", "stock_num": 100, "condition": "G"},
         {"spot": "세종사무실", "stock_num": 500, "condition": "G"}
       ],
-      "photo":"photoName"
+      "thumbnail": ""
     }
   ]
 }

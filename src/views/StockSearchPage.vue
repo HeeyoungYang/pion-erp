@@ -268,27 +268,6 @@ export default {
                         }
                     ]
             }
-
-          // "query_info":{
-          //   "script_file_name": "rooting_stock_table_root_json_2024_03_18_15_49_08.json",
-          //   "params":[
-          //     {
-          //       "key":"type",
-          //       "type":"string",
-          //       "value": searchType
-          //     },
-          //     {
-          //       "key":"_code",
-          //       "type":"string",
-          //       "value": searchProductCode
-          //     },
-          //     {
-          //       "key":"condition",
-          //       "type":"string",
-          //       "value": searchCondition
-          //     }
-          //   ]
-          // }
         });
 
         if (typeof result === 'string'){
@@ -299,14 +278,22 @@ export default {
           return a;
         });
         this.product_data = result;
+        // this.product_data = StockSearchPageConfig.test_product_data;
 
       } catch (error) {
         alert(error);
       }
 
+
       this.product_data.forEach(data =>{
+        let stock_calc = 0;
+        for(let d=0; d<data.spot_stock.length; d++){
+          stock_calc += data.spot_stock[d].stock_num;
+        }
+        data.total_stock = stock_calc
+        data.item_price = data.unit_price * data.total_stock
         this.total_stock_num += data.total_stock
-        this.total_stock_price += data.stock_price
+        this.total_stock_price += data.item_price
       })
 
     }

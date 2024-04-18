@@ -39,14 +39,11 @@
       "model": "반제품모델1",
       "spec": "반제품스펙1",
       "manufacturer": "파이온일렉트릭",
-      "item_num": "",
-      "total_stock": 100,
       "unit_price": 2,
-      "item_price": 100,
-      "photo": "testt.jpg",
+      "thumbnail": "",
       "spot_stock":[
         {"spot": "공장동 1층", "stock_num": 40, "condition": "G"},
-        {"spot": "공장동 2층", "stock_num": 60, "condition": "G"}
+        {"spot": "공장동 2층", "stock_num": 70, "condition": "G"}
       ],
       "belong_data":[
         {
@@ -57,9 +54,8 @@
           "spec": "원부자재사양1",
           "manufacturer": "파이온일렉트릭",
           "item_num": 400,
-          "total_stock": 1000,
           "unit_price": 3,
-          "item_price": 1000,
+          "thumbnail": "",
           "spot_stock":[
             {"spot": "세종사무실", "stock_num": 1000, "condition": "G"}
           ]
@@ -72,9 +68,8 @@
           "spec": "원부자재사양2",
           "manufacturer": "파이온일렉트릭",
           "item_num": 200,
-          "total_stock": 100,
           "unit_price": 4,
-          "item_price": 900,
+          "thumbnail": "",
           "spot_stock":[
             {"spot": "세종사무실", "stock_num": 450, "condition": "G"},
             {"spot": "공장동 1층", "stock_num": 450, "condition": "G"}
@@ -82,24 +77,22 @@
         }
       ]
     },
-    {
-      "classification": "GFM",
-      "item_code": "PE-반제품-02",
-      "name": "제어기 Ass`Y",
-      "model": "반제품모델2",
-      "spec": "반제품스펙2",
-      "manufacturer": "파이온일렉트릭",
-      "item_num": "",
-      "total_stock": 120,
-      "unit_price": 1,
-      "item_price": 120,
-      "photo": "testt.jpg",
-      "spot_stock":[
-        {"spot": "공장동 1층", "stock_num": 50, "condition": "G"},
-        {"spot": "공장동 2층", "stock_num": 70, "condition": "G"}
-      ],
-      "belong_data":[]
-    }
+      {
+        "classification": "GFM",
+        "item_code": "PE-반제품-02",
+        "name": "제어기 Ass`Y",
+        "model": "반제품모델2",
+        "spec": "반제품스펙2",
+        "manufacturer": "파이온일렉트릭",
+        "item_num": "",
+        "unit_price": 1,
+        "thumbnail": "",
+        "spot_stock":[
+          {"spot": "공장동 1층", "stock_num": 50, "condition": "G"},
+          {"spot": "공장동 2층", "stock_num": 720, "condition": "G"}
+        ],
+        "belong_data":[]
+      }
   ]
 }
   
