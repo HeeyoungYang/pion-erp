@@ -98,6 +98,7 @@ import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import MemberPageConfig from "@/configure/MemberPageConfig.json";
+import mux from "@/mux";
 
 export default {
   components: {
@@ -122,28 +123,29 @@ export default {
           v => !!v || '이름 입력',
           v => !!(v &&  /[가-힣]/.test(v) ) || '형식 확인(한글)',
         ]},
-        {label:'부서', column_name:'department', type:'select', list:['기획관리', '영업팀'], value:'', col:'12', sm:'6', lg:'6',
-        rules: [
-          v => !!v || '부서 선택',
-        ]},
-        {label:'직책', column_name:'position', type:'select', list:['사원', '주임', '대리', '매니저'], value:'', col:'12', sm:'6', lg:'6',
-        rules: [
-          v => !!v || '직책 선택',
-        ]},
-        {label:'전화번호', column_name:'phone', col:'12', sm:'6', lg:'6', value: '',
-        rules: [
-          v => !!v || '전화번호 입력',
-          v => !!(v &&  /^\d{2,3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
-        ]},
-        {label:'내선', column_name:'extension', col:'12', sm:'6', lg:'6', value: '',
-        rules: [
-          v => !!v || '내선번호 입력',
-          v => !!(v &&  /[0-9]$/.test(v) ) || '숫자만 입력',
-        ]},
+        // {label:'부서', column_name:'department', type:'select', list:['기획관리', '영업팀'], value:'', col:'12', sm:'6', lg:'6',
+        // rules: [
+        //   v => !!v || '부서 선택',
+        // ]},
+        // {label:'직책', column_name:'position', type:'select', list:['사원', '주임', '대리', '매니저'], value:'', col:'12', sm:'6', lg:'6',
+        // rules: [
+        //   v => !!v || '직책 선택',
+        // ]},
+        // {label:'전화번호', column_name:'phone', col:'12', sm:'6', lg:'6', value: '',
+        // rules: [
+        //   v => !!v || '전화번호 입력',
+        //   v => !!(v &&  /^\d{2,3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
+        // ]},
+        // {label:'내선', column_name:'extension', col:'12', sm:'6', lg:'6', value: '',
+        // rules: [
+        //   v => !!v || '내선번호 입력',
+        //   v => !!(v &&  /[0-9]$/.test(v) ) || '숫자만 입력',
+        // ]},
         {label:'이메일', column_name:'email', col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '이메일 입력',
-        v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)',
+        v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@gmail.com+/.test(v) ) || '이메일 형식 확인(@gmail.com)', // for test
+        // v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)', // origin
         ]},
         {label:'모바일', column_name:'mobile', col:'12', sm:'6', lg:'6', value: '',
         rules: [
@@ -157,20 +159,20 @@ export default {
       editedItem: {
         user_id:'',
         name: '',
-        department: '',
-        position: '',
-        phone: '',
-        extension: '',
+        // department: '',
+        // position: '',
+        // phone: '',
+        // extension: '',
         email: '',
         mobile: '',
       },
       defaultItem: {
         user_id:'',
         name: '',
-        department: '',
-        position: '',
-        phone: '',
-        extension: '',
+        // department: '',
+        // position: '',
+        // phone: '',
+        // extension: '',
         email: '',
         mobile: '',
       },
@@ -234,7 +236,7 @@ export default {
       this.dialog = true
     },
 
-    uploadMember () {
+    async uploadMember () {
       const validate = this.$refs.memberForm.validate();
       let member_input = this.registMemberInputs;
       let item = this.editedItem;
@@ -259,10 +261,28 @@ export default {
 
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
           this.editedItem.creater = 'user_id';
-          alert('계정 추가가 완료되었습니다');
+          try {
+            let result = await mux.Server.post({
+              path: '/api/admin/signup/',
+              user_name: item.user_id,
+              given_name: item.name,
+              family_name: '',
+              user_email: item.email,
+              phone_number: item.mobile
+            });
+            console.log('result :>> ', result);
+            alert(result.message);
+            // 성공시 다이얼로그 닫기
+            if (result.code == 0){
+              this.dialog = false;
+            }
+          } catch (error) {
+            alert(error);
+          }
         }else{// 아니라면 수정
           this.editedItem.modifier = 'user_id';
           alert('수정이 완료되었습니다');
+          this.dialog = false;
         }
       }
     },
