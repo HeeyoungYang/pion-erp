@@ -36,7 +36,7 @@
                       filled
                       hide-details
                       :inputs="searchMaterialCardInputs"
-                      @enter="searchMaterialButton"
+                      @enter="searchMaterial"
                     >
                       <v-col
                         cols="12"
@@ -63,7 +63,7 @@
                             <v-btn
                               color="primary"
                               elevation="2"
-                              @click="searchMaterialButton"
+                              @click="searchMaterial"
                             >
                               <v-icon>mdi-magnify</v-icon>검색
                             </v-btn>
@@ -327,7 +327,7 @@
                             <p class="mb-0">{{ tab_main==0 ? editRegistMaterial.item_code : (tab_main==1 ? editRegistModule.item_code : (tab_main==2 ? editRegistProduct.item_code : '')) }}</p>
                             <p class="red--text">자재를 삭제하시겠습니까?</p>
                           </template>
-                          삭제 시 복구 불가능합니다.
+                          기본 정보 및 재고 정보가 모두 삭제됩니다.
                         </ModalDialogComponent>
                       </v-col>
                     </v-row>
@@ -355,7 +355,7 @@
                       filled
                       hide-details
                       :inputs="searchModuleCardInputs"
-                      @enter="searchMaterialButton"
+                      @enter="searchModule"
                     >
                       <v-col
                         cols="12"
@@ -382,6 +382,7 @@
                             <v-btn
                               color="primary"
                               elevation="2"
+                              @click="searchModule"
                             >
                               <v-icon>mdi-magnify</v-icon>검색
                             </v-btn>
@@ -553,6 +554,7 @@
                                   clearable
                                   hide-details
                                   :inputs="moduleSearchMaterialInputs"
+                                  @enter="searchItem"
                                 >
                                   <v-col
                                     cols="12"
@@ -565,7 +567,7 @@
                                       elevation="2"
                                       class="mr-2"
                                       small
-                                      @enter="searchMaterialButton"
+                                      @click="searchItem"
                                     >
                                       검색
                                     </v-btn>
@@ -587,7 +589,7 @@
                                 v-model="selected_material_for_module_data"
                                 :headers="module_search_material_headers"
                                 :items="search_material_for_module_data"
-                                item-key="item_code"
+                                item-key="_code"
                                 show-select
                               />
                               </v-col>
@@ -665,7 +667,7 @@
                       filled
                       hide-details
                       :inputs="searchProductCardInputs"
-                      @enter="searchMaterialButton"
+                      @enter="searchProduct"
                     >
                       <v-col
                         cols="12"
@@ -676,6 +678,7 @@
                         <v-btn
                           color="primary"
                           elevation="2"
+                          @click="searchProduct"
                         >
                           <v-icon>mdi-magnify</v-icon>검색
                         </v-btn>
@@ -909,7 +912,7 @@
                                           elevation="2"
                                           class="mr-2"
                                           small
-                                          @enter="searchMaterialButton"
+                                          @enter="searchItem"
                                         >
                                           검색
                                         </v-btn>
@@ -1110,8 +1113,10 @@ export default {
       module_headers:ProductBackDataPageConfig.module_headers,
       module_search_material_headers:ProductBackDataPageConfig.module_search_material_headers,
       module_set_material_headers: ProductBackDataPageConfig.module_set_material_headers,
-      search_material_for_module_data:ProductBackDataPageConfig.search_material_for_module_data,
-      module_data:ProductBackDataPageConfig.module_data,
+      search_material_for_module_data:[],
+      module_data:[],
+      // module_data:ProductBackDataPageConfig.test_module_data,
+      // search_material_for_module_data:ProductBackDataPageConfig.test_search_material_for_module_data,
 
 
       //완제품 정보
@@ -1128,8 +1133,8 @@ export default {
       product_search_item_headers:ProductBackDataPageConfig.product_search_item_headers,
       product_set_items_headers:ProductBackDataPageConfig.product_set_items_headers,
       search_items_for_product_data:ProductBackDataPageConfig.search_items_for_product_data,
-      product_data: ProductBackDataPageConfig.product_data,
-      // product_data: [],
+      product_data: [],
+      // product_data: ProductBackDataPageConfig.test_product_data,
 
 
       // 상세내역 정보
@@ -1167,8 +1172,8 @@ export default {
       this.module_dialog = true
     },
     initialize () {
-      // this.material_data = []
-      this.material_data = ProductBackDataPageConfig.test_material_data
+      this.material_data = []
+      // this.material_data = ProductBackDataPageConfig.test_material_data
     },
     rulesSet(inputs){
       inputs.forEach(input =>{
@@ -1177,6 +1182,106 @@ export default {
         }else if(input.type != 'file'){
           input.rules =  [v => !!v || input.label + " 입력"]
         }
+      })
+    },
+
+    async searchItem() {
+      let searchType;
+      if(this.tab_main == 1){
+        searchType = '원부자재'
+      }else {
+        searchType = this.moduleSearchMaterialInputs.find(x=>x.label === '종류').value;
+      }
+      let searchClassification = this.moduleSearchMaterialInputs.find(x=>x.label === '분류').value;
+      if (searchClassification === 'All')
+        searchClassification = '';
+      let searchProductCode = this.moduleSearchMaterialInputs.find(x=>x.label === '관리코드').value;
+      let searchProductName = this.moduleSearchMaterialInputs.find(x=>x.label === '제품명').value;
+      let searchModelName = this.moduleSearchMaterialInputs.find(x=>x.label === '모델명').value;
+      let searchProductSpec = this.moduleSearchMaterialInputs.find(x=>x.label === '사양').value;
+      let searchManufacturer = this.moduleSearchMaterialInputs.find(x=>x.label === '제조사').value;
+      let searchStockMoreZero = this.stock_more_0 ? 0 : '';
+
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "query_info":{
+            "script_file_name":"rooting_product_table_stock_table_module_table_material_table_root_json_2024_03_27_10_33_27.json",
+            "params":[
+                        {
+                            "key": "classification",
+                            "type": "string",
+                            "value": searchClassification
+                        },
+                        {
+                            "key": "manufacturer",
+                            "type": "string",
+                            "value": searchManufacturer
+
+                        },
+                        {
+                            "key": "model",
+                            "type": "string",
+                            "value": searchModelName
+                        },
+                        {
+                            "key": "name",
+                            "type": "string",
+                            "value": searchProductName
+
+                        },
+                        {
+                            "key": "_code",
+                            "type": "string",
+                            "value": searchProductCode
+                        },
+                        {
+                            "key": "spec",
+                            "type": "string",
+                            "value": searchProductSpec
+                        },
+                        {
+                            "key": "type",
+                            "type": "string",
+                            "value": searchType
+                        },
+                        {
+                            "key": "stock_num",
+                            "type": "int",
+                            "value": searchStockMoreZero
+                        }
+                    ]
+            }
+        });
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.search_material_for_module_data = result;
+      // this.search_material_for_module_data = ProductBackDataPageConfig.test_search_material_for_module_data;
+
+      } catch (error) {
+        alert(error);
+      }
+
+    },
+
+    async searchMaterial() {
+      //검색 시 총 재고, 총 금액 초기화
+      this.material_total_stock_num = 0;
+      this.material_total_stock_price = 0;
+
+      this.material_data = ProductBackDataPageConfig.test_material_data;
+
+      this.material_data.forEach(data =>{
+        let stock_calc = 0;
+        for(let d=0; d<data.spot_stock.length; d++){
+          stock_calc += data.spot_stock[d].stock_num;
+        }
+        data.total_stock = stock_calc
+        data.item_price = data.unit_price * data.total_stock
+        this.material_total_stock_num += data.total_stock
+        this.material_total_stock_price += data.item_price
       })
     },
     registMaterialItem(){
@@ -1288,6 +1393,25 @@ export default {
       // }
     },
 
+
+    async searchModule() {
+      //검색 시 총 재고, 총 금액 초기화
+      this.module_total_stock_num = 0;
+      this.module_total_stock_price = 0;
+
+      this.module_data = ProductBackDataPageConfig.test_module_data;
+
+      this.module_data.forEach(data =>{
+        let stock_calc = 0;
+        for(let d=0; d<data.spot_stock.length; d++){
+          stock_calc += data.spot_stock[d].stock_num;
+        }
+        data.total_stock = stock_calc
+        data.item_price = data.unit_price * data.total_stock
+        this.module_total_stock_num += data.total_stock
+        this.module_total_stock_price += data.item_price
+      })
+    },
     registModuleItem(){
       let module_input = this.registModuleInputs;
       this.rulesSet(module_input);
@@ -1337,9 +1461,10 @@ export default {
     },
     addItemsToModule(){
       this.selected_material_for_module_data.forEach(data =>{
+        data.item_code = data._code
         this.module_set_material_data.push(data);
       })
-      this.selected_material_for_module_data = []
+      this.selected_material_for_module_data = [];
     },
     uploadModule(){
       // 저장버튼 클릭 시 registModuleInputs value를 editRegistModule에 전달
@@ -1393,6 +1518,11 @@ export default {
 
         console.log('반제품 데이터 : ' + JSON.stringify(this.editRegistModule));
       }
+      this.close();
+    },
+
+    async searchProduct() {
+      this.product_data = ProductBackDataPageConfig.test_product_data;
     },
 
     registProductItem(){
@@ -1582,7 +1712,6 @@ export default {
       }
 
       // 삭제 요청 = this.deleteItemList
-
       this.closeDelete()
     },
 
@@ -1596,6 +1725,11 @@ export default {
       this.registProductSpotInputs = [];
       this.registModuleSpotInputs = [];
       this.registMaterialSpotInputs = [];
+      this.search_material_for_module_data = [];
+      this.set_material_search = false;
+      this.moduleSearchMaterialInputs.forEach(input => {
+        input.value = ''
+      })
       this.$nextTick(() => {
         this.editRegistMaterial = Object.assign({}, this.defaultMaterialItem)
         this.editedIndex = -1
@@ -1629,81 +1763,6 @@ export default {
         const items = this.material_excel_upload_data; // 테이블 내용 정보
         mux.Excel.open(file, headers, items);
       }
-    },
-
-    async searchMaterialButton() {
-      // alert(this.searchCardInputs.find(x=>x.label === '일자').value.sort());
-
-      let searchClassification = this.searchMaterialCardInputs.find(x=>x.label === '분류').value;
-      if (searchClassification === 'All')
-      searchClassification = '';
-      let searchCondition = this.searchMaterialCardInputs.find(x=>x.label === '상태').value;
-      if (searchCondition === 'All')
-        searchCondition = '';
-      let searchMaterialCode = this.searchMaterialCardInputs.find(x=>x.label === '관리코드').value;
-      let searchName = this.searchMaterialCardInputs.find(x=>x.label === '제품명').value;
-      let searchModel = this.searchMaterialCardInputs.find(x=>x.label === '모델명').value;
-      let searchSpec = this.searchMaterialCardInputs.find(x=>x.label === '사양').value;
-      let searchManufacturer = this.searchMaterialCardInputs.find(x=>x.label === '제조사').value;
-
-      try {
-        let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
-          "query_info":{
-            "script_file_name":"rooting_material_table_stock_table_root_json_2024_03_18_17_49_52.json",
-            "params": [
-              {
-                  "key": "manufacturer",
-                  "type":"string",
-                  "value": searchManufacturer
-              },
-              {
-                  "key": "spec",
-                  "type":"string",
-                  "value": searchSpec
-              },
-              {
-                  "key": "model",
-                  "type":"string",
-                  "value": searchModel
-              },
-              {
-                  "key": "name",
-                  "type":"string",
-                  "value": searchName
-              },
-              {
-                  "key": "item_code",
-                  "type":"string",
-                  "value": searchMaterialCode
-              },
-              {
-                  "key": "condition",
-                  "type":"string",
-                  "value": searchCondition
-              },
-              {
-                  "key": "classification",
-                  "type":"string",
-                  "value": searchClassification
-              }
-            ]
-          }
-        });
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        this.material_data = result;
-
-      } catch (error) {
-        alert(error);
-      }
-
-      this.material_data.forEach(data =>{
-        this.material_total_stock_num += data.total_stock
-        this.material_total_stock_price += data.stock_price
-      })
     },
   },
 }

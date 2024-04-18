@@ -12,7 +12,6 @@
         :show-select="showSelect"
         :search="search"
         :sort-by="sortBy"
-        v-model="selected_data"
         :style="tableStyle ? tableStyle : ''"
         :hide-default-footer="hideDefaultFooter"
         :disable-pagination="disablePagination"
@@ -31,7 +30,7 @@
         <template v-slot:[`item.item_price`] = "{ item }">
           {{  item.unit_price * item.item_num ? item.unit_price * item.item_num :  0 }}
         </template>
-        <template v-slot:[`item.edit_item`]="{ index }">
+        <template v-slot:[`item.edit_item`]="{ item, index }">
           <v-icon
             v-if="addable"
             color="primary"

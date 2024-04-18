@@ -79,15 +79,12 @@
       "model": "모델1",
       "spec": "사양1",
       "manufacturer": "파이온일렉트릭",
-      "total_stock": 100,
-      "inbound_date": "2024-03-11",
       "unit_price": 1,
-      "stock_price": 100,
       "spot_stock":[
         {"spot": "공장동 1층", "stock_num": 40, "condition": "G"},
         {"spot": "공장동 2층", "stock_num": 60, "condition": "G"}
       ],
-      "photo":"photoName"
+      "thumbnail":""
     },
     {
       "classification":"일반",
@@ -96,15 +93,12 @@
       "model": "모델2",
       "spec": "사양2",
       "manufacturer": "파이온일렉트릭",
-      "total_stock": 40,
-      "inbound_date": "2024-03-11",
       "unit_price": 1,
-      "stock_price": 40,
       "spot_stock":[
         {"spot": "공장동 1층", "stock_num": 30, "condition": "G"},
         {"spot": "공장동 2층", "stock_num": 10, "condition": "G"}
       ],
-      "photo":"photoName"
+      "thumbnail":""
     },
     {
       "classification":"일반",
@@ -113,16 +107,13 @@
       "model": "",
       "spec": "사양3",
       "manufacturer": "파이온일렉트릭",
-      "total_stock": 1200,
-      "inbound_date": "2024-03-14",
       "unit_price": 2,
-      "stock_price": 2400,
       "spot_stock":[
         {"spot": "공장동 1층", "stock_num": 600, "condition": "G"},
         {"spot": "공장동 2층", "stock_num": 100, "condition": "G"},
         {"spot": "세종사무실", "stock_num": 500, "condition": "G"}
       ],
-      "photo":"photoName"
+      "thumbnail":""
     }
   ],
 
@@ -183,7 +174,7 @@
 
   "module_search_material_headers": [
     { "text": "분류", "align": "center", "value": "classification"},
-    { "text": "관리코드", "align": "center", "value": "item_code"},
+    { "text": "관리코드", "align": "center", "value": "_code"},
     { "text": "자재명", "align": "center", "value": "name"},
     { "text": "모델명", "align": "center", "value": "model"},
     { "text": "사양", "align": "center", "value": "spec"},
@@ -202,7 +193,7 @@
     { "text": "총액", "align": "center", "value": "item_price"},
     { "text": "제외", "align": "center", "value": "edit_item", "sortable": false}
   ],
-  "search_material_for_module_data":[
+  "test_search_material_for_module_data":[
     {
       "classification":"일반",
       "item_code": "공장2F_E-09-1111",
@@ -231,7 +222,7 @@
       "unit_price": "3"
     }
   ],
-  "module_data": [
+  "test_module_data": [
     {
       "classification": "GFM",
       "item_code": "PE-반제품-01",
@@ -322,7 +313,7 @@
     {"label":"사진", "column_name":"photo", "type":"file", "col":"12", "sm":"1", "lg":"1", "value": "", "hide_input":true, "icon":"mdi-image-edit"}
   ],
   "productSearchMaterialModuleInputs":[
-    {"label":"종류", "type":"auto", "list":["All", "원부자재", "반제품"], "value":"All", "col":"12", "sm":"4", "lg":"3"},
+    {"label":"종류", "type":"auto", "list":["원부자재", "반제품"], "value":"", "col":"12", "sm":"4", "lg":"3"},
     {"label":"분류", "type":"auto", "list":["All", "일반", "GFM", "전력변환기"], "value":"All", "col":"12", "sm":"4", "lg":"3"},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
@@ -419,7 +410,7 @@
     }
   ],
 
-  "product_data": [
+  "test_product_data": [
     {
       "item_code": "P-ESS-PC-380V500K60H-RT-24-R1",
       "classification": "GFM",
