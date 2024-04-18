@@ -361,7 +361,7 @@ mux.Server = {
 
         // 응답에 accessToken 이 있으면 localStorage 에, RefreshToken 이 있으면 쿠키에 저장
         if (response.data){
-          if (response && response.data && response.data.data){
+          if (response && response.data && response.data.data && response.data.data.AuthenticationResult){
             if (response.data.data.AuthenticationResult.AccessToken){
               localStorage.setItem('AccessToken', response.data.data.AuthenticationResult.AccessToken)
               console.log('response.data.data.AuthenticationResult.ExpiresIn :>> ', response.data.data.AuthenticationResult.ExpiresIn);
@@ -396,7 +396,12 @@ mux.Server = {
    * @example
    * mux.Server.logOut();
    */
-  logOut() {
+  async logOut() {
+    try {
+      await this.post({path:'/api/user/logout/'});
+    } catch (error) {
+      console.log('logout error :>> ', error);
+    }
     localStorage.clear();
     Vue.$cookies.keys().forEach(key =>{
       if (key !== configJson.cookies.id)
@@ -1879,6 +1884,26 @@ mux.Number = {
       result = result + 붙일문자;
     }
     return result;
+  },
+
+  /**
+   * +82, - 있든 없든 010-1111-2222 형식으로 반환하는 함수
+   * @param {string} phoneNumber 
+   * @returns {string}
+   * @example mux.Number.formatPhoneNumber('+8201011112222') -> '010-1111-2222'
+   */
+  formatPhoneNumber(phoneNumber) {
+    // +82 제거
+    var cleaned = ('' + phoneNumber).replace('+82', '').replace(/\D/g, '').trim();
+    
+    // 전화번호 길이가 11자리인 경우에만 변환
+    var match = cleaned.match(/^(\d{3})(\d{4})(\d{4})$/);
+    if (match) {
+        return match[1] + '-' + match[2] + '-' + match[3];
+    }
+    
+    // 형식에 맞지 않는 경우에는 그대로 반환
+    return phoneNumber;
   },
 
   /**

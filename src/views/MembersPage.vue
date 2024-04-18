@@ -203,10 +203,29 @@ export default {
   },
 
   methods: {
-    initialize () {
+    async initialize () {
       this.headers = MemberPageConfig.table_header;
       console.log("MemberPageConfig.table_header=", MemberPageConfig.table_header);
-      this.members = MemberPageConfig.test_members;
+      let memberList = [];
+      try {
+        const result = await mux.Server.get({path:'/api/admin/users/'});
+        if (result.code == 0){
+          memberList = result.data.map(data => {
+            let user = {};
+            user.user_id = data.Username;
+            user.name = (data.Attributes.find(x=>x.Name === 'family_name') ? data.Attributes.find(x=>x.Name === 'family_name').Value : '') + (data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '');
+            user.email = data.Attributes.find(x=>x.Name === 'email') ? data.Attributes.find(x=>x.Name === 'email').Value : '';
+            user.mobile = data.Attributes.find(x=>x.Name === 'phone_number') ? mux.Number.formatPhoneNumber(data.Attributes.find(x=>x.Name === 'phone_number').Value) : '';
+            return user;
+          });
+        }else {
+          alert(result.message);
+        }
+      } catch (error) {
+        alert(error);
+      }
+      this.members = memberList;
+      // this.members = MemberPageConfig.test_members;
     },
     registItem(item){
       this.editedIndex = this.members.indexOf(item)
@@ -224,7 +243,7 @@ export default {
       // this.editedItem = Object.assign({}, item)
       let member_input = this.registMemberInputs;
       member_input.forEach(data =>{
-        if(data.column_name == 'user_id'){
+        if(data.column_name == 'user_id' || data.column_name == 'email'){
           data.disabled = true
         }
         for(let i=0; i<Object.keys(item).length; i++){
@@ -260,7 +279,7 @@ export default {
         // }
 
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
-          this.editedItem.creater = 'user_id';
+          // this.editedItem.creater = 'user_id';
           try {
             let result = await mux.Server.post({
               path: '/api/admin/signup/',
@@ -280,9 +299,26 @@ export default {
             alert(error);
           }
         }else{// 아니라면 수정
-          this.editedItem.modifier = 'user_id';
-          alert('수정이 완료되었습니다');
-          this.dialog = false;
+          // this.editedItem.modifier = 'user_id';
+          try {
+            console.log('item :>> ', item);
+            let result = await mux.Server.put({
+              path: '/api/admin/user/',
+              user_name: item.user_id,
+              given_name: item.name,
+              family_name: '',
+              phone_number: item.mobile
+            });
+            console.log('result :>> ', result);
+            // alert('수정이 완료되었습니다');
+            alert(result.message);
+            // 성공시 다이얼로그 닫기
+            if (result.code == 0){
+              this.dialog = false;
+            }
+          } catch (error) {
+            alert(error);
+          }
         }
       }
     },
@@ -293,13 +329,29 @@ export default {
       this.dialogDelete = true
     },
 
-    deleteItemConfirm () {
-      this.deleteMemeber = {};
-      this.deleteMemeber.modifier = 'user_id'
-      this.deleteMemeber.user_id = this.editedItem.user_id;
-      console.log('계정 삭제 : ' + JSON.stringify(this.deleteMemeber));
-      this.members.splice(this.editedIndex, 1)
-      this.closeDelete()
+    async deleteItemConfirm () {
+      // this.deleteMemeber = {};
+      // this.deleteMemeber.modifier = 'user_id'
+      // this.deleteMemeber.user_id = this.editedItem.user_id;
+      // console.log('계정 삭제 : ' + JSON.stringify(this.deleteMemeber));
+      console.log('this.editedItem.user_id :>> ', this.editedItem.user_id);
+      // 현재 api 가 사용자 삭제가 아닌 탈퇴 기능을 수행 중...
+      // try {
+      //   let result = await mux.Server.delete({
+      //     path: '/api/admin/user/',
+      //     user_name: this.editedItem.user_id
+      //   });
+      //   console.log('result :>> ', result);
+      //   alert(result.message);
+      //   // 성공시 다이얼로그 닫기
+      //   if (result.code == 0){
+      //     this.members.splice(this.editedIndex, 1)
+      //     this.closeDelete()
+      //   }
+      // } catch (error) {
+      //   alert(error);
+      //   console.log('error :>> ', error);
+      // }
     },
 
     close () {

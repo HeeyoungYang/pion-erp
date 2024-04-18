@@ -591,6 +591,7 @@
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import InboundApproveComponent from "@/components/InboundApproveComponent";
 import ShipApproveComponent from "@/components/ShipApproveComponent";
+// import mux from "@/mux";
 
 export default {
   props: {
@@ -655,11 +656,26 @@ export default {
       inbound_approve_files: [],
       ship_approve_belong: [],
       authority_list:['관리자', '노무비정보관리', '원가계산', '입고승인', '출고승인'],
+      authority_list_info:[],
       approve_radio: true,
       confirmationDialog: false,
     };
   },
-  mounted() {
+  async mounted() {
+    // if (this.showAuthority){
+    //   try {
+    //     let result = await mux.Server.get({path: '/api/admin/page_permission/'});
+    //     console.log('result :>> ', result);
+    //     alert(result.message);
+    //     // 성공시
+    //     if (result.code == 0){
+    //       this.authority_list_info = result;
+    //       this.authority_list = result.data.map(x=>x.group_alias);
+    //     }
+    //   } catch (error) {
+    //     alert(error);
+    //   }
+    // }
     this.addedHeaders = this.headers.map((obj)=>{
           return obj;
     }).filter(element => element);

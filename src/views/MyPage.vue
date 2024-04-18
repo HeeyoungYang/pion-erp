@@ -141,6 +141,7 @@
 import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
+import mux from "@/mux";
 
 export default {
   components: {
@@ -200,7 +201,8 @@ export default {
       ],
       // ▼ 실제 현 비밀번호와 사용자가 입력한 현재 비밀번호 일치 여부
       checkCurrentPasswordRules: [
-        v => !!(v == this.userInfo.password) || '비밀번호를 확인해주세요.',
+        v => !!v || '비밀번호 입력',
+        v => !!(v &&  /^(?=.*[a-zA-z])(?=.*[0-9]).{8,16}$/.test(v) ) || '영문 + 숫자, 8자 이상 16자 이하',
       ],
     }
   },
@@ -218,10 +220,28 @@ export default {
       this.showSaveButton = true;
     },
     // ▼ 저장버튼 onclick 함수
-    savePrivacyInfoFunc(){
+    async savePrivacyInfoFunc(){
       const validate = this.$refs.myInfoForm.validate();
       if(validate){
-        alert('저장이 완료되었습니다.')
+        // try {
+        //   console.log('this.userInputs :>> ', this.userInputs);
+        //   let result = await mux.Server.post({
+        //     path: '/api/???/???',
+        //     user_name: this.$configJson.cookies.id,
+        //     given_name: ???,
+        //     family_name: '',
+        //     phone_number: this.userInputs.find(x=>x.column_name === 'mobile').value
+        //   });
+        //   console.log('result :>> ', result);
+        //   // alert('저장이 완료되었습니다.')
+        //   alert(result.message);
+        //   // 성공시 다이얼로그 닫기
+        //   if (result.code == 0){
+        //     this.dialog = false;
+        //   }
+        // } catch (error) {
+        //   alert(error);
+        // }
 
         this.userInputs.forEach(data =>{
           data.disabled = true
@@ -230,10 +250,26 @@ export default {
         this.showSaveButton = false;
       }
     },
-    save(){
+    async save(){
       const validate = this.$refs.passwordForm.validate();
       if(validate){
-        alert('비밀번호 변경이 완료되었습니다.')
+        try {
+          console.log('this.passwords :>> ', this.passwords);
+          let result = await mux.Server.post({
+            path: '/api/user/change_password/',
+            old_password: this.passwords.currentPassword,
+            new_password: this.passwords.newPassword
+          });
+          console.log('result :>> ', result);
+          // alert('비밀번호 변경이 완료되었습니다.');
+          alert(result.message);
+          // 성공시 다이얼로그 닫기
+          if (result.code == 0){
+            this.dialog = false;
+          }
+        } catch (error) {
+          alert(error);
+        }
         this.dialog = false;
       }
 

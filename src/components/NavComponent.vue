@@ -267,6 +267,7 @@
             v-for="(item, index) in userMenuList"
             :key="index"
             :to=item.to
+            @click="clickUserMenu(item)"
           >
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
@@ -280,6 +281,8 @@
   @import "../assets/css/index.css";
 </style>
 <script>
+import mux from '@/mux';
+
   export default {
     props: ['userMenu', 'productMenu', 'inboundMenu', 'shipMenu', 'estimateMenu', 'backDataMenu'],
     data: () => ({
@@ -290,7 +293,7 @@
 
       userMenuList: [
         { title: 'My page', to:'/my-page'},
-        { title: 'Logout', to:'/'},
+        { title: 'Logout'},
       ],
         right: null,
 
@@ -336,6 +339,14 @@
         ['권한 설정', '', '/member-authorization'],
       ],
     }),
+    methods: {
+      clickUserMenu(item) {
+        if (!item.to){
+          mux.Server.logOut();
+          return false;
+        }
+      }
+    }
   }
 </script>
 <style>
