@@ -3,6 +3,26 @@
   "table_header": [
     {"text": "ID", "align": "center", "value": "user_id"},
     {"text": "이름", "align": "center", "value": "name"},
+    {"text": "이메일", "align": "center", "value": "email"},
+    {"text": "모바일", "align": "center", "value": "mobile"}
+  ],
+  "test_members": [
+    {
+      "user_id": "yjs",
+      "name": "윤준수",
+      "email": "yjs@pionelectric.com",
+      "mobile": "010-1234-5678"
+    },
+    {
+      "user_id": "kcs",
+      "name": "김철수",
+      "email": "kcs@pionelectric.com",
+      "mobile": "010-5678-1234"
+    }
+  ],
+  "unused_table_header": [
+    {"text": "ID", "align": "center", "value": "user_id"},
+    {"text": "이름", "align": "center", "value": "name"},
     {"text": "부서", "align": "center", "value": "department"},
     {"text": "직책", "align": "center", "value": "position"},
     {"text": "전화번호", "align": "center", "value": "phone"},
@@ -10,7 +30,7 @@
     {"text": "이메일", "align": "center", "value": "email"},
     {"text": "모바일", "align": "center", "value": "mobile"}
   ],
-  "test_members": [
+  "unused_test_members": [
     {
       "user_id": "yjs",
       "name": "윤준수",

@@ -424,6 +424,8 @@ mux.Server.axiosInstance.interceptors.request.use(
     const token = localStorage.getItem('AccessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }else {
+      config.headers.Authorization = `Bearer a`;
     }
     return config;
   },
