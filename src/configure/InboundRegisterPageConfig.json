@@ -1,0 +1,170 @@
+{ 
+  "spot_list": ["공장동 1층", "공장동 2층", "세종 사무실"],
+
+  "searchCardInputs":[
+    {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "원부자재", "반제품", "완제품"]},
+    {"label":"분류", "type":"auto", "list":["All", "일반", "GFM", "전력변환기"], "value":"All", "col":"12", "sm":"4", "lg":"2"},
+    {"label":"상태", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "G", "B"]},
+    {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"제조사", "col":"12", "sm":"4", "lg":"3", "value": ""}
+  ],
+
+  "inboundCardInputs":[
+    {"label":"발주서 번호", "col":"12", "sm":"4", "lg":"2", "value": ""},
+    {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"2", "value": ""},
+    {"label":"구매담당자", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"", "list":["김OO", "최OO", "이OO", "박OO"]},
+    {"label":"자재담당자", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"", "list":["김OO", "최OO", "이OO", "박OO"]},
+    {"label":"수입검사서", "type":"file", "col":"12", "sm":"4", "lg":"2", "value": "", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"시험성적서", "type":"file", "col":"12", "sm":"4", "lg":"2", "value": "", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"기타", "type":"file", "col":"12", "sm":"4", "lg":"2", "value": "", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true},
+    {"label":"비고", "type":"textarea", "col":"12", "sm":"4", "lg":"4", "value": ""}
+  ],
+
+  "product_inbound_headers": [
+    { "text": "종류", "align": "center", "value": "product_type"},
+    { "text": "분류", "align": "center", "value": "product_classification"},
+    { "text": "관리코드", "align": "center", "value": "product_code"},
+    { "text": "제품명", "align": "center", "value": "product_name"},
+    { "text": "입고수량", "align": "center", "value": "inbound_num"},
+    { "text": "입고장소", "align": "center", "value": "spot"},
+    { "text": "규격", "align": "center", "value": "product_spec"},
+    { "text": "모델명", "align": "center", "value": "product_model"},
+    { "text": "제조사", "align": "center", "value": "manufacturer"},
+    { "text": "단가", "align": "center", "value": "unit_price"},
+    { "text": "사진", "align": "center", "value": "photo"}
+  ],
+
+  "product_search_headers": [
+    { "text": "종류", "align": "center", "value": "product_type"},
+    { "text": "분류", "align": "center", "value": "product_classification"},
+    { "text": "관리코드", "align": "center", "value": "product_code"},
+    { "text": "제품명", "align": "center", "value": "product_name"},
+    { "text": "모델명", "align": "center", "value": "product_model"},
+    { "text": "사양", "align": "center", "value": "product_spec"},
+    { "text": "제조사", "align": "center", "value": "manufacturer"},
+    { "text": "단가", "align": "center", "value": "unit_price"}
+  ],
+
+  "test_product_search_data": [
+    {
+      "product_type":"원부자재",
+      "product_classification":"일반",
+      "product_code": "공장2F_E-09-01",
+      "product_name": "IGBT & SMPS",
+      "product_model": "",
+      "product_spec": "111",
+      "manufacturer": "파이온일렉트릭",
+      "unit_price": "",
+      "photo":"",
+      "spot": "",
+      "inbound_num": ""
+    },
+    {
+      "product_type":"원부자재",
+      "product_classification":"일반",
+      "product_code": "공장2F_E-09-02",
+      "product_name": "SPD, 퓨즈",
+      "product_model": "",
+      "product_spec": "2222",
+      "manufacturer": "파이온일렉트릭",
+      "unit_price": "",
+      "photo":"",
+      "spot": "",
+      "inbound_num": ""
+    },
+    {
+      "product_type":"원부자재",
+      "product_classification":"일반",
+      "product_code": "공장2F_E-09-03",
+      "product_name": "쿨링팬",
+      "product_model": "",
+      "product_spec": "",
+      "manufacturer": "파이온일렉트릭",
+      "unit_price": "",
+      "photo":"",
+      "spot": "",
+      "inbound_num": ""
+    },
+    {
+      "product_type":"원부자재",
+      "product_classification":"일반",
+      "product_code": "공장2F_E-09-04",
+      "product_name": "보호회로",
+      "product_model": "",
+      "product_spec": "",
+      "manufacturer": "파이온일렉트릭",
+      "unit_price": "",
+      "photo":"",
+      "spot": "",
+      "inbound_num": ""
+    },
+    {
+      "product_type":"원부자재",
+      "product_classification":"일반",
+      "product_code": "공장2F_E-09-05",
+      "product_name": "리액터",
+      "product_model": "",
+      "product_spec": "",
+      "manufacturer": "파이온일렉트릭",
+      "unit_price": "",
+      "photo":"",
+      "spot": "",
+      "inbound_num": ""
+    },
+    {
+      "product_type":"원부자재",
+      "product_classification":"일반",
+      "product_code": "공장2F_E-09-06",
+      "product_name": "MCCB",
+      "product_model": "",
+      "product_spec": "",
+      "manufacturer": "파이온일렉트릭",
+      "unit_price": "",
+      "photo":"",
+      "spot": "",
+      "inbound_num": ""
+    },
+    {
+      "product_type":"반제품",
+      "product_classification":"일반",
+      "product_code": "공장2F_E-09-07",
+      "product_name": "PCS Ass`Y",
+      "product_model": "",
+      "product_spec": "",
+      "manufacturer": "파이온일렉트릭",
+      "unit_price": "",
+      "photo":"",
+      "spot": "",
+      "inbound_num": ""
+    },
+    {
+      "product_type":"반제품",
+      "product_classification":"일반",
+      "product_code": "공장2F_E-09-08",
+      "product_name": "제어기 Ass`Y",
+      "product_model": "",
+      "product_spec": "",
+      "manufacturer": "파이온일렉트릭",
+      "unit_price": "",
+      "photo":"",
+      "spot": "",
+      "inbound_num": ""
+    },
+    {
+      "product_type":"완제품",
+      "product_classification":"일반",
+      "product_code": "P-ESS-PC-380V500K60H-RT-24-R1",
+      "product_name": "ESS GFM용 PCS",
+      "product_model": "",
+      "product_spec": "380VAC 500kW",
+      "manufacturer": "파이온일렉트릭",
+      "unit_price": "",
+      "photo":"",
+      "spot": "",
+      "inbound_num": ""
+    }
+  ]
+}
