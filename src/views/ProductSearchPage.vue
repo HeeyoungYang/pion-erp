@@ -180,8 +180,10 @@ import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import ProductSearchPageConfig from "@/configure/ProductSearchPageConfig.json";
 // import mux from "@/mux";
+import CheckPagePermission from "@/common_js/CheckPagePermission";
 
 export default {
+  mixins: [CheckPagePermission('http://192.168.0.26:8081/api/check_page_permission?page_name=ProductSearchPage')],
   components: {
                 NavComponent,
                 DataTableComponent,
@@ -191,6 +193,7 @@ export default {
                 ModalDialogComponent,
               },
   mounted(){
+    this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
     // this.closeAll()
   },
   data(){
@@ -215,7 +218,12 @@ export default {
     },
   },
   methods: {
-
+    handleResultCheckPagePermission(result) {
+      // 사용자 페이지 권한 결과를 확인하여 처리한다.
+      // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
+      // result.response ==> 세부 정보 포함
+      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+    },
     detailInfoItem(item){
       this.detail_dialog = true;
       this.stockDetails = item.spot_stock

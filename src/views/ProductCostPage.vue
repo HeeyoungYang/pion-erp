@@ -674,15 +674,15 @@
                     <!-- adjustment_ratio -->
                     <td align="center">{{ tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio : '') }}</td>
                     <!-- man_per_hour -->
-                    <td align="center">{{ 
-                      (tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '')) 
-                      && (tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '')) 
-                      && (tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio : '')) 
+                    <td align="center">{{
+                      (tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : ''))
+                      && (tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : ''))
+                      && (tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio : ''))
                       ? parseFloat((
                           (tab_main === 0 ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day)
                           * (tab_main === 0 ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio)
                           * (tab_main === 0 ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio)
-                        ).toFixed(3)) : '' 
+                        ).toFixed(3)) : ''
                     }}</td>
                     <!-- unit_price -->
                     <td align="center">{{ tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? mux.Number.withComma(labor_occupation_data.find(x=> x.name == item.occupation).unit_price) : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? mux.Number.withComma(labor_occupation_list.find(x=> x.name == item.occupation).unit_price) : '') }}</td>
@@ -697,10 +697,10 @@
                       ></v-text-field>
                     </td>
                     <!-- total_amount -->
-                    <td align="center">{{ 
-                      ((tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '')) 
-                      && (tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '')) 
-                      && (tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio : '')) 
+                    <td align="center">{{
+                      ((tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : ''))
+                      && (tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : ''))
+                      && (tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio : ''))
                       && (tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? labor_occupation_data.find(x=> x.name == item.occupation).unit_price : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? labor_occupation_list.find(x=> x.name == item.occupation).unit_price : ''))
                       ? mux.Number.withComma((
                           ((tab_main === 0 ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day)
@@ -742,7 +742,10 @@ import mux from "@/mux";
 import Vue from 'vue';
 import ProductCostPageConfig from "@/configure/ProductCostPageConfig.json";
 
+import CheckPagePermission from "@/common_js/CheckPagePermission";
+
 export default {
+  mixins: [CheckPagePermission('http://192.168.0.26:8081/api/check_page_permission?page_name=ProductCostPage')],
   components: {
                 NavComponent,
                 ModalDialogComponent,
@@ -791,7 +794,7 @@ export default {
       dialog_search_product_data:[],
       dialog_selected_product_data:[],
       search_cost_data: [
-        
+
       ],
 
       calc_cost_detail_data: [
@@ -1001,7 +1004,7 @@ export default {
                 click: ()=>{this.dialog_calculate_labor = true}
               },
               belong_data: [
-                
+
               ]
             },
             {
@@ -1237,7 +1240,7 @@ export default {
       new_profite_formula: '(노무비+경비+일반관리비)X15%',
     }
   },
-  
+
   watch: {
     // 노무비 Dialog show and hide
     dialog_calculate_labor(show) {
@@ -1278,7 +1281,7 @@ export default {
             this.merged_labor_cost_data.push({cost_list:labor.name, cost_unit:'식', cost_num:'1', cost_unit_price:mergedUnitPrice});
           }
         });
-        
+
       // 조회 - 직접 노무비 리스트 적용
       this.calc_cost_detail_data_direct_labor.belong_data = this.merged_labor_cost_data;
       // 조회 - 간접 노무비 적용
@@ -1309,7 +1312,7 @@ export default {
       },
       deep: true // 객체 내부 속성 변경 감지
     },
-    
+
     // 조회 - 데이터 변경
     calc_cost_detail_data: {
       handler(){
@@ -1335,7 +1338,7 @@ export default {
             this.merged_labor_cost_list.push({cost_list:labor.name, cost_unit:'식', cost_num:'1', cost_unit_price:mergedUnitPrice});
           }
         });
-        
+
       // 계산 - 직접 노무비 리스트 적용
       this.calc_cost_detail_data_direct_labor2.belong_data = this.merged_labor_cost_list;
       // 계산 - 간접 노무비 적용
@@ -1459,6 +1462,7 @@ export default {
   },
 
   async mounted() {
+    this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
     this.username = Vue.$cookies.get(this.$configJson.cookies.name);
     this.todayDate = mux.Date.format(new Date(), 'yyyy-MM-dd');
     // const current_data = await mux.Server.get({path:'/product-cost/'});
@@ -1518,6 +1522,12 @@ export default {
   },
 
   methods: {
+    handleResultCheckPagePermission(result) {
+      // 사용자 페이지 권한 결과를 확인하여 처리한다.
+      // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
+      // result.response ==> 세부 정보 포함
+      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+    },
     search(){
       const keyword = this.searching_product_name.trim();
       console.log('keyword :>> ', keyword);
@@ -1535,7 +1545,7 @@ export default {
       console.log(`${product_code} / ${product_name} / ${product_capacity}`);
 
       const searchResult = ProductCostPageConfig.dialog_search_product_data;
-      
+
       this.dialog_search_product_data = searchResult;
     },
     searchDataCalcProcess(searchResult, isFirst){
@@ -1573,7 +1583,7 @@ export default {
         const normalMaintenanceFeeCost = Math.round(normalMaintenanceFeeUnitPrice * info.normal_maintenance_fee_num);
         let profiteUnitPrice = Math.round((totalLaborCost + totalExpenseFeeCost + normalMaintenanceFeeCost) * info.profite_ratio);
         const profiteCost = Math.round(profiteUnitPrice * info.profite_num);
-  
+
         const allTotalCost = productTotalCost + totalLaborCost + totalExpenseFeeCost + normalMaintenanceFeeCost + profiteCost;
         info.cost_total_amount = mux.Number.withComma(allTotalCost);
         if (isFirst){
@@ -1581,7 +1591,7 @@ export default {
         }
         return info;
       });
-      
+
       this.search_cost_data = productCostArr;
       this.searched_datas = searchResult;
     },
@@ -1625,7 +1635,7 @@ export default {
         alert('모든 행을 삭제할 수 없습니다.');
         return;
       }
-      
+
       target_labor_cost.splice(idx, 1);
     },
     clickSearchedTr(item) {
@@ -1721,7 +1731,7 @@ export default {
       this.calc_cost_detail_data_expendables.cost_unit_price = 0;
       // 조회 - 산업안전보건관리비 적용
       this.calc_cost_detail_data_industrial_safety.cost_unit_price = 0;
-      
+
       // 조회 - 일반관리비 적용
       this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = 0;
       // 조회 - 이윤 적용
@@ -1908,17 +1918,17 @@ export default {
                 }
           }
         }
-        
+
         // 품번 기준 정렬
         this.labor_cost_data.sort((a,b) => a.no.localeCompare(b.no));
-        
+
         this.origin_labor_cost_data = this.labor_cost_data;
         this.searched_datas.labor_cost_calc_detail = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
         this.labor_cost_data.forEach(data => {
           this.searched_datas.labor_cost_calc_detail.push(data);
         });
         this.searchDataCalcProcess(this.searched_datas);
-        
+
       }else {
         // 계산
         // 입력 데이터 기준 데이터 동기화
@@ -1949,7 +1959,7 @@ export default {
           alert('양식이 잘못되었습니다.');
           return;
         }
-        
+
         // 수량 0행 존재 확인 후, 선택에 따라 모두 삭제
         let isConfirm = false;
         for (let i = this.labor_cost_list.length - 1; i >= 0; i--) {
@@ -1982,12 +1992,12 @@ export default {
                 }
           }
         }
-        
+
         // 품번 기준 정렬
         this.labor_cost_list.sort((a,b) => a.no.localeCompare(b.no));
         this.origin_labor_cost_list = this.labor_cost_list;
       }
-        
+
       this.dialog_calculate_labor = false;
     },
 

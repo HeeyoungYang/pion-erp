@@ -144,13 +144,24 @@
 import NavComponent from "@/components/NavComponent";
 import MailFormComponent from "@/components/MailFormComponent";
 import mux from "@/mux";
+import CheckPagePermission from "@/common_js/CheckPagePermission";
 
 export default {
+  mixins: [CheckPagePermission('http://192.168.0.26:8081/api/check_page_permission?page_name=EstimateSearchPage')],
+  mounted() {
+    this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
+  },
   components: {
                 NavComponent,
                 MailFormComponent,
               },
   methods:{
+    handleResultCheckPagePermission(result) {
+      // 사용자 페이지 권한 결과를 확인하여 처리한다.
+      // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
+      // result.response ==> 세부 정보 포함
+      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+    },
     test(){
       console.log('test');
       // mux.Server.uploadFile({path: '/', folder:'somefolder', file: this.files[0]});
