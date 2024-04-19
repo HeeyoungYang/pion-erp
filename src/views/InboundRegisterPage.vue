@@ -360,7 +360,7 @@ import InboundRegisterPageConfig from "@/configure/InboundRegisterPageConfig.jso
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 
 export default {
-  mixins: [CheckPagePermission('http://192.168.0.26:8081/api/check_page_permission?page_name=InboundRegisterPage')],
+  mixins: [CheckPagePermission('/api/check_page_permission?page_name=InboundRegisterPage')],
   mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
   },

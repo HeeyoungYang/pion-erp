@@ -252,7 +252,7 @@ import ShipRegisterPageConfig from "@/configure/ShipRegisterPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 
 export default {
-  mixins: [CheckPagePermission('http://192.168.0.26:8081/api/check_page_permission?page_name=ShipRegisterPage')],
+  mixins: [CheckPagePermission('/api/check_page_permission?page_name=ShipRegisterPage')],
   components: {
                 NavComponent,
                 DataTableComponent,

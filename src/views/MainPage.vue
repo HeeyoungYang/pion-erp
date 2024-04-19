@@ -53,7 +53,7 @@ import ModalDialogComponent from "@/components/ModalDialogComponent";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 
 export default {
-  mixins: [CheckPagePermission('http://192.168.0.26:8081/api/check_page_permission?page_name=MainPage')],
+  mixins: [CheckPagePermission('/api/check_page_permission?page_name=MainPage')],
   mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
   },

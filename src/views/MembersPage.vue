@@ -102,7 +102,7 @@ import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 
 export default {
-  mixins: [CheckPagePermission('http://192.168.0.26:8081/api/check_page_permission?page_name=MembersPage')],
+  mixins: [CheckPagePermission('/api/check_page_permission?page_name=MembersPage')],
   mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
   },
