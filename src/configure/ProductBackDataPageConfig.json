@@ -196,7 +196,7 @@
   "test_search_material_for_module_data":[
     {
       "classification":"일반",
-      "item_code": "공장2F_E-09-1111",
+      "_code": "공장2F_E-09-1111",
       "name": "원부자재1111",
       "model": "모델1111",
       "spec": "스펙1111",
@@ -205,7 +205,7 @@
     },
     {
       "classification":"일반",
-      "item_code": "공장2F_E-09-2222",
+      "_code": "공장2F_E-09-2222",
       "name": "원부자재2222",
       "model": "모델2222",
       "spec": "스펙2222",
@@ -214,7 +214,7 @@
     },
     {
       "classification":"일반",
-      "item_code": "공장2F_E-09-3333",
+      "_code": "공장2F_E-09-3333",
       "name": "원부자재3333",
       "model": "모델3333",
       "spec": "스펙3333",
@@ -313,7 +313,7 @@
     {"label":"사진", "column_name":"photo", "type":"file", "col":"12", "sm":"1", "lg":"1", "value": "", "hide_input":true, "icon":"mdi-image-edit"}
   ],
   "productSearchMaterialModuleInputs":[
-    {"label":"종류", "type":"auto", "list":["원부자재", "반제품"], "value":"", "col":"12", "sm":"4", "lg":"3"},
+    {"label":"종류", "type":"auto", "list":["원부자재", "반제품"], "value":"원부자재", "col":"12", "sm":"4", "lg":"3"},
     {"label":"분류", "type":"auto", "list":["All", "일반", "GFM", "전력변환기"], "value":"All", "col":"12", "sm":"4", "lg":"3"},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
@@ -347,7 +347,7 @@
   "product_search_item_headers": [
     { "text": "종류", "align": "center", "value": "type"},
     { "text": "분류", "align": "center", "value": "classification"},
-    { "text": "관리코드", "align": "center", "value": "item_code"},
+    { "text": "관리코드", "align": "center", "value": "_code"},
     { "text": "자재명", "align": "center", "value": "name"},
     { "text": "모델명", "align": "center", "value": "model"},
     { "text": "사양", "align": "center", "value": "spec"},
@@ -367,11 +367,11 @@
     { "text": "총액", "align": "center", "value": "item_price"},
     { "text": "제외", "align": "center", "value": "edit_item", "sortable": false }
   ],
-  "search_items_for_product_data":[
+  "test_search_items_for_product_data":[
     {
       "type":"원부자재",
       "classification": "GFM",
-      "item_code": "공장2F_E-09-01",
+      "_code": "공장2F_E-09-01",
       "name": "IGBT & SMPS",
       "model": "원부자재모델1",
       "spec": "원부자재사양1",
@@ -381,7 +381,7 @@
     {
       "type":"원부자재",
       "classification": "GFM",
-      "item_code": "공장2F_E-09-02",
+      "_code": "공장2F_E-09-02",
       "name": "SPD, 퓨즈",
       "model": "원부자재모델2",
       "spec": "원부자재사양2",
@@ -391,7 +391,7 @@
     {
       "type":"반제품",
       "classification": "GFM",
-      "item_code": "공장2F_E-29-01",
+      "_code": "공장2F_E-29-01",
       "name": "IGBT & SMPS",
       "model": "반제품모델1",
       "spec": "반제품사양1",
@@ -401,7 +401,7 @@
     {
       "type":"반제품",
       "classification": "GFM",
-      "item_code": "공장2F_E-29-02",
+      "_code": "공장2F_E-29-02",
       "name": "SPD, 퓨즈",
       "model": "반제품모델2",
       "spec": "반제품사양2",

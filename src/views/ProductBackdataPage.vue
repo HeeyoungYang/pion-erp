@@ -576,7 +576,7 @@
                                       elevation="2"
                                       class="mr-2"
                                       small
-                                      @click="addItemsToModule"
+                                      @click="addItems"
                                     >
                                       추가
                                     </v-btn>
@@ -679,9 +679,11 @@
                           color="primary"
                           elevation="2"
                           @click="searchProduct"
+                          class="mr-2"
                         >
                           <v-icon>mdi-magnify</v-icon>검색
                         </v-btn>
+                        <v-btn color="success" @click="registProductItem">등록</v-btn>
                       </v-col>
                     </InputsFormComponent>
                   </CardComponent>
@@ -717,7 +719,7 @@
                                 v-bind="attrs"
                                 v-on="on"
                               >
-                                mdi-image-edit
+                                mdi-image
                               </v-icon>
                             </template>
 
@@ -770,192 +772,6 @@
                           >
                             <v-btn color="blue-grey darken-1" small class="mr-2 float-right white--text" @click="deleteItem(data)">완제품 삭제</v-btn>
                             <v-btn color="primary" small class="mr-2 float-right" @click="editProductItem(data)">수정</v-btn>
-                            <v-btn color="success" small class="mr-2 float-right" @click="registProductItem">등록</v-btn>
-
-                            <!-- 완제품 등록 Modal -->
-                            <ModalDialogComponent
-                              :dialog-value="product_dialog"
-                              max-width="70%"
-                              title-class=" "
-                              :dialog-transition="'slide-x-transition'"
-                              :dialog-custom="'custom-dialog elevation-0 white'"
-                              :card-elevation="'0'"
-                              :hide-overlay="true"
-                              :persistent="true"
-                            >
-                              <v-container>
-                                <!-- 모달 내용 구성 -->
-                                <v-row>
-                                  <v-col
-                                    cols="12"
-                                  >
-                                    <p class="text-h6 font-weight-black float-left mb-0">완제품 정보 입력</p>
-                                    <v-btn
-                                      color="success"
-                                      small
-                                      class="ml-4 float-left"
-                                      elevation="2"
-                                      @click="uploadProduct"
-                                    >
-                                      저장
-                                    </v-btn>
-                                    <v-btn
-                                      color="default"
-                                      small
-                                      class="ml-2 float-left"
-                                      elevation="2"
-                                      @click="close"
-                                    >
-                                      닫기
-                                    </v-btn>
-                                  </v-col>
-                                </v-row>
-                                <v-form ref="productForm" class="mt-3">
-                                  <InputsFormComponent
-                                    dense
-                                    clearable
-                                    filled
-                                    col_class="py-0"
-                                    :inputs="registProductInputs"
-                                  >
-                                    <v-menu
-                                      open-on-hover
-                                      :close-on-content-click="false"
-                                      :nudge-width="100"
-                                      offset-x
-                                    >
-                                      <!-- v-if="this.registProductInputs[this.registProductInputs.length-1].value" -->
-                                      <template v-slot:activator="{ on, attrs }">
-                                        <v-col cols="12" sm="1">
-                                          <v-icon
-                                            v-bind="attrs"
-                                            v-on="on"
-                                          >
-                                            mdi-image-multiple-outline
-                                          </v-icon>
-                                        </v-col>
-                                      </template>
-
-                                      <v-card class="pa-0">
-                                        <v-list class="pa-0">
-                                          <v-list-item class="pa-0">
-                                            <v-list-item-content class="pa-3">
-                                              <v-list-item-subtitle>
-                                                제품이미지영역
-                                                <v-img
-                                                  alt="Pionelectric Logo"
-                                                  class="shrink mr-2"
-                                                  contain
-                                                  :src="testImg ? testImg : ''"
-                                                  transition="scale-transition"
-                                                  width="150"
-                                                />
-                                              </v-list-item-subtitle>
-                                            </v-list-item-content>
-                                          </v-list-item>
-                                        </v-list>
-                                      </v-card>
-                                    </v-menu>
-                                  </InputsFormComponent>
-                                </v-form>
-                                <v-divider class="my-7"></v-divider>
-                                <v-row>
-                                  <v-col cols="3" class="pb-0">
-                                    <p class="text-h6 font-weight-black mb-0">
-                                      완제품 위치 및 재고 설정
-                                      <v-icon small color="primary" class="mr-3" style="cursor:pointer" @click="addSpotInputs('product')">mdi-plus-thick</v-icon>
-                                      <v-icon small color="default" style="cursor:pointer" @click="deleteSpotInputs('product')">mdi-minus-thick</v-icon>
-                                    </p>
-                                  </v-col>
-                                  <v-col cols="9">
-                                    <InputsFormComponent
-                                      dense
-                                      clearable
-                                      filled
-                                      col_class="py-0"
-                                      :inputs="registProductSpotInputs"
-                                    ></InputsFormComponent>
-                                  </v-col>
-                                </v-row>
-                                <v-divider class="my-7"></v-divider>
-                                <v-row>
-                                  <v-col cols="9" class="pb-0">
-                                    <p class="text-h6 font-weight-black mb-0">
-                                      자재 리스트
-                                      <v-btn color="primary" class="ml-4" x-small @click="set_material_search = true" v-if="!set_material_search">자재 선택</v-btn>
-                                      <v-btn color="primary" x-small @click="set_material_search = false" v-if="set_material_search">선택 닫기</v-btn>
-                                      <v-btn x-small color="default" class="ml-2" @click="resetData('product')">비우기</v-btn>
-                                    </p>
-                                  </v-col>
-                                </v-row>
-
-                                <v-row v-if="set_material_search" style="background: #efefef;" class="mt-7">
-                                  <v-col cols="12">
-                                    <p class="text-h6 font-weight-black mb-0">자재 검색</p>
-                                  </v-col>
-                                  <v-col cols="12">
-                                    <InputsFormComponent
-                                      dense
-                                      clearable
-                                      filled
-                                      hide-details
-                                      :inputs="productSearchMaterialModuleInputs"
-                                    >
-                                      <v-col
-                                        cols="12"
-                                        sm="4"
-                                        lg="3"
-                                        align-self="center"
-                                      >
-                                        <v-btn
-                                          color="primary"
-                                          elevation="2"
-                                          class="mr-2"
-                                          small
-                                          @enter="searchItem"
-                                        >
-                                          검색
-                                        </v-btn>
-                                        <v-btn
-                                          color="success"
-                                          elevation="2"
-                                          class="mr-2"
-                                          small
-                                          @click="addItemsToProduct"
-                                        >
-                                          추가
-                                        </v-btn>
-                                        <v-btn color="default" small @click="set_material_search = false" v-if="set_material_search">
-                                          자재 선택 닫기
-                                        </v-btn>
-                                      </v-col>
-                                    </InputsFormComponent>
-                                  </v-col>
-                                  <v-col cols="12">
-                                    <DataTableComponent
-                                      v-model="selected_items_for_product_data"
-                                      :headers="product_search_item_headers"
-                                      :items="search_items_for_product_data"
-                                      item-key="item_code"
-                                      show-select
-                                      dense
-                                    />
-                                  </v-col>
-                                </v-row>
-                                <v-row>
-                                  <v-col cols="12">
-                                    <InputsDataTableComponent
-                                      :headers="product_set_items_headers"
-                                      :items="product_set_items_data"
-                                      item-key="item_code"
-                                      dense
-                                      deletable
-                                      @delete="deleteBelongItem"
-                                    ></InputsDataTableComponent>
-                                  </v-col>
-                                </v-row>
-                              </v-container>
-                            </ModalDialogComponent>
 
                             <!-- 완제품 삭제 Dialog -->
                             <ModalDialogComponent
@@ -998,6 +814,190 @@
                       </template>
                     </ExpansionPanelComponent>
                   </div>
+                  <!-- 완제품 등록 Modal -->
+                  <ModalDialogComponent
+                    :dialog-value="product_dialog"
+                    max-width="70%"
+                    title-class=" "
+                    :dialog-transition="'slide-x-transition'"
+                    :dialog-custom="'custom-dialog elevation-0 white'"
+                    :card-elevation="'0'"
+                    :hide-overlay="true"
+                    :persistent="true"
+                  >
+                    <v-container>
+                      <!-- 모달 내용 구성 -->
+                      <v-row>
+                        <v-col
+                          cols="12"
+                        >
+                          <p class="text-h6 font-weight-black float-left mb-0">완제품 정보 입력</p>
+                          <v-btn
+                            color="success"
+                            small
+                            class="ml-4 float-left"
+                            elevation="2"
+                            @click="uploadProduct"
+                          >
+                            저장
+                          </v-btn>
+                          <v-btn
+                            color="default"
+                            small
+                            class="ml-2 float-left"
+                            elevation="2"
+                            @click="close"
+                          >
+                            닫기
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                      <v-form ref="productForm" class="mt-3">
+                        <InputsFormComponent
+                          dense
+                          clearable
+                          filled
+                          col_class="py-0"
+                          :inputs="registProductInputs"
+                        >
+                          <v-menu
+                            open-on-hover
+                            :close-on-content-click="false"
+                            :nudge-width="100"
+                            offset-x
+                          >
+                            <!-- v-if="this.registProductInputs[this.registProductInputs.length-1].value" -->
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-col cols="12" sm="1">
+                                <v-icon
+                                  v-bind="attrs"
+                                  v-on="on"
+                                >
+                                  mdi-image-multiple-outline
+                                </v-icon>
+                              </v-col>
+                            </template>
+
+                            <v-card class="pa-0">
+                              <v-list class="pa-0">
+                                <v-list-item class="pa-0">
+                                  <v-list-item-content class="pa-3">
+                                    <v-list-item-subtitle>
+                                      제품이미지영역
+                                      <v-img
+                                        alt="Pionelectric Logo"
+                                        class="shrink mr-2"
+                                        contain
+                                        :src="testImg ? testImg : ''"
+                                        transition="scale-transition"
+                                        width="150"
+                                      />
+                                    </v-list-item-subtitle>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list>
+                            </v-card>
+                          </v-menu>
+                        </InputsFormComponent>
+                      </v-form>
+                      <v-divider class="my-7"></v-divider>
+                      <v-row>
+                        <v-col cols="3" class="pb-0">
+                          <p class="text-h6 font-weight-black mb-0">
+                            완제품 위치 및 재고 설정
+                            <v-icon small color="primary" class="mr-3" style="cursor:pointer" @click="addSpotInputs('product')">mdi-plus-thick</v-icon>
+                            <v-icon small color="default" style="cursor:pointer" @click="deleteSpotInputs('product')">mdi-minus-thick</v-icon>
+                          </p>
+                        </v-col>
+                        <v-col cols="9">
+                          <InputsFormComponent
+                            dense
+                            clearable
+                            filled
+                            col_class="py-0"
+                            :inputs="registProductSpotInputs"
+                          ></InputsFormComponent>
+                        </v-col>
+                      </v-row>
+                      <v-divider class="my-7"></v-divider>
+                      <v-row>
+                        <v-col cols="9" class="pb-0">
+                          <p class="text-h6 font-weight-black mb-0">
+                            자재 리스트
+                            <v-btn color="primary" class="ml-4" x-small @click="set_material_search = true" v-if="!set_material_search">자재 선택</v-btn>
+                            <v-btn color="primary" x-small @click="set_material_search = false" v-if="set_material_search">선택 닫기</v-btn>
+                            <v-btn x-small color="default" class="ml-2" @click="resetData('product')">비우기</v-btn>
+                          </p>
+                        </v-col>
+                      </v-row>
+
+                      <v-row v-if="set_material_search" style="background: #efefef;" class="mt-7">
+                        <v-col cols="12">
+                          <p class="text-h6 font-weight-black mb-0">자재 검색</p>
+                        </v-col>
+                        <v-col cols="12">
+                          <InputsFormComponent
+                            dense
+                            clearable
+                            hide-details
+                            :inputs="productSearchMaterialModuleInputs"
+                            @enter="searchItem"
+                          >
+                            <v-col
+                              cols="12"
+                              sm="4"
+                              lg="3"
+                              align-self="center"
+                            >
+                              <v-btn
+                                color="primary"
+                                elevation="2"
+                                class="mr-2"
+                                small
+                                @click="searchItem"
+                              >
+                                검색
+                              </v-btn>
+                              <v-btn
+                                color="success"
+                                elevation="2"
+                                class="mr-2"
+                                small
+                                @click="addItems"
+                              >
+                                추가
+                              </v-btn>
+                              <v-btn color="default" small @click="set_material_search = false" v-if="set_material_search">
+                                자재 선택 닫기
+                              </v-btn>
+                            </v-col>
+                          </InputsFormComponent>
+                        </v-col>
+                        <v-col cols="12">
+                          <DataTableComponent
+                            v-model="selected_items_for_product_data"
+                            :headers="product_search_item_headers"
+                            :items="search_items_for_product_data"
+                            item-key="_code"
+                            show-select
+                            dense
+                          />
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="12">
+                          <InputsDataTableComponent
+                            :headers="product_set_items_headers"
+                            :items="product_set_items_data"
+                            item-key="item_code"
+                            dense
+                            deletable
+                            @delete="deleteBelongItem"
+                          ></InputsDataTableComponent>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </ModalDialogComponent>
                 </v-col>
               </v-row>
             </v-tab-item>
@@ -1198,20 +1198,35 @@ export default {
 
     async searchItem() {
       let searchType;
+      let searchClassification;
+      let searchProductCode;
+      let searchProductName ;
+      let searchModelName;
+      let searchProductSpec;
+      let searchManufacturer;
+      let searchStockMoreZero = this.stock_more_0 ? 0 : '';
+
       if(this.tab_main == 1){
         searchType = '원부자재'
+        searchClassification = this.moduleSearchMaterialInputs.find(x=>x.label === '분류').value;
+        if (searchClassification === 'All')
+          searchClassification = '';
+        searchProductCode = this.moduleSearchMaterialInputs.find(x=>x.label === '관리코드').value;
+        searchProductName = this.moduleSearchMaterialInputs.find(x=>x.label === '제품명').value;
+        searchModelName = this.moduleSearchMaterialInputs.find(x=>x.label === '모델명').value;
+        searchProductSpec = this.moduleSearchMaterialInputs.find(x=>x.label === '사양').value;
+        searchManufacturer = this.moduleSearchMaterialInputs.find(x=>x.label === '제조사').value;
       }else {
-        searchType = this.moduleSearchMaterialInputs.find(x=>x.label === '종류').value;
+        searchType = this.productSearchMaterialModuleInputs.find(x=>x.label === '종류').value;
+        searchClassification = this.productSearchMaterialModuleInputs.find(x=>x.label === '분류').value;
+        if (searchClassification === 'All')
+          searchClassification = '%';
+        searchProductCode = this.productSearchMaterialModuleInputs.find(x=>x.label === '관리코드').value;
+        searchProductName = this.productSearchMaterialModuleInputs.find(x=>x.label === '제품명').value;
+        searchModelName = this.productSearchMaterialModuleInputs.find(x=>x.label === '모델명').value;
+        searchProductSpec = this.productSearchMaterialModuleInputs.find(x=>x.label === '사양').value;
+        searchManufacturer = this.productSearchMaterialModuleInputs.find(x=>x.label === '제조사').value;
       }
-      let searchClassification = this.moduleSearchMaterialInputs.find(x=>x.label === '분류').value;
-      if (searchClassification === 'All')
-        searchClassification = '';
-      let searchProductCode = this.moduleSearchMaterialInputs.find(x=>x.label === '관리코드').value;
-      let searchProductName = this.moduleSearchMaterialInputs.find(x=>x.label === '제품명').value;
-      let searchModelName = this.moduleSearchMaterialInputs.find(x=>x.label === '모델명').value;
-      let searchProductSpec = this.moduleSearchMaterialInputs.find(x=>x.label === '사양').value;
-      let searchManufacturer = this.moduleSearchMaterialInputs.find(x=>x.label === '제조사').value;
-      let searchStockMoreZero = this.stock_more_0 ? 0 : '';
 
       try {
         let result = await mux.Server.post({
@@ -1268,12 +1283,25 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        this.search_material_for_module_data = result;
-      // this.search_material_for_module_data = ProductBackDataPageConfig.test_search_material_for_module_data;
+        if(this.tab_main == 1){
+          this.search_material_for_module_data = result;
+          this.selected_material_for_module_data = []
+        }else{
+          this.search_items_for_product_data = result;
+          this.selected_items_for_product_data = []
+        }
 
       } catch (error) {
         alert(error);
       }
+
+
+      // if(this.tab_main == 1){
+      //   this.search_material_for_module_data = ProductBackDataPageConfig.test_search_material_for_module_data;
+      // }else{
+      //   this.search_items_for_product_data = ProductBackDataPageConfig.test_search_items_for_product_data;
+      // }
+
 
     },
 
@@ -1470,13 +1498,6 @@ export default {
       // this.module_set_material_data= item.belong_data
       this.module_dialog = true;
     },
-    addItemsToModule(){
-      this.selected_material_for_module_data.forEach(data =>{
-        data.item_code = data._code
-        this.module_set_material_data.push(data);
-      })
-      this.selected_material_for_module_data = [];
-    },
     uploadModule(){
       // 저장버튼 클릭 시 registModuleInputs value를 editRegistModule에 전달
       // 수정, 등록 둘 다 editRegistModule에 요청, editedIndex에 따라 구분
@@ -1574,12 +1595,6 @@ export default {
       }
       this.product_dialog = true;
     },
-    addItemsToProduct(){
-      this.selected_items_for_product_data.forEach(data =>{
-        this.product_set_items_data.push(data);
-      })
-      this.selected_items_for_product_data = []
-    },
 
     uploadProduct(){
       // 수정, 등록 둘 다 editRegistProduct에 요청, editedIndex에 따라 구분
@@ -1642,6 +1657,38 @@ export default {
       }
     },
 
+    addItems(){
+      let check_duplicate=[];
+      let set_item;
+      let selected_item;
+      if(this.tab_main == 1){
+        set_item = this.module_set_material_data;
+        selected_item = this.selected_material_for_module_data;
+      }else{
+        set_item = this.product_set_items_data;
+        selected_item = this.selected_items_for_product_data;
+      }
+      set_item.forEach(item => {
+        for(let d=0; d<selected_item.length; d++){
+          if(item._code === selected_item[d].item_code){
+            check_duplicate.push(item._code);
+          }
+        }
+      })
+      if(check_duplicate.length > 0){
+        let duplicate = JSON.stringify(check_duplicate).replace( "[",'').replace( "]",'');
+        alert(duplicate + '은(는) 이미 추가된 제품입니다.')
+        return
+      }else{
+        selected_item.forEach(data =>{
+          data.item_code = data._code
+          set_item.push(data);
+        })
+        this.selected_material_for_module_data = []
+        this.selected_items_for_product_data = []
+      }
+    },
+    
     detailInfoItem(item){
       this.detail_dialog = true;
       this.stockDetails = item.spot_stock
@@ -1737,9 +1784,20 @@ export default {
       this.registModuleSpotInputs = [];
       this.registMaterialSpotInputs = [];
       this.search_material_for_module_data = [];
+      this.search_items_for_product_data = [];
       this.set_material_search = false;
-      this.moduleSearchMaterialInputs.forEach(input => {
-        input.value = ''
+      let search_input;
+      if(this.tab_main == 1){
+        search_input = this.moduleSearchMaterialInputs;
+      }else{
+        search_input = this.productSearchMaterialModuleInputs;
+      }
+      search_input.forEach(input => {
+        if(input.label == '분류'){
+          input.value = 'All'
+        }else{
+          input.value = ''
+        }
       })
       this.$nextTick(() => {
         this.editRegistMaterial = Object.assign({}, this.defaultMaterialItem)
