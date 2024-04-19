@@ -1075,6 +1075,8 @@ export default {
       editedIndex: -1,
       deleteItemList:{},
       excel_photos: [],
+      manufacturer_list:[],
+      classification_list:[],
 
       //tabs
       tab_main: null,
@@ -1184,6 +1186,16 @@ export default {
     },
     initialize () {
       this.material_data = []
+      this.manufacturer_list = ProductBackDataPageConfig.test_manufacturer_list;
+      this.classification_list = ProductBackDataPageConfig.test_classification_list;
+      mux.List.addLists(this.searchMaterialCardInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addLists(this.registMaterialInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addLists(this.searchModuleCardInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addLists(this.registModuleInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addLists(this.moduleSearchMaterialInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addLists(this.registProductInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addLists(this.productSearchMaterialModuleInputs, this.classification_list, this.manufacturer_list);
+
       // this.material_data = ProductBackDataPageConfig.test_material_data
     },
     rulesSet(inputs){
@@ -1688,7 +1700,7 @@ export default {
         this.selected_items_for_product_data = []
       }
     },
-    
+
     detailInfoItem(item){
       this.detail_dialog = true;
       this.stockDetails = item.spot_stock

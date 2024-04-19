@@ -152,7 +152,7 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import ModuleSearchPageConfig from "@/configure/ModuleSearchPageConfig.json";
-// import mux from "@/mux";
+import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 
 export default {
@@ -197,18 +197,21 @@ export default {
     this.initialize()
   },
   methods: {
+    addLists(inputType){
+      inputType.forEach( inputs => {
+          if(inputs.label == '분류'){
+            inputs.list = this.classification_list;
+            inputs.list.unshift('All');
+          }else if(inputs.label == '제조사'){
+            inputs.list = this.manufacturer_list;
+          }
+        })
+    },
     async initialize () {
       this.manufacturer_list = ModuleSearchPageConfig.test_manufacturer_list;
       this.classification_list = ModuleSearchPageConfig.test_classification_list;
+      mux.List.addLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
 
-      this.searchCardInputs.forEach( inputs => {
-        if(inputs.label == '분류'){
-          inputs.list = this.classification_list;
-          inputs.list.unshift('All');
-        }else if(inputs.label == '제조사'){
-          inputs.list = this.manufacturer_list;
-        }
-      })
     },
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.

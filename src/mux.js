@@ -279,7 +279,7 @@ mux.Server = {
         if (reqObj.timeout){
           this.axiosInstance.defaults.timeout = reqObj.timeout;
         }
-        
+
         Object.keys(reqObj).forEach(key => {
           if (key !== 'path' && key !== 'folder' && key !== 'fileName'){
             sendData[key] = reqObj[key];
@@ -582,7 +582,7 @@ mux.Util = {
         // 포커스를 설정하고 1초 뒤에 프린트 도구 시작
         setTimeout(async() => {
           previewPopup.focus();
-      
+
           // PDF 생성 옵션 설정
           const options = {
             // margin: [15, 0, 15, 0], // top, right, bottom, left 마진 여백
@@ -593,7 +593,7 @@ mux.Util = {
             image: { type: 'jpeg', quality: 1 }, // 이미지 퀄리티 (pdf 들어갈 영역을 사진을 찍어 변환 하기 때문에 이미지 퀄리티 = pdf 퀄리티
             html2canvas: { // html2canvas 옵션
               useCORS: true, // 영역 안에 로컬 이미지를 삽입 할 때 옵션 필요
-              scrollY: 0, // 스크롤 이슈 때문에 필수 
+              scrollY: 0, // 스크롤 이슈 때문에 필수
               scale: 2, // browsers device pixel ratio !! 1로 하면 부분적으로 회색 영역 생겨서 2로 해야 함
               dpi: 300,
               letterRendering: true,
@@ -602,7 +602,7 @@ mux.Util = {
             // jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' }
             jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
           };
-    
+
           // HTML을 PDF로 변환하여 다운로드
           html2pdf().set(options).from(previewPopup.document.body).save();
 
@@ -620,7 +620,7 @@ mux.Util = {
     });
   },
 
-  
+
   binaryToURL(binary){
     return URL.createObjectURL(new Blob([binary]));
   },
@@ -642,13 +642,13 @@ mux.Util = {
             width *= scaleFactor;
             height *= scaleFactor;
           }
-          
+
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
-          
+
           canvas.width = width;
           canvas.height = height;
-          
+
           ctx.drawImage(img, 0, 0, width, height);
 
           // 캔버스의 이미지 데이터를 JPEG 형식의 바이너리로 반환
@@ -1888,20 +1888,20 @@ mux.Number = {
 
   /**
    * +82, - 있든 없든 010-1111-2222 형식으로 반환하는 함수
-   * @param {string} phoneNumber 
+   * @param {string} phoneNumber
    * @returns {string}
    * @example mux.Number.formatPhoneNumber('+8201011112222') -> '010-1111-2222'
    */
   formatPhoneNumber(phoneNumber) {
     // +82 제거
     var cleaned = ('' + phoneNumber).replace('+82', '').replace(/\D/g, '').trim();
-    
+
     // 전화번호 길이가 11자리인 경우에만 변환
     var match = cleaned.match(/^(\d{3})(\d{4})(\d{4})$/);
     if (match) {
         return match[1] + '-' + match[2] + '-' + match[3];
     }
-    
+
     // 형식에 맞지 않는 경우에는 그대로 반환
     return phoneNumber;
   },
@@ -2086,6 +2086,25 @@ mux.Number = {
     const result = values.slice(1).reduce((acc, value) => acc / (value * multiplier), values[0] * multiplier) / multiplier;
 
     return result;
+  },
+}
+
+mux.List ={
+  /**
+   * 정수 변환 방식 나누기(소수점 계산 오류 방지)
+   * @param {Array} inputType
+   * @param {Array} classificationList
+   * @param {Array} manufacturerList
+   */
+   addLists(inputType, classificationList, manufacturerList){
+    inputType.forEach( inputs => {
+        if(inputs.label == '분류'){
+          inputs.list = classificationList;
+          inputs.list.unshift('All');
+        }else if(inputs.label == '제조사'){
+          inputs.list = manufacturerList;
+        }
+      })
   },
 }
 

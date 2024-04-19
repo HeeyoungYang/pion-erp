@@ -2,13 +2,13 @@
   "tab_items":["원부자재 정보", "반제품 정보", "완제품 정보"],
 
   "searchMaterialCardInputs":[
-    {"label":"분류", "type":"auto", "list":["All", "일반", "GFM", "전력변환기"], "value":"All", "col":"12", "sm":"4", "lg":"3"},
+    {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"3"},
     {"label":"상태", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All", "G", "B"]},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"제조사", "col":"12", "sm":"4", "lg":"3", "value": ""}
+    {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
 
   "registMaterialInputs":[
@@ -17,7 +17,7 @@
     {"label":"자재명", "column_name":"name",  "col":"12", "sm":"3", "lg":"3", "value": "" },
     {"label":"모델명", "column_name":"model",  "col":"12", "sm":"3", "lg":"3", "value": ""},
     {"label":"사양", "column_name":"spec", "col":"12", "sm":"3", "lg":"3", "value": ""},
-    {"label":"제조사", "column_name":"manufacturer", "type":"auto", "list":["라온코리아", "액트솔루션", "옵토마린", "성민우텍"], "col":"12", "sm":"3", "lg":"3", "value": ""},
+    {"label":"제조사", "column_name":"manufacturer", "type":"auto",  "col":"12", "sm":"3", "lg":"3", "value": ""},
     {"label":"단가", "text_type":"number", "column_name":"unit_price", "col":"12", "sm":"3", "lg":"3", "value": ""},
     {"label":"사진", "column_name":"photo", "type":"file", "col":"12", "sm":"1", "lg":"1", "value": "", "hide_input":true, "icon":"mdi-image-edit" }
   ],  
@@ -70,7 +70,11 @@
     "unit_price": "",
     "spot_stock":[],
     "photo":""
-  },
+  },  
+  
+  "test_manufacturer_list": ["파이온일렉트릭", "라온코리아", "액트솔루션", "옵토마린", "성민우텍"],
+  "test_classification_list": ["전력변환기", "GFM"],
+
   "test_material_data": [
     {
       "classification":"일반",
@@ -120,13 +124,13 @@
   
 
   "searchModuleCardInputs":[
-    {"label":"분류", "type":"auto", "list":["All", "일반", "GFM", "전력변환기"], "value":"All", "col":"12", "sm":"4", "lg":"3"},
+    {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"3"},
     {"label":"상태", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All", "G", "B"]},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"제조사", "col":"12", "sm":"4", "lg":"3", "value": ""}
+    {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
   "registModuleInputs":[
     {"label":"분류", "column_name":"classification", "type":"auto", "list":["일반", "GFM", "전력변환기"], "value":"", "col":"12", "sm":"3", "lg":"3"},
@@ -134,18 +138,18 @@
     {"label":"자재명", "column_name":"name",  "col":"12", "sm":"3", "lg":"3", "value": ""},
     {"label":"모델명", "column_name":"model",  "col":"12", "sm":"3", "lg":"3", "value": ""},
     {"label":"사양", "column_name":"spec", "col":"12", "sm":"3", "lg":"3", "value": ""},
-    {"label":"제조사", "column_name":"manufacturer", "type":"auto", "list":["라온코리아", "액트솔루션", "옵토마린", "성민우텍"], "col":"12", "sm":"3", "lg":"3", "value": ""},
+    {"label":"제조사", "column_name":"manufacturer", "type":"auto",  "col":"12", "sm":"3", "lg":"3", "value": ""},
     {"label":"단가", "text_type":"number", "column_name":"unit_price", "col":"12", "sm":"3", "lg":"3", "value": ""},
     {"label":"사진", "column_name":"photo", "type":"file", "col":"12", "sm":"1", "lg":"1", "value": "", "hide_input":true, "icon":"mdi-image-edit"}
   ],
 
   "moduleSearchMaterialInputs":[
-    {"label":"분류", "type":"auto", "list":["All", "일반", "GFM", "전력변환기"], "value":"All", "col":"12", "sm":"4", "lg":"3"},
+    {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"3"},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"제조사", "col":"12", "sm":"4", "lg":"3", "value": ""}
+    {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
   "editRegistModule": {
     "type":"반제품",
@@ -308,18 +312,18 @@
     {"label":"완제품명", "column_name":"name",  "col":"12", "sm":"3", "lg":"3", "value": ""},
     {"label":"모델명", "column_name":"model",  "col":"12", "sm":"3", "lg":"3", "value": ""},
     {"label":"사양", "column_name":"spec", "col":"12", "sm":"3", "lg":"3", "value": ""},
-    {"label":"제조사", "column_name":"manufacturer", "type":"auto", "list":["라온코리아", "액트솔루션", "옵토마린", "성민우텍"], "col":"12", "sm":"3", "lg":"3", "value": ""},
+    {"label":"제조사", "column_name":"manufacturer", "type":"auto",  "col":"12", "sm":"3", "lg":"3", "value": ""},
     {"label":"단가", "text_type":"number", "column_name":"unit_price", "col":"12", "sm":"3", "lg":"3", "value": ""},
     {"label":"사진", "column_name":"photo", "type":"file", "col":"12", "sm":"1", "lg":"1", "value": "", "hide_input":true, "icon":"mdi-image-edit"}
   ],
   "productSearchMaterialModuleInputs":[
     {"label":"종류", "type":"auto", "list":["원부자재", "반제품"], "value":"원부자재", "col":"12", "sm":"4", "lg":"3"},
-    {"label":"분류", "type":"auto", "list":["All", "일반", "GFM", "전력변환기"], "value":"All", "col":"12", "sm":"4", "lg":"3"},
+    {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"3"},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"제조사", "col":"12", "sm":"4", "lg":"3", "value": ""}
+    {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
   "editRegistProduct": {
     "type": "완제품",
