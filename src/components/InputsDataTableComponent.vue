@@ -4,7 +4,6 @@
     <v-col cols="12">
       <v-data-table
         :dense="dense"
-        :value="selected_data"
         :headers="headers"
         :items="items"
         :item-key="itemKey"
@@ -117,15 +116,15 @@ export default {
   },
   data() {
     return {
-      selected_data: this.value.slice(),
+      // selected_data: this.value.slice(),
     };
   },
   mounted() {
   },
   watch: {
-    value(newValue) {
-      this.selected_data = newValue.slice();
-    }
+    // value(newValue) {
+    //   this.selected_data = newValue.slice();
+    // }
   },
   methods: {
     addItem(item, index) {

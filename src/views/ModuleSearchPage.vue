@@ -152,7 +152,7 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import ModuleSearchPageConfig from "@/configure/ModuleSearchPageConfig.json";
-// import mux from "@/mux";
+import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 
 export default {
@@ -175,6 +175,8 @@ export default {
       detail_dialog: false,
       stockDetails:[],
       inboundDetails:[],
+      manufacturer_list:[],
+      classification_list:[],
 
       stock_detail_header:ModuleSearchPageConfig.stock_detail_header,
       inbound_detail_header:ModuleSearchPageConfig.inbound_detail_header,
@@ -190,7 +192,27 @@ export default {
       val || this.closeDetail()
     },
   },
+
+  created () {
+    this.initialize()
+  },
   methods: {
+    addLists(inputType){
+      inputType.forEach( inputs => {
+          if(inputs.label == '분류'){
+            inputs.list = this.classification_list;
+            inputs.list.unshift('All');
+          }else if(inputs.label == '제조사'){
+            inputs.list = this.manufacturer_list;
+          }
+        })
+    },
+    async initialize () {
+      this.manufacturer_list = ModuleSearchPageConfig.test_manufacturer_list;
+      this.classification_list = ModuleSearchPageConfig.test_classification_list;
+      mux.List.addLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
+
+    },
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
