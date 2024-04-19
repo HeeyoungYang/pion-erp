@@ -62,7 +62,7 @@ mux.Server = {
           try {
             // let result = await this.get(sendData); // 페이지 이동 전 path 로 Get 요청을 통해 토큰 및 권한 인증
             // if (result){
-              router.push(sendData.path);
+              router.push({path: sendData.path, query: sendData});
             // }else {
             //   this.logOut();
             // }

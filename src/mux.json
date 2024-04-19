@@ -3,7 +3,8 @@
   "RefreshTokenCookieExpiration": "7d",
   
   "cookies": {
-    "id": "savedID",
+    "savedID": "savedID",
+    "id": "id",
     "name": "username",
     "RefreshToken": "RefreshToken"
   }
