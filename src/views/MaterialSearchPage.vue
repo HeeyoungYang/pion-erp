@@ -168,6 +168,8 @@ export default {
       total_stock_num:0,
       total_stock_price:0,
       detail_dialog: false,
+      manufacturer_list:[],
+      classification_list:[],
       stockDetails:[],
       inboundDetails:[],
 
@@ -187,7 +189,24 @@ export default {
       val || this.closeDetail()
     },
   },
+
+  created () {
+    this.initialize()
+  },
   methods: {
+    async initialize () {
+      this.manufacturer_list = MaterialSearchPageConfig.test_manufacturer_list;
+      this.classification_list = MaterialSearchPageConfig.test_classification_list;
+
+      this.searchCardInputs.forEach( inputs => {
+        if(inputs.label == '분류'){
+          inputs.list = this.classification_list;
+          inputs.list.unshift('All');
+        }else if(inputs.label == '제조사'){
+          inputs.list = this.manufacturer_list;
+        }
+      })
+    },
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음

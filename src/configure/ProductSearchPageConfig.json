@@ -16,6 +16,7 @@
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
+  
   "headers": [
     { "text": "", "align": "center", "value": ""},
     { "text": "제품코드", "align": "center", "value": "item_code"},
