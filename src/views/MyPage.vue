@@ -146,8 +146,9 @@ import CheckPagePermission from "@/common_js/CheckPagePermission";
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=MyPage')],
-  mounted() {
+  async mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
+    this.getuserInfo();
   },
   components: {
                 NavComponent,
@@ -164,31 +165,19 @@ export default {
       //▼ 비밀번호 변경 Modal
       dialog: false,
       // ▼ 계정 기본 정보
-      userInfo: {name: '윤준수', password:'test1234'},
-      userInputs:[
-        {icon: 'mdi-crowd', column_name:'department', label: '부서', value: '기획관리', col:'12', sm:'6', lg:'6', disabled:true},
-        {icon: 'mdi-map-marker-account', column_name:'position', label: '직책', value: '매니저', col:'12', sm:'6', lg:'6', disabled:true},
-        {icon: 'mdi-phone-dial', column_name:'phone', label: '전화번호', value: '070-1234-1234', col:'12', sm:'6', lg:'6', disabled:true,
-        rules: [
-          v => !!v || '전화번호 입력',
-          v => !!(v &&  /^\d{2,3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
-        ]},
-        {icon: 'mdi-phone-in-talk', column_name:'extension', label: '내선', value:'123', col:'12', sm:'6', lg:'6', disabled:true,
-        rules: [
-          v => !!v || '내선번호 입력',
-          v => !!(v &&  /[0-9]$/.test(v) ) || '숫자만 입력',
-        ]},
-        {icon: 'mdi-email-fast', column_name:'email', label: '이메일', value: 'yjs@pionelectric.com', col:'12', sm:'6', lg:'6', disabled:true,
-        rules: [
-          v => !!v || '이메일 입력',
-        v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)',
-        ]},
-        {icon: 'mdi-cellphone-text', column_name:'mobile', label: '모바일', value: '010-1234-5678', col:'12', sm:'6', lg:'6', disabled:true,
-        rules: [
-          v => !!v || '휴대전화번호 입력',
-          v => !!(v &&  /^\d{3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
-        ]},
-      ],
+      user_info: {
+        given_name: '',
+        family_name: '',
+        phone_number: '',
+        email_address: '',
+        department: '',
+        position: '',
+        internal_number: '',
+        office_phone_number: ''
+      },
+
+      userInfo: {},
+      userInputs:[],
       // ▼ 비밀번호 변경
       passwords:{
         currentPassword:'',
@@ -218,7 +207,57 @@ export default {
       // result.response ==> 세부 정보 포함
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
+    async getuserInfo() {
+      try {
+        console.log('사용자 계정 정보 가졍오기');
+        let result = await mux.Server.get({
+          path: '/api/user/',
+        });
+        console.log('result :>> ', result);
+        this.user_info.phone_number = result.data.UserAttributes.find(attr => attr.Name === 'phone_number').Value;
+        this.user_info.given_name = result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value;
+        this.user_info.family_name = result.data.UserAttributes.find(attr => attr.Name === 'family_name').Value;
+        this.user_info.email_address = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
 
+        this.user_info.office_phone_number = result.data.UserAttributes.find(attr => attr.Name === 'custom:office_phone_number').Value;
+        this.user_info.internal_number = result.data.UserAttributes.find(attr => attr.Name === 'custom:internal_number').Value;
+        this.user_info.position = result.data.UserAttributes.find(attr => attr.Name === 'custom:position').Value;
+        this.user_info.department = result.data.UserAttributes.find(attr => attr.Name === 'custom:department').Value;
+
+        this.userInfo = {name: this.user_info.family_name + " " + this.user_info.given_name};
+        this.userInputs = [
+          {icon: 'mdi-crowd', column_name:'department', label: '부서', value:  this.user_info.department, col:'12', sm:'6', lg:'6', disabled:true},
+          {icon: 'mdi-map-marker-account', column_name:'position', label: '직책', value:  this.user_info.position, col:'12', sm:'6', lg:'6', disabled:true},
+          {icon: 'mdi-phone-dial', column_name:'phone', label: '전화번호', value: this.user_info.office_phone_number, col:'12', sm:'6', lg:'6', disabled:true,
+          rules: [
+            v => !!v || '전화번호 입력',
+            v => !!(v &&  /^\d{2,3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
+          ]},
+          {icon: 'mdi-phone-in-talk', column_name:'extension', label: '내선', value:this.user_info.internal_number, col:'12', sm:'6', lg:'6', disabled:true,
+          rules: [
+            v => !!v || '내선번호 입력',
+            v => !!(v &&  /[0-9]$/.test(v) ) || '숫자만 입력',
+          ]},
+          {icon: 'mdi-email-fast', column_name:'email', label: '이메일', value: this.user_info.email_address, col:'12', sm:'6', lg:'6', disabled:true,
+          rules: [
+            v => !!v || '이메일 입력',
+          v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)',
+          ]},
+          {icon: 'mdi-cellphone-text', column_name:'mobile', label: '모바일', value: this.user_info.phone_number, col:'12', sm:'6', lg:'6', disabled:true,
+          rules: [
+            v => !!v || '휴대전화번호 입력',
+            v => !!(v &&  /^\d{3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
+          ]},
+        ];
+        //alert(result.message);
+        // 성공시 다이얼로그 닫기
+        if (result.code == 0){
+          this.dialog = false;
+        }
+      } catch (error) {
+        alert(error);
+      }
+    },
     // ▼ 수정버튼 onclick 함수
     editPrivacyInfoFunc(){
       this.userInputs.forEach(data =>{
@@ -284,7 +323,6 @@ export default {
         }
         this.dialog = false;
       }
-
     }
   },
 }
