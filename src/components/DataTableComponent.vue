@@ -724,28 +724,17 @@ export default {
   methods: {
     async initialize () {
       try {
-        console.log('사용자 리스트 가져오기');
+        console.log('페이지 권한 정보로 부터 group 정보 가져오기');
         let result = await mux.Server.get({
-          path: '/api/admin/users/',
+          path: '/api/admin/page_permission/',
         });
         console.log('result :>> ', result);
 
-        //"user_id": "yjs",
-        //"name": "윤준수",
-        //"department": "기획관리",
-        //"position": "매니저",
-        //"authority":["관리자"]
-
-        let member = { user_id: '', name: '', department: '', position: '', authority: [] };
-        result.data.Users.forEach(user => {
-          member.user_id = user.Username;
-          member.name = user.Attributes.find(attr => attr.Name === 'family_name').Value + user.Attributes.find(attr => attr.Name === 'given_name').Value;
-          member.department = user.Attributes.find(attr => attr.Name === 'custom:department').Value;
-          member.position = user.Attributes.find(attr => attr.Name === 'custom:position').Value;
-          member.authority = [];
-          this.members.push(member);
-          //this.authority_list.push()
-        });
+        let group_alias = "";
+        for (let i = 0; i < result.data.length; i++){
+          group_alias = result.data[i].group_alias;
+          this.authority_list.push(group_alias);
+        }
         //alert(result.message);
         // 성공시 다이얼로그 닫기
         if (result.code == 0){
