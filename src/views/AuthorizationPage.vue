@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import mux from "@/mux";
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import AuthorizationPageConfig from "@/configure/AuthorizationPageConfig.json";
@@ -57,14 +58,53 @@ export default {
   mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
   },
+  created () {
+    this.initialize()
+  },
   methods: {
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
-    }
+    },
+    async initialize () {
+      this.headers = AuthorizationPageConfig.table_header;
+      console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
+      try {
+        console.log('사용자 리스트 가져오기');
+        let result = await mux.Server.get({
+          path: '/api/admin/users/',
+        });
+        console.log('result :>> ', result);
+
+        //"user_id": "yjs",
+        //"name": "윤준수",
+        //"department": "기획관리",
+        //"position": "매니저",
+        //"authority":["관리자"]
+
+        let member = { user_id: '', name: '', department: '', position: '', authority: [] };
+        result.data.Users.forEach(user => {
+          member.user_id = user.Username;
+          member.name = user.Attributes.find(attr => attr.Name === 'family_name').Value + user.Attributes.find(attr => attr.Name === 'given_name').Value;
+          member.department = user.Attributes.find(attr => attr.Name === 'custom:department').Value;
+          member.position = user.Attributes.find(attr => attr.Name === 'custom:position').Value;
+          member.authority = [];
+          this.members.push(member);
+        });
+        //alert(result.message);
+        // 성공시 다이얼로그 닫기
+        if (result.code == 0){
+          this.dialog = false;
+        }
+      } catch (error) {
+        alert(error);
+      }
+    },
+
   },
+
   components: {
     NavComponent,
     DataTableComponent,
@@ -74,7 +114,7 @@ export default {
     return {
       search: '',
       headers: AuthorizationPageConfig.headers,
-      members: AuthorizationPageConfig.test_members
+      members: [],//AuthorizationPageConfig.test_members
     }
   },
 }

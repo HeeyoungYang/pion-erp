@@ -105,7 +105,6 @@ export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=MembersPage')],
   mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
-    this.getUserList(); // 사용자 리스트 가져오기
   },
   components: {
     NavComponent,
@@ -215,7 +214,9 @@ export default {
       // result.response ==> 세부 정보 포함
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    async getUserList() {
+    async initialize () {
+      this.headers = MemberPageConfig.table_header;
+      console.log("MemberPageConfig.table_header=", MemberPageConfig.table_header);
       try {
         console.log('사용자 리스트 가져오기');
         let result = await mux.Server.get({
@@ -223,27 +224,12 @@ export default {
         });
         console.log('result :>> ', result);
 
+        let member = { user_id: '', name: '', email: '', mobile: ''};
         result.data.Users.forEach(user => {
-        // Code to handle each user in the array
-          let member = {
-            user_id: '',
-            name: '',
-            email: '',
-            mobile: ''
-          };
-
           member.user_id = user.Username;
           member.name = user.Attributes.find(attr => attr.Name === 'family_name').Value + user.Attributes.find(attr => attr.Name === 'given_name').Value;
           member.email = user.Attributes.find(attr => attr.Name === 'email').Value;
-          member.mobile = user.Attributes.find(attr => attr.Name === 'phone_number').Value;
-
-          console.log('id=' + user.Username);
-          console.log('phone_number=' + user.Attributes.find(attr => attr.Name === 'phone_number').Value);
-          console.log('given_name=' + user.Attributes.find(attr => attr.Name === 'given_name').Value);
-          console.log('family_name=' + user.Attributes.find(attr => attr.Name === 'family_name').Value);
-          console.log('email=' + user.Attributes.find(attr => attr.Name === 'email').Value);
-
-          //console.log('user :>> ', user);
+          member.phone_number = user.Attributes.find(attr => attr.Name === 'phone_number').Value;
           this.members.push(member);
         });
         //alert(result.message);
@@ -254,30 +240,6 @@ export default {
       } catch (error) {
         alert(error);
       }
-    },
-    async initialize () {
-      this.headers = MemberPageConfig.table_header;
-      console.log("MemberPageConfig.table_header=", MemberPageConfig.table_header);
-      let memberList = [];
-      try {
-        const result = await mux.Server.get({path:'/api/admin/users/'});
-        if (result.code == 0){
-          memberList = result.data.map(data => {
-            let user = {};
-            user.user_id = data.Username;
-            user.name = (data.Attributes.find(x=>x.Name === 'family_name') ? data.Attributes.find(x=>x.Name === 'family_name').Value : '') + (data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '');
-            user.email = data.Attributes.find(x=>x.Name === 'email') ? data.Attributes.find(x=>x.Name === 'email').Value : '';
-            user.mobile = data.Attributes.find(x=>x.Name === 'phone_number') ? mux.Number.formatPhoneNumber(data.Attributes.find(x=>x.Name === 'phone_number').Value) : '';
-            return user;
-          });
-        }else {
-          alert(result.message);
-        }
-      } catch (error) {
-        alert(error);
-      }
-      this.members = memberList;
-      // this.members = MemberPageConfig.test_members;
     },
     registItem(item){
       this.editedIndex = this.members.indexOf(item)

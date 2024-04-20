@@ -591,7 +591,7 @@
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import InboundApproveComponent from "@/components/InboundApproveComponent";
 import ShipApproveComponent from "@/components/ShipApproveComponent";
-// import mux from "@/mux";
+ import mux from "@/mux";
 
 export default {
   props: {
@@ -655,7 +655,8 @@ export default {
       inbound_approve_belong: [],
       inbound_approve_files: [],
       ship_approve_belong: [],
-      authority_list:['관리자', '노무비정보관리', '원가계산', '입고승인', '출고승인'],
+      //authority_list:['관리자', '노무비정보관리', '원가계산', '입고승인', '출고승인'],
+      authority_list:[],
       authority_list_info:[],
       approve_radio: true,
       confirmationDialog: false,
@@ -717,7 +718,43 @@ export default {
       this.selected_data = newValue.slice();
     }
   },
+  created () {
+    this.initialize()
+  },
   methods: {
+    async initialize () {
+      try {
+        console.log('사용자 리스트 가져오기');
+        let result = await mux.Server.get({
+          path: '/api/admin/users/',
+        });
+        console.log('result :>> ', result);
+
+        //"user_id": "yjs",
+        //"name": "윤준수",
+        //"department": "기획관리",
+        //"position": "매니저",
+        //"authority":["관리자"]
+
+        let member = { user_id: '', name: '', department: '', position: '', authority: [] };
+        result.data.Users.forEach(user => {
+          member.user_id = user.Username;
+          member.name = user.Attributes.find(attr => attr.Name === 'family_name').Value + user.Attributes.find(attr => attr.Name === 'given_name').Value;
+          member.department = user.Attributes.find(attr => attr.Name === 'custom:department').Value;
+          member.position = user.Attributes.find(attr => attr.Name === 'custom:position').Value;
+          member.authority = [];
+          this.members.push(member);
+          //this.authority_list.push()
+        });
+        //alert(result.message);
+        // 성공시 다이얼로그 닫기
+        if (result.code == 0){
+          this.dialog = false;
+        }
+      } catch (error) {
+        alert(error);
+      }
+    },
     updateSelectedData(newValue) {
       this.$emit('input', newValue);
     },

@@ -1,0 +1,11 @@
+{
+  "ModalDialogComponent_ChangePassword": {
+    "max-width": "300px",
+    "title": "비밀번호 변경",
+    "closeText": "취소",
+    "saveText": "저장"
+  },
+  "Input_PhoneNumber": {
+    "label": "전화번호"
+  }
+}

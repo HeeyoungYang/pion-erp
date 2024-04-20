@@ -1,5 +1,5 @@
 {  
-  "headers": [
+  "table_header": [
     {"text": "ID", "align": "center", "value": "user_id"},
     {"text": "이름", "align": "center", "value": "name"},
     {"text": "부서", "align": "center", "value": "department"},

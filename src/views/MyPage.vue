@@ -64,10 +64,10 @@
                           <!-- ▼ 비밀번호 변경 관련 Dialog(모달) -->
                           <ModalDialogComponent
                             :dialog-value="dialog"
-                            max-width="300px"
-                            title="비밀번호 변경"
-                            closeText="취소"
-                            saveText="저장"
+                            :max-width="myPageConfig.ModalDialogComponent_ChangePassword.max-width"
+                            :title="myPageConfig.ModalDialogComponent_ChangePassword.title"
+                            :closeText="myPageConfig.ModalDialogComponent_ChangePassword.closeText"
+                            :saveText="myPageConfig.ModalDialogComponent_ChangePassword.saveText"
                             :persistent="true"
                             @close="dialog=false"
                             @save="save"
@@ -143,12 +143,12 @@ import ModalDialogComponent from "@/components/ModalDialogComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
+import MyPageConfig from "@/configure/MyPageConfig.json";
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=MyPage')],
   async mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
-    this.getuserInfo();
   },
   components: {
                 NavComponent,
@@ -157,6 +157,7 @@ export default {
               },
   data(){
     return{
+      myPageConfig: MyPageConfig,
       // disabledInput: true,
       // ▼ 정보 수정 버튼
       showEditButton: true,
@@ -200,6 +201,9 @@ export default {
       ],
     }
   },
+  created () {
+    this.initialize()
+  },
   methods: {
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
@@ -207,7 +211,7 @@ export default {
       // result.response ==> 세부 정보 포함
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    async getuserInfo() {
+    async initialize() {
       try {
         console.log('사용자 계정 정보 가졍오기');
         let result = await mux.Server.get({
@@ -218,13 +222,12 @@ export default {
         this.user_info.given_name = result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value;
         this.user_info.family_name = result.data.UserAttributes.find(attr => attr.Name === 'family_name').Value;
         this.user_info.email_address = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
-
         this.user_info.office_phone_number = result.data.UserAttributes.find(attr => attr.Name === 'custom:office_phone_number').Value;
         this.user_info.internal_number = result.data.UserAttributes.find(attr => attr.Name === 'custom:internal_number').Value;
         this.user_info.position = result.data.UserAttributes.find(attr => attr.Name === 'custom:position').Value;
         this.user_info.department = result.data.UserAttributes.find(attr => attr.Name === 'custom:department').Value;
-
         this.userInfo = {name: this.user_info.family_name + " " + this.user_info.given_name};
+
         this.userInputs = [
           {icon: 'mdi-crowd', column_name:'department', label: '부서', value:  this.user_info.department, col:'12', sm:'6', lg:'6', disabled:true},
           {icon: 'mdi-map-marker-account', column_name:'position', label: '직책', value:  this.user_info.position, col:'12', sm:'6', lg:'6', disabled:true},
@@ -241,7 +244,7 @@ export default {
           {icon: 'mdi-email-fast', column_name:'email', label: '이메일', value: this.user_info.email_address, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [
             v => !!v || '이메일 입력',
-          v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)',
+            v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)',
           ]},
           {icon: 'mdi-cellphone-text', column_name:'mobile', label: '모바일', value: this.user_info.phone_number, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [

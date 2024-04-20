@@ -4,7 +4,7 @@
     {"text": "ID", "align": "center", "value": "user_id"},
     {"text": "이름", "align": "center", "value": "name"},
     {"text": "이메일", "align": "center", "value": "email"},
-    {"text": "모바일", "align": "center", "value": "mobile"}
+    {"text": "모바일", "align": "center", "value": "phone_number"}
   ],
   "test_members": [
     {
