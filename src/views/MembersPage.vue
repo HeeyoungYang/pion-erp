@@ -105,6 +105,7 @@ export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=MembersPage')],
   mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
+    this.getUserList(); // 사용자 리스트 가져오기
   },
   components: {
     NavComponent,
@@ -213,6 +214,46 @@ export default {
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+    },
+    async getUserList() {
+      try {
+        console.log('사용자 리스트 가져오기');
+        let result = await mux.Server.get({
+          path: '/api/admin/users/',
+        });
+        console.log('result :>> ', result);
+
+        result.data.Users.forEach(user => {
+        // Code to handle each user in the array
+          let member = {
+            user_id: '',
+            name: '',
+            email: '',
+            mobile: ''
+          };
+
+          member.user_id = user.Username;
+          member.name = user.Attributes.find(attr => attr.Name === 'family_name').Value + user.Attributes.find(attr => attr.Name === 'given_name').Value;
+          member.email = user.Attributes.find(attr => attr.Name === 'email').Value;
+          member.mobile = user.Attributes.find(attr => attr.Name === 'phone_number').Value;
+
+          console.log('id=' + user.Username);
+          console.log('phone_number=' + user.Attributes.find(attr => attr.Name === 'phone_number').Value);
+          console.log('given_name=' + user.Attributes.find(attr => attr.Name === 'given_name').Value);
+          console.log('family_name=' + user.Attributes.find(attr => attr.Name === 'family_name').Value);
+          console.log('email=' + user.Attributes.find(attr => attr.Name === 'email').Value);
+
+          //console.log('user :>> ', user);
+          this.members.push(member);
+        });
+        //alert(result.message);
+        // 성공시 다이얼로그 닫기
+        if (result.code == 0){
+          this.dialog = false;
+        }
+      } catch (error) {
+        alert(error);
+      }
     },
     async initialize () {
       this.headers = MemberPageConfig.table_header;
