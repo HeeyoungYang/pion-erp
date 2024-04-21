@@ -2089,22 +2089,22 @@ mux.Number = {
   },
 }
 
-mux.List ={
+mux.List = {
   /**
-   * 정수 변환 방식 나누기(소수점 계산 오류 방지)
+   * 불러온 분류, 제조사 리스트를 해당하는 검색 조건 list:[]에 추가
    * @param {Array} inputType
    * @param {Array} classificationList
    * @param {Array} manufacturerList
    */
-   addLists(inputType, classificationList, manufacturerList){
+  addLists(inputType, classificationList, manufacturerList){
     inputType.forEach( inputs => {
-        if(inputs.label == '분류'){
-          inputs.list = classificationList;
-          inputs.list.unshift('All');
-        }else if(inputs.label == '제조사'){
-          inputs.list = manufacturerList;
-        }
-      })
+      if(inputs.label == '분류'){
+        inputs.list = classificationList;
+        inputs.list.unshift('All');
+      }else if(inputs.label == '제조사'){
+        inputs.list = manufacturerList;
+      }
+    })
   },
 }
 
