@@ -97,7 +97,7 @@
           </v-list-group>
         </v-list-group>
         <v-list-group
-          :value="productMenu"
+          :value="salesMenu"
           prepend-icon="mdi-clipboard-text"
         >
           <template v-slot:activator>
@@ -107,7 +107,7 @@
           <v-list-group
             no-action
             sub-group
-            :value="inboundMenu"
+            :value="estimateMenu"
           >
             <template v-slot:activator>
               <v-list-item-content>
@@ -133,7 +133,7 @@
           <v-list-group
             no-action
             sub-group
-            :value="shipMenu"
+            :value="obtainOrderMenu"
           >
             <template v-slot:activator>
               <v-list-item-content>

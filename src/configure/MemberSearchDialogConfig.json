@@ -1,0 +1,33 @@
+{  
+  "table_header": [
+    {"text": "이름", "align": "center", "value": "name"},
+    {"text": "부서", "align": "center", "value": "department"},
+    {"text": "직책", "align": "center", "value": "position"},    
+    {"text": "Email", "align": "center", "value": "email"},    
+    {"text": "ID", "align": "center", "value": "user_id"},    
+    {"text": "", "align": "center", "value": "set", "sortable":false}
+  ],
+  "test_members": [
+    {
+      "user_id": "yjs",
+      "name": "윤준수",
+      "department": "기획관리",
+      "position": "매니저",
+      "email": "yjs@pionelectric.com"
+    },
+    {
+      "user_id": "kcs",
+      "name": "김철수",
+      "department": "영업팀",
+      "position": "대리",
+      "email": "kcs@pionelectric.com"
+    },
+    {
+      "user_id": "heeyoung",
+      "name": "양희영",
+      "department": "시스템",
+      "position": "대리",
+      "email": "didgud0822@gmail.com"
+    }
+  ]
+}

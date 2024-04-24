@@ -3,24 +3,21 @@
 
   "searchCardInputs":[
     {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "원부자재", "반제품", "완제품"]},
-    {"label":"분류", "type":"auto", "list":["All", "일반", "GFM", "전력변환기"], "value":"All", "col":"12", "sm":"4", "lg":"2"},
+    {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"2"},
     {"label":"상태", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "G", "B"]},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"제조사", "col":"12", "sm":"4", "lg":"3", "value": ""}
+    {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
-
-  "inboundCardInputs":[
+  "inboundCardInfoInputs":[
     {"label":"발주서 번호", "col":"12", "sm":"4", "lg":"2", "value": ""},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"2", "value": ""},
-    {"label":"구매담당자", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"", "list":["김OO", "최OO", "이OO", "박OO"]},
-    {"label":"자재담당자", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"", "list":["김OO", "최OO", "이OO", "박OO"]},
     {"label":"수입검사서", "type":"file", "col":"12", "sm":"4", "lg":"2", "value": "", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
     {"label":"시험성적서", "type":"file", "col":"12", "sm":"4", "lg":"2", "value": "", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
-    {"label":"기타", "type":"file", "col":"12", "sm":"4", "lg":"2", "value": "", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true},
-    {"label":"비고", "type":"textarea", "col":"12", "sm":"4", "lg":"4", "value": ""}
+    {"label":"기타", "type":"file", "col":"12", "sm":"4", "lg":"4", "value": "", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true},
+    {"label":"비고", "type":"textarea", "col":"12", "sm":"4", "lg":"6", "value": ""}
   ],
 
   "product_inbound_headers": [
@@ -47,6 +44,9 @@
     { "text": "제조사", "align": "center", "value": "manufacturer"},
     { "text": "단가", "align": "center", "value": "unit_price"}
   ],
+
+  "test_manufacturer_list": ["파이온일렉트릭", "라온코리아", "액트솔루션", "옵토마린", "성민우텍"],
+  "test_classification_list": ["전력변환기", "GFM"],
 
   "test_product_search_data": [
     {

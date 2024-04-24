@@ -122,11 +122,6 @@
                               >
                                 {{ approve_radio ? '승인' : '반려' }}
                               </v-btn>
-                              <v-btn
-                                small
-                                color="grey lighten-2"
-                                class="ml-2"
-                              >취소</v-btn>
                             </v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
