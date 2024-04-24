@@ -222,6 +222,7 @@ import DataTableComponent from "@/components/DataTableComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LaborCostBackDataPageConfig from "@/configure/LaborCostBackDataPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
+import mux from "@/mux";
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=LaborCostBackdataPage')],
@@ -352,21 +353,10 @@ export default {
         }
       })
     },
-    rulesSet(inputs){
-      inputs.forEach(input =>{
-        if(input.column_name == 'formula2'){
-            input.rules =  [v => !!v || '백분율(%) 혹은 숫자 입력']
-        }else if(input.text_type == 'number'){
-          input.rules =  [v => !!v || input.label + " 입력(숫자)"]
-        }else{
-          input.rules =  [v => !!v || input.label + " 입력"]
-        }
-      })
-    },
     registLaborItem(item){
       this.editedLaborIndex = this.labor_data.indexOf(item)
       let labor_input = this.registLaborInputs;
-      this.rulesSet(labor_input);
+      mux.Rules.rulesSet(labor_input);
       labor_input.forEach(data =>{
         if(data.column_name == 'name' || data.column_name == 'type' || data.column_name == 'no'){
           data.disabled = false
@@ -380,7 +370,7 @@ export default {
       this.editedLaborIndex = this.labor_data.indexOf(item)
       // this.editedLaborItem = Object.assign({}, item)
       let labor_input = this.registLaborInputs;
-      this.rulesSet(labor_input);
+      mux.Rules.rulesSet(labor_input);
       labor_input.forEach(data =>{
         for(let i=0; i<Object.keys(item).length; i++){
           if(data.column_name == Object.keys(item)[i]){
@@ -429,7 +419,7 @@ export default {
       this.editedWageIndex = this.wage_data.indexOf(item)
       // this.editedWageItem = Object.assign({}, item)
       let wage_input = this.registWageInputs;
-      this.rulesSet(wage_input);
+      mux.Rules.rulesSet(wage_input);
       wage_input.forEach(data =>{
         if(data.column_name == 'occupation'){
           data.disabled = true
@@ -445,7 +435,7 @@ export default {
     registWageItem(item){
       this.editedWageIndex = this.wage_data.indexOf(item)
       let wage_input = this.registWageInputs;
-      this.rulesSet(wage_input);
+      mux.Rules.rulesSet(wage_input);
       wage_input.forEach(data =>{
         if(data.column_name == 'occupation'){
           data.disabled = false
@@ -480,7 +470,7 @@ export default {
     editRatioItem (item) {
       this.editedRatioIndex = this.ratio_data.indexOf(item)
       let ratio_input = this.registRatioInputs;
-      this.rulesSet(ratio_input);
+      mux.Rules.rulesSet(ratio_input);
       let split_formula = item.formula.split('X');
       item.formula1 = split_formula[0]
       item.formula2 = split_formula[1]
