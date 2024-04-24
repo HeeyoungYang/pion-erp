@@ -7,6 +7,7 @@
     <v-main>
       <v-row justify="center">
         <v-col cols="12" sm="6">
+          <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
           <v-card elevation="1">
             <v-card-title style="width:100%;">
               <v-row>
@@ -52,6 +53,7 @@ import DataTableComponent from "@/components/DataTableComponent";
 import AuthorizationPageConfig from "@/configure/AuthorizationPageConfig.json";
 // import ModalDialogComponent from "@/components/ModalDialogComponent";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
+import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=AuthorizationPage')],
@@ -69,6 +71,7 @@ export default {
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     async initialize () {
+      this.loading_dialog = true;
       this.headers = AuthorizationPageConfig.table_header;
       console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
 
@@ -81,6 +84,7 @@ export default {
             this.groups.push({name: data.GroupName, users: []});
           });
         }else {
+          this.loading_dialog = false;
           alert(result.message);
           return;
         }
@@ -93,6 +97,7 @@ export default {
               group.users.push(data.Username);
             });
           }else {
+            this.loading_dialog = false;
             alert(result.message);
             return;
           }
@@ -110,15 +115,17 @@ export default {
             return user;
           });
         }else {
+          this.loading_dialog = false;
           alert(result.message);
           return;
         }
       } catch (error) {
+        this.loading_dialog = false;
         alert(error);
         return;
       }
       this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
-
+      this.loading_dialog = false;
     },
 
   },
@@ -126,10 +133,12 @@ export default {
   components: {
     NavComponent,
     DataTableComponent,
+    LoadingModalComponent,
     // ModalDialogComponent,
   },
   data() {
     return {
+      loading_dialog: false,
       search: '',
       headers: AuthorizationPageConfig.headers,
       members: [],//AuthorizationPageConfig.test_members

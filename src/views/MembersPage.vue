@@ -7,6 +7,7 @@
     <v-main>
       <v-row justify="center">
         <v-col cols="12" sm="8">
+          <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
           <v-card elevation="1">
             <v-card-title style="width:100%;">
               <v-row>
@@ -100,6 +101,7 @@ import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import MemberPageConfig from "@/configure/MemberPageConfig.json";
 import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
+import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=MembersPage')],
@@ -111,9 +113,11 @@ export default {
     ModalDialogComponent,
     DataTableComponent,
     InputsFormComponent,
+    LoadingModalComponent,
   },
   data() {
     return {
+      loading_dialog: false,
       search: '',
       dialog: false,
       dialogDelete: false,
@@ -137,12 +141,12 @@ export default {
         rules: [
           v => !!v || '직책 선택',
         ]},
-        {label:'전화번호', column_name:'phone', col:'12', sm:'6', lg:'6', value: '',
+        {label:'전화번호', column_name:'office_phone_number', col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '전화번호 입력',
           v => !!(v &&  /^(0(2|3[1-3]|4[1-4]|5[1-5]|6[1-4]|70))-(\d{3,4})-(\d{4})$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
         ]},
-        {label:'내선', column_name:'extension', col:'12', sm:'6', lg:'6', value: '',
+        {label:'내선', column_name:'office_internal_number', col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '내선번호 입력',
           v => !!(v &&  /[0-9]$/.test(v) ) || '숫자만 입력',
@@ -153,7 +157,7 @@ export default {
         v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@gmail.com+/.test(v) ) || '이메일 형식 확인(@gmail.com)', // for test
         // v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)', // origin
         ]},
-        {label:'모바일', column_name:'mobile', col:'12', sm:'6', lg:'6', value: '',
+        {label:'모바일', column_name:'phone_number', col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '휴대전화번호 입력',
           v => !!(v &&  /^(?:(010-\d{4})|(01[1|6|7|8|9]-\d{3,4}))-(\d{4})$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
@@ -169,7 +173,7 @@ export default {
         position: '',
         office_phone_number: '',
         office_internal_number	: '',
-        user_email: '',
+        email: '',
         phone_number: '',
       },
       defaultItem: {
@@ -179,7 +183,7 @@ export default {
         position: '',
         office_phone_number: '',
         office_internal_number	: '',
-        user_email: '',
+        email: '',
         phone_number: '',
       },
       deleteMemeber:{},
@@ -216,6 +220,7 @@ export default {
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     async initialize () {
+      this.loading_dialog = true;
       this.headers = MemberPageConfig.table_header;
       console.log("MemberPageConfig.table_header=", MemberPageConfig.table_header);
       let memberList = [];
@@ -228,24 +233,31 @@ export default {
             user.name = (data.Attributes.find(x=>x.Name === 'family_name') ? data.Attributes.find(x=>x.Name === 'family_name').Value : '') + (data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '');
             user.email = data.Attributes.find(x=>x.Name === 'email') ? data.Attributes.find(x=>x.Name === 'email').Value : '';
             user.phone_number = data.Attributes.find(x=>x.Name === 'phone_number') ? mux.Number.formatPhoneNumber(data.Attributes.find(x=>x.Name === 'phone_number').Value) : '';
+            user.office_phone_number = data.Attributes.find(x=>x.Name === 'custom:office_phone_number') ? mux.Number.formatTelNumber(data.Attributes.find(x=>x.Name === 'custom:office_phone_number').Value) : '';
+            user.office_internal_number = data.Attributes.find(x=>x.Name === 'custom:internal_number') ? data.Attributes.find(x=>x.Name === 'custom:internal_number').Value : '';
+            user.position = data.Attributes.find(x=>x.Name === 'custom:position') ? data.Attributes.find(x=>x.Name === 'custom:position').Value : '';
+            user.department = data.Attributes.find(x=>x.Name === 'custom:department') ? data.Attributes.find(x=>x.Name === 'custom:department').Value : '';
             return user;
           });
           
         }else {
+          this.loading_dialog = false;
           alert(result.message);
+          return;
         }
       } catch (error) {
+        this.loading_dialog = false;
         alert(error);
+        return;
       }
       this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
+      this.loading_dialog = false;
     },
     registItem(item){
       this.editedIndex = this.members.indexOf(item)
       let member_input = this.registMemberInputs;
       member_input.forEach(data =>{
-        if(data.column_name == 'user_id'){
-          data.disabled = false
-        }
+        data.disabled = false
         data.value = '';
       })
       this.dialog = true
@@ -298,10 +310,10 @@ export default {
               user_name: item.user_id,
               given_name: item.name,
               family_name: ' ',
-              phone_number: item.mobile,
-              email_address: item.email_address,
+              phone_number: item.phone_number,
+              user_email: item.email,
               office_phone_number: item.office_phone_number,
-              internal_number: item.internal_number,
+              office_internal_number: item.office_internal_number,
               position: item.position,
               department: item.department
             });
@@ -324,9 +336,9 @@ export default {
               given_name: item.name,
               family_name: ' ',
               phone_number: item.phone_number.replaceAll('-', ''),
-              email_address: item.email_address,
+              email: item.email,
               office_phone_number: item.office_phone_number.replaceAll('-', ''),
-              internal_number: item.internal_number,
+              internal_number: item.office_internal_number,
               position: item.position,
               department: item.department
             });
@@ -335,6 +347,13 @@ export default {
             alert(result.message);
             // 성공시 다이얼로그 닫기
             if (result.code == 0){
+              this.members = this.members.map(a => {
+                if (a.user_id === item.user_id) {
+                  return item;
+                }else {
+                  return a;
+                }
+              });
               this.dialog = false;
             }
           } catch (error) {

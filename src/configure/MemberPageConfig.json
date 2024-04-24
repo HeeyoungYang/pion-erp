@@ -3,6 +3,10 @@
   "table_header": [
     {"text": "ID", "align": "center", "value": "user_id"},
     {"text": "이름", "align": "center", "value": "name"},
+    {"text": "부서", "align": "center", "value": "department"},
+    {"text": "직책", "align": "center", "value": "position"},
+    {"text": "전화번호", "align": "center", "value": "office_phone_number"},
+    {"text": "내선", "align": "center", "value": "office_internal_number"},
     {"text": "이메일", "align": "center", "value": "email"},
     {"text": "모바일", "align": "center", "value": "phone_number"}
   ],
@@ -19,16 +23,6 @@
       "email": "kcs@pionelectric.com",
       "mobile": "010-5678-1234"
     }
-  ],
-  "unused_table_header": [
-    {"text": "ID", "align": "center", "value": "user_id"},
-    {"text": "이름", "align": "center", "value": "name"},
-    {"text": "부서", "align": "center", "value": "department"},
-    {"text": "직책", "align": "center", "value": "position"},
-    {"text": "전화번호", "align": "center", "value": "phone"},
-    {"text": "내선", "align": "center", "value": "extension"},
-    {"text": "이메일", "align": "center", "value": "email"},
-    {"text": "모바일", "align": "center", "value": "mobile"}
   ],
   "unused_test_members": [
     {

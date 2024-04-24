@@ -5,6 +5,7 @@
   :persistent="persistent ? persistent : false"
   :transition="dialogTransition ? dialogTransition : ''"
   :content-class="dialogCustom ? dialogCustom : ''"
+  :hide-overlay="hideOverlay ? hideOverlay : false"
   @click:outside="persistent ? null : close()">
     <template v-slot:activator="{ on, attrs }">
       <slot name="activator" v-bind="attrs" v-on="on"></slot>

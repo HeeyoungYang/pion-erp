@@ -3,6 +3,7 @@
     <ModalDialogComponent
         :dialog-value="loading_dialog"
         :persistent="true"
+        :hide-overlay="hideOverlay"
         width="350px"
         title-class="hide"
       >
@@ -23,6 +24,7 @@ import ModalDialogComponent from "@/components/ModalDialogComponent";
 export default {
   props: {
     dialogValue: Boolean,
+    hideOverlay: Boolean,
   },
   components: {
               ModalDialogComponent,

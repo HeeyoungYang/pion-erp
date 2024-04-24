@@ -446,13 +446,15 @@ mux.Server.axiosInstance.interceptors.response.use(
   },
   async error => {
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if ((error.response.data && error.response.data.code === 5193) 
+    && !originalRequest._retry) {
       originalRequest._retry = true;
+      const userName = Vue.$cookies.get(configJson.cookies.id);
       const RefreshToken = Vue.$cookies.get(configJson.cookies.RefreshToken);
       if (RefreshToken) {
         try {
           // RefreshToken을 사용하여 새로운 AccessToken을 요청합니다.
-          const response = await axios.post('/token-refresh', { RefreshToken });
+          const response = await axios.post('/api/user/refresh_token/', { user_name: userName, refresh_token: RefreshToken });
           const newAccessToken = response.data.accessToken;
           localStorage.setItem('AccessToken', newAccessToken);
           // 기존 요청을 재시도합니다.
@@ -462,7 +464,17 @@ mux.Server.axiosInstance.interceptors.response.use(
           // RefreshToken을 사용하여 AccessToken을 갱신하는데 실패한 경우 로그아웃 처리 등을 수행할 수 있습니다.
           console.error('AccessToken 갱신 실패:', refreshError);
           // 로그아웃
-          mux.Server.logOut();
+          try {
+            await axios.post({path:'/api/user/logout/'});
+          } catch (error) {
+            console.log('logout error :>> ', error);
+          }
+          localStorage.clear();
+          Vue.$cookies.keys().forEach(key =>{
+            if (key !== configJson.cookies.savedID)
+            Vue.$cookies.remove(key);
+          });
+          router.push('/');
         }
       }
     }
