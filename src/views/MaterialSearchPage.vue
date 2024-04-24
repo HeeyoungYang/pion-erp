@@ -194,7 +194,7 @@ export default {
     this.initialize()
   },
   methods: {
-    addLists(inputType){
+    addProductBasicInfoLists(inputType){
       inputType.forEach( inputs => {
           if(inputs.label == '분류'){
             inputs.list = this.classification_list;
@@ -207,7 +207,7 @@ export default {
     async initialize () {
       this.manufacturer_list = MaterialSearchPageConfig.test_manufacturer_list;
       this.classification_list = MaterialSearchPageConfig.test_classification_list;
-      mux.List.addLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
     },
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.

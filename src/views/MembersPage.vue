@@ -117,6 +117,7 @@ export default {
       search: '',
       dialog: false,
       dialogDelete: false,
+      
       registMemberInputs:[
         {label:'ID', column_name:'user_id',  col:'12', sm:'6', lg:'6', value: '',
         rules: [
