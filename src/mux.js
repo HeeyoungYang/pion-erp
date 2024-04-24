@@ -404,7 +404,7 @@ mux.Server = {
     }
     localStorage.clear();
     Vue.$cookies.keys().forEach(key =>{
-      if (key !== configJson.cookies.id)
+      if (key !== configJson.cookies.savedID)
       Vue.$cookies.remove(key);
     });
     router.push('/');
@@ -1896,10 +1896,21 @@ mux.Number = {
     // +82 제거
     var cleaned = ('' + phoneNumber).replace('+82', '').replace(/\D/g, '').trim();
 
-    // 전화번호 길이가 11자리인 경우에만 변환
-    var match = cleaned.match(/^(\d{3})(\d{4})(\d{4})$/);
+    var match = cleaned.match(/^(01[0|1|6|7|8|9])(\d{3,4})(\d{4})$/);
     if (match) {
-        return match[1] + '-' + match[2] + '-' + match[3];
+      return match[1] + '-' + match[2] + '-' + match[3];
+    }
+
+    // 형식에 맞지 않는 경우에는 그대로 반환
+    return phoneNumber;
+  },
+  formatTelNumber(phoneNumber) {
+    // +82 제거
+    var cleaned = ('' + phoneNumber).replace('+82', '').replace(/\D/g, '').trim();
+
+    var match = cleaned.match(/^(0[2|3[1-3]|4[1-4]|5[1-5]|6[1-4]|70])(\d{3,4})(\d{4})$/);
+    if (match) {
+      return match[1] + '-' + match[2] + '-' + match[3];
     }
 
     // 형식에 맞지 않는 경우에는 그대로 반환

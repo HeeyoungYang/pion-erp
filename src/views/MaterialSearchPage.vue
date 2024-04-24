@@ -227,73 +227,49 @@ export default {
       this.total_stock_num = 0;
       this.total_stock_price = 0;
 
-      // let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
-      // if (searchClassification === 'All')
-      // searchClassification = '';
-      // let searchCondition = this.searchCardInputs.find(x=>x.label === '상태').value;
-      // if (searchCondition === 'All')
-      //   searchCondition = '';
-      // let searchMaterialCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
-      // let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
-      // let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
-      // let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
-      // let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
+      let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
+      if (searchClassification === 'All')
+      searchClassification = '';
+      let searchCondition = this.searchCardInputs.find(x=>x.label === '상태').value;
+      if (searchCondition === 'All')
+        searchCondition = '';
+      let searchMaterialCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+      let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
+      let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
+      let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
+      let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
+      let searchStockMoreZero = this.stock_more_0 ? 0 : '';
 
-      // try {
-      //   let result = await mux.Server.post({
-      //     path: '/api/sample_rest_api/',
-      //     "query_info":{
-      //       "script_file_name":"rooting_material_table_stock_table_root_json_2024_03_18_17_49_52.json",
-      //       "params": [
-      //         {
-      //             "key": "manufacturer",
-      //             "type":"string",
-      //             "value": searchManufacturer
-      //         },
-      //         {
-      //             "key": "spec",
-      //             "type":"string",
-      //             "value": searchSpec
-      //         },
-      //         {
-      //             "key": "model",
-      //             "type":"string",
-      //             "value": searchModel
-      //         },
-      //         {
-      //             "key": "name",
-      //             "type":"string",
-      //             "value": searchName
-      //         },
-      //         {
-      //             "key": "material_code",
-      //             "type":"string",
-      //             "value": searchMaterialCode
-      //         },
-      //         {
-      //             "key": "condition",
-      //             "type":"string",
-      //             "value": searchCondition
-      //         },
-      //         {
-      //             "key": "classification",
-      //             "type":"string",
-      //             "value": searchClassification
-      //         }
-      //       ]
-      //     }
-      //   });
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: [
+            {
+              "classification": searchClassification,
+              "manufacturer": searchManufacturer,
+              "_code": searchMaterialCode,
+              "model": searchModel,
+              "name": searchName,
+              "spec": searchSpec,
+              "type": '원부자재',
+              "condition": searchCondition,
+              "stock_num": searchStockMoreZero
+            }
+          ],
+          script_file_name: "rooting_원자재_검색_24_04_21_17_46_0JY.json",
+          script_file_path: "data_storage_pion\\json_sql\\stock\\materiral\\원자재_검색_24_04_21_17_46_WPA"
+        });
 
-      //   if (typeof result === 'string'){
-      //     result = JSON.parse(result);
-      //   }
-      //   this.product_data = result;
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.product_data = result;
 
-      // } catch (error) {
-      //   alert(error);
-      // }
+      } catch (error) {
+        alert(error);
+      }
 
-      this.product_data = MaterialSearchPageConfig.test_product_data;
+      // this.product_data = MaterialSearchPageConfig.test_product_data;
 
       this.product_data.forEach(data =>{
         let stock_calc = 0;

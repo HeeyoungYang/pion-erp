@@ -153,6 +153,7 @@
                           ></v-text-field>
                           <v-text-field
                             label="새 비밀번호"
+                            type="password"
                             v-model="setNewPassword"
                             :rules="passwordRules"
                           ></v-text-field>

@@ -128,24 +128,24 @@ export default {
           v => !!v || '이름 입력',
           v => !!(v &&  /[가-힣]/.test(v) ) || '형식 확인(한글)',
         ]},
-        // {label:'부서', column_name:'department', type:'select', list:['기획관리', '영업팀'], value:'', col:'12', sm:'6', lg:'6',
-        // rules: [
-        //   v => !!v || '부서 선택',
-        // ]},
-        // {label:'직책', column_name:'position', type:'select', list:['사원', '주임', '대리', '매니저'], value:'', col:'12', sm:'6', lg:'6',
-        // rules: [
-        //   v => !!v || '직책 선택',
-        // ]},
-        // {label:'전화번호', column_name:'phone', col:'12', sm:'6', lg:'6', value: '',
-        // rules: [
-        //   v => !!v || '전화번호 입력',
-        //   v => !!(v &&  /^\d{2,3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
-        // ]},
-        // {label:'내선', column_name:'extension', col:'12', sm:'6', lg:'6', value: '',
-        // rules: [
-        //   v => !!v || '내선번호 입력',
-        //   v => !!(v &&  /[0-9]$/.test(v) ) || '숫자만 입력',
-        // ]},
+        {label:'부서', column_name:'department', type:'select', list:['기획관리', '영업팀'], value:'', col:'12', sm:'6', lg:'6',
+        rules: [
+          v => !!v || '부서 선택',
+        ]},
+        {label:'직책', column_name:'position', type:'select', list:['사원', '주임', '대리', '매니저'], value:'', col:'12', sm:'6', lg:'6',
+        rules: [
+          v => !!v || '직책 선택',
+        ]},
+        {label:'전화번호', column_name:'phone', col:'12', sm:'6', lg:'6', value: '',
+        rules: [
+          v => !!v || '전화번호 입력',
+          v => !!(v &&  /^(0(2|3[1-3]|4[1-4]|5[1-5]|6[1-4]|70))-(\d{3,4})-(\d{4})$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
+        ]},
+        {label:'내선', column_name:'extension', col:'12', sm:'6', lg:'6', value: '',
+        rules: [
+          v => !!v || '내선번호 입력',
+          v => !!(v &&  /[0-9]$/.test(v) ) || '숫자만 입력',
+        ]},
         {label:'이메일', column_name:'email', col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '이메일 입력',
@@ -155,7 +155,7 @@ export default {
         {label:'모바일', column_name:'mobile', col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '휴대전화번호 입력',
-          v => !!(v &&  /^\d{3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
+          v => !!(v &&  /^(?:(010-\d{4})|(01[1|6|7|8|9]-\d{3,4}))-(\d{4})$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
         ]},
       ],
       headers: [],
@@ -164,22 +164,22 @@ export default {
       editedItem: {
         user_id:'',
         name: '',
-        // department: '',
-        // position: '',
-        // phone: '',
-        // extension: '',
-        email: '',
-        mobile: '',
+        department: '',
+        position: '',
+        office_phone_number: '',
+        office_internal_number	: '',
+        user_email: '',
+        phone_number: '',
       },
       defaultItem: {
         user_id:'',
         name: '',
-        // department: '',
-        // position: '',
-        // phone: '',
-        // extension: '',
-        email: '',
-        mobile: '',
+        department: '',
+        position: '',
+        office_phone_number: '',
+        office_internal_number	: '',
+        user_email: '',
+        phone_number: '',
       },
       deleteMemeber:{},
     }
@@ -217,29 +217,26 @@ export default {
     async initialize () {
       this.headers = MemberPageConfig.table_header;
       console.log("MemberPageConfig.table_header=", MemberPageConfig.table_header);
+      let memberList = [];
       try {
-        console.log('사용자 리스트 가져오기');
-        let result = await mux.Server.get({
-          path: '/api/admin/users/',
-        });
-        console.log('result :>> ', result);
-
-        let member = { user_id: '', name: '', email: '', mobile: ''};
-        result.data.Users.forEach(user => {
-          member.user_id = user.Username;
-          member.name = user.Attributes.find(attr => attr.Name === 'family_name').Value + user.Attributes.find(attr => attr.Name === 'given_name').Value;
-          member.email = user.Attributes.find(attr => attr.Name === 'email').Value;
-          member.phone_number = user.Attributes.find(attr => attr.Name === 'phone_number').Value;
-          this.members.push(member);
-        });
-        //alert(result.message);
-        // 성공시 다이얼로그 닫기
+        const result = await mux.Server.get({path:'/api/admin/users/'});
         if (result.code == 0){
-          this.dialog = false;
+          memberList = result.data.Users.map(data => {
+            let user = {};
+            user.user_id = data.Username;
+            user.name = (data.Attributes.find(x=>x.Name === 'family_name') ? data.Attributes.find(x=>x.Name === 'family_name').Value : '') + (data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '');
+            user.email = data.Attributes.find(x=>x.Name === 'email') ? data.Attributes.find(x=>x.Name === 'email').Value : '';
+            user.phone_number = data.Attributes.find(x=>x.Name === 'phone_number') ? mux.Number.formatPhoneNumber(data.Attributes.find(x=>x.Name === 'phone_number').Value) : '';
+            return user;
+          });
+          
+        }else {
+          alert(result.message);
         }
       } catch (error) {
         alert(error);
       }
+      this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
     },
     registItem(item){
       this.editedIndex = this.members.indexOf(item)
@@ -299,9 +296,13 @@ export default {
               path: '/api/admin/signup/',
               user_name: item.user_id,
               given_name: item.name,
-              family_name: '',
-              user_email: item.email,
-              phone_number: item.mobile
+              family_name: ' ',
+              phone_number: item.mobile,
+              email_address: item.email_address,
+              office_phone_number: item.office_phone_number,
+              internal_number: item.internal_number,
+              position: item.position,
+              department: item.department
             });
             console.log('result :>> ', result);
             alert(result.message);
@@ -317,11 +318,16 @@ export default {
           try {
             console.log('item :>> ', item);
             let result = await mux.Server.put({
-              path: '/api/admin/user/',
+              path: '/api/user/',
               user_name: item.user_id,
               given_name: item.name,
-              family_name: '',
-              phone_number: item.mobile
+              family_name: ' ',
+              phone_number: item.phone_number.replaceAll('-', ''),
+              email_address: item.email_address,
+              office_phone_number: item.office_phone_number.replaceAll('-', ''),
+              internal_number: item.internal_number,
+              position: item.position,
+              department: item.department
             });
             console.log('result :>> ', result);
             // alert('수정이 완료되었습니다');
@@ -349,23 +355,23 @@ export default {
       // this.deleteMemeber.user_id = this.editedItem.user_id;
       // console.log('계정 삭제 : ' + JSON.stringify(this.deleteMemeber));
       console.log('this.editedItem.user_id :>> ', this.editedItem.user_id);
-      // 현재 api 가 사용자 삭제가 아닌 탈퇴 기능을 수행 중...
-      // try {
-      //   let result = await mux.Server.delete({
-      //     path: '/api/admin/user/',
-      //     user_name: this.editedItem.user_id
-      //   });
-      //   console.log('result :>> ', result);
-      //   alert(result.message);
-      //   // 성공시 다이얼로그 닫기
-      //   if (result.code == 0){
-      //     this.members.splice(this.editedIndex, 1)
-      //     this.closeDelete()
-      //   }
-      // } catch (error) {
-      //   alert(error);
-      //   console.log('error :>> ', error);
-      // }
+      
+      try {
+        let result = await mux.Server.delete({
+          path: '/api/admin/user/',
+          user_name: this.editedItem.user_id
+        });
+        console.log('result :>> ', result);
+        alert(result.message);
+        // 성공시 다이얼로그 닫기
+        if (result.code == 0){
+          this.members.splice(this.editedIndex, 1)
+          this.closeDelete()
+        }
+      } catch (error) {
+        alert(error);
+        console.log('error :>> ', error);
+      }
     },
 
     close () {

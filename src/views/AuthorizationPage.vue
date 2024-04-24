@@ -71,36 +71,54 @@ export default {
     async initialize () {
       this.headers = AuthorizationPageConfig.table_header;
       console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
+
+      let memberList = [];
       try {
-        console.log('사용자 리스트 가져오기');
-        let result = await mux.Server.get({
-          path: '/api/admin/users/',
-        });
-        console.log('result :>> ', result);
 
-        //"user_id": "yjs",
-        //"name": "윤준수",
-        //"department": "기획관리",
-        //"position": "매니저",
-        //"authority":["관리자"]
-
-        let member = { user_id: '', name: '', department: '', position: '', authority: [] };
-        result.data.Users.forEach(user => {
-          member.user_id = user.Username;
-          member.name = user.Attributes.find(attr => attr.Name === 'family_name').Value + user.Attributes.find(attr => attr.Name === 'given_name').Value;
-          member.department = user.Attributes.find(attr => attr.Name === 'custom:department').Value;
-          member.position = user.Attributes.find(attr => attr.Name === 'custom:position').Value;
-          member.authority = [];
-          this.members.push(member);
-        });
-        //alert(result.message);
-        // 성공시 다이얼로그 닫기
+        let result = await mux.Server.get({path:'/api/admin/groups/'});
         if (result.code == 0){
-          this.dialog = false;
+          memberList = result.data.forEach(data => {
+            this.groups.push({name: data.GroupName, users: []});
+          });
+        }else {
+          alert(result.message);
+          return;
+        }
+
+        for (let i = 0; i < this.groups.length; i++) {
+          const group = this.groups[i];
+          result = await mux.Server.get({path:`/api/admin/group/users/?group_name=${group.name}`});
+          if (result.code == 0){
+            result.data.Users.forEach(data => {
+              group.users.push(data.Username);
+            });
+          }else {
+            alert(result.message);
+            return;
+          }
+        }
+
+        result = await mux.Server.get({path:'/api/admin/users/'});
+        if (result.code == 0){
+          memberList = result.data.Users.map(data => {
+            let user = {};
+            user.user_id = data.Username;
+            user.name = (data.Attributes.find(x=>x.Name === 'family_name') ? data.Attributes.find(x=>x.Name === 'family_name').Value : '') + (data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '');
+            user.department = data.Attributes.find(attr => attr.Name === 'custom:department').Value;
+            user.position = data.Attributes.find(attr => attr.Name === 'custom:position').Value;
+            user.authority = this.groups.filter(group => group.users.includes(user.user_id)).map(group => group.name);
+            return user;
+          });
+        }else {
+          alert(result.message);
+          return;
         }
       } catch (error) {
         alert(error);
+        return;
       }
+      this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
+
     },
 
   },
@@ -115,6 +133,7 @@ export default {
       search: '',
       headers: AuthorizationPageConfig.headers,
       members: [],//AuthorizationPageConfig.test_members
+      groups: [],
     }
   },
 }

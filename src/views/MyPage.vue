@@ -218,11 +218,10 @@ export default {
           path: '/api/user/',
         });
         console.log('result :>> ', result);
-        this.user_info.phone_number = result.data.UserAttributes.find(attr => attr.Name === 'phone_number').Value;
+        this.user_info.phone_number = mux.Number.formatPhoneNumber(result.data.UserAttributes.find(attr => attr.Name === 'phone_number').Value);
         this.user_info.given_name = result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value;
-        this.user_info.family_name = result.data.UserAttributes.find(attr => attr.Name === 'family_name').Value;
         this.user_info.email_address = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
-        this.user_info.office_phone_number = result.data.UserAttributes.find(attr => attr.Name === 'custom:office_phone_number').Value;
+        this.user_info.office_phone_number = mux.Number.formatTelNumber(result.data.UserAttributes.find(attr => attr.Name === 'custom:office_phone_number').Value);
         this.user_info.internal_number = result.data.UserAttributes.find(attr => attr.Name === 'custom:internal_number').Value;
         this.user_info.position = result.data.UserAttributes.find(attr => attr.Name === 'custom:position').Value;
         this.user_info.department = result.data.UserAttributes.find(attr => attr.Name === 'custom:department').Value;
@@ -234,7 +233,7 @@ export default {
           {icon: 'mdi-phone-dial', column_name:'phone', label: '전화번호', value: this.user_info.office_phone_number, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [
             v => !!v || '전화번호 입력',
-            v => !!(v &&  /^\d{2,3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
+            v => !!(v &&  /^(0(2|3[1-3]|4[1-4]|5[1-5]|6[1-4]|70))-(\d{3,4})-(\d{4})$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
           ]},
           {icon: 'mdi-phone-in-talk', column_name:'extension', label: '내선', value:this.user_info.internal_number, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [
@@ -244,12 +243,13 @@ export default {
           {icon: 'mdi-email-fast', column_name:'email', label: '이메일', value: this.user_info.email_address, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [
             v => !!v || '이메일 입력',
-            v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)',
+            v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@gmail.com+/.test(v) ) || '이메일 형식 확인(@gmail.com)', // test
+            // v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)', // origin
           ]},
           {icon: 'mdi-cellphone-text', column_name:'mobile', label: '모바일', value: this.user_info.phone_number, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [
             v => !!v || '휴대전화번호 입력',
-            v => !!(v &&  /^\d{3}-\d{3,4}-\d{4}$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
+            v => !!(v &&  /^(?:(010-\d{4})|(01[1|6|7|8|9]-\d{3,4}))-(\d{4})$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
           ]},
         ];
         //alert(result.message);
@@ -264,7 +264,7 @@ export default {
     // ▼ 수정버튼 onclick 함수
     editPrivacyInfoFunc(){
       this.userInputs.forEach(data =>{
-        if(data.column_name == 'department' || data.column_name == 'position'){
+        if(data.column_name == 'department' || data.column_name == 'position' || data.column_name == 'email'){
           data.disabled = true
         } else{
           data.disabled = false
@@ -277,25 +277,30 @@ export default {
     async savePrivacyInfoFunc(){
       const validate = this.$refs.myInfoForm.validate();
       if(validate){
-        // try {
-        //   console.log('this.userInputs :>> ', this.userInputs);
-        //   let result = await mux.Server.post({
-        //     path: '/api/???/???',
-        //     user_name: this.$configJson.cookies.id,
-        //     given_name: ???,
-        //     family_name: '',
-        //     phone_number: this.userInputs.find(x=>x.column_name === 'mobile').value
-        //   });
-        //   console.log('result :>> ', result);
-        //   // alert('저장이 완료되었습니다.')
-        //   alert(result.message);
-        //   // 성공시 다이얼로그 닫기
-        //   if (result.code == 0){
-        //     this.dialog = false;
-        //   }
-        // } catch (error) {
-        //   alert(error);
-        // }
+        try {
+          console.log('this.userInputs :>> ', this.userInputs);
+          let result = await mux.Server.put({
+            path: '/api/user/',
+            user_name: this.$configJson.cookies.id,
+            given_name: this.user_info.given_name,
+            family_name: ' ',
+            phone_number: this.user_info.phone_number.replaceAll('-', ''),
+            email: this.user_info.email_address,
+            office_phone_number: this.user_info.office_phone_number.replaceAll('-', ''),
+            internal_number: this.user_info.internal_number,
+            position: this.user_info.position,
+            department: this.user_info.department
+          });
+          console.log('result :>> ', result);
+          // alert('저장이 완료되었습니다.')
+          alert(result.message);
+          // 성공시 다이얼로그 닫기
+          if (result.code == 0){
+            this.dialog = false;
+          }
+        } catch (error) {
+          alert(error);
+        }
 
         this.userInputs.forEach(data =>{
           data.disabled = true

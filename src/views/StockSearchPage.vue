@@ -248,58 +248,21 @@ export default {
       try {
         let result = await mux.Server.post({
           path: '/api/sample_rest_api/',
-          "query_info":{
-            "script_file_name":"rooting_product_table_stock_table_module_table_material_table_root_json_2024_03_27_10_33_27.json",
-            "params":[
-                        {
-                            "key": "classification",
-                            "type": "string",
-                            "value": searchClassification
-                        },
-                        {
-                            "key": "manufacturer",
-                            "type": "string",
-                            "value": searchManufacturer
-
-                        },
-                        {
-                            "key": "model",
-                            "type": "string",
-                            "value": searchModelName
-                        },
-                        {
-                            "key": "name",
-                            "type": "string",
-                            "value": searchProductName
-
-                        },
-                        {
-                            "key": "_code",
-                            "type": "string",
-                            "value": searchProductCode
-                        },
-                        {
-                            "key": "spec",
-                            "type": "string",
-                            "value": searchProductSpec
-                        },
-                        {
-                            "key": "type",
-                            "type": "string",
-                            "value": searchType
-                        },
-                        {
-                            "key": "condition",
-                            "type": "string",
-                            "value": searchCondition
-                        },
-                        {
-                            "key": "stock_num",
-                            "type": "int",
-                            "value": searchStockMoreZero
-                        }
-                    ]
+          params: [
+            {
+              "classification": searchClassification,
+              "manufacturer": searchManufacturer,
+              "model": searchModelName,
+              "name": searchProductName,
+              "_code": searchProductCode,
+              "spec": searchProductSpec,
+              "type": searchType,
+              "condition": searchCondition,
+              "stock_num": searchStockMoreZero
             }
+          ],
+          script_file_name: "rooting_재고_검색_24_04_21_17_44_FKE.json",
+          script_file_path: "data_storage_pion\\json_sql\\stock\\stock_search\\재고_검색_24_04_21_17_45_RGC"
         });
 
         if (typeof result === 'string'){
