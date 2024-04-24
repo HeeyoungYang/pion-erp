@@ -349,7 +349,7 @@ export default {
       if(validate){
         product_info.forEach(data =>{
           if(data.column_name == 'classification'){
-            item.classification_modify = data.value;
+            item.classification_update = data.value;
             item.classification = this.classification_data[this.editedBasicInfoIndex].classification;
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
             item.creater = 'user_id';
@@ -359,7 +359,7 @@ export default {
               alert('분류 수정이 완료되었습니다.');
             }
           }else if(data.column_name == 'manufacturer'){
-            item.manufacturer_modify = data.value;
+            item.manufacturer_update = data.value;
             item.manufacturer = this.manufacturer_data[this.editedBasicInfoIndex].manufacturer;
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
             item.creater = 'user_id';
@@ -369,7 +369,7 @@ export default {
               alert('제조사 수정이 완료되었습니다.');
             }
           }else if(data.column_name == 'spot'){
-            item.spot_modify = data.value;
+            item.spot_update = data.value;
             item.spot = this.spot_data[this.editedBasicInfoIndex].spot;
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
             item.creater = 'user_id';
