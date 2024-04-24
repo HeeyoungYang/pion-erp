@@ -2096,13 +2096,29 @@ mux.List = {
    * @param {Array} classificationList
    * @param {Array} manufacturerList
    */
-  addLists(inputType, classificationList, manufacturerList){
+  addProductBasicInfoLists(inputType, classificationList, manufacturerList){
     inputType.forEach( inputs => {
       if(inputs.label == '분류'){
         inputs.list = classificationList;
         inputs.list.unshift('All');
       }else if(inputs.label == '제조사'){
         inputs.list = manufacturerList;
+      }
+    })
+  },
+  /**
+   * 불러온 분류, 제조사 리스트를 해당하는 검색 조건 list:[]에 추가
+   * @param {Array} inputType
+   * @param {Array} membersList
+   */
+   addMembersLists(inputType, label, membersList){
+    inputType.forEach( inputs => {
+      if(inputs.label == label){
+        let member_list = [];
+        for(let m=0; m<membersList.length; m++){
+          member_list.push(membersList[m].name + "(" + membersList[m].id + ")");
+        }
+        inputs.list = member_list;
       }
     })
   },

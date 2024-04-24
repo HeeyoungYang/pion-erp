@@ -46,6 +46,7 @@
                 <v-btn
                   color="primary"
                   elevation="2"
+                  @click="searchProduct"
                 >
                   <v-icon>mdi-magnify</v-icon>검색
                 </v-btn>
@@ -74,22 +75,50 @@
               입고 정보 입력
             </div>
             <div slot="cardText">
+              <!-- <v-row>
+                <v-col cols="12" sm="3">
+                  <v-row>
+                    <v-col>확인</v-col>
+                    <v-col>김OO</v-col>
+                  </v-row>
+                </v-col>
+                <v-col cols="12" sm="3">
+                  승인
+                </v-col>
+                <v-col cols="12" sm="3">
+                  구매담당자
+                </v-col>
+                <v-col cols="12" sm="3">
+                  자재담당자
+                </v-col>
+              </v-row> -->
+
+              <MemberSearchDialogComponent
+                  :dialog-value="member_dialog"
+                  :persistent="true"
+                  @close="close"
+                  @setMember = "setMember"
+                  @members = "members"
+                >
+                </MemberSearchDialogComponent>
+              <v-chip
+                class="mr-2 mb-4"
+                style="cursor:pointer"
+                v-for="(member, i) in inbound_member_info"
+                :key="i"
+                :color="member.name ? 'success' : 'default'"
+                @click="selectMemberDialog(i)"
+              >
+                {{ member.type }} : {{ member.name }}
+              </v-chip>
+
               <InputsFormComponent
                 dense
                 clearable
                 filled
                 hide-details
-                :inputs="inboundCardInputs"
+                :inputs="inboundCardInfoInputs"
               >
-                <v-col cols="12" sm="4" lg="2" v-if="something_wrong">
-                  <v-text-field
-                    dense
-                    hide-details
-                    filled
-                    label="사유"
-                    v-model="something_wrong_reason"
-                  ></v-text-field>
-                </v-col>
                 <v-col cols="12" sm="4" lg="2" align-self="center">
                   <v-radio-group
                     dense
@@ -110,6 +139,15 @@
                       @click="something_wrong = true"
                     ></v-radio>
                   </v-radio-group>
+                </v-col>
+                <v-col cols="12" sm="4" lg="4" v-if="something_wrong">
+                  <v-text-field
+                    dense
+                    hide-details
+                    filled
+                    label="사유"
+                    v-model="something_wrong_reason"
+                  ></v-text-field>
                 </v-col>
               </InputsFormComponent>
               <v-divider class="my-5"></v-divider>
@@ -356,8 +394,10 @@ import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
+import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent.vue";
 import InboundRegisterPageConfig from "@/configure/InboundRegisterPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
+import mux from "@/mux";
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=InboundRegisterPage')],
@@ -369,12 +409,17 @@ export default {
                 DataTableComponent,
                 InputsFormComponent,
                 CardComponent,
+                MemberSearchDialogComponent,
               },
   data(){
     return{
+      member_dialog: false,
       add_self: false,
       select_product: true,
       dates: [],
+      members_list:[],
+      manufacturer_list:[],
+      classification_list:[],
       menu: false,
       something_wrong:false,
       something_wrong_reason:'',
@@ -382,17 +427,57 @@ export default {
       something_wrong_radio: '이상 없음',
       product_inbound_data: [],
       product_inbound_data_added: [],
+      member_type_index:0,
+      inbound_member_info:[
+        {type:'확인', name:'', user_id:'', email:''},
+        {type:'승인', name:'', user_id:'', email:''},
+        {type:'구매담당자', name:'', user_id:'', email:''},
+        {type:'자재담당자', name:'', user_id:'', email:''},
+      ],
 
       spot_list: InboundRegisterPageConfig.spot_list,
       searchCardInputs:InboundRegisterPageConfig.searchCardInputs,
-      inboundCardInputs:InboundRegisterPageConfig.inboundCardInputs,
+      inboundCardInfoInputs:InboundRegisterPageConfig.inboundCardInfoInputs,
       product_inbound_headers:InboundRegisterPageConfig.product_inbound_headers,
       product_search_headers:InboundRegisterPageConfig.product_search_headers,
-      product_search_data:InboundRegisterPageConfig.test_product_search_data,
+      product_search_data:[],
     }
   },
 
+
+  created () {
+    this.initialize()
+    this.members()
+  },
   methods: {
+    async initialize () {
+      this.manufacturer_list = InboundRegisterPageConfig.test_manufacturer_list;
+      this.classification_list = InboundRegisterPageConfig.test_classification_list;
+      mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
+
+      try {
+        console.log('사용자 계정 정보 가졍오기');
+        let result = await mux.Server.get({
+          path: '/api/user/',
+        });
+        console.log('result :>> ', result);
+        this.inbound_member_info[0].name = result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value;
+        this.inbound_member_info[0].email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
+      } catch (error) {
+        alert(error);
+      }
+
+      this.members_list.forEach(mem => {
+        if(this.inbound_member_info[0].name === mem.name && this.inbound_member_info[0].email === mem.email){
+          this.inbound_member_info[0].user_id = mem.user_id;
+        }
+      })
+
+
+    },
+    searchProduct(){
+      this.product_search_data = InboundRegisterPageConfig.test_product_search_data
+    },
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
@@ -448,6 +533,21 @@ export default {
       }else{
         this.product_inbound_data.splice(idx, 1);
       }
+    },
+    selectMemberDialog(idx){
+      this.member_type_index = idx
+      this.member_dialog = true;
+    },
+    setMember(item){
+      this.inbound_member_info[this.member_type_index].name = item.name
+      this.inbound_member_info[this.member_type_index].user_id = item.user_id
+      this.close();
+    },
+    members(data){
+      this.members_list=data;
+    },
+    close(){
+      this.member_dialog = false
     },
   },
 
