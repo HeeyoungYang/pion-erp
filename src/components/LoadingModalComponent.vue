@@ -2,6 +2,7 @@
   <div>
     <ModalDialogComponent
         :dialog-value="loading_dialog"
+        :persistent="true"
         width="350px"
         title-class="hide"
       >
@@ -20,12 +21,20 @@
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 
 export default {
+  props: {
+    dialogValue: Boolean,
+  },
   components: {
               ModalDialogComponent,
               },
   data(){
     return {
-      loading_dialog:false,
+      loading_dialog:this.dialogValue,
+    }
+  },
+  watch:{
+    dialogValue(){
+      this.loading_dialog = this.dialogValue;
     }
   }
 }
