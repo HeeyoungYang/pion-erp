@@ -219,6 +219,7 @@ import DataTableComponent from "@/components/DataTableComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import BasicInfoBackDataPageConfig from "@/configure/BasicInfoBackDataPageConfig.json";
+import mux from "@/mux";
 
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 
@@ -295,19 +296,10 @@ export default {
       this.manufacturer_data = BasicInfoBackDataPageConfig.test_manufacturer_data
       this.spot_data = BasicInfoBackDataPageConfig.test_spot_data
     },
-    rulesSet(inputs){
-      inputs.forEach(input =>{
-        if(input.text_type == 'number'){
-          input.rules =  [v => !!v || input.label + " 입력(숫자)"]
-        }else{
-          input.rules =  [v => !!v || input.label + " 입력"]
-        }
-      })
-    },
     registProductInfo(type){
       this.registProductInfoInputs = [];
       let product_input = this.ProductInfoInputsList;
-      this.rulesSet(product_input);
+      mux.Rules.rulesSet(product_input);
       this.editedBasicInfoIndex = -1
       product_input.forEach(data =>{
           data.value = '';
@@ -320,7 +312,7 @@ export default {
     editProductInfo (item) {
       this.registProductInfoInputs = [];
       let product_input = this.ProductInfoInputsList;
-      this.rulesSet(product_input);
+      mux.Rules.rulesSet(product_input);
       product_input.forEach(data =>{
         if(data.column_name == Object.keys(item)){
           if(data.column_name == 'classification'){

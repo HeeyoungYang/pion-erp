@@ -2089,6 +2089,10 @@ mux.Number = {
   },
 }
 
+/**
+ * Input List 관련 유틸리티 함수 그룹
+ * @namespace List
+ */
 mux.List = {
   /**
    * 불러온 분류, 제조사 리스트를 해당하는 검색 조건 list:[]에 추가
@@ -2107,7 +2111,7 @@ mux.List = {
     })
   },
   /**
-   * 불러온 분류, 제조사 리스트를 해당하는 검색 조건 list:[]에 추가
+   * 불러온 Member를 해당하는 검색 조건 list:[]에 추가
    * @param {Array} inputType
    * @param {Array} membersList
    */
@@ -2122,6 +2126,30 @@ mux.List = {
       }
     })
   },
+}
+
+/**
+ * 유효성 검사 관련 유틸리티 함수 그룹
+ * @namespace Rules
+ */
+
+mux.Rules = {
+  /**
+   * InputsFormComponent 혹은 InputsCardComponent Value 유효성 검사
+   * @param {Array} inputs
+   */
+    rulesSet(inputs){
+      inputs.forEach(input =>{
+        if(input.text_type == 'number'){
+          input.rules =  [v => !!v || input.label + " 입력(숫자)"]
+        }else if(input.column_name == 'formula2'){
+          input.rules =  [v => !!v || '백분율(%) 혹은 숫자 입력']
+        }else if(input.type != 'file'){
+          input.rules =  [v => !!v || input.label + " 입력"]
+        }
+      })
+    },
+
 }
 
 

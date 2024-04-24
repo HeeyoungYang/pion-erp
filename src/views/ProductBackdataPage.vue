@@ -1198,15 +1198,6 @@ export default {
 
       // this.material_data = ProductBackDataPageConfig.test_material_data
     },
-    rulesSet(inputs){
-      inputs.forEach(input =>{
-        if(input.text_type == 'number'){
-          input.rules =  [v => !!v || input.label + " 입력(숫자)"]
-        }else if(input.type != 'file'){
-          input.rules =  [v => !!v || input.label + " 입력"]
-        }
-      })
-    },
 
     async searchItem() {
       let searchType;
@@ -1337,7 +1328,7 @@ export default {
     },
     registMaterialItem(){
       let material_input = this.registMaterialInputs;
-      this.rulesSet(material_input);
+      mux.Rules.rulesSet(material_input);
 
       material_input.forEach(data =>{
         if(data.column_name == 'item_code'){
@@ -1356,7 +1347,7 @@ export default {
     editMaterialItem (item) {
       this.editedIndex = this.material_data.indexOf(item)
       let material_input = this.registMaterialInputs;
-      this.rulesSet(material_input);
+      mux.Rules.rulesSet(material_input);
       // let stock_spot_arr = this.material_data.filter(datas => datas.item_code === item.item_code);
       let stock_spot_arr = item.spot_stock;
       let spot_input = this.registMaterialSpotInputs;
@@ -1465,7 +1456,7 @@ export default {
     },
     registModuleItem(){
       let module_input = this.registModuleInputs;
-      this.rulesSet(module_input);
+      mux.Rules.rulesSet(module_input);
       module_input.forEach(data =>{
         if(data.column_name == 'item_code'){
           data.disabled = false
@@ -1479,7 +1470,7 @@ export default {
     editModuleItem(item){
       this.editedIndex = this.module_data.indexOf(item)
       let module_input = this.registModuleInputs;
-      this.rulesSet(module_input);
+      mux.Rules.rulesSet(module_input);
       // let stock_spot_arr = this.module_data.filter(datas => datas.item_code === item.item_code);
       let stock_spot_arr = item.spot_stock;
       let spot_input = this.registModuleSpotInputs;
@@ -1562,7 +1553,6 @@ export default {
 
         console.log('반제품 데이터 : ' + JSON.stringify(this.editRegistModule));
       }
-      this.close();
     },
 
     async searchProduct() {
@@ -1571,6 +1561,7 @@ export default {
 
     registProductItem(){
       let product_input = this.registProductInputs;
+      mux.Rules.rulesSet(product_input);
       product_input.forEach(data =>{
         if(data.column_name == 'item_code'){
           data.disabled = false
@@ -1586,6 +1577,7 @@ export default {
       let product_input = this.registProductInputs;
       let spot_input = this.registProductSpotInputs;
       let spot = item.spot_stock
+      mux.Rules.rulesSet(product_input);
       product_input.forEach(data =>{
         if(data.column_name == 'item_code'){
           data.disabled = true
@@ -1618,7 +1610,6 @@ export default {
 
       const validate = this.$refs.productForm.validate();
       if(validate){
-
         let stock_spot_arr=[];
         let stock_num_arr=[];
         let stock_condition_arr=[];
@@ -1660,7 +1651,6 @@ export default {
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
           this.editRegistProduct.creater = 'user_id';
           alert('완제품 등록이 완료되었습니다');
-
         }else{// 아니라면 수정
           this.editRegistProduct.modifier = 'user_id';
           alert('완제품 수정이 완료되었습니다');
