@@ -1539,7 +1539,7 @@ export default {
           }
         })
         this.module_set_material_data.forEach(material =>{
-          item.belong_data.push({material_code: material.item_code, material_num: material.item_num});
+          item.belong_data.push({material_code: material.item_code, material_num: material.num});
         })
 
         this.editRegistModule.type = '반제품'
@@ -1641,9 +1641,9 @@ export default {
 
         this.product_set_items_data.forEach(items =>{
           if(items.type == '원부자재'){
-            item.belong_data.push({type:items.type, material_code: items.item_code, material_num: items.item_num});
+            item.belong_data.push({type:items.type, material_code: items.item_code, material_num: items.num});
           }else if(items.type == '반제품'){
-            item.belong_data.push({type:items.type, module_code: items.item_code, module_num: items.item_num});
+            item.belong_data.push({type:items.type, module_code: items.item_code, module_num: items.num});
           }
         })
 

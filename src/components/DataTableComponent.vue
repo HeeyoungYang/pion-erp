@@ -261,12 +261,12 @@
                       class="mr-2"
                       color="yellow lighten-4"
                       small
-                    >필요수량 : {{ item.item_num }}</v-chip>
+                    >필요수량 : {{ item.num }}</v-chip>
                     <v-chip
                       class="mr-2"
                       color="yellow lighten-4"
                       small
-                    >금액 : {{ item.item_num * item.unit_price }}</v-chip>
+                    >금액 : {{ item.num * item.unit_price }}</v-chip>
                   </p>
                 </td>
                 <td v-if="showItemDetails" align="center">
@@ -462,11 +462,11 @@
                       class="mr-2"
                       color="white"
                       small
-                    >필요수량 : {{ data.item_num }}</v-chip>
+                    >필요수량 : {{ data.num }}</v-chip>
                     <v-chip
                       class="mr-2 white"
                       small
-                    >금액 : {{ data.item_num * data.unit_price }}</v-chip>
+                    >금액 : {{ data.num * data.unit_price }}</v-chip>
                   </p>
                 </td>
                 <td v-if="showItemDetails" align="center">
@@ -586,7 +586,7 @@
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import InboundApproveComponent from "@/components/InboundApproveComponent";
 import ShipApproveComponent from "@/components/ShipApproveComponent";
- import mux from "@/mux";
+//  import mux from "@/mux";
 
 export default {
   props: {
@@ -658,20 +658,6 @@ export default {
     };
   },
   async mounted() {
-    // if (this.showAuthority){
-    //   try {
-    //     let result = await mux.Server.get({path: '/api/admin/page_permission/'});
-    //     console.log('result :>> ', result);
-    //     alert(result.message);
-    //     // 성공시
-    //     if (result.code == 0){
-    //       this.authority_list_info = result;
-    //       this.authority_list = result.data.map(x=>x.group_alias);
-    //     }
-    //   } catch (error) {
-    //     alert(error);
-    //   }
-    // }
     this.addedHeaders = this.headers.map((obj)=>{
           return obj;
     }).filter(element => element);
@@ -718,26 +704,20 @@ export default {
   },
   methods: {
     async initialize () {
-      try {
-        console.log('페이지 권한 정보로 부터 group 정보 가져오기');
-        let result = await mux.Server.get({
-          path: '/api/admin/page_permission/',
-        });
-        console.log('result :>> ', result);
-
-        let group_alias = "";
-        for (let i = 0; i < result.data.length; i++){
-          group_alias = result.data[i].group_alias;
-          this.authority_list.push(group_alias);
-        }
-        //alert(result.message);
-        // 성공시 다이얼로그 닫기
-        if (result.code == 0){
-          this.dialog = false;
-        }
-      } catch (error) {
-        alert(error);
-      }
+      // if (this.showAuthority){
+      //   try {
+      //     let result = await mux.Server.get({path: '/api/admin/page_permission/'});
+      //     console.log('result :>> ', result);
+      //     alert(result.message);
+      //     // 성공시
+      //     if (result.code == 0){
+      //       this.authority_list_info = result;
+      //       this.authority_list = result.data.map(x=>x.group_alias);
+      //     }
+      //   } catch (error) {
+      //     alert(error);
+      //   }
+      // }
     },
     updateSelectedData(newValue) {
       this.$emit('input', newValue);
