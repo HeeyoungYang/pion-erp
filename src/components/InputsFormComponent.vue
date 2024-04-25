@@ -59,6 +59,7 @@
         :rows="input.rows ? input.rows : '1'"
       ></v-textarea>
       <v-file-input v-else-if="input.type === 'file'"
+        v-model="input.value"
         :small-chips="smallChips"
         :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
         :outlined="input.outlined === undefined ? (outlined ? outlined : false) : input.outlined"

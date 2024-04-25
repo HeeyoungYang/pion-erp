@@ -15,6 +15,7 @@
             text-class=" pt-3"
             title-class="mb-0 font-weight-black"
             divider-class="mb-3"
+            v-if="!add_self"
           >
             <div slot="cardTitle">
               <span>자재 선택</span>
@@ -23,7 +24,6 @@
                 color="success"
                 class="mr-2 ml-4"
                 @click="addProductInboundData"
-                v-if="!add_self"
               >
                 직접 입력형 전환
               </v-btn>
@@ -111,45 +111,47 @@
               >
                 {{ member.type }} : {{ member.name }}
               </v-chip>
-
-              <InputsFormComponent
-                dense
-                clearable
-                filled
-                hide-details
-                :inputs="inboundCardInfoInputs"
-              >
-                <v-col cols="12" sm="4" lg="2" align-self="center">
-                  <v-radio-group
-                    dense
-                    hide-details
-                    class="mt-0"
-                    v-model="something_wrong_radio"
-                    row
-                  >
-                    <v-radio
-                      label="이상 없음"
-                      value="이상 없음"
-                      @click="something_wrong = false"
-                    ></v-radio>
-                    <v-radio
-                      label="이상 있음"
-                      value="이상 있음"
-                      class="mr-0"
-                      @click="something_wrong = true"
-                    ></v-radio>
-                  </v-radio-group>
-                </v-col>
-                <v-col cols="12" sm="4" lg="4" v-if="something_wrong">
-                  <v-text-field
-                    dense
-                    hide-details
-                    filled
-                    label="사유"
-                    v-model="something_wrong_reason"
-                  ></v-text-field>
-                </v-col>
-              </InputsFormComponent>
+              <v-form ref="inboundForm">
+                <InputsFormComponent
+                  dense
+                  clearable
+                  filled
+                  hide-details
+                  :inputs="inboundCardInfoInputs"
+                >
+                  <v-col cols="12" sm="4" lg="2" align-self="center">
+                    <v-radio-group
+                      dense
+                      hide-details
+                      class="mt-0"
+                      v-model="something_wrong_radio"
+                      row
+                    >
+                      <v-radio
+                        label="이상 없음"
+                        value="이상 없음"
+                        @click="something_wrong = false"
+                      ></v-radio>
+                      <v-radio
+                        label="이상 있음"
+                        value="이상 있음"
+                        class="mr-0"
+                        @click="something_wrong = true"
+                      ></v-radio>
+                    </v-radio-group>
+                  </v-col>
+                  <v-col cols="12" sm="4" lg="4" v-if="something_wrong">
+                    <v-text-field
+                      dense
+                      hide-details
+                      filled
+                      label="사유"
+                      v-model="something_wrong_reason"
+                      :rules="[v => !!v || '사유 입력']"
+                    ></v-text-field>
+                  </v-col>
+                </InputsFormComponent>
+              </v-form>
               <v-divider class="my-5"></v-divider>
               <v-row>
                 <v-col cols="12" sm="2" lg="2" align-self="center">
@@ -256,13 +258,15 @@
                         <td align="center">{{  item.product_model }}</td>
                         <td align="center">{{  item.manufacturer }}</td>
                         <td align="center">{{  item.unit_price }}</td>
-                        <td align="center">{{  item.photo }}</td>
+                        <td align="center">
+                          <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                        </td>
                       </tr>
                       <tr v-else-if="add_self">
                         <td align="center">
                           <v-autocomplete
                             v-model="item.product_type"
-                            :items="product_classification_list.slice(1)"
+                            :items="type_list"
                             dense
                             filled
                             hide-details
@@ -272,7 +276,7 @@
                         <td align="center">
                           <v-autocomplete
                             v-model="item.product_classification"
-                            :items="product_type_list.slice(1)"
+                            :items="classification_list.slice(1)"
                             dense
                             filled
                             hide-details
@@ -363,7 +367,7 @@
 
                           </v-text-field>
                         </td>
-                        <td align="center">
+                        <!-- <td align="center">
                           <v-file-input
                             small-chips
                             filled
@@ -373,7 +377,7 @@
                             v-model="item.photo"
                             prepend-icon="mdi-image"
                           ></v-file-input>
-                        </td>
+                        </td> -->
                         <td align="center">
                           <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
                         </td>
@@ -416,6 +420,7 @@ export default {
       member_dialog: false,
       add_self: false,
       select_product: true,
+      today:'',
       dates: [],
       members_list:[],
       manufacturer_list:[],
@@ -428,13 +433,9 @@ export default {
       product_inbound_data: [],
       product_inbound_data_added: [],
       member_type_index:0,
-      inbound_member_info:[
-        {type:'확인', name:'', user_id:'', email:''},
-        {type:'승인', name:'', user_id:'', email:''},
-        {type:'구매담당자', name:'', user_id:'', email:''},
-        {type:'자재담당자', name:'', user_id:'', email:''},
-      ],
-
+      type_list:InboundRegisterPageConfig.type_list,
+      inbound_member_info:InboundRegisterPageConfig.inbound_member_info,
+      inbound_confirmation_data: InboundRegisterPageConfig.inbound_confirmation_data,
       spot_list: InboundRegisterPageConfig.spot_list,
       searchCardInputs:InboundRegisterPageConfig.searchCardInputs,
       inboundCardInfoInputs:InboundRegisterPageConfig.inboundCardInfoInputs,
@@ -451,9 +452,13 @@ export default {
   },
   methods: {
     async initialize () {
+      let date = new Date();
+      this.today = mux.Date.format(date, 'yyyyMMdd');
+
       this.manufacturer_list = InboundRegisterPageConfig.test_manufacturer_list;
       this.classification_list = InboundRegisterPageConfig.test_classification_list;
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
+      mux.Rules.rulesSet(this.inboundCardInfoInputs);
 
       try {
         console.log('사용자 계정 정보 가졍오기');
@@ -461,7 +466,7 @@ export default {
           path: '/api/user/',
         });
         console.log('result :>> ', result);
-        this.inbound_member_info[0].name = result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value;
+        this.inbound_member_info[0].name = (result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value).trim();
         this.inbound_member_info[0].email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
       } catch (error) {
         alert(error);
@@ -489,9 +494,6 @@ export default {
         alert('직접 입력형으로 전환되며 위에서 선택한 자재는 선택 해제됩니다. ');
         this.product_inbound_data = [];
         this.select_product = false;
-        this.product_inbound_headers.push(
-          { text: '제외', align: 'center', value: 'photo', },
-        )
       }
       this.add_self = true;
       this.product_inbound_data.push({
@@ -513,7 +515,6 @@ export default {
         alert('자재 선택형으로 전환되며 아래 작성된 내용은 초기화됩니다.');
         this.product_inbound_data = [];
         this.select_product = true;
-        this.product_inbound_headers.pop();
       }
       this.add_self = false;
     },
@@ -523,12 +524,88 @@ export default {
       })
     },
     inboundApprovalRequest(){
-      let inbound_data = this.product_inbound_data
-      console.log('입고 데이터 : ' + JSON.stringify(inbound_data));
-      alert('요청이 완료되었습니다.');
+      let inbound_input = this.inboundCardInfoInputs;
+      let member_input = this.inbound_member_info;
+      let item = this.inbound_confirmation_data;
+      let success = true;
+      const validate = this.$refs.inboundForm.validate();
+      if(validate){
+        inbound_input.forEach(data => {
+          for(let i=0; i<Object.keys(item).length; i++){
+            if(data.column_name == Object.keys(item)[i]){
+              if(data.type == 'file' && data.value){
+                item[Object.keys(item)[i]] = data.value.name;
+              }else{
+                item[Object.keys(item)[i]] = data.value;
+              }
+            }
+          }
+        })
+        item.code = this.today + "_" + item.order_code;
+
+        let empty_member = [];
+
+        member_input.forEach(mem => {
+          if(!mem.user_id){
+            empty_member.push(mem.type)
+          }else{
+            if(mem.type === '확인'){
+              item.checker = mem.name;
+              item.checker_id = mem.user_id;
+            }else if(mem.type === '승인'){
+              item.approver = mem.name;
+              item.approver_id = mem.user_id;
+            }else if(mem.type === '구매담당자'){
+              item.purchase_manager = mem.name;
+            }else if(mem.type === '자재담당자'){
+              item.material_manager = mem.name;
+            }
+          }
+        })
+
+        if(empty_member.length > 0){
+          alert(empty_member+"를 선택해주세요.");
+          return success = false;
+        }
+
+        let inbound_product_data = this.product_inbound_data
+        if(inbound_product_data.length === 0){
+          alert('자재를 선택해주세요.');
+          return success = false;
+        }else{
+          if(!this.add_self){
+            for(let d = 0; d < inbound_product_data.length; d++){
+              if(inbound_product_data[d].inbound_num == '' || inbound_product_data[d].spec == '' || inbound_product_data[d].spot == ''){
+                alert('입고수량, 입고장소, 규격 필수 입력');
+                return success = false;
+              }
+            }
+          }else{
+            // for(let add = 0; add < inbound_product_data.length; add++){
+            //   if(Object.keys(inbound_product_data[add]) != 'model' && Object.values(inbound_product_data[add]) === ''){
+            //     alert('모델을 제외한 모든 정보가 기입되어야 합니다.');
+            //     return
+            //   }
+            // }
+            inbound_product_data.forEach(data => {
+              for(let add = 0; add < Object.keys(data).length; add++){
+                if(Object.keys(data)[add] != 'product_model' && Object.values(data)[add] === ''){
+                  alert('모델을 제외한 모든 정보가 기입되어야 합니다.');
+                  return success = false;
+                }
+              }
+            })
+          }
+        }
+        if(success == true){
+          console.log('입고 정보 : ' + JSON.stringify(item));
+          console.log('입고 제품 : ' + JSON.stringify(inbound_product_data));
+          alert('요청이 완료되었습니다.');
+        }
+      }
     },
     deleteInboundDataRow(idx){
-      if(idx === 0){
+      if(this.product_inbound_data.length === 1){
         alert('행이 한 개 이상 존재해야 합니다.')
       }else{
         this.product_inbound_data.splice(idx, 1);
