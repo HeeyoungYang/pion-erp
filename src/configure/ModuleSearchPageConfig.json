@@ -56,7 +56,7 @@
           "model": "원부자재모델1",
           "spec": "원부자재사양1",
           "manufacturer": "파이온일렉트릭",
-          "item_num": 400,
+          "num": 400,
           "unit_price": 3,
           "thumbnail": "",
           "spot_stock":[
@@ -70,7 +70,7 @@
           "model": "원부자재모델2",
           "spec": "원부자재사양2",
           "manufacturer": "파이온일렉트릭",
-          "item_num": 200,
+          "num": 200,
           "unit_price": 4,
           "thumbnail": "",
           "spot_stock":[
@@ -87,7 +87,7 @@
         "model": "반제품모델2",
         "spec": "반제품스펙2",
         "manufacturer": "파이온일렉트릭",
-        "item_num": "",
+        "num": "",
         "unit_price": 1,
         "thumbnail": "",
         "spot_stock":[

@@ -16,18 +16,18 @@
         :disable-pagination="disablePagination"
         :disable-sort="disableSort"
       >
-        <template v-slot:[`item.item_num`] = "{ item }">
+        <template v-slot:[`item.num`] = "{ item }">
           <v-text-field
             dense
             hide-details
-            v-model="item.item_num"
+            v-model="item.num"
             style="width:100px;font-size: 0.775rem !important;"
             type="number"
             filled
           ></v-text-field>
         </template>
         <template v-slot:[`item.item_price`] = "{ item }">
-          {{  item.unit_price * item.item_num ? item.unit_price * item.item_num :  0 }}
+          {{  item.unit_price * item.num ? item.unit_price * item.num :  0 }}
         </template>
         <template v-slot:[`item.edit_item`]="{ item, index }">
           <v-icon
