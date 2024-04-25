@@ -118,7 +118,6 @@
                           :dialog-transition="'slide-x-transition'"
                           :dialog-custom="'custom-dialog elevation-0 white'"
                           :card-elevation="'0'"
-                          :hide-overlay="true"
                           :persistent="true"
                         >
                           <v-container>
@@ -185,7 +184,6 @@
                             :dialog-transition="'slide-x-transition'"
                             :dialog-custom="'custom-dialog elevation-0 white'"
                             :card-elevation="'0'"
-                            :hide-overlay="true"
                             :persistent="true"
                           >
                             <v-container>
@@ -436,7 +434,6 @@
                           :dialog-transition="'slide-x-transition'"
                           :dialog-custom="'custom-dialog elevation-0 white'"
                           :card-elevation="'0'"
-                          :hide-overlay="true"
                           :persistent="true"
                         >
                           <v-container>
@@ -822,7 +819,6 @@
                     :dialog-transition="'slide-x-transition'"
                     :dialog-custom="'custom-dialog elevation-0 white'"
                     :card-elevation="'0'"
-                    :hide-overlay="true"
                     :persistent="true"
                   >
                     <v-container>
@@ -1005,14 +1001,13 @@
         </v-col>
       </v-row>
       <ModalDialogComponent
-      :dialog-value="detail_dialog"
-      max-width="50%"
-      title-class="display-none"
-      :dialog-transition="'slide-x-transition'"
-      :dialog-custom="'custom-dialog elevation-0 white'"
-      :card-elevation="'0'"
-      :hide-overlay="true"
-      @close="closeDetail"
+        :dialog-value="detail_dialog"
+        max-width="50%"
+        title-class="display-none"
+        :dialog-transition="'slide-x-transition'"
+        :dialog-custom="'custom-dialog elevation-0 white'"
+        :card-elevation="'0'"
+        @close="closeDetail"
       >
         <v-row>
           <v-col cols="12" sm="6">

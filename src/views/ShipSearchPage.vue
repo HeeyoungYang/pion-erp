@@ -91,7 +91,6 @@
       :dialog-transition="'slide-x-transition'"
       :dialog-custom="'custom-dialog elevation-0 white'"
       :card-elevation="'0'"
-      :hide-overlay="true"
       @close="closeProductList"
     >
       <v-container>
