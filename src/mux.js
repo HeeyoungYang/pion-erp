@@ -455,7 +455,7 @@ mux.Server.axiosInstance.interceptors.response.use(
         try {
           // RefreshToken을 사용하여 새로운 AccessToken을 요청합니다.
           const response = await axios.post('/api/user/refresh_token/', { user_name: userName, refresh_token: RefreshToken });
-          const newAccessToken = response.data.accessToken;
+          const newAccessToken = response.data.data.AccessToken;
           localStorage.setItem('AccessToken', newAccessToken);
           // 기존 요청을 재시도합니다.
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
