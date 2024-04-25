@@ -253,10 +253,6 @@ export default {
           ]},
         ];
         //alert(result.message);
-        // 성공시 다이얼로그 닫기
-        if (result.code == 0){
-          this.dialog = false;
-        }
       } catch (error) {
         alert(error);
       }
@@ -278,10 +274,9 @@ export default {
       const validate = this.$refs.myInfoForm.validate();
       if(validate){
         try {
-          console.log('this.userInputs :>> ', this.userInputs);
           let result = await mux.Server.put({
             path: '/api/user/',
-            user_name: this.$configJson.cookies.id,
+            user_name: this.$cookies.get(this.$configJson.cookies.id),
             given_name: this.user_info.given_name,
             family_name: ' ',
             phone_number: this.user_info.phone_number.replaceAll('-', ''),
@@ -291,35 +286,31 @@ export default {
             position: this.user_info.position,
             department: this.user_info.department
           });
-          console.log('result :>> ', result);
           // alert('저장이 완료되었습니다.')
           alert(result.message);
-          // 성공시 다이얼로그 닫기
+          // 성공시
           if (result.code == 0){
-            this.dialog = false;
+            this.userInputs.forEach(data =>{
+              data.disabled = true
+            })
+            this.showEditButton = true;
+            this.showSaveButton = false;
           }
         } catch (error) {
           alert(error);
         }
 
-        this.userInputs.forEach(data =>{
-          data.disabled = true
-        })
-        this.showEditButton = true;
-        this.showSaveButton = false;
       }
     },
     async save(){
       const validate = this.$refs.passwordForm.validate();
       if(validate){
         try {
-          console.log('this.passwords :>> ', this.passwords);
           let result = await mux.Server.post({
             path: '/api/user/change_password/',
             old_password: this.passwords.currentPassword,
             new_password: this.passwords.newPassword
           });
-          console.log('result :>> ', result);
           // alert('비밀번호 변경이 완료되었습니다.');
           alert(result.message);
           // 성공시 다이얼로그 닫기
