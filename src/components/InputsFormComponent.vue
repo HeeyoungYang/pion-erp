@@ -72,7 +72,36 @@
         :disabled="input.disabled"
         :accept="input.accept"
       ></v-file-input>
-      <v-menu v-else-if="input.type === 'date' || input.type === 'date-picker' || input.type === 'datepicker'"
+
+      <v-menu v-else-if="input.type === 'dateSingle'"
+        v-model="input.menu"
+        :close-on-content-click="false"
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        min-width="auto"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            v-model="dateSet"
+            :dense="dense"
+            :rules="input.rules"
+            :hide-details="hideDetails"
+            :clearable="input.clearable === undefined ? (clearable ? clearable : false) : input.clearable"
+            :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
+            :outlined="input.outlined === undefined ? (outlined ? outlined : false) : input.outlined"
+            :label="input.label"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker
+          v-model="dateSet"
+          @input="input.menu = false"
+        ></v-date-picker>
+      </v-menu>
+      <v-menu v-else-if="input.type === 'dateRange'"
         :ref="'menu'+index"
         v-model="input.menu"
         :close-on-content-click="false"
@@ -160,15 +189,19 @@ export default {
   },
   computed:{
     dateRangeText () {
-      return this.inputs.find(x=>x.type === 'date' || x.type === 'date-picker' || x.type === 'datepicker').value.sort().join(' ~ ');
+      return this.inputs.find(x=>x.type === 'dateRange').value.sort().join(' ~ ');
     },
   },
   data() {
     return {
+      dateSet: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
       dates:[]
     };
   },
   watch: {
+    dateSet(){
+      this.$emit('dateSet', this.dateSet);
+    }
   },
   methods: {
     enterKeyup() {
