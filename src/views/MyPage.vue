@@ -217,13 +217,13 @@ export default {
           path: '/api/user/',
         });
         console.log('result :>> ', result);
-        this.user_info.phone_number = mux.Number.formatPhoneNumber(result.data.UserAttributes.find(attr => attr.Name === 'phone_number').Value);
-        this.user_info.given_name = result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value;
-        this.user_info.email_address = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
-        this.user_info.office_phone_number = mux.Number.formatTelNumber(result.data.UserAttributes.find(attr => attr.Name === 'custom:office_phone_number').Value);
-        this.user_info.internal_number = result.data.UserAttributes.find(attr => attr.Name === 'custom:internal_number').Value;
-        this.user_info.position = result.data.UserAttributes.find(attr => attr.Name === 'custom:position').Value;
-        this.user_info.department = result.data.UserAttributes.find(attr => attr.Name === 'custom:department').Value;
+        this.user_info.phone_number = this.$cookies.get(this.$configJson.cookies.phone_number.key);
+        this.user_info.given_name = this.$cookies.get(this.$configJson.cookies.name.key);
+        this.user_info.email_address = this.$cookies.get(this.$configJson.cookies.email.key);
+        this.user_info.office_phone_number = this.$cookies.get(this.$configJson.cookies.office_phone_number.key);
+        this.user_info.internal_number = this.$cookies.get(this.$configJson.cookies.office_internal_number.key);
+        this.user_info.position = this.$cookies.get(this.$configJson.cookies.position.key);
+        this.user_info.department = this.$cookies.get(this.$configJson.cookies.department.key);
 
         this.userInputs = [
           {icon: 'mdi-crowd', column_name:'department', label: '부서', value:  this.user_info.department, col:'12', sm:'6', lg:'6', disabled:true},
@@ -288,6 +288,14 @@ export default {
           alert(result.message);
           // 성공시
           if (result.code == 0){
+            this.$cookies.set(this.$configJson.cookies.name.key, this.user_info.given_name);
+            this.$cookies.set(this.$configJson.cookies.phone_number.key, this.user_info.phone_number);
+            this.$cookies.set(this.$configJson.cookies.email.key, this.user_info.email_address);
+            this.$cookies.set(this.$configJson.cookies.office_phone_number.key, this.user_info.office_phone_number);
+            this.$cookies.set(this.$configJson.cookies.office_internal_number.key, this.user_info.internal_number);
+            this.$cookies.set(this.$configJson.cookies.position.key, this.user_info.position);
+            this.$cookies.set(this.$configJson.cookies.department.key, this.user_info.department);
+
             this.userInputs.forEach(data =>{
               data.disabled = true
             })
