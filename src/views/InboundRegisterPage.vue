@@ -118,6 +118,7 @@
                   filled
                   hide-details
                   :inputs="inboundCardInfoInputs"
+                  @dateSet = "dateSetImport"
                 >
                   <v-col cols="12" sm="4" lg="2" align-self="center">
                     <v-radio-group
@@ -422,6 +423,7 @@ export default {
       add_self: false,
       select_product: true,
       today:'',
+      inbound_date_set:'',
       dates: [],
       members_list:[],
       manufacturer_list:[],
@@ -453,8 +455,7 @@ export default {
   },
   methods: {
     async initialize () {
-      let date = new Date();
-      this.today = mux.Date.format(date, 'yyyyMMdd');
+      this.today = new Date();
 
       this.manufacturer_list = InboundRegisterPageConfig.test_manufacturer_list;
       this.classification_list = InboundRegisterPageConfig.test_classification_list;
@@ -543,7 +544,7 @@ export default {
             }
           }
         })
-        item.code = this.today + "_" + item.order_code;
+        item.inbound_date = (this.inbound_date_set === "" ? mux.Date.format(this.today, 'yyyy-MM-dd') : this.inbound_date_set);
 
         let empty_member = [];
 
@@ -554,12 +555,12 @@ export default {
             if(mem.type === '확인'){
               item.checker = mem.name;
               item.checker_id = mem.user_id;
-              if(mem.user_id == this.login_id){
-                let date = new Date();
+              if(item.checker_id == this.login_id){
                 item.approval_phase = '미승인';
-                item.checked_date = this.today = mux.Date.format(date, 'yyyy-MM-dd');
+                item.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd');
               }else{
-                item.approval_phase = '미확인'
+                item.approval_phase = '미확인';
+                item.checked_date = "";
               }
             }else if(mem.type === '승인'){
               item.approver = mem.name;
@@ -606,6 +607,7 @@ export default {
             })
           }
         }
+
         if(success == true){
           console.log('입고 정보 : ' + JSON.stringify(item));
           console.log('입고 제품 : ' + JSON.stringify(inbound_product_data));
@@ -631,6 +633,9 @@ export default {
     },
     members(data){
       this.members_list=data;
+    },
+    dateSetImport(item){
+      this.inbound_date_set = item
     },
     close(){
       this.member_dialog = false

@@ -12,11 +12,12 @@
     {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
   "inboundCardInfoInputs":[
+    {"label":"입고일자", "column_name":"inbound_date", "type":"dateSingle", "value": "", "col":"12", "sm":"4", "lg":"2", "menu":""},
     {"label":"발주서 번호", "column_name":"order_code", "col":"12", "sm":"4", "lg":"2", "value": ""},
     {"label":"프로젝트 코드", "column_name":"project_code", "col":"12", "sm":"4", "lg":"2", "value": ""},
-    {"label":"수입검사서", "column_name":"receiving_inspection", "type":"file", "col":"12", "sm":"4", "lg":"2", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
-    {"label":"시험성적서", "column_name":"inspection_report", "type":"file", "col":"12", "sm":"4", "lg":"2", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
-    {"label":"기타", "column_name":"files", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true},
+    {"label":"수입검사서", "column_name":"receiving_inspection", "type":"file", "col":"12", "sm":"4", "lg":"3", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"시험성적서", "column_name":"inspection_report", "type":"file", "col":"12", "sm":"4", "lg":"3", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"기타", "column_name":"files", "type":"file", "col":"12", "sm":"4", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true},
     {"label":"비고", "column_name":"note", "type":"textarea", "col":"12", "sm":"4", "lg":"6", "value": ""}
   ],
 
@@ -54,6 +55,7 @@
   
   "inbound_confirmation_data":{
     "code" : "",
+    "inbound_date": "",
     "order_code" : "",
     "project_code" : "",
     "purchase_manager" : "",
