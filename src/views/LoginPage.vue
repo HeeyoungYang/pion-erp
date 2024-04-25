@@ -189,10 +189,9 @@
 </template>
 <script>
 import mux from '@/mux';
-import Vue from 'vue';
 export default {
   mounted(){
-    console.log('Vue.$cookies.keys() :>> ', Vue.$cookies.keys());
+    console.log('this.$cookies.keys() :>> ', this.$cookies.keys());
   },
   data(){
     return{
@@ -201,8 +200,8 @@ export default {
         userID:'',
         verificationCode:'',
         setNewPassword:'',
-        checkbox: Vue.$cookies.keys().includes(this.$configJson.cookies.savedID),
-        idValue: Vue.$cookies.keys().includes(this.$configJson.cookies.savedID) ? Vue.$cookies.get(this.$configJson.cookies.savedID) : '',
+        checkbox: this.$cookies.keys().includes(this.$configJson.cookies.savedID.key),
+        idValue: this.$cookies.keys().includes(this.$configJson.cookies.savedID.key) ? this.$cookies.get(this.$configJson.cookies.savedID.key) : '',
         idRules: [
           v => !!v || '아이디 입력',
         ],
@@ -262,49 +261,13 @@ export default {
       this.setPassword = false;
       this.newPasswordDialog = false;
     },
-    async login(){
+    login(){
       const id = document.getElementById('idField').value;
       const pw = document.getElementById('pwField').value;
 
-      // if(id == ''){
-      //   alert('아이디를 입력하세요.')
-      //   return;
-      // }else if(pw == ''){
-      //   alert('비밀번호를 입력하세요.')
-      //   return;
-      // }
-
       const validate = this.$refs.loginForm.validate();
       if(validate){
-        mux.Server.post({
-          path:'/api/user/login/', user_name:id, password:pw
-        }).then(result => {
-          console.log('result :>> ', result);
-          const fullName = (result.data.family_name ? result.data.family_name : '') + (result.data.given_name ? result.data.given_name : '');
-          Vue.$cookies.set(this.$configJson.cookies.name, fullName, '1h');
-          Vue.$cookies.set(this.$configJson.cookies.id, id, '100y');
-          if (this.checkbox){
-            Vue.$cookies.set(this.$configJson.cookies.savedID, id, '100y');
-          }else {
-            Vue.$cookies.remove(this.$configJson.cookies.savedID);
-          }
-          result.data.path = '/home';
-          mux.Server.move(result.data);
-        }).catch(err => {
-          console.error('err :>>>>> ', err);
-          switch (err.message) {
-            // case 'password':
-            //   alert('비밀번호 오류');
-            //   break;
-            // case 'id':
-            //   alert('존재하지 않는 아이디');
-            //   break;
-
-            default:
-              alert('아이디 또는 비밀번호를 확인해주세요.');
-              break;
-          }
-        });
+        mux.Server.logIn(id, pw, this.checkbox);
       }
     }
   },

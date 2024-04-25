@@ -29,7 +29,7 @@
                         <v-col
                         xs="6">
                           <!-- ▼ 계정 이름 -->
-                          <span class="mr-2 font-weight-black text-h6">{{ userInfo.name }}</span>
+                          <span class="mr-2 font-weight-black text-h6">{{ user_info.given_name }}</span>
                         </v-col>
                         <v-col
                         xs="6">
@@ -177,7 +177,6 @@ export default {
         office_phone_number: ''
       },
 
-      userInfo: {},
       userInputs:[],
       // ▼ 비밀번호 변경
       passwords:{
@@ -225,7 +224,6 @@ export default {
         this.user_info.internal_number = result.data.UserAttributes.find(attr => attr.Name === 'custom:internal_number').Value;
         this.user_info.position = result.data.UserAttributes.find(attr => attr.Name === 'custom:position').Value;
         this.user_info.department = result.data.UserAttributes.find(attr => attr.Name === 'custom:department').Value;
-        this.userInfo = {name: this.user_info.family_name + " " + this.user_info.given_name};
 
         this.userInputs = [
           {icon: 'mdi-crowd', column_name:'department', label: '부서', value:  this.user_info.department, col:'12', sm:'6', lg:'6', disabled:true},
@@ -276,7 +274,7 @@ export default {
         try {
           let result = await mux.Server.put({
             path: '/api/user/',
-            user_name: this.$cookies.get(this.$configJson.cookies.id),
+            user_name: this.$cookies.get(this.$configJson.cookies.id.key),
             given_name: this.user_info.given_name,
             family_name: ' ',
             phone_number: this.user_info.phone_number.replaceAll('-', ''),

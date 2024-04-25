@@ -367,7 +367,7 @@ mux.Server = {
               console.log('response.data.data.AuthenticationResult.ExpiresIn :>> ', response.data.data.AuthenticationResult.ExpiresIn);
             }
             if (response.data.data.AuthenticationResult.RefreshToken){
-              Vue.$cookies.set(configJson.cookies.RefreshToken, response.data.data.AuthenticationResult.RefreshToken, configJson.RefreshTokenCookieExpiration);
+              Vue.$cookies.set(configJson.cookies.RefreshToken.key, response.data.data.AuthenticationResult.RefreshToken, configJson.cookies.RefreshToken.expiration);
             }
           }
         }
@@ -392,6 +392,79 @@ mux.Server = {
   },
 
   /**
+   * 사용자 정보 쿠키 저장
+   * @example
+   * mux.Server.setUserCookies();
+   * @returns {Promise}
+   * @memberof mux.Server
+   * @inner
+   * @private
+  */
+  setUserCookies() {
+    return new Promise((resolve, reject) => {
+      this.get({
+        path: '/api/user/',
+      }).then((result) => {
+        if (result.code == 0) {
+          Vue.$cookies.set(configJson.cookies.name.key, result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value, configJson.cookies.name.expiration);
+          Vue.$cookies.set(configJson.cookies.phone_number.key, mux.Number.formatPhoneNumber(result.data.UserAttributes.find(attr => attr.Name === 'phone_number').Value), configJson.cookies.phone_number.expiration);
+          Vue.$cookies.set(configJson.cookies.email.key, result.data.UserAttributes.find(attr => attr.Name === 'email').Value, configJson.cookies.email.expiration);
+          Vue.$cookies.set(configJson.cookies.office_phone_number.key, mux.Number.formatTelNumber(result.data.UserAttributes.find(attr => attr.Name === 'custom:office_phone_number').Value), configJson.cookies.office_phone_number.expiration);
+          Vue.$cookies.set(configJson.cookies.office_internal_number.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:internal_number').Value, configJson.cookies.office_internal_number.expiration);
+          Vue.$cookies.set(configJson.cookies.position.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:position').Value, configJson.cookies.position.expiration);
+          Vue.$cookies.set(configJson.cookies.department.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:department').Value, configJson.cookies.department.expiration);
+          resolve();
+        } else {
+          console.log('사용자 정보 조회 실패:', result.message);
+          reject(result.message);
+        }
+      }).catch((error) => {
+        console.log('사용자 정보 조회 에러:', error);
+        reject(error);
+      });
+    });
+  },
+
+  /**
+   * 로그인 함수 - 쿠키 저장 + 메인 페이지('/home')로 이동
+   * @example
+   * mux.Server.logIn('userId', 'userPw12#', true);
+   */
+  logIn(id, pw, saveIdCheck) {
+    this.post({
+      path:'/api/user/login/', user_name:id, password:pw
+    }).then(result => {
+      this.setUserCookies().then(() => {
+        Vue.$cookies.set(configJson.cookies.id.key, id, configJson.cookies.id.expiration);
+        if (saveIdCheck){
+          Vue.$cookies.set(configJson.cookies.savedID.key, id, configJson.cookies.savedID.expiration);
+        }else {
+          Vue.$cookies.remove(configJson.cookies.savedID.key);
+        }
+        result.data.path = '/home';
+        this.move(result.data);
+      }).catch((error) => {
+        console.log('사용자 정보 쿠키 저장 실패:', error);
+        alert('로그인 실패:', error);
+      });
+    }).catch(err => {
+      console.error('err :>>>>> ', err);
+      switch (err.message) {
+        // case 'password':
+        //   alert('비밀번호 오류');
+        //   break;
+        // case 'id':
+        //   alert('존재하지 않는 아이디');
+        //   break;
+
+        default:
+          alert('아이디 또는 비밀번호를 확인해주세요.');
+          break;
+      }
+    });
+  },
+
+  /**
    * 로그아웃 함수 - 로컬 스토리지와 쿠키 clear + 로그인 페이지('/')로 이동
    * @example
    * mux.Server.logOut();
@@ -404,7 +477,7 @@ mux.Server = {
     }
     localStorage.clear();
     Vue.$cookies.keys().forEach(key =>{
-      if (key !== configJson.cookies.savedID)
+      if (key !== configJson.cookies.savedID.key)
       Vue.$cookies.remove(key);
     });
     router.push('/');
@@ -449,17 +522,34 @@ mux.Server.axiosInstance.interceptors.response.use(
     if ((error.response.data && error.response.data.code === 5193) 
     && !originalRequest._retry) {
       originalRequest._retry = true;
-      const userName = Vue.$cookies.get(configJson.cookies.id);
-      const RefreshToken = Vue.$cookies.get(configJson.cookies.RefreshToken);
-      if (RefreshToken) {
+      const userName = Vue.$cookies.get(configJson.cookies.id.key);
+      const RefreshToken = Vue.$cookies.get(configJson.cookies.RefreshToken.key);
+      if (userName && RefreshToken) {
         try {
           // RefreshToken을 사용하여 새로운 AccessToken을 요청합니다.
           const response = await axios.post('/api/user/refresh_token/', { user_name: userName, refresh_token: RefreshToken });
           const newAccessToken = response.data.data.AccessToken;
           localStorage.setItem('AccessToken', newAccessToken);
-          // 기존 요청을 재시도합니다.
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          return axios(originalRequest);
+
+          axios.get('/api/user/').then((result) => {
+            if (result.code == 0) {
+              Vue.$cookies.set(configJson.cookies.name.key, result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value, configJson.cookies.name.expiration);
+              Vue.$cookies.set(configJson.cookies.phone_number.key, mux.Number.formatPhoneNumber(result.data.UserAttributes.find(attr => attr.Name === 'phone_number').Value), configJson.cookies.phone_number.expiration);
+              Vue.$cookies.set(configJson.cookies.email.key, result.data.UserAttributes.find(attr => attr.Name === 'email').Value, configJson.cookies.email.expiration);
+              Vue.$cookies.set(configJson.cookies.office_phone_number.key, mux.Number.formatTelNumber(result.data.UserAttributes.find(attr => attr.Name === 'custom:office_phone_number').Value), configJson.cookies.office_phone_number.expiration);
+              Vue.$cookies.set(configJson.cookies.office_internal_number.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:internal_number').Value, configJson.cookies.office_internal_number.expiration);
+              Vue.$cookies.set(configJson.cookies.position.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:position').Value, configJson.cookies.position.expiration);
+              Vue.$cookies.set(configJson.cookies.department.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:department').Value, configJson.cookies.department.expiration);
+              
+              // 기존 요청을 재시도합니다.
+              originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+              return axios(originalRequest);
+            } else {
+              console.error('AccessToken 갱신 후 사용자 정보 저장 실패:', result.message);
+            }
+          }).catch((error) => {
+            console.error('AccessToken 갱신 후 사용자 정보 저장 에러:', error);
+          });
         } catch (refreshError) {
           // RefreshToken을 사용하여 AccessToken을 갱신하는데 실패한 경우 로그아웃 처리 등을 수행할 수 있습니다.
           console.error('AccessToken 갱신 실패:', refreshError);
@@ -471,7 +561,7 @@ mux.Server.axiosInstance.interceptors.response.use(
           }
           localStorage.clear();
           Vue.$cookies.keys().forEach(key =>{
-            if (key !== configJson.cookies.savedID)
+            if (key !== configJson.cookies.savedID.key)
             Vue.$cookies.remove(key);
           });
           router.push('/');

@@ -189,7 +189,7 @@ const router = new VueRouter({
 // router.beforeEach(async (to, from, next) => {
 //   const permissions = to.meta.permission;
 //   // 로컬스토리지에 AccessToken 이 없거나 RefreshToken 쿠키가 없을 때,
-//   if ((!localStorage.getItem('AccessToken') || !Vue.$cookies.get(Vue.prototype.$configJson.cookies.RefreshToken))){
+//   if ((!localStorage.getItem('AccessToken') || !Vue.$cookies.get(Vue.prototype.$configJson.cookies.RefreshToken.key))){
 //     // meta.permission 에 guest 가 있으면 페이지 이동
 //     if (permissions.includes('guest')) {
 //       return next();

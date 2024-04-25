@@ -233,17 +233,18 @@
 
                     </v-card-title>
                     <v-card-text>
-                      <CostTableComponent
-                        :headers="survey_cost_headers"
-                        :items="calc_cost_detail_data"
-                        item-key="product_code"
-                        trStyle="background-color:#efefef; "
-                        trClass="font-weight-black info_title"
-                        :cost-num-edit-disabled="edit_survey_cost_num_disabled"
-                        class="cost_table_border print_cost_table"
-                      >
-
-                      </CostTableComponent>
+                      <v-form ref="surveyCostForm">
+                        <CostTableComponent
+                          :headers="survey_cost_headers"
+                          :items="calc_cost_detail_data"
+                          item-key="product_code"
+                          trStyle="background-color:#efefef; "
+                          trClass="font-weight-black info_title"
+                          :cost-num-edit-disabled="edit_survey_cost_num_disabled"
+                          class="cost_table_border print_cost_table"
+                        >
+                        </CostTableComponent>
+                      </v-form>
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
@@ -357,6 +358,7 @@
                             x-small
                             class="mr-3 float-right"
                             elevation="0"
+                            @click="save()"
                           >
                             <v-icon
                               small
@@ -367,15 +369,17 @@
 
                 </v-card-title>
                 <v-card-text>
-                  <CostTableComponent
-                    :headers="survey_cost_headers"
-                    :items="calc_cost_detail_data2"
-                    item-key="product_code"
-                    trStyle="background-color:#efefef"
-                    trClass="font-weight-black info_title"
-                    class="cost_table_border"
-                  >
-                  </CostTableComponent>
+                  <v-form ref="surveyCostForm2">
+                    <CostTableComponent
+                      :headers="survey_cost_headers"
+                      :items="calc_cost_detail_data2"
+                      item-key="product_code"
+                      trStyle="background-color:#efefef"
+                      trClass="font-weight-black info_title"
+                      class="cost_table_border"
+                    >
+                    </CostTableComponent>
+                  </v-form>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -739,9 +743,7 @@ import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import CostTableComponent from "@/components/CostTableComponent";
 import mux from "@/mux";
-import Vue from 'vue';
 import ProductCostPageConfig from "@/configure/ProductCostPageConfig.json";
-
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 
 export default {
@@ -1463,7 +1465,11 @@ export default {
 
   async mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
-    this.username = Vue.$cookies.get(this.$configJson.cookies.name);
+    console.log('this.$cookies.keys() :>> ', this.$cookies.keys());
+    console.log('this.$configJson.cookies.name.key :>> ', this.$configJson.cookies.name.key);
+    console.log('this.$cookies.get(this.$configJson.cookies.name.key) :>> ', this.$cookies.get(this.$configJson.cookies.name.key));
+    this.username = this.$cookies.get(this.$configJson.cookies.name.key);
+    console.log('this.username :>> ', this.username);
     this.todayDate = mux.Date.format(new Date(), 'yyyy-MM-dd');
     // const current_data = await mux.Server.get({path:'/product-cost/'});
     // this.new_indirect_labor_ratio = current_data.cost_ratio.find(x=> x.type === '간접 노무비').ratio;
@@ -1853,7 +1859,7 @@ export default {
 
     },
 
-    saveLabor() {
+    async saveLabor() {
       let isValid = true;
       if(this.tab_main === 0){
         // 조회
@@ -1921,13 +1927,24 @@ export default {
 
         // 품번 기준 정렬
         this.labor_cost_data.sort((a,b) => a.no.localeCompare(b.no));
-
-        this.origin_labor_cost_data = this.labor_cost_data;
-        this.searched_datas.labor_cost_calc_detail = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
-        this.labor_cost_data.forEach(data => {
-          this.searched_datas.labor_cost_calc_detail.push(data);
-        });
-        this.searchDataCalcProcess(this.searched_datas);
+        
+        // try {
+        //   const result = await mux.Server.put({path:'/api/product-cost/labor', data: this.labor_cost_data});
+        //   if (result.code === 0){
+            this.origin_labor_cost_data = this.labor_cost_data;
+            this.searched_datas.labor_cost_calc_detail = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
+            this.labor_cost_data.forEach(data => {
+              this.searched_datas.labor_cost_calc_detail.push(data);
+            });
+            this.searchDataCalcProcess(this.searched_datas);
+        //   }else {
+        //     alert(result.message);
+        //     return;
+        //   }
+        // } catch (error) {
+        //   alert(error);
+        //   return;
+        // }
 
       }else {
         // 계산
@@ -1995,40 +2012,83 @@ export default {
 
         // 품번 기준 정렬
         this.labor_cost_list.sort((a,b) => a.no.localeCompare(b.no));
+
         this.origin_labor_cost_list = this.labor_cost_list;
       }
 
       this.dialog_calculate_labor = false;
     },
 
-    surveyCostNumEditSave() {
-      // 유효성 검사 + 서버 통신 성공시 {
-      this.origin_calc_cost_detail_data = this.calc_cost_detail_data;
-      this.clickedProductCost.employment_insurance_num = this.calc_cost_detail_data_employment_insurance.cost_num;
-      this.clickedProductCost.tool_rent_fee_num = this.calc_cost_detail_data_tool_rent_fee.cost_num;
-      this.clickedProductCost.transportation_fee_num = this.calc_cost_detail_data_transportation_fee.cost_num;
-      this.clickedProductCost.industrial_accident_num = this.calc_cost_detail_data_industrial_accident.cost_num;
-      this.clickedProductCost.taxes_dues_num = this.calc_cost_detail_data_taxes_dues.cost_num;
-      this.clickedProductCost.welfare_benefits_num = this.calc_cost_detail_data_welfare_benefits.cost_num;
-      this.clickedProductCost.retirement_num = this.calc_cost_detail_data_retirement.cost_num;
-      this.clickedProductCost.expendables_num = this.calc_cost_detail_data_expendables.cost_num;
-      this.clickedProductCost.industrial_safety_num = this.calc_cost_detail_data_industrial_safety.cost_num;
-      this.clickedProductCost.normal_maintenance_fee_num = this.calc_cost_detail_data_normal_maintenance_fee.cost_num;
-      this.clickedProductCost.profite_num = this.calc_cost_detail_data_profite.cost_num;
-      this.searched_datas.product_cost = this.searched_datas.product_cost.map(x=> {
-        if (x.cost_calc_code === this.clickedProductCost.cost_calc_code){
-          return this.clickedProductCost;
-        }else {
-          return x;
-        }
-      });
+    async surveyCostNumEditSave() {
+      // 유효성 검사
+      const validate = this.$refs.surveyCostForm.validate();
+      if(validate) {
+        
+        // try {
+        //   const result = await mux.Server.put({path:'/api/product-cost/survey-cost-num', data: this.calc_cost_detail_data});
+        //   if (result.code === 0){
+            this.origin_calc_cost_detail_data = this.calc_cost_detail_data;
+            this.clickedProductCost.employment_insurance_num = this.calc_cost_detail_data_employment_insurance.cost_num;
+            this.clickedProductCost.tool_rent_fee_num = this.calc_cost_detail_data_tool_rent_fee.cost_num;
+            this.clickedProductCost.transportation_fee_num = this.calc_cost_detail_data_transportation_fee.cost_num;
+            this.clickedProductCost.industrial_accident_num = this.calc_cost_detail_data_industrial_accident.cost_num;
+            this.clickedProductCost.taxes_dues_num = this.calc_cost_detail_data_taxes_dues.cost_num;
+            this.clickedProductCost.welfare_benefits_num = this.calc_cost_detail_data_welfare_benefits.cost_num;
+            this.clickedProductCost.retirement_num = this.calc_cost_detail_data_retirement.cost_num;
+            this.clickedProductCost.expendables_num = this.calc_cost_detail_data_expendables.cost_num;
+            this.clickedProductCost.industrial_safety_num = this.calc_cost_detail_data_industrial_safety.cost_num;
+            this.clickedProductCost.normal_maintenance_fee_num = this.calc_cost_detail_data_normal_maintenance_fee.cost_num;
+            this.clickedProductCost.profite_num = this.calc_cost_detail_data_profite.cost_num;
+            this.searched_datas.product_cost = this.searched_datas.product_cost.map(x=> {
+              if (x.cost_calc_code === this.clickedProductCost.cost_calc_code){
+                return this.clickedProductCost;
+              }else {
+                return x;
+              }
+            });
+      
+            this.searchDataCalcProcess(this.searched_datas);
+            
+            this.edit_survey_cost_num_disabled = true;
+        //   }else {
+        //     alert(result.message);
+        //     return;
+        //   }
+        // } catch (error) {
+        //   alert(error);
+        //   return;
+        // }
+      }
 
-      this.searchDataCalcProcess(this.searched_datas);
-      // }
-      this.edit_survey_cost_num_disabled = true;
     },
-  },
 
+    async save() {
+      if (this.calc_cost_detail_data_product_cost2.belong_data.length === 0){
+        alert('제품을 불러와야 합니다.');
+        return;
+      }
+      if (this.calc_cost_detail_data_direct_labor2.belong_data.length === 0 || this.calc_cost_detail_data_direct_labor2.belong_data[0].cost_list === ''){
+        alert('직접 노무비를 산출해야 합니다.');
+        return;
+      }
+      const validate = this.$refs.surveyCostForm2.validate();
+      if(validate){
+        // try {
+        //   const result = await mux.Server.post({path:'/api/product-cost/', data: this.calc_cost_detail_data2});
+        //   if (result.code === 0){
+            alert('저장되었습니다.');
+        //   }else {
+        //     alert(result.message);
+        //     return;
+        //   }
+        // }catch (error) {
+        //   alert(error);
+        //   return;
+        // }
+      }
+    },
+
+  },
 }
 </script>
 <style>

@@ -1,11 +1,16 @@
 {
   "defaultTimeout": 300000,
-  "RefreshTokenCookieExpiration": "7d",
   
   "cookies": {
-    "savedID": "savedID",
-    "id": "id",
-    "name": "username",
-    "RefreshToken": "RefreshToken"
+    "savedID": {"key": "savedID", "expiration": "100y"},
+    "id": {"key": "id", "expiration": "7d"},
+    "name": {"key": "name", "expiration": "7d"},
+    "RefreshToken": {"key": "RefreshToken", "expiration": "7d"},
+    "phone_number": {"key": "phone_number", "expiration": "7d"},
+    "email": {"key": "email", "expiration": "7d"},
+    "office_phone_number": {"key": "office_phone_number", "expiration": "7d"},
+    "office_internal_number": {"key": "office_internal_number", "expiration": "7d"},
+    "position": {"key": "position", "expiration": "7d"},
+    "department": {"key": "department", "expiration": "7d"}
   }
 }

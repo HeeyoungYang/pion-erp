@@ -75,12 +75,12 @@ export default {
       if(!validate) return;
 
       // 비밀번호 변경 저장
-      console.log('this.$configJson.cookies.id :>> ', this.$configJson.cookies.id);
+      console.log('this.$configJson.cookies.id.key :>> ', this.$configJson.cookies.id.key);
       console.log('this.$route.query.temporary_password :>> ', this.$route.query.temporary_password);
       console.log('this.passwords.newPassword :>> ', this.passwords.newPassword);
       mux.Server.put({
         path: '/api/user/change_first_password/',
-        user_name: this.$cookies.get(this.$configJson.cookies.id),
+        user_name: this.$cookies.get(this.$configJson.cookies.id.key),
         temporary_password: this.$route.query.temporary_password,
         new_password: this.passwords.newPassword,
       }).then((response) => {
