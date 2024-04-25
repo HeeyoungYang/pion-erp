@@ -92,7 +92,6 @@
       :dialog-transition="'slide-x-transition'"
       :dialog-custom="'custom-dialog elevation-0 white'"
       :card-elevation="'0'"
-      :hide-overlay="true"
       @close="closeProductList"
     >
       <v-container>
@@ -100,19 +99,15 @@
           <v-col cols="12">
             <table style="width:100%">
               <tr>
-                <td class="approve_title" style="width:15%">프로젝트 코드</td>
-                <td class="approve_text" style="width:35%">{{ inbound_info_data.project_code }}</td>
-                <td class="approve_title" style="width:15%">입고 위치</td>
-                <td class="approve_text" style="width:35%">{{ inbound_info_data.spot }}</td>
-              </tr>
-              <tr>
-                <td class="approve_title" style="width:15%">품질검사결과</td>
-                <td class="approve_text" style="width:35%">
-                  <p class="mb-0 font-weight-bold">{{ inbound_info_data.quality_inspection }}</p>
-                  <p class="mb-0 error--text" v-if="inbound_info_data.quality_inspection == '이상 있음'"> : {{ inbound_info_data.quality_inspection_reason }}</p>
+                <td class="approve_title" style="width:10%">프로젝트 코드</td>
+                <td class="approve_text" style="width:15%">{{ inbound_info_data.project_code }}</td>
+                <td class="approve_title" style="width:10%">품질검사결과</td>
+                <td class="approve_text" style="width:25%">
+                  <p class="mb-0 font-weight-bold">{{ inbound_info_data.abnormal_reason == '' ? '이상 없음' : '이상 있음' }}</p>
+                  <p class="mb-0 error--text" v-if="inbound_info_data.abnormal_reason != ''"> : {{ inbound_info_data.abnormal_reason }}</p>
                 </td>
-                <td class="approve_title" style="width:15%">비고</td>
-                <td class="approve_text" style="width:35%">
+                <td class="approve_title" style="width:10%">비고</td>
+                <td class="approve_text" style="width:30%">
                   {{  inbound_info_data.note }}
                 </td>
               </tr>
@@ -131,15 +126,15 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" sm="4">
+          <v-col cols="12" sm="4" v-if="inbound_info_data.receiving_inspection">
             <p class="font-weight-bold primary--text mb-0">▼ 수입검사서</p>
             <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+inbound_info_data.receiving_inspection"></iframe>
           </v-col>
-          <v-col cols="12" sm="4">
+          <v-col cols="12" sm="4" v-if="inbound_info_data.inspection_report">
             <p class="font-weight-bold primary--text mb-0">▼ 시험성적서</p>
             <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+inbound_info_data.inspection_report"></iframe>
           </v-col>
-          <v-col cols="12" sm="4">
+          <v-col cols="12" sm="4" v-if="inbound_info_data.files">
             <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
             <v-chip
              color="grey lighten-2"
@@ -179,7 +174,6 @@ export default {
               },
   data(){
     return{
-      menu: false,
       dates: [],
       inbound_product_list_dialog: false,
 
@@ -219,17 +213,21 @@ export default {
       this.inbound_product_list_data = [];
       this.inbound_info_data = {};
       belong_datas.forEach(data =>{
+        data.inbound_price = data.unit_price * data.inbound_num;
         this.inbound_product_list_data.push(data);
       })
+      let file_name = item.files.split(',');
+      if(!file_name[0]){
+        file_name = ""
+      }
       this.inbound_info_data = {
         project_code:item.project_code,
         spot:item.spot,
-        quality_inspection : item.quality_inspection,
-        quality_inspection_reason : item.quality_inspection_reason,
+        abnormal_reason : item.abnormal_reason,
         receiving_inspection : item.receiving_inspection,
         inspection_report : item.inspection_report,
         note: item.note,
-        files: item.files.split(','),
+        files: file_name,
       }
       this.inbound_product_list_dialog = true;
     },

@@ -71,7 +71,7 @@
               <tr  @click="clickTr(item)">
                 <td v-if="approval" align="center">
                   <v-menu
-                    v-if="item.approval == '미승인'"
+                    v-if="item.approval_phase == '미승인' || item.approval_phase == '미확인'"
                     :close-on-content-click="false"
                     :nudge-width="200"
                     offset-x
@@ -80,11 +80,11 @@
                       <v-chip
                         class="ma-2"
                         small
-                        color="default"
+                        :color="item.approval_phase == '미확인' ? 'default' : 'amber lighten-4'"
                         v-bind="attrs"
                         v-on="on"
                       >
-                        {{ item.approval }}
+                        {{ item.approval_phase }}
                       </v-chip>
                     </template>
 
@@ -97,15 +97,22 @@
                               dense
                               hide-details
                               row
+                              class="mt-0"
                             >
                               <v-radio
-                                label="승인"
+                                :label="item.approval_phase == '미승인'? '승인' : '확인'"
                                 :value=true
                               ></v-radio>
                               <v-radio
                                 label="반려"
                                 :value=false
                               ></v-radio>
+                              <v-btn
+                                small
+                                :color="approve_radio ? 'primary' : 'error' "
+                              >
+                                저장
+                              </v-btn>
                             </v-radio-group>
                             <v-text-field
                               v-if="!approve_radio"
@@ -114,22 +121,22 @@
                               filled
                               label="사유"
                             ></v-text-field>
-                            <v-list-item-title class="mt-4 font-weight-bold ">
-                              {{ approve_radio ? '승인' : '반려' }} 하시겠습니까?
+                            <!-- <v-list-item-title class="mt-4 font-weight-bold ">
+                              {{ approve_radio ? (item.approval_phase == '미승인'? '승인' : '확인') : '반려' }} 하시겠습니까?
                               <v-btn
                                 small
                                 :color="approve_radio ? 'primary' : 'error' "
                               >
-                                {{ approve_radio ? '승인' : '반려' }}
+                                {{ approve_radio ? (item.approval_phase == '미승인'? '승인' : '확인') : '반려' }}
                               </v-btn>
-                            </v-list-item-title>
+                            </v-list-item-title> -->
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
                     </v-card>
                   </v-menu>
                   <v-menu
-                    v-else-if="item.approval == '승인'"
+                    v-else-if="item.approval_phase == '승인'"
                     :close-on-content-click="false"
                     :max-width="160"
                     offset-x
@@ -142,7 +149,7 @@
                         v-bind="attrs"
                         v-on="on"
                       >
-                        {{ item.approval }}
+                        {{ item.approval_phase }}
                       </v-chip>
                     </template>
 
@@ -150,7 +157,7 @@
                       <v-list class="pa-0">
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-3">
-                            <v-list-item-subtitle>승인일 : {{ item.approve_date }}</v-list-item-subtitle>
+                            <v-list-item-subtitle>승인일 : {{ item.approved_date }}</v-list-item-subtitle>
                             <v-btn
                               small
                               color="success"
@@ -195,7 +202,7 @@
                     </ModalDialogComponent>
                   </v-menu>
                   <v-menu
-                    v-else-if="item.approval == '반려'"
+                    v-else-if="item.approval_phase == '반려'"
                     open-on-hover
                     :close-on-content-click="false"
                     :nudge-width="150"
@@ -210,7 +217,7 @@
                         v-bind="attrs"
                         v-on="on"
                       >
-                        {{ item.approval }}
+                        {{ item.approval_phase }}
                       </v-chip>
                     </template>
 
@@ -219,7 +226,7 @@
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-3">
                             <v-list-item-subtitle class="error--text font-weight-black">[ 반려사유 ]</v-list-item-subtitle>
-                            <v-list-item-title>{{ item.approver }} : {{ item.return_reason }}</v-list-item-title>
+                            <v-list-item-title>{{ item.rejecter }} : {{ item.reject_reason }}</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>

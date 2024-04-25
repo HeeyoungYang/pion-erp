@@ -22,8 +22,9 @@
 .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td{
   font-size: 0.775rem!important;
 }
-.approve_title{background-color: #efefef; text-align: center; font-weight: bold; padding: 5px; border: 1px solid #cccccc;}
-.approve_text{padding: 5px 10px; border: 1px solid #cccccc;}
+.approve_title{background-color: #efefef; text-align: center; font-weight: bold; padding: 5px; border: 1px solid #cccccc;font-size: 0.875rem!important;}
+.approve_text,
+.v-data-table > .v-data-table__wrapper > table > tbody > tr > td.approve_text{padding: 5px 10px; border: 1px solid #cccccc;font-size: 0.875rem!important;}
 
 @media print{
   .dont_print{display: none;}

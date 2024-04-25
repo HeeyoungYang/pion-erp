@@ -545,9 +545,13 @@ export default {
           }
         })
         item.inbound_date = (this.inbound_date_set === "" ? mux.Date.format(this.today, 'yyyy-MM-dd') : this.inbound_date_set);
+        if(this.add_self){
+          item.add_data = "직접기입형"
+        }else{
+          item.add_data = "선택형"
+        }
 
         let empty_member = [];
-
         member_input.forEach(mem => {
           if(!mem.user_id){
             empty_member.push(mem.type)
@@ -591,12 +595,6 @@ export default {
               }
             }
           }else{
-            // for(let add = 0; add < inbound_product_data.length; add++){
-            //   if(Object.keys(inbound_product_data[add]) != 'model' && Object.values(inbound_product_data[add]) === ''){
-            //     alert('모델을 제외한 모든 정보가 기입되어야 합니다.');
-            //     return
-            //   }
-            // }
             inbound_product_data.forEach(data => {
               for(let add = 0; add < Object.keys(data).length; add++){
                 if(Object.keys(data)[add] != 'product_model' && Object.values(data)[add] === ''){

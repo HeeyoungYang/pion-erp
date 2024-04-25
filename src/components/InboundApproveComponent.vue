@@ -24,13 +24,13 @@
             </tr>
             <tr>
               <td style="border:1px solid #b7b7b7; border-left: 0px; border-bottom: 0px; height:50px" class="text-h6 font-weight-bold">{{  inboundData.creater }}</td>
-              <td style="border:1px solid #b7b7b7; border-left: 0px; border-bottom: 0px;" class="text-h6 font-weight-bold">{{  inboundData.creater }}</td>
+              <td style="border:1px solid #b7b7b7; border-left: 0px; border-bottom: 0px;" class="text-h6 font-weight-bold">{{  inboundData.checker }}</td>
               <td style="border:1px solid #b7b7b7; border-left: 0px; border-bottom: 0px;" class="text-h6 font-weight-bold">{{  inboundData.approver }}</td>
             </tr>
             <tr>
               <td style="border:1px solid #b7b7b7; border-left: 0px;">{{  inboundData.created_time }}</td>
-              <td style="border:1px solid #b7b7b7; border-left: 0px;">{{  inboundData.created_time }}</td>
-              <td style="border:1px solid #b7b7b7; border-left: 0px;">{{  inboundData.approve_date }}</td>
+              <td style="border:1px solid #b7b7b7; border-left: 0px;">{{  inboundData.checked_date }}</td>
+              <td style="border:1px solid #b7b7b7; border-left: 0px;">{{  inboundData.approved_date }}</td>
             </tr>
           </table>
           <p class="text-center">아래와 같이 입고를 요청합니다. 검토 후 결제를 바랍니다.</p>
@@ -42,50 +42,52 @@
               <td class="approve_title">작성일</td>
               <td class="approve_text">{{ inboundData.created_time}}</td>
               <td class="approve_title">구매담당자</td>
-              <td class="approve_text">유대현 차장</td>
+              <td class="approve_text">{{inboundData.purchase_manager}}</td>
             </tr>
             <tr>
               <td class="approve_title">입고일자</td>
               <td class="approve_text">{{ inboundData.inbound_date}}</td>
               <td class="approve_title">자재담당자</td>
-              <td class="approve_text">김민기 사원</td>
+              <td class="approve_text">{{inboundData.material_manager}}</td>
             </tr>
             <tr>
               <td class="approve_title">업체명</td>
               <td class="approve_text">(주)파이온 일렉트릭</td>
               <td class="approve_title">프로젝트 코드</td>
-              <td class="approve_text">당진 9호기 PJT</td>
+              <td class="approve_text">{{inboundData.project_code}}</td>
             </tr>
           </table>
           <p class="mb-2 mt-7 text-h6 font-weight-black">내용</p>
+          <v-simple-table dense class="mb-3" style="border-bottom:1px solid #cccccc; border-radius:0px;">
+            <template v-slot:default>
+              <thead>
+                <tr>
+                  <th class="text-center approve_title" style="border-right:0px; border-bottom:0px">품명</th>
+                  <th class="text-center approve_title" style="border-right:0px; border-bottom:0px">규격(사양)</th>
+                  <th class="text-center approve_title" style="border-right:0px; border-bottom:0px">수량</th>
+                  <th class="text-center approve_title" style="border-bottom:0px">제조사</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                class="approve_text"
+                  v-for="(dta, i) in belongData"
+                  :key="i"
+                >
+                  <td class="text-center approve_text" style="border-right:0px; border-bottom:0px">{{ dta.name }}</td>
+                  <td class="text-center approve_text" style="border-right:0px; border-bottom:0px">{{ dta.spec }}</td>
+                  <td class="text-center approve_text" style="border-right:0px; border-bottom:0px">{{ dta.inbound_num }}</td>
+                  <td class="text-center approve_text" style="border-bottom:0px">{{ dta.manufacturer }}</td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
           <table style="width:100%">
-            <tr>
-              <td class="approve_title" style="width: 130px;">업체명</td>
-              <td class="approve_text">{{ inboundData.manufacturer}}</td>
-            </tr>
-            <tr>
-              <td class="approve_title" style="width: 130px;">품명</td>
-              <td class="approve_text">
-                <p class="mb-0" v-for="(dta, i) in belongData" :key="i">{{ i+1 }}. {{ dta.name }}</p>
-              </td>
-            </tr>
-            <tr>
-              <td class="approve_title" style="width: 130px;">규격(사양)</td>
-              <td class="approve_text">
-                <p class="mb-0" v-for="(dta, i) in belongData" :key="i">{{ i+1 }}. {{ dta.spec }}</p>
-              </td>
-            </tr>
-            <tr>
-              <td class="approve_title" style="width: 130px;">수량</td>
-              <td class="approve_text">
-                <p class="mb-0" v-for="(dta, i) in belongData" :key="i">{{ i+1 }}. {{ dta.name }} - {{ dta.inbound_num }}EA </p>
-              </td>
-            </tr>
             <tr>
               <td class="approve_title" style="width: 130px;">품질검사결과</td>
               <td class="approve_text">
-                <p class="mb-0 font-weight-bold">{{ inboundData.quality_inspection }}</p>
-                <p class="mb-0 error--text" v-if="inboundData.quality_inspection == '이상 있음'">{{ inboundData.quality_inspection_reason }}</p>
+                <p class="mb-0 font-weight-bold">{{ inboundData.abnormal_reason == '' ? '이상 없음' : '이상 있음' }}</p>
+                <p class="mb-0 error--text" v-if="inboundData.abnormal_reason != ''"> : {{ inboundData.abnormal_reason }}</p>
               </td>
             </tr>
             <tr>
@@ -102,7 +104,7 @@
             </tr>
             <tr>
               <td class="approve_title" style="width: 130px;">비고</td>
-              <td class="approve_text">{{  inboundData.note }}</td>
+              <td class="approve_text">{{ inboundData.note }}</td>
             </tr>
           </table>
           <p class="mb-2 mt-7 text-h6 font-weight-black">붙임</p>

@@ -74,7 +74,8 @@
     "receiving_inspection" : "",
     "inspection_report" : "",
     "files" : "",
-    "note" : ""
+    "note" : "",
+    "add_data": ""
   },
 
   "type_list":["원부자재", "반제품", "완제품"],
