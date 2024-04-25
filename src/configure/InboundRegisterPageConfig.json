@@ -59,6 +59,7 @@
     "purchase_manager" : "",
     "material_manager" : "",
     "abnormal_reason" : "",
+    "approval_phase": "",
     "checker" : "",
     "checker_id" : "",
     "checked_date" : "",

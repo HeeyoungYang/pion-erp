@@ -417,6 +417,7 @@ export default {
               },
   data(){
     return{
+      login_id:'',
       member_dialog: false,
       add_self: false,
       select_product: true,
@@ -475,6 +476,7 @@ export default {
       this.members_list.forEach(mem => {
         if(this.inbound_member_info[0].name === mem.name && this.inbound_member_info[0].email === mem.email){
           this.inbound_member_info[0].user_id = mem.user_id;
+          this.login_id = mem.user_id
         }
       })
 
@@ -552,6 +554,13 @@ export default {
             if(mem.type === '확인'){
               item.checker = mem.name;
               item.checker_id = mem.user_id;
+              if(mem.user_id == this.login_id){
+                let date = new Date();
+                item.approval_phase = '미승인';
+                item.checked_date = this.today = mux.Date.format(date, 'yyyy-MM-dd');
+              }else{
+                item.approval_phase = '미확인'
+              }
             }else if(mem.type === '승인'){
               item.approver = mem.name;
               item.approver_id = mem.user_id;
