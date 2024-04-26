@@ -12,8 +12,7 @@
             contain
             src="../assets/img/pion_logo.png"
             transition="scale-transition"
-            width="150"
-            style="margin-top:10px"
+            style="margin-top:10px; width: 150px;"
           />
         </v-col>
         <v-col cols="6">
