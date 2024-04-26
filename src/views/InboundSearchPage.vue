@@ -32,6 +32,7 @@
                 <v-btn
                   color="primary"
                   elevation="2"
+                  @click="searchButton"
                 >
                   <v-icon>mdi-magnify</v-icon>검색
                 </v-btn>
@@ -188,7 +189,7 @@ export default {
       searchCardInputs:InboundSearchPageConfig.searchCardInputs,
       inbound_approve_headers:InboundSearchPageConfig.inbound_approve_headers,
       inbound_product_list_headers:InboundSearchPageConfig.inbound_product_list_headers,
-      inbound_approve_data:InboundSearchPageConfig.test_inbound_approve_data,
+      inbound_approve_data:[],
     }
   },
 
@@ -228,7 +229,9 @@ export default {
       // result.response ==> 세부 정보 포함
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-
+    searchButton(){
+      this.inbound_approve_data = InboundSearchPageConfig.test_inbound_approve_data
+    },
     closeProductList(){
       this.inbound_product_list_dialog = false;
     },
