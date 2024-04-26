@@ -1,9 +1,10 @@
 
 <template >
   <v-container>
-    <div>
-      <p class="text-center text-h4 font-weight-bold black--text pb-8 mb-8" style="border-bottom:1px solid #ccc">입고 확인서</p>
-      <v-row class="mt-3">
+    <div style="position:relative">
+      <p class="print_doc_title">입고 확인서</p>
+      <!-- <p class="print_doc_title text-center text-h4 font-weight-bold black--text pb-8 mb-8" style="border-bottom:1px solid #ccc">입고 확인서</p> -->
+      <v-row style="margin-top:15px">
         <v-col cols="6">
           <v-img
             alt="Pionelectric Logo"
@@ -12,32 +13,33 @@
             src="../assets/img/pion_logo.png"
             transition="scale-transition"
             width="150"
+            style="margin-top:10px"
           />
         </v-col>
         <v-col cols="6">
           <table style="border-spacing: 0;width: 100%; text-align: center;">
               <tr>
-              <td rowspan="3" style="border:1px solid #b7b7b7!important" class="blue lighten-5">결재</td>
-              <td style="border:1px solid #b7b7b7!important; border-left: 0px; border-bottom: 0px;" class="blue lighten-5">작성</td>
-              <td style="border:1px solid #b7b7b7!important; border-left: 0px; border-bottom: 0px;" class="blue lighten-5">확인</td>
-              <td style="border:1px solid #b7b7b7!important; border-left: 0px; border-bottom: 0px;" class="blue lighten-5">승인</td>
+              <td rowspan="3" class="approve_list_title">결재</td>
+              <td class="approve_list_title approve_list_title_border">작성</td>
+              <td class="approve_list_title approve_list_title_border">확인</td>
+              <td class="approve_list_title approve_list_title_border">승인</td>
             </tr>
             <tr>
-              <td style="border:1px solid #b7b7b7; border-left: 0px; border-bottom: 0px; height:50px" class="text-h6 font-weight-bold">{{  inboundData.creater }}</td>
-              <td style="border:1px solid #b7b7b7; border-left: 0px; border-bottom: 0px;" class="text-h6 font-weight-bold">{{  inboundData.checker }}</td>
-              <td style="border:1px solid #b7b7b7; border-left: 0px; border-bottom: 0px;" class="text-h6 font-weight-bold">{{  inboundData.approver }}</td>
+              <td class="approve_list_name">{{  inboundData.creater }}</td>
+              <td class="approve_list_name">{{  inboundData.checker }}</td>
+              <td class="approve_list_name">{{  inboundData.approver }}</td>
             </tr>
             <tr>
-              <td style="border:1px solid #b7b7b7; border-left: 0px;">{{  inboundData.created_time }}</td>
-              <td style="border:1px solid #b7b7b7; border-left: 0px;">{{  inboundData.checked_date }}</td>
-              <td style="border:1px solid #b7b7b7; border-left: 0px;">{{  inboundData.approved_date }}</td>
+              <td class="approve_list_date">{{  inboundData.created_time }}</td>
+              <td class="approve_list_date">{{  inboundData.checked_date }}</td>
+              <td class="approve_list_date">{{  inboundData.approved_date }}</td>
             </tr>
           </table>
-          <p class="text-center">아래와 같이 입고를 요청합니다. 검토 후 결제를 바랍니다.</p>
+          <p style="text-align: center; font-size:11px; margin-top:5px">아래와 같이 입고를 요청합니다. 검토 후 결제를 바랍니다.</p>
         </v-col>
         <v-col cols="12">
-          <p class="mb-2 text-h6 font-weight-black">개요</p>
-          <table style="width:100%">
+          <p class="doc_list_title">개요</p>
+          <table class="doc_table">
             <tr>
               <td class="approve_title">작성일</td>
               <td class="approve_text">{{ inboundData.created_time}}</td>
@@ -57,15 +59,14 @@
               <td class="approve_text">{{inboundData.project_code}}</td>
             </tr>
           </table>
-          <p class="mb-2 mt-7 text-h6 font-weight-black">내용</p>
-          <v-simple-table dense class="mb-3" style="border-bottom:1px solid #cccccc; border-radius:0px;">
-            <template v-slot:default>
-              <thead>
+          <p class="doc_list_title" style="margin-top:28px">내용</p>
+          <table class="doc_detail_table">
+            <thead>
                 <tr>
-                  <th class="text-center approve_title" style="border-right:0px; border-bottom:0px">품명</th>
-                  <th class="text-center approve_title" style="border-right:0px; border-bottom:0px">규격(사양)</th>
-                  <th class="text-center approve_title" style="border-right:0px; border-bottom:0px">수량</th>
-                  <th class="text-center approve_title" style="border-bottom:0px">제조사</th>
+                  <th class="approve_title">품명</th>
+                  <th class="approve_title">규격(사양)</th>
+                  <th class="approve_title">수량</th>
+                  <th class="approve_title">제조사</th>
                 </tr>
               </thead>
               <tbody>
@@ -74,48 +75,44 @@
                   v-for="(dta, i) in belongData"
                   :key="i"
                 >
-                  <td class="text-center approve_text" style="border-right:0px; border-bottom:0px">{{ dta.name }}</td>
-                  <td class="text-center approve_text" style="border-right:0px; border-bottom:0px">{{ dta.spec }}</td>
-                  <td class="text-center approve_text" style="border-right:0px; border-bottom:0px">{{ dta.inbound_num }}</td>
-                  <td class="text-center approve_text" style="border-bottom:0px">{{ dta.manufacturer }}</td>
+                  <td class="approve_text">{{ dta.name }}</td>
+                  <td class="approve_text">{{ dta.spec }}</td>
+                  <td class="approve_text">{{ dta.inbound_num }}</td>
+                  <td class="approve_text">{{ dta.manufacturer }}</td>
                 </tr>
               </tbody>
-            </template>
-          </v-simple-table>
-          <table style="width:100%">
+          </table>
+          <table class="doc_table">
             <tr>
-              <td class="approve_title" style="width: 130px;">품질검사결과</td>
+              <td class="approve_title">품질검사결과</td>
               <td class="approve_text">
-                <p class="mb-0 font-weight-bold">{{ inboundData.abnormal_reason == '' ? '이상 없음' : '이상 있음' }}</p>
-                <p class="mb-0 error--text" v-if="inboundData.abnormal_reason != ''"> : {{ inboundData.abnormal_reason }}</p>
+                <p style="margin-bottom:0px; font-weight:bold">{{ inboundData.abnormal_reason == '' ? '이상 없음' : '이상 있음' }}</p>
+                <p style="margin-bottom:0px; color:red" v-if="inboundData.abnormal_reason != ''"> : {{ inboundData.abnormal_reason }}</p>
               </td>
             </tr>
             <tr>
-              <td class="approve_title" style="width: 130px;">수입검사서</td>
+              <td class="approve_title">수입검사서</td>
               <td class="approve_text">
                 {{ inboundData.receiving_inspection ? '■ 유   □무' : '□ 유   ■무' }}
               </td>
             </tr>
             <tr>
-              <td class="approve_title" style="width: 130px;">시험성적서</td>
+              <td class="approve_title">시험성적서</td>
               <td class="approve_text">
                 {{ inboundData.inspection_report ? '■ 유   □무' : '□ 유   ■무' }}
               </td>
             </tr>
             <tr>
-              <td class="approve_title" style="width: 130px;">비고</td>
+              <td class="approve_title">비고</td>
               <td class="approve_text">{{ inboundData.note }}</td>
             </tr>
           </table>
-          <p class="mb-2 mt-7 text-h6 font-weight-black">붙임</p>
-          <div style="border:1px solid #ccc" class="px-5 py-4">
+          <p class="doc_list_title" style="margin-top:28px">붙임</p>
+          <div style="border:1px solid #ccc; padding:16px 20px; font-size: 12px;">
                 <p class="mb-0" v-for="(file, i) in belongFiles" :key="i">{{ i+1 }}. {{ file }}</p>
           </div>
         </v-col>
       </v-row>
-    </div>
-    <div>
-
     </div>
   </v-container>
 
@@ -154,4 +151,18 @@ export default {
 }
 </script>
 <style>
+.approve_list_title{border:1px solid #b7b7b7!important; background-color: #E3F2FD !important; font-size: 13px;}
+.approve_list_title_border{border-left: 0px!important; border-bottom: 0px!important; }
+.approve_list_name{border:1px solid #b7b7b7; border-left: 0px; border-bottom: 0px; font-size: 16px; height:45px; font-weight: bold;}
+.approve_list_date{border:1px solid #b7b7b7; border-left: 0px;font-size: 11px;padding: 3px 0px;}
+.doc_list_title{font-size : 17px; font-weight:bold; margin-bottom:8px}
+.doc_detail_table{border-bottom:1px solid #cccccc; border-right:1px solid #cccccc; border-radius:0px;margin-bottom: 10px; width:100%; border-spacing: 0px;}
+.doc_detail_table tr th,
+.doc_detail_table tr td{border-right:0px; border-bottom:0px; text-align: center; font-size: 12px!important;}
+.doc_table{width: 100%;}
+.doc_table tr td:first-child{width: 150px;}
+.doc_table tr td{ font-size: 12px!important}
+
+.print_doc_title{font-weight: bold;font-size: 25px; text-align: center; padding-bottom: 30px; margin-bottom: 30px!important; color: black;border-bottom:1px solid #ccc};
+
 </style>

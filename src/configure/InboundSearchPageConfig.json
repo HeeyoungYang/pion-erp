@@ -40,6 +40,11 @@
     { "text": "단가", "align": "center", "value": "unit_price"},
     { "text": "입고금액", "align": "center", "value": "inbound_price"}
   ],
+  "login_info": {
+    "user_id" : "",
+    "name": "",
+    "email": ""
+  },
   "test_inbound_approve_data":[
     {
       "creater": "윤준수",

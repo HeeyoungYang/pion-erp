@@ -56,6 +56,7 @@
                     approval="inbound"
                     dense
                     @clickTr="clickApproveData"
+                    @setApprovalPhase="setApprovalPhase"
                   />
                 </v-card-text>
               </v-card>
@@ -159,6 +160,7 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import InboundSearchPageConfig from "@/configure/InboundSearchPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
+import mux from "@/mux";
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=InboundSearchPage')],
@@ -174,11 +176,14 @@ export default {
               },
   data(){
     return{
+      today:'',
       dates: [],
       inbound_product_list_dialog: false,
 
       inbound_info_data:{},
       inbound_product_list_data:[],
+
+      change_approve:{},
 
       searchCardInputs:InboundSearchPageConfig.searchCardInputs,
       inbound_approve_headers:InboundSearchPageConfig.inbound_approve_headers,
@@ -197,7 +202,26 @@ export default {
       val || this.closeProductList()
     },
   },
+  created () {
+    this.initialize()
+  },
   methods:{
+    async initialize () {
+      this.today = new Date();
+      try {
+        console.log('사용자 계정 정보 가졍오기');
+        let result = await mux.Server.get({
+          path: '/api/user/',
+        });
+        console.log('result :>> ', result);
+        // this.login_info.name = (result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value).trim();
+        // this.login_info.email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
+        this.login_info.name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+        this.login_info.email = this.$cookies.get(this.$configJson.cookies.email.key);
+      } catch (error) {
+        alert(error);
+      }
+    },
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
@@ -231,6 +255,42 @@ export default {
       }
       this.inbound_product_list_dialog = true;
     },
+    setApprovalPhase(item, change, reason){
+      this.change_approve={};
+      if(item.approval_phase === '미확인'){
+        if(change === true){
+          this.change_approve.code = item.code;
+          this.change_approve.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd');
+          this.change_approve.approval_phase = '미승인';
+        }else{
+          if(reason === ''){
+            alert('반려 사유 필수 기입');
+          }else{
+            this.change_approve.code = item.code;
+            this.change_approve.reject_reason = reason;
+            this.change_approve.rejecter = this.login_info.name;
+            this.change_approve.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd');
+          this.change_approve.approval_phase = '반려';
+          }
+        }
+      }else if(item.approval_phase === '미승인'){
+        if(change === true){
+          this.change_approve.code = item.code;
+          this.change_approve.approved_date = mux.Date.format(this.today, 'yyyy-MM-dd');
+          this.change_approve.approval_phase = '승인';
+        }else{
+          if(reason === ''){
+            alert('반려 사유 필수 기입');
+          }else{
+            this.change_approve.code = item.code;
+            this.change_approve.reject_reason = reason;
+            this.change_approve.rejecter = this.login_info.name;
+            this.change_approve.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd');
+          this.change_approve.approval_phase = '반려';
+          }
+        }
+      }
+    }
   },
 }
 </script>

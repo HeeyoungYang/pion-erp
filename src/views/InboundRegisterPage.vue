@@ -468,8 +468,11 @@ export default {
           path: '/api/user/',
         });
         console.log('result :>> ', result);
-        this.inbound_member_info[0].name = (result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value).trim();
-        this.inbound_member_info[0].email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
+        // this.inbound_member_info[0].name = (result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value).trim();
+        // this.inbound_member_info[0].email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
+        this.inbound_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+        this.inbound_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
+        // this.inbound_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.user_name.key);
       } catch (error) {
         alert(error);
       }

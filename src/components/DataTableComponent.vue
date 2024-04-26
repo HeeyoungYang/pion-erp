@@ -110,12 +110,14 @@
                               <v-btn
                                 small
                                 :color="approve_radio ? 'primary' : 'error' "
+                                @click="changeApprovalPhase(item, approve_radio, reject_reason)"
                               >
                                 저장
                               </v-btn>
                             </v-radio-group>
                             <v-text-field
                               v-if="!approve_radio"
+                              v-model="reject_reason"
                               dense
                               hide-details
                               filled
@@ -173,16 +175,59 @@
                       :dialog-value="confirmationDialog"
                       max-width="900px"
                       title-class="display-none"
-                      closeText="취소"
-                      saveText="저장"
+                      text-class="pb-0"
                       :persistent="true"
-                      @close="confirmationDialog=false"
                     >
                       <InboundApproveComponent
                       :inbound-data="item"
                       :belong-data="inbound_approve_belong"
                       :belong-files="inbound_approve_files"
+                      ref="inboundApproveComponent"
                       />
+                      <div style="position: sticky; bottom: 60px;">
+                        <p style="text-align: right;">
+                          <v-menu offset-x>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-btn
+                                color="primary"
+                                fab
+                                x-small
+                                elevation="1"
+                                v-bind="attrs"
+                                v-on="on"
+                              >
+                                <v-icon small>mdi-content-save</v-icon>
+                              </v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-item
+                                dense
+                                @click="printInboundApprove('입고확인서')"
+                              >
+                                <v-list-item-title>PDF</v-list-item-title>
+                              </v-list-item>
+                              <v-list-item
+                                dense
+                                @click="printInboundApprove()"
+                              >
+                                <v-list-item-title>출력</v-list-item-title>
+                              </v-list-item>
+                            </v-list>
+                          </v-menu>
+                        </p>
+                        <p style="text-align: right;">
+                          <v-btn
+                            fab
+                            color="blue-grey darken-1"
+                            x-small
+                            class="white--text"
+                            elevation="1"
+                            @click="confirmationDialog=false"
+                          >
+                            <v-icon> mdi-close-thick </v-icon>
+                          </v-btn>
+                        </p>
+                      </div>
                     </ModalDialogComponent>
                     <ModalDialogComponent
                       v-else-if="approval == 'ship'"
@@ -593,7 +638,7 @@
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import InboundApproveComponent from "@/components/InboundApproveComponent";
 import ShipApproveComponent from "@/components/ShipApproveComponent";
-//  import mux from "@/mux";
+import mux from "@/mux";
 
 export default {
   props: {
@@ -661,6 +706,7 @@ export default {
       authority_list:[],
       authority_list_info:[],
       approve_radio: true,
+      reject_reason: '',
       confirmationDialog: false,
     };
   },
@@ -753,6 +799,9 @@ export default {
     detailItem(item){
       this.$emit("itemDetials", item);
     },
+    changeApprovalPhase(item, change, reason){
+      this.$emit("setApprovalPhase", item, change, reason);
+    },
     closeAll () {
         Object.keys(this.$refs).forEach(k => {
             if (this.$refs[k] && this.$refs[k].$attrs['data-open']) {
@@ -794,6 +843,15 @@ export default {
         this.ship_approve_belong.push(data);
       })
       this.confirmationDialog = true;
+    },
+    printInboundApprove(fileName){
+      setTimeout(async () => {
+        if (fileName){
+          mux.Util.downloadPDF(this.$refs.inboundApproveComponent, fileName);
+        }else {
+          mux.Util.print(this.$refs.inboundApproveComponent);
+        }
+      }, 500);
     },
   },
 };
