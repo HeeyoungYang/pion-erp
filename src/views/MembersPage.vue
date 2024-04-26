@@ -378,8 +378,7 @@ export default {
       
       try {
         let result = await mux.Server.delete({
-          path: '/api/admin/user/',
-          user_name: this.editedItem.user_id
+          path: `/api/admin/user/?user_name=${this.editedItem.user_id}`
         });
         console.log('result :>> ', result);
         alert(result.message);

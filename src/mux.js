@@ -434,19 +434,31 @@ mux.Server = {
     this.post({
       path:'/api/user/login/', user_name:id, password:pw
     }).then(result => {
-      this.setUserCookies().then(() => {
-        Vue.$cookies.set(configJson.cookies.id.key, id, configJson.cookies.id.expiration);
+      if (result.code == 0 || result.code == 5031 || result.data.temporary_password){
         if (saveIdCheck){
           Vue.$cookies.set(configJson.cookies.savedID.key, id, configJson.cookies.savedID.expiration);
         }else {
           Vue.$cookies.remove(configJson.cookies.savedID.key);
         }
-        result.data.path = '/home';
-        this.move(result.data);
-      }).catch((error) => {
-        console.log('사용자 정보 쿠키 저장 실패:', error);
-        alert('로그인 실패:', error);
-      });
+        Vue.$cookies.set(configJson.cookies.id.key, id, configJson.cookies.id.expiration);
+        // 최초 로그인 시 쿠키는 추후에 저장
+        if (result.code == 0){
+          this.setUserCookies().then(() => {
+            result.data.path = '/home';
+            this.move(result.data);
+          }).catch((error) => {
+            console.log('사용자 정보 쿠키 저장 실패:', error);
+            alert('로그인 실패:', error);
+            mux.Server.logOut();
+          });
+        }else {
+          result.data.path = '/home';
+          this.move(result.data);
+        }
+      }else {
+        console.error('로그인 실패:', result.message);
+        alert(result.message);
+      }
     }).catch(err => {
       console.error('err :>>>>> ', err);
       switch (err.message) {
