@@ -757,20 +757,20 @@ export default {
   },
   methods: {
     async initialize () {
-      // if (this.showAuthority){
-      //   try {
-      //     let result = await mux.Server.get({path: '/api/admin/page_permission/'});
-      //     console.log('result :>> ', result);
-      //     alert(result.message);
-      //     // 성공시
-      //     if (result.code == 0){
-      //       this.authority_list_info = result;
-      //       this.authority_list = result.data.map(x=>x.group_alias);
-      //     }
-      //   } catch (error) {
-      //     alert(error);
-      //   }
-      // }
+      if (this.showAuthority){
+        try {
+          let result = await mux.Server.get({path: '/api/admin/groups/'});
+          console.log('result :>> ', result);
+          //alert(result.message);
+          // 성공시
+          if (result.code == 0){
+            //this.authority_list_info = result;
+            this.authority_list = result.data.map(x=>x.group_alias);
+          }
+        } catch (error) {
+          alert(error);
+        }
+      }
     },
     updateSelectedData(newValue) {
       this.$emit('input', newValue);

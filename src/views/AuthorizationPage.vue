@@ -77,7 +77,38 @@ export default {
 
       let memberList = [];
       try {
+        let result = await mux.Server.get({path:'/api/admin/users_authorization/'});
+        if (result.code == 0){
+          memberList = result.data.map(data => {
+            let user = {};
+            user.user_id = data.user_name;
+            user.name = data.family_name + data.given_name;
+            user.department = data.department;
+            user.position = data.position;
+            user.authority = data.groups;
+            return user;
+          });
+        }else {
+          this.loading_dialog = false;
+          alert(result.message);
+          return;
+        }
+      } catch (error) {
+        this.loading_dialog = false;
+        alert(error);
+        return;
+      }
+      this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
+      this.loading_dialog = false;
+    },
 
+    /*async initialize () {
+      this.loading_dialog = true;
+      this.headers = AuthorizationPageConfig.table_header;
+      console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
+
+      let memberList = [];
+      try {
         let result = await mux.Server.get({path:'/api/admin/groups/'});
         if (result.code == 0){
           memberList = result.data.forEach(data => {
@@ -126,8 +157,7 @@ export default {
       }
       this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
       this.loading_dialog = false;
-    },
-
+    }, */
   },
 
   components: {
@@ -142,7 +172,7 @@ export default {
       search: '',
       headers: AuthorizationPageConfig.headers,
       members: [],//AuthorizationPageConfig.test_members
-      groups: [],
+      groups: [], // 사용하지 않음
     }
   },
 }
