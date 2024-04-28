@@ -36,6 +36,7 @@
               :items="members"
               :search="search"
               show-authority
+              @changeAuthority="handleChangeAuthority"
             >
             </DataTableComponent>
 
@@ -69,6 +70,11 @@ export default {
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+    },
+    handleChangeAuthority(data) {
+      // 사용자 권한 변경 결과를 확인하여 처리한다.
+      // data ==> 변경된 사용자 정보
+      console.log('사용자 권한 변경 결과:', JSON.stringify(data));
     },
     async initialize () {
       this.loading_dialog = true;
