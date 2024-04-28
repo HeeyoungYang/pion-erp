@@ -260,8 +260,8 @@ export default {
               "stock_num": searchStockMoreZero
             }
           ],
-          script_file_name: "rooting_재고_검색_24_04_21_17_44_FKE.json",
-          script_file_path: "data_storage_pion\\json_sql\\stock\\stock_search\\재고_검색_24_04_21_17_45_RGC"
+          script_file_name: "rooting_재고_검색_24_04_27_16_56_L08.json",
+          script_file_path: "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_04_27_16_56_LKK"
         });
 
         if (typeof result === 'string'){
