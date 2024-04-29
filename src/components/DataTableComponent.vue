@@ -234,16 +234,58 @@
                       :dialog-value="confirmationDialog"
                       max-width="900px"
                       title-class="display-none"
-                      closeText="취소"
-                      saveText="저장"
                       :persistent="true"
-                      @close="confirmationDialog=false"
                     >
                       <ShipApproveComponent
-                      :ship-data="item"
-                      :belong-data="ship_approve_belong"
-                      :belong-files="ship_approve_files"
+                        :ship-data="item"
+                        :belong-data="ship_approve_belong"
+                        :belong-files="ship_approve_files"
+                        ref="shipApproveComponent"
                       />
+                      <div style="position: sticky; bottom: 60px;">
+                        <p style="text-align: right;">
+                          <v-menu offset-x>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-btn
+                                color="primary"
+                                fab
+                                x-small
+                                elevation="1"
+                                v-bind="attrs"
+                                v-on="on"
+                              >
+                                <v-icon small>mdi-content-save</v-icon>
+                              </v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-item
+                                dense
+                                @click="printShipApprove('출고요청서')"
+                              >
+                                <v-list-item-title>PDF</v-list-item-title>
+                              </v-list-item>
+                              <v-list-item
+                                dense
+                                @click="printShipApprove()"
+                              >
+                                <v-list-item-title>출력</v-list-item-title>
+                              </v-list-item>
+                            </v-list>
+                          </v-menu>
+                        </p>
+                        <p style="text-align: right;">
+                          <v-btn
+                            fab
+                            color="blue-grey darken-1"
+                            x-small
+                            class="white--text"
+                            elevation="1"
+                            @click="confirmationDialog=false"
+                          >
+                            <v-icon> mdi-close-thick </v-icon>
+                          </v-btn>
+                        </p>
+                      </div>
                     </ModalDialogComponent>
                   </v-menu>
                   <v-menu
@@ -611,7 +653,7 @@
  * @property {Boolean} [deletableBelong] - 내부 항목 삭제 버튼 여부(default:false)
  * @property {Boolean} [notEditableBelong] - 편집 및 삭제 컬럼 여부(default:false)
  * @property {Boolean} [showPhoto] - 자재 사진 노출 여부(default:false)
- * @property {Boolean} [approval] - 승인 노출 여부(default:false)
+ * @property {String} [approval] - 승인 노출 여부(default:undefined)
  * @property {Boolean} [showFiles] - 첨부파일 노출 여부(default:false)
  * @property {Boolean} [showAuthority] - 권한 설정 여부(default:false)
  * @property {Boolean} [showItemDetails] - 자재 상세 내역 노출 여부(default:false)
@@ -671,7 +713,7 @@ export default {
     deletableBelong: Boolean,
     notEditableBelong: Boolean,
     showPhoto: Boolean,
-    approval: Boolean,
+    approval: String,
     showFiles: Boolean,
     showAuthority: Boolean,
     showItemDetails: Boolean,
@@ -859,6 +901,15 @@ export default {
           mux.Util.downloadPDF(this.$refs.inboundApproveComponent, fileName);
         }else {
           mux.Util.print(this.$refs.inboundApproveComponent);
+        }
+      }, 500);
+    },
+    printShipApprove(fileName){
+      setTimeout(async () => {
+        if (fileName){
+          mux.Util.downloadPDF(this.$refs.shipApproveComponent, fileName);
+        }else {
+          mux.Util.print(this.$refs.shipApproveComponent);
         }
       }, 500);
     },
