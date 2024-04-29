@@ -37,6 +37,7 @@
                 <v-btn
                   color="primary"
                   elevation="2"
+                  @click="searchButton"
                 >
                   <v-icon>mdi-magnify</v-icon>검색
                 </v-btn>
@@ -66,177 +67,91 @@
             <div slot="cardTitle">
               출고 정보 입력
             </div>
-            <InputsFormComponent
-              slot="cardText"
-              dense
-              clearable
-              filled
-              hide-details
-              :inputs="shipCardInputs"
-            >
-              <v-col cols="12" sm="4" lg="4" align-self="center">
-                <v-btn
-                  small
-                  color="success"
-                >
-                  출고 승인 요청
-                </v-btn>
-              </v-col>
-              <v-col
-                cols="12"
+            <div slot="cardText">
+              <MemberSearchDialogComponent
+                :dialog-value="member_dialog"
+                :persistent="true"
+                @close="close"
+                @setMember = "setMember"
+                @members = "members"
               >
-                <v-data-table
+              </MemberSearchDialogComponent>
+              <v-chip
+                class="mr-2 mb-4"
+                style="cursor:pointer"
+                v-for="(member, i) in approve_member_info"
+                :key="i"
+                :color="member.name ? 'success' : 'default'"
+                @click="selectMemberDialog(i)"
+              >
+                {{ member.type }} : {{ member.name }}
+              </v-chip>
+
+              <v-form ref="shipForm">
+                <InputsFormComponent
                   dense
-                  :headers="product_ship_headers"
-                  :items="product_ship_data"
-                  item-key="product_info"
-                  class="elevation-1"
+                  clearable
+                  filled
+                  hide-details
+                  :inputs="shipCardInputs"
+                  @dateSet = "dateSetImport"
                 >
-                  <template v-slot:item="{ item }">
-                    <tr v-if="!add_self">
-                      <td align="center">{{  item.product_type }}</td>
-                      <td align="center">{{  item.product_classification }}</td>
-                      <td align="center">{{  item.product_code }}</td>
-                      <td align="center">{{  item.product_name }}</td>
-                      <td align="center">
-                        <v-text-field
-                          dense
-                          filled
-                          type="number"
-                          style="max-width:150px"
-                          v-model="item.product_ship_num"
-                          @click="check_stock_num = item.stock_num"
-                          :rules="shipNumRules"
-                        >
-                        </v-text-field>
-                      </td>
-                      <td align="center">{{  item.product_model }}</td>
-                      <td align="center">{{  item.product_spec }}</td>
-                      <td align="center">{{  item.manufacturer }}</td>
-                      <td align="center">{{  item.spot }}</td>
-                      <td align="center">{{  item.stock_num }}</td>
-                      <td align="center">{{  item.unit_price }}</td>
-                      <td align="center">{{  item.photo }}</td>
-                    </tr>
-                    <tr v-else-if="add_self">
-                      <td align="center">
-                        <v-autocomplete
-                          v-model="item.product_classification"
-                          :items="product_type_list.slice(1)"
-                          dense
-                          filled
-                          hide-details
-                          style="width:150px"
-                        ></v-autocomplete>
-                      </td>
-                      <td align="center">
-                        <v-autocomplete
-                          v-model="item.product_type"
-                          :items="product_classification_list.slice(1)"
-                          dense
-                          filled
-                          hide-details
-                          style="width:150px"
-                        ></v-autocomplete>
-                      </td>
-                      <td align="center">
-                        <v-text-field
-                          dense
-                          hide-details
-                          filled
-                          v-model="item.product_code"
-                          style="width:200px"
-                        >
-                        </v-text-field>
-                      </td>
-                      <td align="center">
-                        <v-text-field
-                          dense
-                          hide-details
-                          filled
-                          v-model="item.product_name"
-                          style="width:150px"
-                        >
-                        </v-text-field>
-                      </td>
-                      <td align="center">
-                        <v-text-field
-                          dense
-                          hide-details
-                          filled
-                          type="number"
-                          v-model="item.product_ship_num"
-                          style="width:150px"
-                        >
-
-                        </v-text-field>
-                      </td>
-                      <td align="center">
-                        <v-text-field
-                          dense
-                          hide-details
-                          filled
-                          v-model="item.product_model"
-                          style="width:150px"
-                        >
-                        </v-text-field>
-                      </td>
-                      <td align="center">
-                        <v-text-field
-                          dense
-                          hide-details
-                          filled
-                          v-model="item.product_spec"
-                          style="width:150px"
-                        >
-                        </v-text-field>
-                      </td>
-                      <td align="center">
-                        <v-text-field
-                          dense
-                          hide-details
-                          filled
-                          v-model="item.manufacturer"
-                          style="width:150px"
-                        >
-                        </v-text-field>
-                      </td>
-                      <td align="center">
-                        <v-text-field
-                          dense
-                          hide-details
-                          filled
-                          v-model="item.pe_number"
-                          style="width:150px"
-                        >
-                        </v-text-field>
-                      </td>
-                      <td align="center">
-                        <v-text-field
-                          dense
-                          hide-details
-                          filled
-                          type="number"
-                          v-model="item.unit_price"
-                          style="width:150px"
-                        >
-
-                        </v-text-field>
-                      </td>
-                      <td align="center">
-                        <v-file-input
-                          small-chips
-                          filled
-                          dense
-                          hide-details
-                          v-model="item.photo"
-                        ></v-file-input>
-                      </td>
-                    </tr>
-                  </template>
-                </v-data-table>
-              </v-col>
-            </InputsFormComponent>
+                </InputsFormComponent>
+              </v-form>
+              <v-row>
+                  <v-col cols="12" sm="4" lg="4" align-self="center">
+                    <v-btn
+                      small
+                      color="success"
+                      @click="shipApprovalRequest"
+                    >
+                      출고 승인 요청
+                    </v-btn>
+                  </v-col>
+                <v-col
+                  cols="12"
+                >
+                  <v-data-table
+                    dense
+                    :headers="product_ship_headers"
+                    :items="product_ship_data"
+                    item-key="product_info"
+                    class="elevation-1"
+                  >
+                    <template v-slot:item="{ item }">
+                      <tr>
+                        <td align="center">{{  item.type }}</td>
+                        <td align="center">{{  item.classification }}</td>
+                        <td align="center">{{  item.product_code }}</td>
+                        <td align="center">{{  item.name }}</td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            filled
+                            hide-details
+                            type="number"
+                            style="max-width:150px"
+                            v-model="item.ship_num"
+                            @click="check_stock_num = item.stock_num"
+                            :rules="shipNumRules"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">{{  item.model }}</td>
+                        <td align="center">{{  item.spec }}</td>
+                        <td align="center">{{  item.manufacturer }}</td>
+                        <td align="center">{{  item.spot }}</td>
+                        <td align="center">{{  item.stock_num }}</td>
+                        <td align="center">{{  item.unit_price }}</td>
+                        <td align="center">
+                          <v-icon small color="default" style="cursor:pointer" @click="deleteShipDataRow(index)">mdi-minus-thick</v-icon>
+                        </td>
+                      </tr>
+                    </template>
+                  </v-data-table>
+                </v-col>
+              </v-row>
+            </div>
           </CardComponent>
         </v-col>
       </v-row>
@@ -248,8 +163,10 @@ import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
+import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent.vue";
 import ShipRegisterPageConfig from "@/configure/ShipRegisterPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
+import mux from "@/mux";
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=ShipRegisterPage')],
@@ -258,6 +175,7 @@ export default {
                 DataTableComponent,
                 InputsFormComponent,
                 CardComponent,
+                MemberSearchDialogComponent,
               },
   mounted(){
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
@@ -265,33 +183,177 @@ export default {
   },
   data(){
     return{
-      add_self: false,
+      today:'',
+      ship_date_set:'',
       select_product: true,
       dates: [],
       menu: false,
-      check_stock_num:0,
+      member_dialog: false,
+
+      member_type_index:0,
+      members_list:[],
+      manufacturer_list:[],
+      classification_list:[],
 
       product_ship_data: [],
       product_ship_data_added: [],
       shipNumRules: [
-        v => !!v || '출하 수량 입력',
         v => !!( v <= this.check_stock_num) || '출하 수량 > 재고 수량',
       ],
 
+      approve_member_info:ShipRegisterPageConfig.approve_member_info,
       searchCardInputs:ShipRegisterPageConfig.searchCardInputs,
       shipCardInputs:ShipRegisterPageConfig.shipCardInputs,
+      ship_confirmation_data:ShipRegisterPageConfig.ship_confirmation_data,
       product_ship_headers:ShipRegisterPageConfig.product_ship_headers,
       product_search_headers:ShipRegisterPageConfig.product_search_headers,
-      product_search_data:ShipRegisterPageConfig.test_product_search_data,
+      product_search_data:[],
     }
   },
-
+  created () {
+    this.initialize()
+    this.members()
+  },
   methods: {
+    async initialize () {
+      this.today = new Date();
+
+      this.manufacturer_list = ShipRegisterPageConfig.test_manufacturer_list;
+      this.classification_list = ShipRegisterPageConfig.test_classification_list;
+      mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
+      mux.Rules.rulesSet(this.shipCardInputs);
+
+      try {
+        console.log('사용자 계정 정보 가졍오기');
+        let result = await mux.Server.get({
+          path: '/api/user/',
+        });
+        console.log('result :>> ', result);
+        this.approve_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+        this.approve_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
+      } catch (error) {
+        alert(error);
+      }
+
+      this.members_list.forEach(mem => {
+        if(this.approve_member_info[0].name === mem.name && this.approve_member_info[0].email === mem.email){
+          this.approve_member_info[0].user_id = mem.user_id;
+          this.login_id = mem.user_id
+        }
+      })
+
+
+    },
+    searchButton(){
+      this.product_search_data = ShipRegisterPageConfig.test_product_search_data;
+      this.product_search_data.forEach(data => {
+        data.product_info = data.product_code + '/' + data.spot
+      })
+
+    },
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+    },
+    selectMemberDialog(idx){
+      this.member_type_index = idx
+      this.member_dialog = true;
+    },
+    setMember(item){
+      this.approve_member_info[this.member_type_index].name = item.name
+      this.approve_member_info[this.member_type_index].user_id = item.user_id
+      this.close();
+    },
+    members(data){
+      this.members_list=data;
+    },
+    deleteShipDataRow(idx){
+      if(this.product_ship_data.length === 1){
+        alert('행이 한 개 이상 존재해야 합니다.')
+      }else{
+        this.product_ship_data.splice(idx, 1);
+      }
+    },
+    shipApprovalRequest(){
+      let ship_input = this.shipCardInputs;
+      let member_input = this.approve_member_info;
+      let item = this.ship_confirmation_data;
+      let success = true;
+      const validate = this.$refs.shipForm.validate();
+      if(validate){
+        ship_input.forEach(data => {
+          for(let i=0; i<Object.keys(item).length; i++){
+            if(data.column_name == Object.keys(item)[i]){
+              if(data.type == 'file' && data.value){
+                item[Object.keys(item)[i]] = data.value.name;
+              }else{
+                item[Object.keys(item)[i]] = data.value;
+              }
+            }
+          }
+        })
+        item.ship_date = (this.ship_date_set === "" ? mux.Date.format(this.today, 'yyyy-MM-dd') : this.ship_date_set);
+
+        let empty_member = [];
+        member_input.forEach(mem => {
+          if(!mem.user_id){
+            empty_member.push(mem.type)
+          }else{
+            if(mem.type === '확인'){
+              item.checker = mem.name;
+              item.checker_id = mem.user_id;
+              if(item.checker_id == this.login_id){
+                item.approval_phase = '미승인';
+                item.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd');
+              }else{
+                item.approval_phase = '미확인';
+                item.checked_date = "";
+              }
+            }else if(mem.type === '승인'){
+              item.approver = mem.name;
+              item.approver_id = mem.user_id;
+            }
+          }
+        })
+
+        if(empty_member.length > 0){
+          alert(empty_member+"을(를) 선택해주세요.");
+          return success = false;
+        }
+
+        let ship_product_data = this.product_ship_data
+        if(ship_product_data.length === 0){
+          alert('자재를 선택해주세요.');
+          return success = false;
+        }else{
+          for(let d = 0; d < ship_product_data.length; d++){
+            if(ship_product_data[d].ship_num == '' || ship_product_data[d].ship_num == undefined){
+              alert('출고 수량 필수 입력');
+              return success = false;
+            }else if(ship_product_data[d].ship_num == 0){
+                alert('출고수량은 0보다 커야합니다.');
+                return success = false;
+            }else if(ship_product_data[d].ship_num > ship_product_data[d].stock_num){
+              alert('재고보다 출고 수량이 많습니다.');
+              return success = false;
+            }
+          }
+        }
+
+        if(success == true){
+          console.log('출고 정보 : ' + JSON.stringify(item));
+          console.log('출고 제품 : ' + JSON.stringify(ship_product_data));
+          alert('요청이 완료되었습니다.');
+        }
+      }
+    },
+    dateSetImport(item){
+      this.ship_date_set = item
+    },
+    close(){
+      this.member_dialog = false
     },
   },
 

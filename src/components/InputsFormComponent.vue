@@ -61,6 +61,7 @@
       <v-file-input v-else-if="input.type === 'file'"
         v-model="input.value"
         :small-chips="smallChips"
+        :multiple="input.multiple === undefined ? (multiple ? multiple : false) : input.multiple"
         :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
         :outlined="input.outlined === undefined ? (outlined ? outlined : false) : input.outlined"
         :dense="dense"
