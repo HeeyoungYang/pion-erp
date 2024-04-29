@@ -1,65 +1,94 @@
 { 
   "searchCardInputs":[
     {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "원부자재", "반제품", "완제품"]},
-    {"label":"분류", "type":"auto", "list":["All", "일반", "GFM", "전력변환기"], "value":"All", "col":"12", "sm":"4", "lg":"2"},
+    {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"2"},
     {"label":"상태", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "G", "B"]},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"제조사", "col":"12", "sm":"4", "lg":"3", "value": ""}
+    {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
 
 
+  "approve_member_info":[
+    {"type": "확인", "name": "", "user_id": "", "email": ""},
+    {"type": "승인", "name": "", "user_id": "", "email": ""}
+  ],
+
 
   "shipCardInputs":[
-    {"label":"프로젝트", "col":"12", "sm":"4", "lg":"2", "value": ""},
-    {"label":"출하장소", "col":"12", "sm":"4", "lg":"2", "value": ""},
-    {"label":"출고(반출)요청일", "type":"date", "range":true, "value":[], "col":"12", "sm":"4", "lg":"2"},
-    {"label":"시험성적서", "type":"file", "col":"12", "sm":"4", "lg":"2", "value": "", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true},
-    {"label":"기타", "type":"file", "col":"12", "sm":"4", "lg":"4", "value": "", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true},
-    {"label":"출고목적", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"비고", "type":"textarea", "col":"12", "sm":"4", "lg":"4", "value": ""}
+    {"label":"프로젝트", "column_name":"project_code", "col":"12", "sm":"4", "lg":"2", "value": ""},
+    {"label":"출하장소", "column_name":"ship_place", "col":"12", "sm":"4", "lg":"2", "value": ""},
+    {"label":"출고(반출)요청일", "column_name":"ship_date", "type":"dateSingle", "col":"12", "sm":"4", "lg":"2"},
+    {"label":"시험성적서", "column_name":"inspection_report", "type":"file", "col":"12", "sm":"4", "lg":"2", "value": "", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"기타", "column_name":"files", "type":"file", "col":"12", "sm":"4", "lg":"4", "value": "", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true},
+    {"label":"출고목적", "column_name":"purpose", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"비고", "column_name":"note", "type":"textarea", "col":"12", "sm":"4", "lg":"4", "value": ""}
   ],
 
 
   "product_ship_headers": [
-    { "text": "종류", "align": "center", "value": "product_type"},
-    { "text": "분류", "align": "center", "value": "product_classification"},
+    { "text": "종류", "align": "center", "value": "type"},
+    { "text": "분류", "align": "center", "value": "classification"},
     { "text": "관리코드", "align": "center", "value": "product_code"},
-    { "text": "제품명", "align": "center", "value": "product_name"},
-    { "text": "출고수량", "align": "center", "value": "product_ship_num"},
-    { "text": "모델명", "align": "center", "value": "product_model"},
-    { "text": "사양", "align": "center", "value": "product_spec"},
+    { "text": "제품명", "align": "center", "value": "name"},
+    { "text": "출고수량", "align": "center", "value": "ship_num"},
+    { "text": "모델명", "align": "center", "value": "model"},
+    { "text": "사양", "align": "center", "value": "spec"},
     { "text": "제조사", "align": "center", "value": "manufacturer"},
     { "text": "위치", "align": "center", "value": "spot"},
     { "text": "재고", "align": "center", "value": "stock_num"},
     { "text": "단가", "align": "center", "value": "unit_price"},
-    { "text": "사진", "align": "center", "value": "photo"}
+    { "text": "제외", "align": "center", "value": ""}
   ],
 
   "product_search_headers": [
-    { "text": "종류", "align": "center", "value": "product_type"},
-    { "text": "분류", "align": "center", "value": "product_classification"},
+    { "text": "종류", "align": "center", "value": "type"},
+    { "text": "분류", "align": "center", "value": "classification"},
     { "text": "관리코드", "align": "center", "value": "product_code"},
-    { "text": "제품명", "align": "center", "value": "product_name"},
-    { "text": "모델명", "align": "center", "value": "product_model"},
-    { "text": "사양", "align": "center", "value": "product_spec"},
+    { "text": "제품명", "align": "center", "value": "name"},
+    { "text": "모델명", "align": "center", "value": "model"},
+    { "text": "사양", "align": "center", "value": "spec"},
     { "text": "제조사", "align": "center", "value": "manufacturer"},
     { "text": "위치", "align": "center", "value": "spot"},
     { "text": "재고", "align": "center", "value": "stock_num"},
     { "text": "단가", "align": "center", "value": "unit_price"}
   ],
 
+
+  "ship_confirmation_data":{
+    "code" : "",
+    "ship_date": "",
+    "project_code" : "",
+    "ship_place" : "",
+    "purpose" : "",
+    "approval_phase": "",
+    "checker" : "",
+    "checker_id" : "",
+    "checked_date" : "",
+    "approver" : "",
+    "approver_id" : "",
+    "approved_date" : "",
+    "rejecter" : "",
+    "rejected_date" : "",
+    "reject_reason" : "",
+    "inspection_report" : "",
+    "files" : "",
+    "note" : ""
+  },
+
+  "test_manufacturer_list": ["파이온일렉트릭", "라온코리아", "액트솔루션", "옵토마린", "성민우텍"],
+  "test_classification_list": ["전력변환기", "GFM"],
+
   "test_product_search_data": [
     {
-      "product_info":"공장2F_E-09-01/공장동 1층",
-      "product_type":"원부자재",
-      "product_classification":"일반",
+      "type":"원부자재",
+      "classification":"일반",
       "product_code": "공장2F_E-09-01",
-      "product_name": "IGBT & SMPS",
-      "product_model": "모델1",
-      "product_spec": "사양1",
+      "name": "IGBT & SMPS",
+      "model": "모델1",
+      "spec": "사양1",
       "manufacturer": "파이온일렉트릭",
       "spot": "공장동 1층",
       "stock_num":100,
@@ -67,13 +96,12 @@
       "photo":""
     },
     {
-      "product_info":"공장2F_E-09-01/공장동 2층",
-      "product_type":"원부자재",
-      "product_classification":"일반",
+      "type":"원부자재",
+      "classification":"일반",
       "product_code": "공장2F_E-09-01",
-      "product_name": "IGBT & SMPS",
-      "product_model": "모델1",
-      "product_spec": "사양1",
+      "name": "IGBT & SMPS",
+      "model": "모델1",
+      "spec": "사양1",
       "manufacturer": "파이온일렉트릭",
       "spot": "공장동 2층",
       "stock_num":150,
@@ -81,13 +109,12 @@
       "photo":""
     },
     {
-      "product_info":"공장2F_E-09-01/세종 사무실",
-      "product_type":"원부자재",
-      "product_classification":"일반",
+      "type":"원부자재",
+      "classification":"일반",
       "product_code": "공장2F_E-09-01",
-      "product_name": "IGBT & SMPS",
-      "product_model": "모델1",
-      "product_spec": "사양1",
+      "name": "IGBT & SMPS",
+      "model": "모델1",
+      "spec": "사양1",
       "manufacturer": "파이온일렉트릭",
       "spot": "세종 사무실",
       "stock_num":10,
@@ -95,13 +122,12 @@
       "photo":""
     },
     {
-      "product_info":"PE-반제품-1/공장동 1층",
-      "product_type":"반제품",
-      "product_classification":"일반",
+      "type":"반제품",
+      "classification":"일반",
       "product_code": "PE-반제품-1",
-      "product_name": "PCS Ass`Y",
-      "product_model": "모델2",
-      "product_spec": "사양2",
+      "name": "PCS Ass`Y",
+      "model": "모델2",
+      "spec": "사양2",
       "manufacturer": "파이온일렉트릭",
       "spot": "공장동 1층",
       "stock_num":90,
@@ -110,12 +136,12 @@
     },
     {
       "product_info":"PE-반제품-2/세종 사무실",
-      "product_type":"반제품",
-      "product_classification":"일반",
+      "type":"반제품",
+      "classification":"일반",
       "product_code": "PE-반제품-2",
-      "product_name": "제어기 Ass`Y",
-      "product_model": "모델3",
-      "product_spec": "사양3",
+      "name": "제어기 Ass`Y",
+      "model": "모델3",
+      "spec": "사양3",
       "manufacturer": "파이온일렉트릭",
       "spot": "세종 사무실",
       "stock_num":10,
@@ -124,12 +150,12 @@
     },
     {
       "product_info":"P-ESS-PC-380V500K60H-RT-24-R1/세종 사무실",
-      "product_type":"완제품",
-      "product_classification":"일반",
+      "type":"완제품",
+      "classification":"일반",
       "product_code": "P-ESS-PC-380V500K60H-RT-24-R1",
-      "product_name": "ESS GFM용 PCS",
-      "product_model": "모델4",
-      "product_spec": "380VAC 500kW",
+      "name": "ESS GFM용 PCS",
+      "model": "모델4",
+      "spec": "380VAC 500kW",
       "manufacturer": "파이온일렉트릭",
       "spot": "세종 사무실",
       "stock_num":11,

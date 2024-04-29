@@ -17,7 +17,7 @@
     {"label":"프로젝트 코드", "column_name":"project_code", "col":"12", "sm":"4", "lg":"2", "value": ""},
     {"label":"수입검사서", "column_name":"receiving_inspection", "type":"file", "col":"12", "sm":"4", "lg":"3", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
     {"label":"시험성적서", "column_name":"inspection_report", "type":"file", "col":"12", "sm":"4", "lg":"3", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
-    {"label":"기타", "column_name":"files", "type":"file", "col":"12", "sm":"4", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true},
+    {"label":"기타", "column_name":"files", "type":"file", "col":"12", "sm":"4", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true},
     {"label":"비고", "column_name":"note", "type":"textarea", "col":"12", "sm":"4", "lg":"6", "value": ""}
   ],
 

@@ -62,26 +62,6 @@
                 </v-card-text>
               </v-card>
             </v-col>
-            <!-- <v-col
-              cols="12"
-              sm="6"
-            >
-              <v-card
-              elevation="1"
-              class="mt-5"
-              >
-                <v-card-text class=" pt-3">
-                  <DataTableComponent
-                        :headers="inbound_product_list_headers"
-                        :items="inbound_product_list_data"
-                        :item-key="product_code"
-                        dense
-                        show-photo
-                        show-files
-                  />
-                </v-card-text>
-              </v-card>
-            </v-col> -->
           </v-row>
         </v-col>
       </v-row>

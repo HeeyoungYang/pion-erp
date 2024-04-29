@@ -3,7 +3,6 @@
   <v-container>
     <div style="position:relative">
       <p class="print_doc_title">입고 확인서</p>
-      <!-- <p class="print_doc_title text-center text-h4 font-weight-bold black--text pb-8 mb-8" style="border-bottom:1px solid #ccc">입고 확인서</p> -->
       <v-row style="margin-top:15px">
         <v-col cols="6">
           <v-img
@@ -150,18 +149,5 @@ export default {
 }
 </script>
 <style>
-.approve_list_title{border:1px solid #b7b7b7!important; background-color: #E3F2FD !important; font-size: 13px;}
-.approve_list_title_border{border-left: 0px!important; border-bottom: 0px!important; }
-.approve_list_name{border:1px solid #b7b7b7; border-left: 0px; border-bottom: 0px; font-size: 16px; height:45px; font-weight: bold;}
-.approve_list_date{border:1px solid #b7b7b7; border-left: 0px;font-size: 11px;padding: 3px 0px;}
-.doc_list_title{font-size : 17px; font-weight:bold; margin-bottom:8px}
-.doc_detail_table{border-bottom:1px solid #cccccc; border-right:1px solid #cccccc; border-radius:0px;margin-bottom: 10px; width:100%; border-spacing: 0px;}
-.doc_detail_table tr th,
-.doc_detail_table tr td{border-right:0px; border-bottom:0px; text-align: center; font-size: 12px!important;}
-.doc_table{width: 100%;}
-.doc_table tr td:first-child{width: 150px;}
-.doc_table tr td{ font-size: 12px!important}
-
-.print_doc_title{font-weight: bold;font-size: 25px; text-align: center; padding-bottom: 30px; margin-bottom: 30px!important; color: black;border-bottom:1px solid #ccc};
 
 </style>

@@ -75,32 +75,15 @@
               입고 정보 입력
             </div>
             <div slot="cardText">
-              <!-- <v-row>
-                <v-col cols="12" sm="3">
-                  <v-row>
-                    <v-col>확인</v-col>
-                    <v-col>김OO</v-col>
-                  </v-row>
-                </v-col>
-                <v-col cols="12" sm="3">
-                  승인
-                </v-col>
-                <v-col cols="12" sm="3">
-                  구매담당자
-                </v-col>
-                <v-col cols="12" sm="3">
-                  자재담당자
-                </v-col>
-              </v-row> -->
 
               <MemberSearchDialogComponent
-                  :dialog-value="member_dialog"
-                  :persistent="true"
-                  @close="close"
-                  @setMember = "setMember"
-                  @members = "members"
-                >
-                </MemberSearchDialogComponent>
+                :dialog-value="member_dialog"
+                :persistent="true"
+                @close="close"
+                @setMember = "setMember"
+                @members = "members"
+              >
+              </MemberSearchDialogComponent>
               <v-chip
                 class="mr-2 mb-4"
                 style="cursor:pointer"
@@ -597,6 +580,9 @@ export default {
             for(let d = 0; d < inbound_product_data.length; d++){
               if(inbound_product_data[d].inbound_num == '' || inbound_product_data[d].spec == '' || inbound_product_data[d].spot == ''){
                 alert('입고수량, 입고장소, 규격 필수 입력');
+                return success = false;
+              }else if(inbound_product_data[d].inbound_num == 0){
+                alert('입고수량은 0보다 커야합니다.');
                 return success = false;
               }
             }
