@@ -180,15 +180,18 @@ export default {
   methods:{
     async initialize () {
       this.today = new Date();
+      const prevURL = window.location.href;
       try {
         console.log('사용자 계정 정보 가졍오기');
         let result = await mux.Server.get({
           path: '/api/user/',
         });
+        if (prevURL !== window.location.href) return;
         console.log('result :>> ', result);
         this.login_info.name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.login_info.email = this.$cookies.get(this.$configJson.cookies.email.key);
       } catch (error) {
+        if (prevURL !== window.location.href) return;
         alert(error);
       }
     },
