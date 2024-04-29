@@ -237,6 +237,7 @@ export default {
       // let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
       // let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
 
+      // const prevURL = window.location.href;
       // try {
       //   let result = await mux.Server.post({
       //     path: '/api/sample_rest_api/',
@@ -261,6 +262,7 @@ export default {
       //       ]
       //     }
       //   });
+      //   if (prevURL !== window.location.href) return;
 
       //   if (typeof result === 'string'){
       //     result = JSON.parse(result);
@@ -268,6 +270,7 @@ export default {
       //   this.product_data = result;
 
       // } catch (error) {
+      //   if (prevURL !== window.location.href) return;
       //   alert(error);
       // }
 

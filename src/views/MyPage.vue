@@ -211,11 +211,13 @@ export default {
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     async initialize() {
+      const prevURL = window.location.href;
       try {
         console.log('사용자 계정 정보 가졍오기');
         let result = await mux.Server.get({
           path: '/api/user/',
         });
+        if (prevURL !== window.location.href) return;
         console.log('result :>> ', result);
         this.user_info.phone_number = this.$cookies.get(this.$configJson.cookies.phone_number.key);
         this.user_info.given_name = this.$cookies.get(this.$configJson.cookies.name.key);
@@ -252,6 +254,7 @@ export default {
         ];
         //alert(result.message);
       } catch (error) {
+        if (prevURL !== window.location.href) return;
         alert(error);
       }
     },
@@ -271,6 +274,7 @@ export default {
     async savePrivacyInfoFunc(){
       const validate = this.$refs.myInfoForm.validate();
       if(validate){
+        const prevURL = window.location.href;
         try {
           let result = await mux.Server.put({
             path: '/api/user/',
@@ -284,6 +288,7 @@ export default {
             position: this.user_info.position,
             department: this.user_info.department
           });
+          if (prevURL !== window.location.href) return;
           // alert('저장이 완료되었습니다.')
           alert(result.message);
           // 성공시
@@ -303,6 +308,7 @@ export default {
             this.showSaveButton = false;
           }
         } catch (error) {
+          if (prevURL !== window.location.href) return;
           alert(error);
         }
 
@@ -311,12 +317,14 @@ export default {
     async save(){
       const validate = this.$refs.passwordForm.validate();
       if(validate){
+        const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
             path: '/api/user/change_password/',
             old_password: this.passwords.currentPassword,
             new_password: this.passwords.newPassword
           });
+          if (prevURL !== window.location.href) return;
           // alert('비밀번호 변경이 완료되었습니다.');
           alert(result.message);
           // 성공시 다이얼로그 닫기
@@ -324,6 +332,7 @@ export default {
             this.dialog = false;
           }
         } catch (error) {
+          if (prevURL !== window.location.href) return;
           alert(error);
         }
         this.dialog = false;

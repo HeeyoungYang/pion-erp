@@ -74,6 +74,7 @@ export default {
       const validate = this.$refs.pwForm.validate();
       if(!validate) return;
 
+      const prevURL = window.location.href;
       // 비밀번호 변경 저장
       mux.Server.put({
         path: '/api/user/change_first_password/',
@@ -81,6 +82,7 @@ export default {
         temporary_password: this.$route.query.temporary_password,
         new_password: this.passwords.newPassword,
       }).then((response) => {
+        if (prevURL !== window.location.href) return;
         if (response.code == 0) {
           try {
             mux.Server.logIn(
@@ -97,6 +99,7 @@ export default {
           console.log('비밀번호 변경 실패:', response);
         }
       }).catch((error) => {
+        if (prevURL !== window.location.href) return;
         alert('비밀번호 변경 에러');
         console.log('비밀번호 변경 에러:', error);
       });

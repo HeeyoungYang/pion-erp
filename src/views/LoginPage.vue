@@ -220,9 +220,11 @@ export default {
       const validate = this.$refs.forgotForm.validate();
       if(!validate) return;
       
+      const prevURL = window.location.href;
       mux.Server.post({
         path:'/api/user/forgot_password/', user_name:this.userID
       }).then(result => {
+        if (prevURL !== window.location.href) return;
         if(result.code == 0){
           alert("사용자 메일로 확인코드가 발송되었습니다!");
           this.setPassword = true;
@@ -230,6 +232,7 @@ export default {
           alert("아이디를 확인해주세요.");
         }
       }).catch(err => {
+        if (prevURL !== window.location.href) return;
         console.error('err :>> ', err);
         alert('아이디를 확인해주세요.');
       });
@@ -238,9 +241,11 @@ export default {
       const validate = this.$refs.setPasswordForm.validate();
       if(!validate) return;
 
+      const prevURL = window.location.href;
       mux.Server.post({
         path:'/api/user/change_password_using_confirm_code/', user_name:this.userID, confirm_code:this.verificationCode, new_password:this.setNewPassword
       }).then(result => {
+        if (prevURL !== window.location.href) return;
         if(result.code == 0){
           alert("비밀번호 변경이 완료되었습니다!");
           this.newPasswordDialog = false;
@@ -253,6 +258,7 @@ export default {
           alert("확인코드를 확인해주세요.");
         }
       }).catch(err => {
+        if (prevURL !== window.location.href) return;
         console.error('err :>> ', err);
         alert('확인코드를 확인해주세요.');
       });

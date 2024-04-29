@@ -462,11 +462,13 @@ export default {
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
       mux.Rules.rulesSet(this.inboundCardInfoInputs);
 
+      const prevURL = window.location.href;
       try {
         console.log('사용자 계정 정보 가졍오기');
         let result = await mux.Server.get({
           path: '/api/user/',
         });
+        if (prevURL !== window.location.href) return;
         console.log('result :>> ', result);
         // this.inbound_member_info[0].name = (result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value).trim();
         // this.inbound_member_info[0].email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
@@ -474,6 +476,7 @@ export default {
         this.inbound_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
         // this.inbound_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.user_name.key);
       } catch (error) {
+        if (prevURL !== window.location.href) return;
         alert(error);
       }
 

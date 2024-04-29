@@ -1226,6 +1226,7 @@ export default {
         searchManufacturer = this.productSearchMaterialModuleInputs.find(x=>x.label === '제조사').value;
       }
 
+      const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
           path: '/api/sample_rest_api/',
@@ -1277,6 +1278,7 @@ export default {
                     ]
             }
         });
+        if (prevURL !== window.location.href) return;
 
         if (typeof result === 'string'){
           result = JSON.parse(result);
@@ -1290,6 +1292,7 @@ export default {
         }
 
       } catch (error) {
+        if (prevURL !== window.location.href) return;
         alert(error);
       }
 

@@ -759,8 +759,10 @@ export default {
   methods: {
     async initialize () {
       if (this.showAuthority){
+        const prevURL = window.location.href;
         try {
           let result = await mux.Server.get({path: '/api/admin/groups/'});
+          if (prevURL !== window.location.href) return;
           console.log('result :>> ', result);
           //alert(result.message);
           // 성공시
@@ -769,6 +771,7 @@ export default {
             this.authority_list = result.data.map(x=>x.group_alias);
           }
         } catch (error) {
+          if (prevURL !== window.location.href) return;
           alert(error);
         }
       }

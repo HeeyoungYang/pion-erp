@@ -239,6 +239,7 @@ export default {
       let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
       let searchStockMoreZero = this.stock_more_0 ? 0 : '';
 
+      const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
           path: '/api/sample_rest_api/',
@@ -258,6 +259,7 @@ export default {
           script_file_name: "rooting_원자재_검색_24_04_21_17_46_0JY.json",
           script_file_path: "data_storage_pion\\json_sql\\stock\\materiral\\원자재_검색_24_04_21_17_46_WPA"
         });
+        if (prevURL !== window.location.href) return;
 
         if (typeof result === 'string'){
           result = JSON.parse(result);
@@ -265,6 +267,7 @@ export default {
         this.product_data = result;
 
       } catch (error) {
+        if (prevURL !== window.location.href) return;
         alert(error);
       }
 

@@ -224,8 +224,10 @@ export default {
       this.headers = MemberPageConfig.table_header;
       console.log("MemberPageConfig.table_header=", MemberPageConfig.table_header);
       let memberList = [];
+      const prevURL = window.location.href;
       try {
         const result = await mux.Server.get({path:'/api/admin/users/'});
+        if (prevURL !== window.location.href) return;
         if (result.code == 0){
           memberList = result.data.Users.map(data => {
             let user = {};
@@ -246,6 +248,7 @@ export default {
           return;
         }
       } catch (error) {
+        if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         alert(error);
         return;
@@ -304,6 +307,7 @@ export default {
 
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
           // this.editedItem.creater = 'user_id';
+          const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
               path: '/api/admin/signup/',
@@ -317,6 +321,7 @@ export default {
               position: item.position,
               department: item.department
             });
+            if (prevURL !== window.location.href) return;
             console.log('result :>> ', result);
             alert(result.message);
             // 성공시 다이얼로그 닫기
@@ -324,10 +329,12 @@ export default {
               this.dialog = false;
             }
           } catch (error) {
+            if (prevURL !== window.location.href) return;
             alert(error);
           }
         }else{// 아니라면 수정
           // this.editedItem.modifier = 'user_id';
+          const prevURL = window.location.href;
           try {
             console.log('item :>> ', item);
             let result = await mux.Server.put({
@@ -342,6 +349,7 @@ export default {
               position: item.position,
               department: item.department
             });
+            if (prevURL !== window.location.href) return;
             console.log('result :>> ', result);
             // alert('수정이 완료되었습니다');
             alert(result.message);
@@ -357,6 +365,7 @@ export default {
               this.dialog = false;
             }
           } catch (error) {
+            if (prevURL !== window.location.href) return;
             alert(error);
           }
         }
@@ -376,10 +385,12 @@ export default {
       // console.log('계정 삭제 : ' + JSON.stringify(this.deleteMemeber));
       console.log('this.editedItem.user_id :>> ', this.editedItem.user_id);
       
+      const prevURL = window.location.href;
       try {
         let result = await mux.Server.delete({
           path: `/api/admin/user/?user_name=${this.editedItem.user_id}`
         });
+        if (prevURL !== window.location.href) return;
         console.log('result :>> ', result);
         alert(result.message);
         // 성공시 다이얼로그 닫기
@@ -388,6 +399,7 @@ export default {
           this.closeDelete()
         }
       } catch (error) {
+        if (prevURL !== window.location.href) return;
         alert(error);
         console.log('error :>> ', error);
       }

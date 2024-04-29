@@ -82,8 +82,10 @@ export default {
       console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
 
       let memberList = [];
+      const prevURL = window.location.href;
       try {
         let result = await mux.Server.get({path:'/api/admin/users_authorization/'});
+        if (prevURL !== window.location.href) return;
         if (result.code == 0){
           memberList = result.data.map(data => {
             let user = {};
@@ -100,6 +102,7 @@ export default {
           return;
         }
       } catch (error) {
+        if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         alert(error);
         return;
@@ -114,8 +117,10 @@ export default {
       console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
 
       let memberList = [];
+      const prevURL = window.location.href;
       try {
         let result = await mux.Server.get({path:'/api/admin/groups/'});
+        if (prevURL !== window.location.href) return;
         if (result.code == 0){
           memberList = result.data.forEach(data => {
             this.groups.push({name: data.GroupName, users: []});
@@ -129,6 +134,7 @@ export default {
         for (let i = 0; i < this.groups.length; i++) {
           const group = this.groups[i];
           result = await mux.Server.get({path:`/api/admin/group/users/?group_name=${group.name}`});
+          if (prevURL !== window.location.href) return;
           if (result.code == 0){
             result.data.Users.forEach(data => {
               group.users.push(data.Username);
@@ -141,6 +147,7 @@ export default {
         }
 
         result = await mux.Server.get({path:'/api/admin/users/'});
+        if (prevURL !== window.location.href) return;
         if (result.code == 0){
           memberList = result.data.Users.map(data => {
             let user = {};
@@ -157,6 +164,7 @@ export default {
           return;
         }
       } catch (error) {
+        if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         alert(error);
         return;

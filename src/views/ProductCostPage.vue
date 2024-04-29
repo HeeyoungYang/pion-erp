@@ -1469,31 +1469,38 @@ export default {
     this.username = this.$cookies.get(this.$configJson.cookies.name.key);
     console.log('this.username :>> ', this.username);
     this.todayDate = mux.Date.format(new Date(), 'yyyy-MM-dd');
-    // const current_data = await mux.Server.get({path:'/product-cost/'});
-    // this.new_indirect_labor_ratio = current_data.cost_ratio.find(x=> x.type === '간접 노무비').ratio;
-    // this.new_indirect_labor_formula = current_data.cost_ratio.find(x=> x.type === '간접 노무비').formula;
-    // this.new_employment_insurance_ratio = current_data.cost_ratio.find(x=> x.type === '고용보험료').ratio;
-    // this.new_employment_insurance_formula = current_data.cost_ratio.find(x=> x.type === '고용보험료').formula;
-    // this.new_tool_rent_fee_ratio = current_data.cost_ratio.find(x=> x.type === '공구손료').ratio;
-    // this.new_tool_rent_fee_formula = current_data.cost_ratio.find(x=> x.type === '공구손료').formula;
-    // this.new_transportation_fee_ratio = current_data.cost_ratio.find(x=> x.type === '여비교통 통신비').ratio;
-    // this.new_transportation_fee_formula = current_data.cost_ratio.find(x=> x.type === '여비교통 통신비').formula;
-    // this.new_industrial_accident_ratio = current_data.cost_ratio.find(x=> x.type === '산재보험료').ratio;
-    // this.new_industrial_accident_formula = current_data.cost_ratio.find(x=> x.type === '산재보험료').formula;
-    // this.new_taxes_dues_ratio = current_data.cost_ratio.find(x=> x.type === '세금과공과').ratio;
-    // this.new_taxes_dues_formula = current_data.cost_ratio.find(x=> x.type === '세금과공과').formula;
-    // this.new_welfare_benefits_ratio = current_data.cost_ratio.find(x=> x.type === '복리후생비').ratio;
-    // this.new_welfare_benefits_formula = current_data.cost_ratio.find(x=> x.type === '복리후생비').formula;
-    // this.new_retirement_ratio = current_data.cost_ratio.find(x=> x.type === '퇴직공제 부금비').ratio;
-    // this.new_retirement_formula = current_data.cost_ratio.find(x=> x.type === '퇴직공제 부금비').formula;
-    // this.new_expendables_ratio = current_data.cost_ratio.find(x=> x.type === '소모품비').ratio;
-    // this.new_expendables_formula = current_data.cost_ratio.find(x=> x.type === '소모품비').formula;
-    // this.new_industrial_safety_ratio = current_data.cost_ratio.find(x=> x.type === '산업안전보건관리비').ratio;
-    // this.new_industrial_safety_formula = current_data.cost_ratio.find(x=> x.type === '산업안전보건관리비').formula;
-    // this.new_normal_maintenance_fee_ratio = current_data.cost_ratio.find(x=> x.type === '일반관리비').ratio;
-    // this.new_normal_maintenance_fee_formula = current_data.cost_ratio.find(x=> x.type === '일반관리비').formula;
-    // this.new_profite_ratio = current_data.cost_ratio.find(x=> x.type === '이윤').ratio;
-    // this.new_profite_formula = current_data.cost_ratio.find(x=> x.type === '이윤').formula;
+    // const prevURL = window.location.href;
+    // try {
+    //   const current_data = await mux.Server.get({path:'/product-cost/'});
+    //   if (prevURL !== window.location.href) return;
+    //   this.new_indirect_labor_ratio = current_data.cost_ratio.find(x=> x.type === '간접 노무비').ratio;
+    //   this.new_indirect_labor_formula = current_data.cost_ratio.find(x=> x.type === '간접 노무비').formula;
+    //   this.new_employment_insurance_ratio = current_data.cost_ratio.find(x=> x.type === '고용보험료').ratio;
+    //   this.new_employment_insurance_formula = current_data.cost_ratio.find(x=> x.type === '고용보험료').formula;
+    //   this.new_tool_rent_fee_ratio = current_data.cost_ratio.find(x=> x.type === '공구손료').ratio;
+    //   this.new_tool_rent_fee_formula = current_data.cost_ratio.find(x=> x.type === '공구손료').formula;
+    //   this.new_transportation_fee_ratio = current_data.cost_ratio.find(x=> x.type === '여비교통 통신비').ratio;
+    //   this.new_transportation_fee_formula = current_data.cost_ratio.find(x=> x.type === '여비교통 통신비').formula;
+    //   this.new_industrial_accident_ratio = current_data.cost_ratio.find(x=> x.type === '산재보험료').ratio;
+    //   this.new_industrial_accident_formula = current_data.cost_ratio.find(x=> x.type === '산재보험료').formula;
+    //   this.new_taxes_dues_ratio = current_data.cost_ratio.find(x=> x.type === '세금과공과').ratio;
+    //   this.new_taxes_dues_formula = current_data.cost_ratio.find(x=> x.type === '세금과공과').formula;
+    //   this.new_welfare_benefits_ratio = current_data.cost_ratio.find(x=> x.type === '복리후생비').ratio;
+    //   this.new_welfare_benefits_formula = current_data.cost_ratio.find(x=> x.type === '복리후생비').formula;
+    //   this.new_retirement_ratio = current_data.cost_ratio.find(x=> x.type === '퇴직공제 부금비').ratio;
+    //   this.new_retirement_formula = current_data.cost_ratio.find(x=> x.type === '퇴직공제 부금비').formula;
+    //   this.new_expendables_ratio = current_data.cost_ratio.find(x=> x.type === '소모품비').ratio;
+    //   this.new_expendables_formula = current_data.cost_ratio.find(x=> x.type === '소모품비').formula;
+    //   this.new_industrial_safety_ratio = current_data.cost_ratio.find(x=> x.type === '산업안전보건관리비').ratio;
+    //   this.new_industrial_safety_formula = current_data.cost_ratio.find(x=> x.type === '산업안전보건관리비').formula;
+    //   this.new_normal_maintenance_fee_ratio = current_data.cost_ratio.find(x=> x.type === '일반관리비').ratio;
+    //   this.new_normal_maintenance_fee_formula = current_data.cost_ratio.find(x=> x.type === '일반관리비').formula;
+    //   this.new_profite_ratio = current_data.cost_ratio.find(x=> x.type === '이윤').ratio;
+    //   this.new_profite_formula = current_data.cost_ratio.find(x=> x.type === '이윤').formula;
+    // } catch (error) {
+    //   if (prevURL !== window.location.href) return;
+    //   alert(error);
+    // }
 
     this.labor_list = ProductCostPageConfig.labor_list;
     this.labor_occupation_list = ProductCostPageConfig.labor_occupation_list;
@@ -1926,8 +1933,10 @@ export default {
         // 품번 기준 정렬
         this.labor_cost_data.sort((a,b) => a.no.localeCompare(b.no));
         
+        // const prevURL = window.location.href;
         // try {
         //   const result = await mux.Server.put({path:'/api/product-cost/labor', data: this.labor_cost_data});
+        //   if (prevURL !== window.location.href) return;
         //   if (result.code === 0){
             this.origin_labor_cost_data = this.labor_cost_data;
             this.searched_datas.labor_cost_calc_detail = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
@@ -1940,6 +1949,7 @@ export default {
         //     return;
         //   }
         // } catch (error) {
+        //   if (prevURL !== window.location.href) return;
         //   alert(error);
         //   return;
         // }
@@ -2022,8 +2032,10 @@ export default {
       const validate = this.$refs.surveyCostForm.validate();
       if(validate) {
         
+        // const prevURL = window.location.href;
         // try {
         //   const result = await mux.Server.put({path:'/api/product-cost/survey-cost-num', data: this.calc_cost_detail_data});
+        //   if (prevURL !== window.location.href) return;
         //   if (result.code === 0){
             this.origin_calc_cost_detail_data = this.calc_cost_detail_data;
             this.clickedProductCost.employment_insurance_num = this.calc_cost_detail_data_employment_insurance.cost_num;
@@ -2053,6 +2065,7 @@ export default {
         //     return;
         //   }
         // } catch (error) {
+        //   if (prevURL !== window.location.href) return;
         //   alert(error);
         //   return;
         // }
@@ -2071,8 +2084,10 @@ export default {
       }
       const validate = this.$refs.surveyCostForm2.validate();
       if(validate){
+        // const prevURL = window.location.href;
         // try {
         //   const result = await mux.Server.post({path:'/api/product-cost/', data: this.calc_cost_detail_data2});
+        //   if (prevURL !== window.location.href) return;
         //   if (result.code === 0){
             alert('저장되었습니다.');
         //   }else {
@@ -2080,6 +2095,7 @@ export default {
         //     return;
         //   }
         // }catch (error) {
+        //   if (prevURL !== window.location.href) return;
         //   alert(error);
         //   return;
         // }
