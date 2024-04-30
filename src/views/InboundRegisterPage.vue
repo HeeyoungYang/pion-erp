@@ -411,6 +411,7 @@ export default {
       members_list:[],
       manufacturer_list:[],
       classification_list:[],
+      spot_list: [],
       menu: false,
       something_wrong:false,
       something_wrong_reason:'',
@@ -422,7 +423,6 @@ export default {
       type_list:InboundRegisterPageConfig.type_list,
       inbound_member_info:InboundRegisterPageConfig.inbound_member_info,
       inbound_confirmation_data: InboundRegisterPageConfig.inbound_confirmation_data,
-      spot_list: InboundRegisterPageConfig.spot_list,
       searchCardInputs:InboundRegisterPageConfig.searchCardInputs,
       inboundCardInfoInputs:InboundRegisterPageConfig.inboundCardInfoInputs,
       product_inbound_headers:InboundRegisterPageConfig.product_inbound_headers,
@@ -442,6 +442,8 @@ export default {
 
       this.manufacturer_list = InboundRegisterPageConfig.test_manufacturer_list;
       this.classification_list = InboundRegisterPageConfig.test_classification_list;
+      this.spot_list = InboundRegisterPageConfig.test_spot_list;
+
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
       mux.Rules.rulesSet(this.inboundCardInfoInputs);
 
@@ -525,8 +527,12 @@ export default {
         inbound_input.forEach(data => {
           for(let i=0; i<Object.keys(item).length; i++){
             if(data.column_name == Object.keys(item)[i]){
-              if(data.type == 'file' && data.value){
-                item[Object.keys(item)[i]] = data.value.name;
+              if(data.type == 'file'){
+                if(data.value){
+                  item[Object.keys(item)[i]] = data.value.name;
+                }else{
+                  item[Object.keys(item)[i]] = '';
+                }
               }else{
                 item[Object.keys(item)[i]] = data.value;
               }

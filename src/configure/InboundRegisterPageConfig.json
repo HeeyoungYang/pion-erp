@@ -1,10 +1,8 @@
 { 
-  "spot_list": ["공장동 1층", "공장동 2층", "세종 사무실"],
 
   "searchCardInputs":[
-    {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "원부자재", "반제품", "완제품"]},
-    {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"2"},
-    {"label":"상태", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "G", "B"]},
+    {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All", "원부자재", "반제품", "완제품"]},
+    {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"3"},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
@@ -82,6 +80,7 @@
 
   "test_manufacturer_list": ["파이온일렉트릭", "라온코리아", "액트솔루션", "옵토마린", "성민우텍"],
   "test_classification_list": ["전력변환기", "GFM"],
+  "test_spot_list": ["공장동 1층", "공장동 2층", "세종 사무실"],
 
   "test_product_search_data": [
     {
