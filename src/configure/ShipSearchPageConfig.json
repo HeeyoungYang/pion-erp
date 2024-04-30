@@ -30,6 +30,23 @@
     { "text": "단가", "align": "center", "value": "unit_price"},
     { "text": "출고금액", "align": "center", "value": "ship_price"}
   ],
+  
+  "login_info": {
+    "user_id" : "",
+    "name": "",
+    "email": ""
+  },
+  "change_approve":{
+    "code":"",
+    "approval_phase":"",
+    "checked_date":"",
+    "rejecter": "",
+    "rejected_date": "",
+    "reject_reason": "",
+    "approved_date":"",
+    "belong_data":[]
+  },
+
   "test_ship_approve_data":[
     {
       "creater": "윤준수",

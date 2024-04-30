@@ -99,10 +99,11 @@
                 </InputsFormComponent>
               </v-form>
               <v-row>
-                  <v-col cols="12" sm="4" lg="4" align-self="center">
+                  <v-col cols="12" sm="12" lg="12" align-self="center">
                     <v-btn
                       small
                       color="success"
+                    class=" float-right"
                       @click="shipApprovalRequest"
                     >
                       출고 승인 요청
@@ -289,8 +290,12 @@ export default {
         ship_input.forEach(data => {
           for(let i=0; i<Object.keys(item).length; i++){
             if(data.column_name == Object.keys(item)[i]){
-              if(data.type == 'file' && data.value){
-                item[Object.keys(item)[i]] = data.value.name;
+              if(data.type == 'file'){
+                if(data.value){
+                  item[Object.keys(item)[i]] = data.value.name;
+                }else{
+                  item[Object.keys(item)[i]] = '';
+                }
               }else{
                 item[Object.keys(item)[i]] = data.value;
               }
@@ -298,7 +303,7 @@ export default {
           }
         })
         item.ship_date = (this.ship_date_set === "" ? mux.Date.format(this.today, 'yyyy-MM-dd') : this.ship_date_set);
-
+        item.creater = this.login_id;
         let empty_member = [];
         member_input.forEach(mem => {
           if(!mem.user_id){

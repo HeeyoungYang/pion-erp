@@ -455,11 +455,8 @@ export default {
         });
         if (prevURL !== window.location.href) return;
         console.log('result :>> ', result);
-        // this.inbound_member_info[0].name = (result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value).trim();
-        // this.inbound_member_info[0].email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
         this.inbound_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.inbound_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
-        // this.inbound_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.user_name.key);
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
@@ -540,6 +537,7 @@ export default {
           }
         })
         item.inbound_date = (this.inbound_date_set === "" ? mux.Date.format(this.today, 'yyyy-MM-dd') : this.inbound_date_set);
+        item.creater = this.login_id;
         if(this.add_self){
           item.add_data = "직접기입형"
         }else{

@@ -151,12 +151,13 @@ export default {
       menu: false,
       dates: [],
       ship_product_list_dialog: false,
-      
+
       ship_info_data:{},
       ship_product_list_data:[],
 
       change_approve:{},
 
+      login_info: ShipSearchPageConfig.login_info,
       searchCardInputs:ShipSearchPageConfig.searchCardInputs,
       ship_approve_headers:ShipSearchPageConfig.ship_approve_headers,
       ship_product_list_headers:ShipSearchPageConfig.ship_product_list_headers,
@@ -227,7 +228,7 @@ export default {
       this.ship_product_list_dialog = true;
     },
     setApprovalPhase(item, change, reason){
-      this.change_approve={};
+      this.change_approve=ShipSearchPageConfig.change_approve;
       if(item.approval_phase === '미확인'){
         if(change === true){
           this.change_approve.code = item.code;
@@ -241,7 +242,7 @@ export default {
             this.change_approve.reject_reason = reason;
             this.change_approve.rejecter = this.login_info.name;
             this.change_approve.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd');
-          this.change_approve.approval_phase = '반려';
+            this.change_approve.approval_phase = '반려';
           }
         }
       }else if(item.approval_phase === '미승인'){
@@ -249,6 +250,7 @@ export default {
           this.change_approve.code = item.code;
           this.change_approve.approved_date = mux.Date.format(this.today, 'yyyy-MM-dd');
           this.change_approve.approval_phase = '승인';
+          this.change_approve.belong_data = item.belong_data;
         }else{
           if(reason === ''){
             alert('반려 사유 필수 기입');
@@ -261,6 +263,7 @@ export default {
           }
         }
       }
+      console.log(JSON.stringify(this.change_approve));
     }
   },
 }
