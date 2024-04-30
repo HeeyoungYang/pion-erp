@@ -229,9 +229,9 @@ export default {
       let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
       if (searchClassification === 'All')
       searchClassification = '';
-      let searchCondition = this.searchCardInputs.find(x=>x.label === '상태').value;
-      if (searchCondition === 'All')
-        searchCondition = '';
+      let searchConditions = this.searchCardInputs.find(x=>x.label === '상태').value;
+      if (searchConditions === 'All')
+        searchConditions = '';
       let searchMaterialCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
       let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
       let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
@@ -252,7 +252,7 @@ export default {
               "name": searchName,
               "spec": searchSpec,
               "type": '원부자재',
-              "condition": searchCondition,
+              "conditions": searchConditions,
               "stock_num": searchStockMoreZero
             }
           ],

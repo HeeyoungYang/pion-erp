@@ -1353,7 +1353,7 @@ export default {
       for(let i=0; i<stock_spot_arr.length; i++){
         spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
         spot_input.push( {label:'재고수량'+[i+1], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].stock_num},)
-        spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'condition', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].condition},)
+        spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].conditions},)
       }
 
       material_input.forEach(data =>{
@@ -1380,22 +1380,22 @@ export default {
       if(validate){
         let stock_spot_arr=[];
         let stock_num_arr=[];
-        let stock_condition_arr=[];
+        let stock_conditions_arr=[];
         for(let i = 0; i < stock_input.length; i++){
           if(stock_input[i].column_name == 'spot'){
             stock_spot_arr.push(stock_input[i].value ? stock_input[i].value : '');
           }else if(stock_input[i].column_name == 'stock_num'){
             stock_num_arr.push(stock_input[i].value ? stock_input[i].value : 0);
-          }else if(stock_input[i].column_name == 'condition'){
-            stock_condition_arr.push(stock_input[i].value ? stock_input[i].value : '');
+          }else if(stock_input[i].column_name == 'conditions'){
+            stock_conditions_arr.push(stock_input[i].value ? stock_input[i].value : '');
           }
         }
 
         for(let x=0; x<stock_spot_arr.length; x++){
-          if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_condition_arr[x] === ''){
+          if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
             continue
           }else{
-            stock_item.push({spot:stock_spot_arr[x], stock_num:stock_num_arr[x], condition:stock_condition_arr[x]});
+            stock_item.push({spot:stock_spot_arr[x], stock_num:stock_num_arr[x], conditions:stock_conditions_arr[x]});
           }
         }
         material_input.forEach(data =>{
@@ -1478,7 +1478,7 @@ export default {
       for(let i=0; i<stock_spot_arr.length; i++){
         spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
         spot_input.push( {label:'재고수량'+[i+1], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].stock_num},)
-        spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'condition', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].condition},)
+        spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].conditions},)
       }
 
       module_input.forEach(data =>{
@@ -1510,22 +1510,22 @@ export default {
       if(validate){
         let stock_spot_arr=[];
         let stock_num_arr=[];
-        let stock_condition_arr=[];
+        let stock_conditions_arr=[];
         for(let i = 0; i < stock_input.length; i++){
           if(stock_input[i].column_name == 'spot'){
             stock_spot_arr.push(stock_input[i].value ? stock_input[i].value : '');
           }else if(stock_input[i].column_name == 'stock_num'){
             stock_num_arr.push(stock_input[i].value ? stock_input[i].value : 0);
-          }else if(stock_input[i].column_name == 'condition'){
-            stock_condition_arr.push(stock_input[i].value ? stock_input[i].value : '');
+          }else if(stock_input[i].column_name == 'conditions'){
+            stock_conditions_arr.push(stock_input[i].value ? stock_input[i].value : '');
           }
         }
 
         for(let x=0; x<stock_spot_arr.length; x++){
-          if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_condition_arr[x] === ''){
+          if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
             continue
           }else{
-            stock_item.push({spot:stock_spot_arr[x], stock_num:stock_num_arr[x], condition:stock_condition_arr[x]});
+            stock_item.push({spot:stock_spot_arr[x], stock_num:stock_num_arr[x], conditions:stock_conditions_arr[x]});
           }
         }
 
@@ -1590,7 +1590,7 @@ export default {
       for(let i=0; i<spot.length; i++){
         spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: spot[i].spot},)
         spot_input.push( {label:'재고수량'+[i+1], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: spot[i].stock_num},)
-        spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'condition', col:'12', sm:'4', lg:'4', value: spot[i].condition},)
+        spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: spot[i].conditions},)
       }
       for(let d=0; d<item.belong_data.length; d++){
         this.product_set_items_data.push(item.belong_data[d])
@@ -1610,22 +1610,22 @@ export default {
       if(validate){
         let stock_spot_arr=[];
         let stock_num_arr=[];
-        let stock_condition_arr=[];
+        let stock_conditions_arr=[];
         for(let i = 0; i < stock_input.length; i++){
           if(stock_input[i].column_name == 'spot'){
             stock_spot_arr.push(stock_input[i].value ? stock_input[i].value : '');
           }else if(stock_input[i].column_name == 'stock_num'){
             stock_num_arr.push(stock_input[i].value ? stock_input[i].value : 0);
-          }else if(stock_input[i].column_name == 'condition'){
-            stock_condition_arr.push(stock_input[i].value ? stock_input[i].value : '');
+          }else if(stock_input[i].column_name == 'conditions'){
+            stock_conditions_arr.push(stock_input[i].value ? stock_input[i].value : '');
           }
         }
 
         for(let x=0; x<stock_spot_arr.length; x++){
-          if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_condition_arr[x] === ''){
+          if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
             continue
           }else{
-            stock_item.push({spot:stock_spot_arr[x], stock_num:stock_num_arr[x], condition:stock_condition_arr[x]});
+            stock_item.push({spot:stock_spot_arr[x], stock_num:stock_num_arr[x], conditions:stock_conditions_arr[x]});
           }
         }
 
@@ -1711,7 +1711,7 @@ export default {
       }
       spot_input.push({label:'위치'+[length], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value:''},)
       spot_input.push( {label:'재고수량'+[length], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value:''},)
-      spot_input.push( {label:'재고상태'+[length], list:['G', 'B'], type:'auto', column_name:'condition', col:'12', sm:'4', lg:'4', value:''},)
+      spot_input.push( {label:'재고상태'+[length], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value:''},)
 
     },
 

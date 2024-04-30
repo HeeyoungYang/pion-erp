@@ -3,7 +3,7 @@
   "stock_detail_header":[
     { "text": "위치", "align": "center", "value": "spot"},
     { "text": "수량", "align": "center", "value": "stock_num"},
-    { "text": "상태", "align": "center", "value": "condition"}
+    { "text": "상태", "align": "center", "value": "conditions"}
   ],
   "inbound_detail_header":[
     { "text": "위치", "align": "center", "value": "spot"},
@@ -45,8 +45,8 @@
       "manufacturer": "파이온일렉트릭",
       "unit_price": 1,
       "spot_stock":[
-        {"spot": "공장동 1층", "stock_num": 40, "condition": "G"},
-        {"spot": "공장동 2층", "stock_num": 60, "condition": "G"}
+        {"spot": "공장동 1층", "stock_num": 40, "conditions": "G"},
+        {"spot": "공장동 2층", "stock_num": 60, "conditions": "G"}
       ],
       "thumbnail": ""
     },
@@ -59,8 +59,8 @@
       "manufacturer": "파이온일렉트릭",
       "unit_price": 1,
       "spot_stock":[
-        {"spot": "공장동 1층", "stock_num": 30, "condition": "G"},
-        {"spot": "공장동 2층", "stock_num": 10, "condition": "G"}
+        {"spot": "공장동 1층", "stock_num": 30, "conditions": "G"},
+        {"spot": "공장동 2층", "stock_num": 10, "conditions": "G"}
       ],
       "thumbnail": ""
     },
@@ -73,9 +73,9 @@
       "manufacturer": "파이온일렉트릭",
       "unit_price": 2,
       "spot_stock":[
-        {"spot": "공장동 1층", "stock_num": 600, "condition": "G"},
-        {"spot": "공장동 2층", "stock_num": 100, "condition": "G"},
-        {"spot": "세종사무실", "stock_num": 500, "condition": "G"}
+        {"spot": "공장동 1층", "stock_num": 600, "conditions": "G"},
+        {"spot": "공장동 2층", "stock_num": 100, "conditions": "G"},
+        {"spot": "세종사무실", "stock_num": 500, "conditions": "G"}
       ],
       "thumbnail": ""
     }
