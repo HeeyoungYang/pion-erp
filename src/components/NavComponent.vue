@@ -337,6 +337,7 @@ import mux from '@/mux';
       adminPages: [
         ['계정 목록', '', '/member-list'],
         ['권한 설정', '', '/member-authorization'],
+        ['페이지 설정', '', '/page-setting'],
       ],
     }),
     methods: {

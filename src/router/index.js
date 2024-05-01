@@ -4,6 +4,7 @@ import LoginPage from '@/views/LoginPage'
 import MainPage from '@/views/MainPage'
 import MembersPage from '@/views/MembersPage'
 import AuthorizationPage from '@/views/AuthorizationPage'
+import PageSettingPage from '@/views/PageSettingPage'
 import StockSearchPage from '@/views/StockSearchPage'
 import MaterialSearchPage from '@/views/MaterialSearchPage'
 import ModuleSearchPage from '@/views/ModuleSearchPage'
@@ -157,6 +158,14 @@ const routes = [
     path: '/member-authorization',
     name: 'AuthorizationPage',
     component: AuthorizationPage,
+    meta: {
+      permission: ['admin', 'master']
+    }
+  },
+  {
+    path: '/page-setting',
+    name: 'PageSettingPage',
+    component: PageSettingPage,
     meta: {
       permission: ['admin', 'master']
     }

@@ -1,0 +1,7 @@
+{  
+  "table_header": [
+    {"text": "ID", "align": "center", "value": "page_name"},
+    {"text": "페이지 명", "align": "center", "value": "page_alias"},
+    {"text": "리소스", "align": "center", "value": "page_url"}
+  ]
+}
