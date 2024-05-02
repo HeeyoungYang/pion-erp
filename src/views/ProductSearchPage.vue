@@ -234,7 +234,7 @@ export default {
     async searchButton() {
 
       let searchProductCode = this.searchCardInputs.find(x=>x.label === '제품코드').value;
-      if (searchProductCode === '')
+      if (!searchProductCode)
         searchProductCode = '%';
       let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
 
