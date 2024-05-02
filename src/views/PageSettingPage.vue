@@ -109,7 +109,7 @@ export default {
   },
   computed: {
     formTitle () {
-      return this.editedIndex === -1 ? '계정 등록' : '계정 수정'
+      return this.editedIndex === -1 ? '페이지 등록' : '페이지 수정'
     },
     formDisabled () {
       return this.editedIndex === -1 ? false : true
