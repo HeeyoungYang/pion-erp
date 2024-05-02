@@ -3,5 +3,25 @@
     {"text": "ID", "align": "center", "value": "page_name"},
     {"text": "페이지 명", "align": "center", "value": "page_alias"},
     {"text": "리소스", "align": "center", "value": "page_url"}
+  ],
+  
+  "editedItem": {
+    "page_name":"",
+    "page_alias": "",
+    "page_url": ""
+  },
+  "defaultItem": {
+    "page_name":"",
+    "page_alias": "",
+    "page_url": ""
+  },
+  "registPageSettingInputs":[
+    {"label":"ID", "column_name":"page_name",  "col":"12", "sm":"12", "lg":"12", "value": ""},
+    {"label":"페이지 명", "column_name":"page_alias",  "col":"12", "sm":"12", "lg":"12", "value": ""},
+    {"label":"리소스", "column_name":"page_url",  "col":"12", "sm":"12", "lg":"12", "value": ""}
+  ],
+  
+  "test_data":[
+    {"page_name": "stock", "page_alias": "관리", "page_url": "/stockMgmt"}
   ]
 }

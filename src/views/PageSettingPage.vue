@@ -21,31 +21,31 @@
                       single-line
                       hide-details
                     >
-                  </v-text-field>
+                    </v-text-field>
                   </p>
                   <ModalDialogComponent
-                        :dialog-value="laborDialog"
-                        max-width="500px"
-                        :title="formLaborTitle"
-                        closeText="취소"
-                        saveText="저장"
-                        :persistent="true"
-                        @close="close"
-                        @save="uploadLaborItem"
-                      >
-                        <template v-slot:activator>
-                          <v-btn color="primary" outlined class="mb-2 float-right" @click="addPageResource">추가</v-btn>
-                        </template>
-                        <v-container>
-                            <!-- slot="cardText" -->
-                          <v-form ref="laborForm">
-                            <InputsFormComponent
-                              clearable
-                              :inputs="registLaborInputs"
-                            ></InputsFormComponent>
-                          </v-form>
-                        </v-container>
-                      </ModalDialogComponent>
+                      :dialog-value="dialog"
+                      max-width="400px"
+                      :title="formTitle"
+                      closeText="취소"
+                      saveText="저장"
+                      :persistent="true"
+                      @close="close"
+                      @save="uploadPageResource"
+                    >
+                      <template v-slot:activator>
+                        <v-btn color="primary" outlined class="mb-2 float-right" @click="addPageResource">추가</v-btn>
+                      </template>
+                      <v-container>
+                          <!-- slot="cardText" -->
+                        <v-form ref="resourceForm">
+                          <InputsFormComponent
+                            clearable
+                            :inputs="registPageSettingInputs"
+                          ></InputsFormComponent>
+                        </v-form>
+                      </v-container>
+                    </ModalDialogComponent>
                 </v-col>
               </v-row>
             </v-card-title>
@@ -59,8 +59,28 @@
               :headers="headers"
               :items="page_resources"
               :search="search"
+              editable
+              deletable
+              @edit="editPageResource"
+              @delete="deletePageResource"
             >
             </DataTableComponent>
+            <ModalDialogComponent
+              :dialog-value="dialogDelete"
+              max-width="300px"
+              title-class="text-body-1 font-weight-black"
+              text-class="text-body-2"
+              save-text="삭제"
+              close-text="취소"
+              @save="deletePageResourceConfirm"
+              @close="closeDelete"
+            >
+              <template v-slot:titleHTML>
+                <p class="mb-0">{{ editedItem.page_alias }} 페이지를</p>
+                <p class="red--text">삭제하시겠습니까?</p>
+              </template>
+              삭제 시 복구가 불가능합니다.
+            </ModalDialogComponent>
 
           </v-card>
         </v-col>
@@ -77,6 +97,7 @@ import PageSettingPageConfig from "@/configure/PageSettingPageConfig.json";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
+import InputsFormComponent from "@/components/InputsFormComponent.vue";
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=PageSettingPageConfig')],
@@ -85,6 +106,23 @@ export default {
   },
   created () {
     this.initialize()
+  },
+  computed: {
+    formTitle () {
+      return this.editedIndex === -1 ? '계정 등록' : '계정 수정'
+    },
+    formDisabled () {
+      return this.editedIndex === -1 ? false : true
+    },
+  },
+
+  watch: {
+    dialog (val) {
+      val || this.close()
+    },
+    dialogDelete (val) {
+      val || this.closeDelete()
+    },
   },
   methods: {
     handleResultCheckPagePermission(result) {
@@ -96,6 +134,8 @@ export default {
     async initialize () {
       this.loading_dialog = true;
       this.headers = PageSettingPageConfig.table_header;
+      this.page_resources = PageSettingPageConfig.test_data;
+
       console.log("PageSettingPageConfig.table_header=", PageSettingPageConfig.table_header);
 
       let page_resourceList = [];
@@ -125,19 +165,107 @@ export default {
       this.page_resources = page_resourceList.sort((a, b) => b.name.localeCompare(a.name));
       this.loading_dialog = false;
     },
-    async addPageResource() {
-      // ModalDialogComponent 컴포넌트에, page_name, page_alias, page_url 정보를 추가할 수 있는 다이얼로그 박스 구성 필요
+    addPageResource(item){
+      this.editedLaborIndex = this.page_resources.indexOf(item)
+      let resource_input = this.registPageSettingInputs;
+      mux.Rules.rulesSet(resource_input);
+      resource_input.forEach(data =>{
+        if(data.column_name == 'page_name'){
+          data.disabled = false
+        }
+        data.value = '';
+      })
+      this.dialog = true;
+    },
+    editPageResource(item){
+      this.editedIndex = this.page_resources.indexOf(item)
+      let resource_input = this.registPageSettingInputs;
+      mux.Rules.rulesSet(resource_input);
+      resource_input.forEach(data =>{
+        for(let i=0; i<Object.keys(item).length; i++){
+          if(data.column_name == Object.keys(item)[i]){
+            data.value = Object.values(item)[i];
+          }
+        }
+        if(data.column_name == 'page_name'){
+          data.disabled = true
+        }
+      })
+      this.dialog = true
+    },
+    async uploadPageResource() {
+      let resource_input = this.registPageSettingInputs;
+      let item = this.editedItem;
+
+      const validate = this.$refs.resourceForm.validate();
+      if(validate){
+        resource_input.forEach(data =>{
+          for(let i=0; i<Object.keys(item).length; i++){
+            if(data.column_name == Object.keys(item)[i]){
+              item[Object.keys(item)[i]] = data.value;
+            }
+          }
+        })
+          const prevURL = window.location.href;
+          try {
+
+            let page_name = item.page_name;
+            let page_alias = item.page_alias;
+            let page_url = item.page_url;
+            console.log("page_name : "+page_name + ", page_alias : " +page_alias+ ", page_url : " +page_url)
+
+
+            let result;
+            if(this.editedIndex === -1){ // Page Resource 추가
+              result = await mux.Server.post({
+                path:'/api/admin/page_resource/',
+                page_name:page_name,
+                page_alias:page_alias,
+                page_url:page_url
+              });
+            }else{ // Page Resource 수정
+              result = await mux.Server.put({
+                path:'/api/admin/page_resource/',
+                page_name:page_name,
+                page_alias:page_alias,
+                page_url:page_url
+              });
+            }
+            if (prevURL !== window.location.href) return;
+            if (result.code == 0) {
+              this.initialize ();
+            }else {
+              this.loading_dialog = false;
+              alert(result.message);
+              return;
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            this.loading_dialog = false;
+            alert(error);
+            return;
+          }
+      }
+    },
+    deletePageResource(item){
+      this.editedIndex = this.page_resources.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialogDelete = true
+    },
+    async deletePageResourceConfirm(){
+      console.log('페이지 삭제 : ' + JSON.stringify(this.editedItem.page_name));
+      this.page_resources.splice(this.editedIndex, 1)
+
       const prevURL = window.location.href;
       try {
 
-        let page_name = "";
-        let page_alias = "";
-        let page_url = "";
-        let result = await mux.Server.post({
+        let page_name = this.editedItem.page_name;
+        console.log("page_name : "+page_name)
+
+
+        let result = await mux.Server.delete({
           path:'/api/admin/page_resource/',
-          page_name:page_name,
-          page_alias:page_alias,
-          page_url:page_url
+          page_name:page_name
         });
         if (prevURL !== window.location.href) return;
         if (result.code == 0) {
@@ -153,6 +281,23 @@ export default {
         alert(error);
         return;
       }
+
+      this.closeDelete()
+    },
+    close () {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+
+    closeDelete () {
+      this.dialogDelete = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
     },
   },
 
@@ -161,14 +306,24 @@ export default {
     DataTableComponent,
     LoadingModalComponent,
     ModalDialogComponent,
+    InputsFormComponent,
   },
+
+
   data() {
     return {
       loading_dialog: false,
+      dialog: false,
+      dialogDelete: false,
       search: '',
       headers: PageSettingPageConfig.headers,
+      registPageSettingInputs: PageSettingPageConfig.registPageSettingInputs,
       page_resources: [],//PageSettingPageConfig.test_members
       groups: [], // 사용하지 않음
+
+      editedIndex: -1,
+      editedItem: PageSettingPageConfig.editedItem,
+      defaultItem: PageSettingPageConfig.defaultItem,
     }
   },
 }

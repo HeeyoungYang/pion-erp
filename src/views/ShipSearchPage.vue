@@ -259,7 +259,7 @@ export default {
             this.change_approve.reject_reason = reason;
             this.change_approve.rejecter = this.login_info.name;
             this.change_approve.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd');
-          this.change_approve.approval_phase = '반려';
+            this.change_approve.approval_phase = '반려';
           }
         }
       }
