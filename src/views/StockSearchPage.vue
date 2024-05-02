@@ -230,13 +230,13 @@ export default {
 
       let searchType = this.searchCardInputs.find(x=>x.label === '종류').value;
       if (searchType === 'All')
-        searchType = '';
+        searchType = '%';
       let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
       if (searchClassification === 'All')
-      searchClassification = '';
+      searchClassification = '%';
       let searchConditions = this.searchCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
-      searchConditions = '';
+      searchConditions = '%';
       let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
       let searchProductName = this.searchCardInputs.find(x=>x.label === '제품명').value;
       let searchModelName = this.searchCardInputs.find(x=>x.label === '모델명').value;
@@ -250,19 +250,36 @@ export default {
           path: '/api/sample_rest_api/',
           params: [
             {
-              "classification": searchClassification,
-              "manufacturer": searchManufacturer,
-              "model": searchModelName,
-              "name": searchProductName,
-              "_code": searchProductCode,
-              "spec": searchProductSpec,
-              "type": searchType,
+              "product_table.classification": searchClassification,
+              "product_table.manufacturer": searchManufacturer,
+              "product_table.model": searchModelName,
+              "product_table.name": searchProductName,
+              "product_table.product_code": searchProductCode,
+              "product_table.spec": searchProductSpec,
+              "product_table.type": searchType,
+
+              "module_table.classification": searchClassification,
+              "module_table.manufacturer": searchManufacturer,
+              "module_table.model": searchModelName,
+              "module_table.name": searchProductName,
+              "module_table.module_code": searchProductCode,
+              "module_table.spec": searchProductSpec,
+              "module_table.type": searchType,
+
+              "material_table.classification": searchClassification,
+              "material_table.manufacturer": searchManufacturer,
+              "material_table.model": searchModelName,
+              "material_table.name": searchProductName,
+              "material_table.material_code": searchProductCode,
+              "material_table.spec": searchProductSpec,
+              "material_table.type": searchType,
+
               "conditions": searchConditions,
               "stock_num": searchStockMoreZero
             }
           ],
-          script_file_name: "rooting_재고_검색_24_04_27_16_56_L08.json",
-          script_file_path: "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_04_27_16_56_LKK"
+          "script_file_name": "rooting_재고_검색_24_05_01_11_35_BHW.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_01_11_35_HPY"
         });
         if (prevURL !== window.location.href) return;
 
@@ -273,7 +290,22 @@ export default {
           a.stock_price = Math.round(a.unit_price * a.stock_num)
           return a;
         });
-        this.product_data = result;
+        let product_data_arr = [];
+        result.forEach(data => {
+          let isExist = false;
+          for (let i = 0; i < product_data_arr.length; i++) {
+            if (product_data_arr[i]._code === data._code) {
+              product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
+              isExist = true;
+              break;
+            }
+          }
+          if (!isExist) {
+            data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
+            product_data_arr.push(data);
+          }
+        });
+        this.product_data = product_data_arr;
         // this.product_data = StockSearchPageConfig.test_product_data;
 
       } catch (error) {
