@@ -261,7 +261,7 @@
                                               alt="Pionelectric Logo"
                                               class="shrink mr-2"
                                               contain
-                                              :src="testImg"
+                                              :src="materialImg"
                                               transition="scale-transition"
                                               width="150"
                                             />
@@ -500,7 +500,7 @@
                                               alt="Pionelectric Logo"
                                               class="shrink mr-2"
                                               contain
-                                              :src="testImg"
+                                              :src="moduleImg"
                                               transition="scale-transition"
                                               width="150"
                                             />
@@ -730,7 +730,7 @@
                                         alt="Pionelectric Logo"
                                         class="shrink mr-2"
                                         contain
-                                        :src="testImg"
+                                        :src="data.thumbnail"
                                         transition="scale-transition"
                                         width="150"
                                       />
@@ -884,7 +884,7 @@
                                         alt="Pionelectric Logo"
                                         class="shrink mr-2"
                                         contain
-                                        :src="testImg"
+                                        :src="productImg"
                                         transition="scale-transition"
                                         width="150"
                                       />
@@ -1065,7 +1065,9 @@ export default {
   data() {
     return {
       mux: mux,
-      testImg: '',
+      materialImg: '',
+      moduleImg: '',
+      productImg: '',
       menu: false,
       editedIndex: -1,
       deleteItemList:{},
@@ -1151,6 +1153,12 @@ export default {
     registMaterialInputsPhoto() {
       return this.registMaterialInputs.find(x=>x.label === '사진');
     },
+    registModuleInputsPhoto() {
+      return this.registModuleInputs.find(x=>x.label === '사진');
+    },
+    registProductInputsPhoto() {
+      return this.registProductInputs.find(x=>x.label === '사진');
+    },
   },
 
   watch: {
@@ -1169,9 +1177,29 @@ export default {
     registMaterialInputsPhoto: {
       handler: async function (newInput) {
         if (newInput.value) {
-          this.testImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 300, 300));
+          this.materialImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 300, 300));
         }else {
-          this.testImg = '';
+          this.materialImg = '';
+        }
+      },
+      deep: true
+    },
+    registModuleInputsPhoto: {
+      handler: async function (newInput) {
+        if (newInput.value) {
+          this.moduleImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 300, 300));
+        }else {
+          this.moduleImg = '';
+        }
+      },
+      deep: true
+    },
+    registProductInputsPhoto: {
+      handler: async function (newInput) {
+        if (newInput.value) {
+          this.productImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 300, 300));
+        }else {
+          this.productImg = '';
         }
       },
       deep: true
@@ -1215,13 +1243,13 @@ export default {
       let searchModelName;
       let searchProductSpec;
       let searchManufacturer;
-      let searchStockMoreZero = this.stock_more_0 ? 0 : '';
+      let searchStockMoreZero = 0;
 
       if(this.tab_main == 1){
         searchType = '원부자재'
         searchClassification = this.moduleSearchMaterialInputs.find(x=>x.label === '분류').value;
         if (searchClassification === 'All')
-          searchClassification = '';
+          searchClassification = '%';
         searchProductCode = this.moduleSearchMaterialInputs.find(x=>x.label === '관리코드').value;
         searchProductName = this.moduleSearchMaterialInputs.find(x=>x.label === '제품명').value;
         searchModelName = this.moduleSearchMaterialInputs.find(x=>x.label === '모델명').value;
@@ -1243,71 +1271,88 @@ export default {
       try {
         let result = await mux.Server.post({
           path: '/api/sample_rest_api/',
-          "query_info":{
-            "script_file_name":"rooting_product_table_stock_table_module_table_material_table_root_json_2024_03_27_10_33_27.json",
-            "params":[
-                        {
-                            "key": "classification",
-                            "type": "string",
-                            "value": searchClassification
-                        },
-                        {
-                            "key": "manufacturer",
-                            "type": "string",
-                            "value": searchManufacturer
+          params: [
+            {
+              "product_table.classification": searchClassification,
+              "product_table.manufacturer": searchManufacturer,
+              "product_table.model": searchModelName,
+              "product_table.name": searchProductName,
+              "product_table.product_code": searchProductCode,
+              "product_table.spec": searchProductSpec,
+              "product_table.type": searchType,
 
-                        },
-                        {
-                            "key": "model",
-                            "type": "string",
-                            "value": searchModelName
-                        },
-                        {
-                            "key": "name",
-                            "type": "string",
-                            "value": searchProductName
+              "module_table.classification": searchClassification,
+              "module_table.manufacturer": searchManufacturer,
+              "module_table.model": searchModelName,
+              "module_table.name": searchProductName,
+              "module_table.module_code": searchProductCode,
+              "module_table.spec": searchProductSpec,
+              "module_table.type": searchType,
 
-                        },
-                        {
-                            "key": "_code",
-                            "type": "string",
-                            "value": searchProductCode
-                        },
-                        {
-                            "key": "spec",
-                            "type": "string",
-                            "value": searchProductSpec
-                        },
-                        {
-                            "key": "type",
-                            "type": "string",
-                            "value": searchType
-                        },
-                        {
-                            "key": "stock_num",
-                            "type": "int",
-                            "value": searchStockMoreZero
-                        }
-                    ]
+              "material_table.classification": searchClassification,
+              "material_table.manufacturer": searchManufacturer,
+              "material_table.model": searchModelName,
+              "material_table.name": searchProductName,
+              "material_table.material_code": searchProductCode,
+              "material_table.spec": searchProductSpec,
+              "material_table.type": searchType,
+
+              "stock_table.conditions": "",
+              "stock_table.stock_num": searchStockMoreZero
             }
+          ],
+          "script_file_name": "rooting_재고_검색_24_05_01_11_35_BHW.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_01_11_35_HPY"
         });
         if (prevURL !== window.location.href) return;
 
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
+        result = result.map(a => {
+          a.stock_price = Math.round(a.unit_price * a.stock_num)
+          return a;
+        });
+        let product_data_arr = [];
+        result.forEach(data => {
+          let isExist = false;
+          for (let i = 0; i < product_data_arr.length; i++) {
+            if (product_data_arr[i]._code === data._code) {
+              product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
+              isExist = true;
+              break;
+            }
+          }
+          if (!isExist) {
+            data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
+            product_data_arr.push(data);
+          }
+        });
+
         if(this.tab_main == 1){
-          this.search_material_for_module_data = result;
+          this.search_material_for_module_data = product_data_arr;
           this.selected_material_for_module_data = []
         }else{
-          this.search_items_for_product_data = result;
+          this.search_items_for_product_data = product_data_arr;
           this.selected_items_for_product_data = []
         }
-
+        
+        this.product_data.forEach(data =>{
+          let stock_calc = 0;
+          for(let d=0; d<data.spot_stock.length; d++){
+            stock_calc += data.spot_stock[d].stock_num;
+          }
+          data.total_stock = stock_calc
+          data.item_price = data.unit_price * data.total_stock
+          this.total_stock_num += data.total_stock
+          this.total_stock_price += data.item_price
+        })
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
+
+
 
 
       // if(this.tab_main == 1){
@@ -1324,18 +1369,105 @@ export default {
       this.material_total_stock_num = 0;
       this.material_total_stock_price = 0;
 
-      this.material_data = ProductBackDataPageConfig.test_material_data;
+      let searchType;
+      let searchClassification;
+      let searchProductCode;
+      let searchProductName ;
+      let searchModelName;
+      let searchProductSpec;
+      let searchManufacturer;
+      let searchStockMoreZero = this.material_stock_more_0 ? 0 : '';
 
-      this.material_data.forEach(data =>{
-        let stock_calc = 0;
-        for(let d=0; d<data.spot_stock.length; d++){
-          stock_calc += data.spot_stock[d].stock_num;
+      searchType = '원부자재';
+      searchClassification = this.searchMaterialCardInputs.find(x=>x.label === '분류').value;
+      if (searchClassification === 'All')
+        searchClassification = '%';
+      searchProductCode = this.searchMaterialCardInputs.find(x=>x.label === '관리코드').value;
+      searchProductName = this.searchMaterialCardInputs.find(x=>x.label === '제품명').value;
+      searchModelName = this.searchMaterialCardInputs.find(x=>x.label === '모델명').value;
+      searchProductSpec = this.searchMaterialCardInputs.find(x=>x.label === '사양').value;
+      searchManufacturer = this.searchMaterialCardInputs.find(x=>x.label === '제조사').value;
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: [
+            {
+              "product_table.classification": searchClassification,
+              "product_table.manufacturer": searchManufacturer,
+              "product_table.model": searchModelName,
+              "product_table.name": searchProductName,
+              "product_table.product_code": searchProductCode,
+              "product_table.spec": searchProductSpec,
+              "product_table.type": searchType,
+
+              "module_table.classification": searchClassification,
+              "module_table.manufacturer": searchManufacturer,
+              "module_table.model": searchModelName,
+              "module_table.name": searchProductName,
+              "module_table.module_code": searchProductCode,
+              "module_table.spec": searchProductSpec,
+              "module_table.type": searchType,
+
+              "material_table.classification": searchClassification,
+              "material_table.manufacturer": searchManufacturer,
+              "material_table.model": searchModelName,
+              "material_table.name": searchProductName,
+              "material_table.material_code": searchProductCode,
+              "material_table.spec": searchProductSpec,
+              "material_table.type": searchType,
+
+              "stock_table.conditions": "",
+              "stock_table.stock_num": searchStockMoreZero
+            }
+          ],
+          "script_file_name": "rooting_재고_검색_24_05_01_11_35_BHW.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_01_11_35_HPY"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
         }
-        data.total_stock = stock_calc
-        data.item_price = data.unit_price * data.total_stock
-        this.material_total_stock_num += data.total_stock
-        this.material_total_stock_price += data.item_price
-      })
+        result = result.map(a => {
+          a.stock_price = Math.round(a.unit_price * a.stock_num)
+          return a;
+        });
+        let product_data_arr = [];
+        result.forEach(data => {
+          let isExist = false;
+          for (let i = 0; i < product_data_arr.length; i++) {
+            if (product_data_arr[i]._code === data._code) {
+              product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
+              isExist = true;
+              break;
+            }
+          }
+          if (!isExist) {
+            data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
+            product_data_arr.push(data);
+          }
+        });
+
+        this.material_data = product_data_arr;
+        // this.material_data = ProductBackDataPageConfig.test_material_data;
+
+        this.material_data.forEach(data =>{
+          let stock_calc = 0;
+          for(let d=0; d<data.spot_stock.length; d++){
+            stock_calc += data.spot_stock[d].stock_num;
+          }
+          data.total_stock = stock_calc
+          data.item_price = data.unit_price * data.total_stock
+          this.material_total_stock_num += data.total_stock
+          this.material_total_stock_price += data.item_price
+        })
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        alert(error);
+      }
+
     },
     registMaterialItem(){
       let material_input = this.registMaterialInputs;
@@ -1419,12 +1551,79 @@ export default {
           }
         })
         this.editRegistMaterial.type = '원부자재'
+        let thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.resizeImageToBinary(this.registMaterialInputsPhoto, 300, 300));
+        let listed_data = [];
+        stock_item.forEach(data =>{
+          listed_data.push({
+            "material_table.material_code": this.editRegistMaterial.item_code,
+            "material_table.classification": this.editRegistMaterial.classification,
+            "material_table.creater": this.editRegistMaterial.creater,
+            "material_table.manufacturer": this.editRegistMaterial.manufacturer,
+            "material_table.model": this.editRegistMaterial.model,
+            "material_table.name": this.editRegistMaterial.name,
+            "material_table.photo": this.editRegistMaterial.photo,
+            "material_table.spec": this.editRegistMaterial.spec,
+            "material_table.thumbnail": thumbnail,
+            "material_table.type": this.editRegistMaterial.type,
+            "material_table.unit_price": this.editRegistMaterial.unit_price,
+            "stock_table.conditions": data.conditions,
+            "stock_table.creater": this.editRegistMaterial.creater,
+            "stock_table.product_code": this.editRegistMaterial.item_code,
+            "stock_table.spot": data.spot,
+            "stock_table.stock_num": data.stock_num,
+            "stock_table.type": this.editRegistMaterial.type
+          });
+        });
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
-          this.editRegistMaterial.creater = 'user_id';
-          alert('원부자재 등록이 완료되었습니다');
+          listed_data = listed_data.map(data => {
+            data["material_table.creater"] = this.$cookies.get(this.$configJson.cookies.id.key);
+            return data;
+          });
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: listed_data,
+              "script_file_name": "rooting_원부자재_재고_등록_24_05_01_11_02_GZH.json",
+              "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\원부자재_재고_등록_24_05_01_11_02_718"
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            console.log('result :>> ', result);
+            alert('원부자재 등록이 완료되었습니다');
+
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            alert(error);
+          }
         }else{// 아니라면 수정
-          this.editRegistMaterial.modifier = 'user_id';
-          alert('원부자재 수정이 완료되었습니다');
+          listed_data = listed_data.map(data => {
+            data["material_table.modifier"] = this.$cookies.get(this.$configJson.cookies.id.key);
+            return data;
+          });
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: listed_data,
+              "script_file_name": "rooting_원부자재_수정_삭_24_05_01_07_43_S8A.json",
+              "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원부자재_수정_삭_24_05_01_07_44_PWY"
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            console.log('result :>> ', result);
+            alert('원부자재 수정이 완료되었습니다');
+
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            alert(error);
+          }
         }
         console.log('원부자재 데이터 : ' + JSON.stringify(this.editRegistMaterial));
       }

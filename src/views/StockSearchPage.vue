@@ -233,10 +233,10 @@ export default {
         searchType = '%';
       let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
       if (searchClassification === 'All')
-      searchClassification = '%';
+        searchClassification = '%';
       let searchConditions = this.searchCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
-      searchConditions = '%';
+        searchConditions = '%';
       let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
       let searchProductName = this.searchCardInputs.find(x=>x.label === '제품명').value;
       let searchModelName = this.searchCardInputs.find(x=>x.label === '모델명').value;
@@ -274,8 +274,8 @@ export default {
               "material_table.spec": searchProductSpec,
               "material_table.type": searchType,
 
-              "conditions": searchConditions,
-              "stock_num": searchStockMoreZero
+              "stock_table.conditions": searchConditions,
+              "stock_table.stock_num": searchStockMoreZero
             }
           ],
           "script_file_name": "rooting_재고_검색_24_05_01_11_35_BHW.json",
@@ -308,22 +308,22 @@ export default {
         this.product_data = product_data_arr;
         // this.product_data = StockSearchPageConfig.test_product_data;
 
+        this.product_data.forEach(data =>{
+          let stock_calc = 0;
+          for(let d=0; d<data.spot_stock.length; d++){
+            stock_calc += data.spot_stock[d].stock_num;
+          }
+          data.total_stock = stock_calc
+          data.item_price = data.unit_price * data.total_stock
+          this.total_stock_num += data.total_stock
+          this.total_stock_price += data.item_price
+        })
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
 
 
-      this.product_data.forEach(data =>{
-        let stock_calc = 0;
-        for(let d=0; d<data.spot_stock.length; d++){
-          stock_calc += data.spot_stock[d].stock_num;
-        }
-        data.total_stock = stock_calc
-        data.item_price = data.unit_price * data.total_stock
-        this.total_stock_num += data.total_stock
-        this.total_stock_price += data.item_price
-      })
 
     }
   }

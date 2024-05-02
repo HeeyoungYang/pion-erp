@@ -178,7 +178,7 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import ProductSearchPageConfig from "@/configure/ProductSearchPageConfig.json";
-// import mux from "@/mux";
+import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 
 export default {
@@ -233,48 +233,56 @@ export default {
 
     async searchButton() {
 
-      // let searchProductCode = this.searchCardInputs.find(x=>x.label === '제품코드').value;
-      // let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
-      // let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
+      let searchProductCode = this.searchCardInputs.find(x=>x.label === '제품코드').value;
+      if (searchProductCode === '')
+        searchProductCode = '%';
+      let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
 
-      // const prevURL = window.location.href;
-      // try {
-      //   let result = await mux.Server.post({
-      //     path: '/api/sample_rest_api/',
-      //     "query_info":{
-      //       "script_file_name":"rooting_material_table_stock_table_root_json_2024_03_18_17_49_52.json",
-      //       "params": [
-      //         {
-      //             "key": "spec",
-      //             "type":"string",
-      //             "value": searchSpec
-      //         },
-      //         {
-      //             "key": "name",
-      //             "type":"string",
-      //             "value": searchName
-      //         },
-      //         {
-      //             "key": "_code",
-      //             "type":"string",
-      //             "value": searchProductCode
-      //         },
-      //       ]
-      //     }
-      //   });
-      //   if (prevURL !== window.location.href) return;
+      let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
 
-      //   if (typeof result === 'string'){
-      //     result = JSON.parse(result);
-      //   }
-      //   this.product_data = result;
 
-      // } catch (error) {
-      //   if (prevURL !== window.location.href) return;
-      //   alert(error);
-      // }
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+              {
+                  "product_table.name": searchName,
+                  "product_table.product_code": searchProductCode,
+                  "product_table.spec": searchSpec
+              }
+          ],
+          "script_file_name": "rooting_완제품_검색_24_05_01_12_44_A0W.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_01_12_45_GC6"
+        });
+        if (prevURL !== window.location.href) return;
 
-      this.product_data = ProductSearchPageConfig.test_product_data;
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        let product_data_arr = [];
+        result.forEach(data => {
+          let isExist = false;
+          for (let i = 0; i < product_data_arr.length; i++) {
+            if (product_data_arr[i]._code === data._code) {
+              product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
+              isExist = true;
+              break;
+            }
+          }
+          if (!isExist) {
+            data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
+            product_data_arr.push(data);
+          }
+        });
+        this.product_data = product_data_arr;
+
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        alert(error);
+      }
+
+      // this.product_data = ProductSearchPageConfig.test_product_data;
 
     }
   },

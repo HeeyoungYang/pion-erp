@@ -228,10 +228,10 @@ export default {
 
       let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
       if (searchClassification === 'All')
-      searchClassification = '';
+        searchClassification = '%';
       let searchConditions = this.searchCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
-        searchConditions = '';
+        searchConditions = '%';
       let searchMaterialCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
       let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
       let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
@@ -245,27 +245,53 @@ export default {
           path: '/api/sample_rest_api/',
           params: [
             {
-              "classification": searchClassification,
-              "manufacturer": searchManufacturer,
-              "_code": searchMaterialCode,
-              "model": searchModel,
-              "name": searchName,
-              "spec": searchSpec,
-              "type": '원부자재',
-              "conditions": searchConditions,
-              "stock_num": searchStockMoreZero
+              "material_table.classification": searchClassification,
+              "material_table.manufacturer": searchManufacturer,
+              "material_table.material_code": searchMaterialCode,
+              "material_table.model": searchModel,
+              "material_table.name": searchName,
+              "material_table.spec": searchSpec,
+              "material_table.type": '원부자재',
+
+              "stock_table.conditions": searchConditions,
+              "stock_table.stock_num": searchStockMoreZero
             }
           ],
-          script_file_name: "rooting_원자재_검색_24_04_21_17_46_0JY.json",
-          script_file_path: "data_storage_pion\\json_sql\\stock\\materiral\\원자재_검색_24_04_21_17_46_WPA"
+          "script_file_name": "rooting_원자재_검색_24_05_01_12_57_YJ7.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\2_원부자재_검색\\원자재_검색_24_05_01_12_57_EG9"
         });
         if (prevURL !== window.location.href) return;
 
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        this.product_data = result;
+        let product_data_arr = [];
+        result.forEach(data => {
+          let isExist = false;
+          for (let i = 0; i < product_data_arr.length; i++) {
+            if (product_data_arr[i]._code === data._code) {
+              product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
+              isExist = true;
+              break;
+            }
+          }
+          if (!isExist) {
+            data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
+            product_data_arr.push(data);
+          }
+        });
+        this.product_data = product_data_arr;
 
+        this.product_data.forEach(data =>{
+          let stock_calc = 0;
+          for(let d=0; d<data.spot_stock.length; d++){
+            stock_calc += data.spot_stock[d].stock_num;
+          }
+          data.total_stock = stock_calc
+          data.item_price = data.unit_price * data.total_stock
+          this.total_stock_num += data.total_stock
+          this.total_stock_price += data.item_price
+        })
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
@@ -273,16 +299,6 @@ export default {
 
       // this.product_data = MaterialSearchPageConfig.test_product_data;
 
-      this.product_data.forEach(data =>{
-        let stock_calc = 0;
-        for(let d=0; d<data.spot_stock.length; d++){
-          stock_calc += data.spot_stock[d].stock_num;
-        }
-        data.total_stock = stock_calc
-        data.item_price = data.unit_price * data.total_stock
-        this.total_stock_num += data.total_stock
-        this.total_stock_price += data.item_price
-      })
 
     }
 
