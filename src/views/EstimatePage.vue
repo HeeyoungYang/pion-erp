@@ -5,30 +5,61 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
-      <v-row justify="center">
-        <v-col
-          cols="12"
-          sm="11"
+      <v-tabs
+        v-model="tab_main"
+        background-color="transparent"
+      >
+        <v-tab
+          v-for="item in tab_main_items"
+          :key="item"
         >
-          <v-card
-          elevation="1"
-          >
-          {{ testJson }}
-          </v-card>
+          {{ item }}
+        </v-tab>
+      </v-tabs>
 
-          <v-card
-          elevation="1"
-          class="mt-5"
-          >
-          </v-card>
-        </v-col>
-      </v-row>
+      <v-tabs-items v-model="tab_main" class="pb-1">
+        <!-- 조회 탭 -->
+        <v-tab-item>
+          <v-row class=" mt-5">
+            <v-col cols="12" sm="5">
+              <v-card
+                elevation="1"
+              >
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="7">
+              <v-card
+                elevation="1"
+              >
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-tab-item>
+        <!-- 작성 탭 -->
+        <v-tab-item>
+          <v-row class=" mt-5">
+            <v-col cols="12" sm="5">
+              <v-card
+                elevation="1"
+              >
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="7">
+              <v-card
+                elevation="1"
+              >
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-tab-item>
+      </v-tabs-items>
+
     </v-main>
   </div>
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
-import EstimateSearchPageConfig from "@/configure/EstimateSearchPageConfig.json";
+import EstimatePageConfig from "@/configure/EstimatePageConfig.json";
 import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 
@@ -55,7 +86,8 @@ export default {
   },
   data(){
     return{
-      testJson: EstimateSearchPageConfig.test
+      tab_main: null,
+      tab_main_items: EstimatePageConfig.tab_main_items,
     }
   },
 }

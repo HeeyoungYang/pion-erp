@@ -284,7 +284,7 @@
 import mux from '@/mux';
 
   export default {
-    props: ['userMenu', 'productMenu', 'inboundMenu', 'shipMenu', 'estimateMenu', 'backDataMenu'],
+    props: ['userMenu', 'productMenu', 'inboundMenu', 'shipMenu', 'estimateMenu', 'backDataMenu', 'salesMenu', 'obtainOrderMenu'],
     data: () => ({
       drawer: null,
       menuList: [
@@ -316,12 +316,12 @@ import mux from '@/mux';
       ],
 
       estimatePages: [
-        ['견적서', '', '/home'],
-        ['견적서 현황', '', '/home'],
+        ['견적서', '', '/estimate'],
+        ['견적서 현황', '', '/estimate-search'],
       ],
       obtainOrderPages: [
-        ['수주서', '', '/home'],
-        ['수주서 현황', '', '/home'],
+        ['수주서', '', '/obtain-order'],
+        ['수주서 현황', '', '/obtain-order-search'],
       ],
       // estimatePages: [
       //   ['견적 작성', '', '/home'],
