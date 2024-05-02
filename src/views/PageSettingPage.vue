@@ -134,7 +134,7 @@ export default {
     async initialize () {
       this.loading_dialog = true;
       this.headers = PageSettingPageConfig.table_header;
-      this.page_resources = PageSettingPageConfig.test_data;
+      this.page_resources = [];
 
       console.log("PageSettingPageConfig.table_header=", PageSettingPageConfig.table_header);
 
@@ -144,13 +144,15 @@ export default {
         let result = await mux.Server.get({path:'/api/admin/page_resources/'});
         if (prevURL !== window.location.href) return;
         if (result.code == 0){
-          page_resourceList = result.data.map(data => {
-            let page_resource = {};
-            page_resource.page_name = data.page_name;
-            page_resource.page_alias = data.page_alias
-            page_resource.page_url = data.page_url;
-            return page_resource;
-          });
+          if( result.data.length > 0) {
+            page_resourceList = result.data.map(data => {
+              let page_resource = {};
+              page_resource.page_name = data.page_name;
+              page_resource.page_alias = data.page_alias
+              page_resource.page_url = data.page_url;
+              return page_resource;
+            });
+          }
         }else {
           this.loading_dialog = false;
           alert(result.message);
@@ -162,7 +164,8 @@ export default {
         alert(error);
         return;
       }
-      this.page_resources = page_resourceList.sort((a, b) => b.name.localeCompare(a.name));
+      this.page_resources = page_resourceList.sort(
+        (a, b) => b.page_name.localeCompare(a.page_name));
       this.loading_dialog = false;
     },
     addPageResource(item){
@@ -206,45 +209,44 @@ export default {
             }
           }
         })
-          const prevURL = window.location.href;
-          try {
+        const prevURL = window.location.href;
+        try {
+          let page_name = item.page_name;
+          let page_alias = item.page_alias;
+          let page_url = item.page_url;
+          console.log("page_name : "+page_name + ", page_alias : " +page_alias+ ", page_url : " +page_url)
 
-            let page_name = item.page_name;
-            let page_alias = item.page_alias;
-            let page_url = item.page_url;
-            console.log("page_name : "+page_name + ", page_alias : " +page_alias+ ", page_url : " +page_url)
-
-
-            let result;
-            if(this.editedIndex === -1){ // Page Resource 추가
-              result = await mux.Server.post({
-                path:'/api/admin/page_resource/',
-                page_name:page_name,
-                page_alias:page_alias,
-                page_url:page_url
-              });
-            }else{ // Page Resource 수정
-              result = await mux.Server.put({
-                path:'/api/admin/page_resource/',
-                page_name:page_name,
-                page_alias:page_alias,
-                page_url:page_url
-              });
-            }
-            if (prevURL !== window.location.href) return;
-            if (result.code == 0) {
-              this.initialize ();
-            }else {
-              this.loading_dialog = false;
-              alert(result.message);
-              return;
-            }
-          } catch (error) {
-            if (prevURL !== window.location.href) return;
+          let result;
+          if(this.editedIndex === -1){ // Page Resource 추가
+            result = await mux.Server.post({
+              path:'/api/admin/page_resource/',
+              page_name:page_name,
+              page_alias:page_alias,
+              page_url:page_url
+            });
+          }else{ // Page Resource 수정
+            result = await mux.Server.put({
+              path:'/api/admin/page_resource/',
+              page_name:page_name,
+              page_alias:page_alias,
+              page_url:page_url
+            });
+          }
+          if (prevURL !== window.location.href) return;
+          if (result.code == 0) {
+            this.close();
+            this.initialize ();
+          }else {
             this.loading_dialog = false;
-            alert(error);
+            alert(result.message);
             return;
           }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          this.loading_dialog = false;
+          alert(error);
+          return;
+        }
       }
     },
     deletePageResource(item){
@@ -262,11 +264,7 @@ export default {
         let page_name = this.editedItem.page_name;
         console.log("page_name : "+page_name)
 
-
-        let result = await mux.Server.delete({
-          path:'/api/admin/page_resource/',
-          page_name:page_name
-        });
+        let result = await mux.Server.delete(`/api/admin/page_resource/?page_name=${page_name}`);
         if (prevURL !== window.location.href) return;
         if (result.code == 0) {
           this.initialize ();
