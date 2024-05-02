@@ -734,6 +734,22 @@ mux.Util = {
     });
   },
 
+  uint8ArrayToHexString(uint8Array) {
+      return '0x' + Array.from(uint8Array, byte => ('0' + (byte & 0xFF).toString(16)).slice(-2)).join('');
+  },
+
+  hexToUint8Array(hexString) {
+    if (hexString.length % 2 !== 0) {
+        throw new Error('Invalid hex string');
+    }
+    const uint8Array = new Uint8Array(hexString.length / 2);
+    for (let i = 0; i < hexString.length; i += 2) {
+        uint8Array[i / 2] = parseInt(hexString.substr(i, 2), 16);
+    }
+    return uint8Array;
+  },
+
+
 
   binaryToURL(binary){
     return URL.createObjectURL(new Blob([binary]));

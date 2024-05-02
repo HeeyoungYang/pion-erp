@@ -261,7 +261,7 @@
                                               alt="Pionelectric Logo"
                                               class="shrink mr-2"
                                               contain
-                                              :src="testImg ? testImg : ''"
+                                              :src="testImg"
                                               transition="scale-transition"
                                               width="150"
                                             />
@@ -500,7 +500,7 @@
                                               alt="Pionelectric Logo"
                                               class="shrink mr-2"
                                               contain
-                                              :src="testImg ? testImg : ''"
+                                              :src="testImg"
                                               transition="scale-transition"
                                               width="150"
                                             />
@@ -730,7 +730,7 @@
                                         alt="Pionelectric Logo"
                                         class="shrink mr-2"
                                         contain
-                                        :src="testImg ? testImg : ''"
+                                        :src="testImg"
                                         transition="scale-transition"
                                         width="150"
                                       />
@@ -884,7 +884,7 @@
                                         alt="Pionelectric Logo"
                                         class="shrink mr-2"
                                         contain
-                                        :src="testImg ? testImg : ''"
+                                        :src="testImg"
                                         transition="scale-transition"
                                         width="150"
                                       />
@@ -1148,6 +1148,9 @@ export default {
   },
 
   computed: {
+    registMaterialInputsPhoto() {
+      return this.registMaterialInputs.find(x=>x.label === '사진');
+    },
   },
 
   watch: {
@@ -1162,6 +1165,16 @@ export default {
     },
     detail_dialog (val) {
       val || this.closeDetail()
+    },
+    registMaterialInputsPhoto: {
+      handler: async function (newInput) {
+        if (newInput.value) {
+          this.testImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 300, 300));
+        }else {
+          this.testImg = '';
+        }
+      },
+      deep: true
     },
   },
 
