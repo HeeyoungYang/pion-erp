@@ -1569,8 +1569,11 @@ export default {
           }
         })
         this.editRegistMaterial.type = '원부자재'
-        // let thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.resizeImageToBinary(this.registMaterialInputsPhoto, 300, 300));
-        let thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.materialImg));
+        
+        let thumbnail = '';
+        if (this.materialImg){
+          thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.materialImg));
+        }
         let listed_data = [];
         stock_item.forEach(data =>{
           listed_data.push({
