@@ -1177,7 +1177,7 @@ export default {
     registMaterialInputsPhoto: {
       handler: async function (newInput) {
         if (newInput.value) {
-          this.materialImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 300, 300));
+          this.materialImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 100, 100));
         }else {
           this.materialImg = '';
         }
@@ -1524,6 +1524,7 @@ export default {
       let item = this.editRegistMaterial;
       let stock_input = this.registMaterialSpotInputs;
       let stock_item = this.editRegistMaterial.spot_stock;
+      stock_item = [];
       const validate = this.$refs.materialForm.validate();
       if(validate){
         let stock_spot_arr=[];
@@ -1554,7 +1555,8 @@ export default {
           }
         })
         this.editRegistMaterial.type = '원부자재'
-        let thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.resizeImageToBinary(this.registMaterialInputsPhoto, 300, 300));
+        // let thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.resizeImageToBinary(this.registMaterialInputsPhoto, 300, 300));
+        let thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.materialImg));
         let listed_data = [];
         stock_item.forEach(data =>{
           listed_data.push({
@@ -1564,7 +1566,7 @@ export default {
             "material_table.manufacturer": this.editRegistMaterial.manufacturer,
             "material_table.model": this.editRegistMaterial.model,
             "material_table.name": this.editRegistMaterial.name,
-            "material_table.photo": this.editRegistMaterial.photo,
+            "material_table.photo": this.editRegistMaterial.item_code + ".png",
             "material_table.spec": this.editRegistMaterial.spec,
             "material_table.thumbnail": thumbnail,
             "material_table.type": this.editRegistMaterial.type,
@@ -1580,6 +1582,7 @@ export default {
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
           listed_data = listed_data.map(data => {
             data["material_table.creater"] = this.$cookies.get(this.$configJson.cookies.id.key);
+            data["stock_table.creater"] = this.$cookies.get(this.$configJson.cookies.id.key);
             return data;
           });
           const prevURL = window.location.href;
@@ -1605,6 +1608,7 @@ export default {
         }else{// 아니라면 수정
           listed_data = listed_data.map(data => {
             data["material_table.modifier"] = this.$cookies.get(this.$configJson.cookies.id.key);
+            data["stock_table.modifier"] = this.$cookies.get(this.$configJson.cookies.id.key);
             return data;
           });
           const prevURL = window.location.href;
