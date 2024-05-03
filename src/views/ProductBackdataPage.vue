@@ -1336,7 +1336,7 @@ export default {
           this.search_items_for_product_data = product_data_arr;
           this.selected_items_for_product_data = []
         }
-        
+
         this.product_data.forEach(data =>{
           let stock_calc = 0;
           for(let d=0; d<data.spot_stock.length; d++){
@@ -1454,6 +1454,8 @@ export default {
         // this.material_data = ProductBackDataPageConfig.test_material_data;
 
         this.material_data.forEach(data =>{
+          data.item_code = data._code;
+          delete data._code;
           let stock_calc = 0;
           for(let d=0; d<data.spot_stock.length; d++){
             stock_calc += data.spot_stock[d].stock_num;
@@ -1463,6 +1465,7 @@ export default {
           this.material_total_stock_num += data.total_stock
           this.material_total_stock_price += data.item_price
         })
+        console.log(this.material_data)
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
