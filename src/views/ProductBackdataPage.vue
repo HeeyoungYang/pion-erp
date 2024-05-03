@@ -322,8 +322,8 @@
                           @close="closeDelete"
                         >
                           <template v-slot:titleHTML>
-                            <p class="mb-0">{{ tab_main==0 ? editRegistMaterial.item_code : (tab_main==1 ? editRegistModule.item_code : (tab_main==2 ? editRegistProduct.item_code : '')) }}</p>
-                            <p class="red--text">자재를 삭제하시겠습니까?</p>
+                            <p class="mb-0 mr-2">{{ tab_main==0 ? editRegistMaterial.item_code : (tab_main==1 ? editRegistModule.item_code : (tab_main==2 ? editRegistProduct.item_code : '')) }}</p>
+                            <p class="mb-0 red--text">자재를 삭제하시겠습니까?</p>
                           </template>
                           기본 정보 및 재고 정보가 모두 삭제됩니다.
                         </ModalDialogComponent>
@@ -1363,7 +1363,17 @@ export default {
 
 
     },
-
+    async imageBinary(thumbnail){
+      if(thumbnail){
+        try {
+          let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
+          console.log(imgURL);
+          return imgURL
+        } catch{
+          return '';
+        }
+      }
+    },
     async searchMaterial() {
       //검색 시 총 재고, 총 금액 초기화
       this.material_total_stock_num = 0;
@@ -1446,6 +1456,7 @@ export default {
           }
           if (!isExist) {
             data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
+            data.img = this.imageBinary(data.thumbnail);
             product_data_arr.push(data);
           }
         });
@@ -2055,12 +2066,39 @@ export default {
       this.delete_dialog = true
     },
 
-    deleteItemConfirm () {
+    async deleteItemConfirm () {
       this.deleteItemList = {};
-      this.deleteItemList.modifier = 'user_id';
+      this.deleteItemList.modifier = this.$cookies.get(this.$configJson.cookies.id.key);
       if(this.tab_main == 0){
         this.deleteItemList.material_code = this.editRegistMaterial.item_code;
         console.log('원부자재 삭제 : ' + JSON.stringify(this.deleteItemList));
+
+        const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: [
+              {
+                "stock_table.product_code": this.deleteItemList.material_code,
+                "modifier": this.deleteItemList.modifier,
+                "material_table.material_code": this.deleteItemList.material_code
+              },
+            ],
+            "script_file_name": "rooting_원부자재_재고_삭제_24_05_01_11_28_X5S.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\5_원부자재_삭제\\원부자재_재고_삭제_24_05_01_11_28_VDT"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          console.log('result :>> ', result);
+          alert('원부자재 등록이 완료되었습니다');
+
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          alert(error);
+        }
         this.material_data.splice(this.editedIndex, 1)
       }else if(this.tab_main == 1){
         this.deleteItemList.module_code = this.editRegistModule.item_code;

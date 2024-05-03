@@ -410,7 +410,7 @@
                                 alt="Pionelectric Logo"
                                 class="shrink mr-2"
                                 contain
-                                src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
+                                :src="item.img"
                                 transition="scale-transition"
                                 width="350"
                               />
@@ -471,7 +471,6 @@
                         small
                           v-bind="attrs"
                           v-on="on"
-                        @click="item.authCheck = item.authority"
                       >
                         <v-icon
                           small
@@ -486,7 +485,7 @@
                         <v-checkbox
                           v-for="(select_authority, i) in authority_list"
                           :key="i"
-                          v-model="item.authCheck"
+                          v-model="item.authority"
                           dense
                           hide-details
                           :label="select_authority"
@@ -496,7 +495,7 @@
                           small
                           color="primary"
                           class="mt-3"
-                          @click="saveUserAuthority(item)"
+                          @click="saveUserAuthority"
                         >저장</v-btn>
                       </v-list>
                     </v-card>
@@ -598,7 +597,7 @@
                                 alt="Pionelectric Logo"
                                 class="shrink mr-2"
                                 contain
-                                src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
+                                :src="item.img"
                                 transition="scale-transition"
                                 width="150"
                               />
@@ -819,8 +818,9 @@ export default {
         }
       }
     },
-    saveUserAuthority(item){
-      this.$emit("changeAuthority", item);
+
+    saveUserAuthority(){
+      this.$emit("changeAuthority", this.authority_list);
       // this.authority_list : 이 값은 현재 등록되어 있는 모든 그룹 리스트 (array)
       // 실제 여기서는 this.authority_list 값은 의미가 없고, 권한 설정(pencil 클릭) 박스에서 등록된 그룹 리스트에서 check된
       // 그룹 리스트와 해당 row에 사용자 정보를 가져와야 함.
