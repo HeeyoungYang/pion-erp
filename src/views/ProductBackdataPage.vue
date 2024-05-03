@@ -1630,8 +1630,10 @@ export default {
             let result = await mux.Server.post({
               path: '/api/sample_rest_api/',
               params: listed_data,
-              "script_file_name": "rooting_원부자재_수정_삭_24_05_01_07_43_S8A.json",
-              "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원부자재_수정_삭_24_05_01_07_44_PWY"
+              "script_file_name": "rooting_원자재_재고_수정_24_05_02_13_40_R8Y.json",
+              "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원자재_재고_수정_24_05_02_13_40_ERR"
+              // "script_file_name": "rooting_원부자재_수정_삭_24_05_01_07_43_S8A.json",
+              // "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원부자재_수정_삭_24_05_01_07_44_PWY"
             });
             if (prevURL !== window.location.href) return;
 
