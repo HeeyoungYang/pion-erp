@@ -276,22 +276,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        let product_data_arr = [];
-        result.forEach(data => {
-          let isExist = false;
-          for (let i = 0; i < product_data_arr.length; i++) {
-            if (product_data_arr[i].code === data.code) {
-              product_data_arr[i].spot_stock.push({product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
-              isExist = true;
-              break;
-            }
-          }
-          if (!isExist) {
-            data.spot_stock = [{product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
-            product_data_arr.push(data);
-          }
-        });
-        this.product_data = product_data_arr;
+        this.product_data = result;
 
         this.product_data.forEach(data =>{
           data.item_code = data.code;
@@ -304,8 +289,10 @@ export default {
             }
           }
           let stock_calc = 0;
-          for(let d=0; d<data.spot_stock.length; d++){
-            stock_calc += data.spot_stock[d].stock_num;
+          if (data.spot_stock){
+            for(let d=0; d<data.spot_stock.length; d++){
+              stock_calc += data.spot_stock[d].stock_num;
+            }
           }
           data.total_stock = stock_calc
           data.item_price = data.unit_price * data.total_stock

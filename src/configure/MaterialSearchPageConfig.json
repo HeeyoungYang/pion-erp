@@ -23,7 +23,7 @@
 
   "headers": [
     { "text": "분류", "align": "center", "value": "classification"},
-    { "text": "관리코드", "align": "center", "value": "material_code"},
+    { "text": "관리코드", "align": "center", "value": "_code"},
     { "text": "제품명", "align": "center", "value": "name"},
     { "text": "모델명", "align": "center", "value": "model"},
     { "text": "사양", "align": "center", "value": "spec"},

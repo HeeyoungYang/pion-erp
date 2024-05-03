@@ -410,7 +410,7 @@
                                 alt="Pionelectric Logo"
                                 class="shrink mr-2"
                                 contain
-                                :src="item.img"
+                                :src="imageBinary(item.thumbnail)"
                                 transition="scale-transition"
                                 width="350"
                               />
@@ -471,6 +471,7 @@
                         small
                           v-bind="attrs"
                           v-on="on"
+                        @click="item.authCheck = item.authority"
                       >
                         <v-icon
                           small
@@ -485,7 +486,7 @@
                         <v-checkbox
                           v-for="(select_authority, i) in authority_list"
                           :key="i"
-                          v-model="item.authority"
+                          v-model="item.authCheck"
                           dense
                           hide-details
                           :label="select_authority"
@@ -597,7 +598,7 @@
                                 alt="Pionelectric Logo"
                                 class="shrink mr-2"
                                 contain
-                                :src="item.img"
+                                :src="imageBinary(item.thumbnail)"
                                 transition="scale-transition"
                                 width="150"
                               />
@@ -818,7 +819,16 @@ export default {
         }
       }
     },
-
+    imageBinary(thumbnail){
+      if(thumbnail){
+        try {
+          let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
+          return imgURL
+        } catch{
+          return '';
+        }
+      }
+    },
     saveUserAuthority(){
       this.$emit("changeAuthority", this.authority_list);
       // this.authority_list : 이 값은 현재 등록되어 있는 모든 그룹 리스트 (array)

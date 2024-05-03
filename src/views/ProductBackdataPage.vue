@@ -1368,7 +1368,6 @@ export default {
       if(thumbnail){
         try {
           let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
-          console.log(imgURL);
           return imgURL
         } catch{
           return '';
@@ -1457,7 +1456,6 @@ export default {
           }
           if (!isExist) {
             data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
-            data.img = this.imageBinary(data.thumbnail);
             product_data_arr.push(data);
           }
         });
@@ -1754,7 +1752,7 @@ export default {
                 "type": this.editRegistMaterial.type,
                 "unit_price": this.editRegistMaterial.unit_price
               },
-              "where": {"material_code": this.editRegistMaterial.item_code}
+              "update_where": {"material_code": this.editRegistMaterial.item_code}
             }]
           };
 
@@ -1764,7 +1762,7 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "where": {"product_code": this.editRegistMaterial.item_code}
+            "delete_where": {"product_code": this.editRegistMaterial.item_code}
           }];
 
           let stock_data = [];
@@ -1880,22 +1878,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        let module_data_arr = [];
-        result.forEach(data => {
-          let isExist = false;
-          for (let i = 0; i < module_data_arr.length; i++) {
-            if (module_data_arr[i].code === data.code) {
-              module_data_arr[i].spot_stock.push({product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
-              isExist = true;
-              break;
-            }
-          }
-          if (!isExist) {
-            data.spot_stock = [{product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
-            module_data_arr.push(data);
-          }
-        });
-        this.module_data = module_data_arr;
+        this.module_data = result;
 
         this.module_data.forEach(data =>{
           data.item_code = data.code;
@@ -1908,29 +1891,21 @@ export default {
             }
           }
           let stock_calc = 0;
-          for(let d=0; d<data.spot_stock.length; d++){
-            stock_calc += data.spot_stock[d].stock_num;
+          if (data.spot_stock){
+            for(let d=0; d<data.spot_stock.length; d++){
+              stock_calc += data.spot_stock[d].stock_num;
+            }
           }
           data.total_stock = stock_calc
           data.item_price = data.unit_price * data.total_stock
-          this.total_stock_num += data.total_stock
-          this.total_stock_price += data.item_price
+          this.module_total_stock_num += data.total_stock
+          this.module_total_stock_price += data.item_price
         })
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
 
-      this.module_data.forEach(data =>{
-        let stock_calc = 0;
-        for(let d=0; d<data.spot_stock.length; d++){
-          stock_calc += data.spot_stock[d].stock_num;
-        }
-        data.total_stock = stock_calc
-        data.item_price = data.unit_price * data.total_stock
-        this.module_total_stock_num += data.total_stock
-        this.module_total_stock_price += data.item_price
-      })
     },
     registModuleItem(){
       let module_input = this.registModuleInputs;
@@ -2125,7 +2100,7 @@ export default {
                 "type": this.editRegistModule.type,
                 "unit_price": this.editRegistModule.unit_price
               },
-              "where": {"module_code": this.editRegistModule.item_code}
+              "update_where": {"module_code": this.editRegistModule.item_code}
             }]
           };
 
@@ -2135,7 +2110,7 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "where": {"product_code": this.editRegistModule.item_code}
+            "delete_where": {"product_code": this.editRegistModule.item_code}
           }];
 
           let stock_data = [];
@@ -2163,7 +2138,7 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "where": {"module_code": this.editRegistModule.item_code}
+            "delete_where": {"module_code": this.editRegistModule.item_code}
           }];
 
           let module_material_data = [];
@@ -2212,7 +2187,68 @@ export default {
     },
 
     async searchProduct() {
-      this.product_data = ProductBackDataPageConfig.test_product_data;
+      // this.product_data = ProductBackDataPageConfig.test_product_data;
+
+      let searchProductCode = this.searchProductCardInputs.find(x=>x.label === '제품코드').value;
+      if (!searchProductCode)
+        searchProductCode = '%';
+      let searchName = this.searchProductCardInputs.find(x=>x.label === '제품명').value;
+      let searchSpec = this.searchProductCardInputs.find(x=>x.label === '사양').value;
+      // let searchStockMoreZero = this.stock_more_0 ? 0 : '';
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+              {
+                "product_table.name": searchName,
+                "product_table.product_code": searchProductCode,
+                "product_table.spec": searchSpec
+              }
+          ],
+          "script_file_name": "rooting_완제품_검색_24_05_01_12_44_A0W.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_01_12_45_GC6"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.product_data = result;
+
+        this.product_data.forEach(data =>{
+          data.item_code = data.code;
+          delete data.code;
+
+          if(data.belong_data){
+            for(let b=0; b<data.belong_data.length; b++){
+              data.belong_data[b].item_code = data.belong_data[b].code;
+              delete data.belong_data[b].code;
+              if(data.belong_data[b].belong_data){
+                for(let c=0; c<data.belong_data[b].belong_data.length; c++){
+                  data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
+                  delete data.belong_data[b].belong_data[c].code;
+                }
+              }
+            }
+          }
+          let stock_calc = 0;
+          if (data.spot_stock){
+            for(let d=0; d<data.spot_stock.length; d++){
+              stock_calc += data.spot_stock[d].stock_num;
+            }
+          }
+          data.total_stock = stock_calc
+          data.item_price = data.unit_price * data.total_stock
+          // this.total_stock_num += data.total_stock
+          // this.total_stock_price += data.item_price
+        })
+
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        alert(error);
+      }
     },
 
     registProductItem(){
@@ -2428,7 +2464,7 @@ export default {
                 "type": this.editRegistProduct.type,
                 "unit_price": this.editRegistProduct.unit_price
               },
-              "where": {"product_code": this.editRegistProduct.item_code}
+              "update_where": {"product_code": this.editRegistProduct.item_code}
             }]
           };
 
@@ -2438,7 +2474,7 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "where": {"product_code": this.editRegistProduct.item_code}
+            "delete_where": {"product_code": this.editRegistProduct.item_code}
           }];
 
           let stock_data = [];
@@ -2466,7 +2502,7 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "where": {"product_code": this.editRegistProduct.item_code}
+            "delete_where": {"product_code": this.editRegistProduct.item_code}
           }];
 
           let product_module_data = [];
@@ -2494,7 +2530,7 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "where": {"product_code": this.editRegistProduct.item_code}
+            "delete_where": {"product_code": this.editRegistProduct.item_code}
           }];
 
           let product_material_data = [];
@@ -2649,13 +2685,40 @@ export default {
         try {
           let result = await mux.Server.post({
             path: '/api/sample_rest_api/',
-            params: [
-              {
-                "stock_table.product_code": this.deleteItemList.material_code,
-                "modifier": this.deleteItemList.modifier,
-                "material_table.material_code": this.deleteItemList.material_code
-              },
-            ],
+            params: {
+              "product_material_table-cancel": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "cancel_where": {"material_code": this.deleteItemList.material_code}
+              }],
+              "module_material_table-cancel": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "cancel_where": {"material_code": this.deleteItemList.material_code}
+              }],
+              "material_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"material_code": this.deleteItemList.material_code}
+              }],
+              "stock_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"material_code": this.deleteItemList.material_code, "type": "원부자재"}
+              }],
+            },
             "script_file_name": "rooting_원부자재_재고_삭제_24_05_01_11_28_X5S.json",
             "script_file_path": "data_storage_pion\\json_sql\\stock\\5_원부자재_삭제\\원부자재_재고_삭제_24_05_01_11_28_VDT"
           });
@@ -2666,20 +2729,124 @@ export default {
           }
           console.log('result :>> ', result);
           alert('삭제가 완료되었습니다');
+          this.material_data.splice(this.editedIndex, 1)
 
         } catch (error) {
           if (prevURL !== window.location.href) return;
           alert(error);
         }
-        this.material_data.splice(this.editedIndex, 1)
       }else if(this.tab_main == 1){
         this.deleteItemList.module_code = this.editRegistModule.item_code;
         console.log('반제품 삭제 : ' + JSON.stringify(this.deleteItemList));
-        this.module_data.splice(this.editedIndex, 1)
+
+        const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: {
+              "product_module_table-cancel": [{
+                "data": {},
+                "cancel_where": {"module_code": this.deleteItemList.module_code}
+              }],
+              "module_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"module_code": this.deleteItemList.module_code}
+              }],
+              "stock_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"product_code": this.deleteItemList.module_code, "type": "반제품"}
+              }],
+              "module_material_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"module_code": this.deleteItemList.module_code}
+              }]
+            },
+            "script_file_name": "rooting_원부자재_재고_삭제_24_05_01_11_28_X5S.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\5_원부자재_삭제\\원부자재_재고_삭제_24_05_01_11_28_VDT"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          console.log('result :>> ', result);
+          alert('삭제가 완료되었습니다');
+          this.module_data.splice(this.editedIndex, 1)
+
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          alert(error);
+        }
       }else if(this.tab_main == 2){
         this.deleteItemList.product_code = this.editRegistProduct.item_code;
         console.log('완제품 삭제 : ' + JSON.stringify(this.deleteItemList));
-        this.product_data.splice(this.editedIndex, 1)
+
+        const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: {
+              "product_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"product_code": this.deleteItemList.product_code}
+              }],
+              "stock_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"product_code": this.deleteItemList.product_code, "type": "완제품"}
+              }],
+              "product_module_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"product_code": this.deleteItemList.product_code}
+              }],
+              "product_material_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"product_code": this.deleteItemList.product_code}
+              }]
+            },
+            "script_file_name": "rooting_원부자재_재고_삭제_24_05_01_11_28_X5S.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\5_원부자재_삭제\\원부자재_재고_삭제_24_05_01_11_28_VDT"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          console.log('result :>> ', result);
+          alert('삭제가 완료되었습니다');
+          this.product_data.splice(this.editedIndex, 1)
+
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          alert(error);
+        }
       }
 
       // 삭제 요청 = this.deleteItemList

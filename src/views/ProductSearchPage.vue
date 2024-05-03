@@ -238,7 +238,6 @@ export default {
       if (!searchProductCode)
         searchProductCode = '%';
       let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
-
       let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
 
 
@@ -248,9 +247,9 @@ export default {
           path: '/api/sample_rest_api/',
           "params": [
               {
-                  "product_table.name": searchName,
-                  "product_table.product_code": searchProductCode,
-                  "product_table.spec": searchSpec
+                "product_table.name": searchName,
+                "product_table.product_code": searchProductCode,
+                "product_table.spec": searchSpec
               }
           ],
           "script_file_name": "rooting_완제품_검색_24_05_01_12_44_A0W.json",
@@ -261,22 +260,35 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        let product_data_arr = [];
-        result.forEach(data => {
-          let isExist = false;
-          for (let i = 0; i < product_data_arr.length; i++) {
-            if (product_data_arr[i].code === data.code) {
-              product_data_arr[i].spot_stock.push({product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
-              isExist = true;
-              break;
+        this.product_data = result;
+
+        this.product_data.forEach(data =>{
+          data.item_code = data.code;
+          delete data.code;
+
+          if(data.belong_data){
+            for(let b=0; b<data.belong_data.length; b++){
+              data.belong_data[b].item_code = data.belong_data[b].code;
+              delete data.belong_data[b].code;
+              if(data.belong_data[b].belong_data){
+                for(let c=0; c<data.belong_data[b].belong_data.length; c++){
+                  data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
+                  delete data.belong_data[b].belong_data[c].code;
+                }
+              }
             }
           }
-          if (!isExist) {
-            data.spot_stock = [{product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
-            product_data_arr.push(data);
+          let stock_calc = 0;
+          if (data.spot_stock){
+            for(let d=0; d<data.spot_stock.length; d++){
+              stock_calc += data.spot_stock[d].stock_num;
+            }
           }
-        });
-        this.product_data = product_data_arr;
+          data.total_stock = stock_calc
+          data.item_price = data.unit_price * data.total_stock
+          // this.total_stock_num += data.total_stock
+          // this.total_stock_price += data.item_price
+        })
 
       } catch (error) {
         if (prevURL !== window.location.href) return;

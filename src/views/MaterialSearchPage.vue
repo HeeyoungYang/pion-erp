@@ -247,29 +247,33 @@ export default {
             {
               "material_table.classification": searchClassification,
               "material_table.manufacturer": searchManufacturer,
-              "material_table.material_code": searchMaterialCode,
               "material_table.model": searchModel,
               "material_table.name": searchName,
+              "material_table.material_code": searchMaterialCode,
               "material_table.spec": searchSpec,
-              "material_table.type": '원부자재',
+              "material_table.type": "원부자재",
 
               "stock_table.conditions": searchConditions,
               "stock_table.stock_num": searchStockMoreZero
             }
           ],
-            "script_file_name": "rooting_원자재_검색_24_05_01_12_57_YJ7.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\2_원부자재_검색\\원자재_검색_24_05_01_12_57_EG9"
+          "script_file_name": "rooting_재고_검색_24_05_01_11_35_BHW.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_01_11_35_HPY"
         });
         if (prevURL !== window.location.href) return;
 
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
+        result = result.map(a => {
+          a.stock_price = Math.round(a.unit_price * a.stock_num)
+          return a;
+        });
         let product_data_arr = [];
         result.forEach(data => {
           let isExist = false;
           for (let i = 0; i < product_data_arr.length; i++) {
-            if (product_data_arr[i].material_code === data.material_code) {
+            if (product_data_arr[i]._code === data._code) {
               product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
               isExist = true;
               break;
@@ -281,6 +285,7 @@ export default {
           }
         });
         this.product_data = product_data_arr;
+        // this.product_data = StockSearchPageConfig.test_product_data;
 
         this.product_data.forEach(data =>{
           let stock_calc = 0;
@@ -292,7 +297,6 @@ export default {
           this.total_stock_num += data.total_stock
           this.total_stock_price += data.item_price
         })
-        console.log(this.product_data)
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
