@@ -257,8 +257,8 @@ export default {
               "stock_table.stock_num": searchStockMoreZero
             }
           ],
-          "script_file_name": "rooting_원자재_검색_24_05_01_12_57_YJ7.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\2_원부자재_검색\\원자재_검색_24_05_01_12_57_EG9"
+            "script_file_name": "rooting_원자재_검색_24_05_01_12_57_YJ7.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\2_원부자재_검색\\원자재_검색_24_05_01_12_57_EG9"
         });
         if (prevURL !== window.location.href) return;
 
@@ -269,7 +269,7 @@ export default {
         result.forEach(data => {
           let isExist = false;
           for (let i = 0; i < product_data_arr.length; i++) {
-            if (product_data_arr[i]._code === data._code) {
+            if (product_data_arr[i].material_code === data.material_code) {
               product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
               isExist = true;
               break;
@@ -292,6 +292,7 @@ export default {
           this.total_stock_num += data.total_stock
           this.total_stock_price += data.item_price
         })
+        console.log(this.product_data)
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
