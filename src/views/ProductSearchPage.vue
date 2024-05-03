@@ -56,7 +56,7 @@
                     class="text-body-1 font-weight-bold black--text ml-2"
                     item-align-center
                   >
-                    : {{ data.item_code }}
+                    : {{ data.code }}
                   </span>
                   <v-menu
                     open-on-hover
@@ -114,9 +114,10 @@
                     {{ spot_stock.spot }} : {{ spot_stock.stock_num }}개
                   </v-chip>
                   <DataTableComponent
+                      v-if="data.belong_data"
                       :headers="headers"
                       :items="data.belong_data"
-                      :item-key="data.belong_data.item_code"
+                      :item-key="data.belong_data.code"
                       hide-default-footer
                       disable-pagination
                       children-key="belong_data"
@@ -264,14 +265,14 @@ export default {
         result.forEach(data => {
           let isExist = false;
           for (let i = 0; i < product_data_arr.length; i++) {
-            if (product_data_arr[i]._code === data._code) {
-              product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
+            if (product_data_arr[i].code === data.code) {
+              product_data_arr[i].spot_stock.push({product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
               isExist = true;
               break;
             }
           }
           if (!isExist) {
-            data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
+            data.spot_stock = [{product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
             product_data_arr.push(data);
           }
         });
