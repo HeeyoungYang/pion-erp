@@ -1658,7 +1658,91 @@ export default {
       this.module_total_stock_num = 0;
       this.module_total_stock_price = 0;
 
-      this.module_data = ProductBackDataPageConfig.test_module_data;
+      // this.module_data = ProductBackDataPageConfig.test_module_data;
+
+      let searchClassification = this.searchModuleCardInputs.find(x=>x.label === '분류').value;
+      if (searchClassification === 'All')
+        searchClassification = '%';
+      let searchConditions = this.searchModuleCardInputs.find(x=>x.label === '상태').value;
+      if (searchConditions === 'All')
+        searchConditions = '%';
+      let searchModuleCode = this.searchModuleCardInputs.find(x=>x.label === '관리코드').value;
+      let searchName = this.searchModuleCardInputs.find(x=>x.label === '제품명').value;
+      let searchModel = this.searchModuleCardInputs.find(x=>x.label === '모델명').value;
+      let searchSpec = this.searchModuleCardInputs.find(x=>x.label === '사양').value;
+      let searchManufacturer = this.searchModuleCardInputs.find(x=>x.label === '제조사').value;
+      let searchStockMoreZero = this.stock_more_0 ? 0 : '';
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+                {
+                    "module_table.classification": searchClassification,
+                    "module_table.manufacturer": searchManufacturer,
+                    "module_table.model": searchModel,
+                    "module_table.module_code": searchModuleCode,
+                    "module_table.name": searchName,
+                    "module_table.spec": searchSpec,
+                    // "material_table.classification": "",
+                    // "material_table.manufacturer": "",
+                    // "material_table.material_code": "",
+                    // "material_table.model": "",
+                    // "material_table.name": "",
+                    // "material_table.spec": "",
+                    "stock_table.conditions": "",
+                    "stock_table.stock_num": searchStockMoreZero
+                }
+            ],
+            "script_file_name": "rooting_반제품_검색_24_05_01_12_50_9BS.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\6_반제품_검색\\반제품_검색_24_05_01_12_50_CZR"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        let module_data_arr = [];
+        result.forEach(data => {
+          let isExist = false;
+          for (let i = 0; i < module_data_arr.length; i++) {
+            if (module_data_arr[i].code === data.code) {
+              module_data_arr[i].spot_stock.push({product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
+              isExist = true;
+              break;
+            }
+          }
+          if (!isExist) {
+            data.spot_stock = [{product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
+            module_data_arr.push(data);
+          }
+        });
+        this.module_data = module_data_arr;
+
+        this.module_data.forEach(data =>{
+          data.item_code = data.code;
+          delete data.code;
+
+          if(data.belong_data){
+            for(let b=0; b<data.belong_data.length; b++){
+              data.belong_data[b].item_code = data.belong_data[b].code;
+              delete data.belong_data[b].code;
+            }
+          }
+          let stock_calc = 0;
+          for(let d=0; d<data.spot_stock.length; d++){
+            stock_calc += data.spot_stock[d].stock_num;
+          }
+          data.total_stock = stock_calc
+          data.item_price = data.unit_price * data.total_stock
+          this.total_stock_num += data.total_stock
+          this.total_stock_price += data.item_price
+        })
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        alert(error);
+      }
 
       this.module_data.forEach(data =>{
         let stock_calc = 0;
