@@ -1497,11 +1497,110 @@ export default {
       })
       this.material_dialog = true
     },
-    registMaterialExcel(){
+    async registMaterialExcel(){
       if(this.material_excel_upload_data.length == 0){
         alert("업로드할 엑셀을 선택해주세요")
+        return;
       }
       //material_excel_upload_data : 불러온 엑셀 데이터
+      const type = '원부자재';
+        
+      let thumbnail_dict = {};
+      for (let i = 0; i < this.excel_photos.length; i++) {
+        const file = this.excel_photos[i];
+        thumbnail_dict[file.name] = mux.Util.uint8ArrayToHexString(await mux.Util.resizeImageToBinary(file, 100, 100));
+      }
+      
+      let noPhoto = false;
+      let duplicateSpot = false;
+      let material_info_arr = [];
+      let stock_data = [];
+      for (let i = 0; i < this.material_excel_upload_data.length; i++) {
+        const row = this.material_excel_upload_data[i];
+        if (row.photo && !thumbnail_dict[row.photo]) {
+          noPhoto = true;
+          break;
+        }
+        if (material_info_arr.find(x => x.data.material_code === row.item_code)) {
+          if (material_info_arr.find(x => x.data.material_code === row.item_code).data.photo == "") {
+            material_info_arr.find(x => x.data.material_code === row.item_code).data.photo = row.item_code + ".png";
+            material_info_arr.find(x => x.data.material_code === row.item_code).data.thumbnail = thumbnail_dict[row.photo];
+          }
+        }else {
+          material_info_arr.push({
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "creater"
+            },
+            "data":{
+              "type": type,
+              "classification": row.classification,
+              "material_code": row.item_code,
+              "name": row.name,
+              "model": row.model,
+              "spec": row.spec,
+              "manufacturer": row.manufacturer,
+              "unit_price": row.unit_price,
+              "photo": row.photo ? row.item_code + ".png" : "",
+              "thumbnail": row.photo ? thumbnail_dict[row.photo] : ""
+            },
+            "ignore_where": {"material_code": row.item_code}
+          });
+        }
+        if (stock_data.find(x => x.data.product_code === row.item_code && x.data.spot === row.spot)) {
+          duplicateSpot = true;
+          break;
+        }else {
+          stock_data.push({
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "creater"
+            },
+            "data":{
+              "conditions": row.conditions,
+              "product_code": row.item_code,
+              "spot": row.spot,
+              "stock_num": row.stock_num,
+              "type": type
+            },
+            "select_where": {"product_code": this.editRegistMaterial.item_code, "spot": row.spot}
+          });
+        }
+      }
+      if (noPhoto){
+        alert('엑셀에 등록된 사진이 첨부되지 않았습니다.');
+        return;
+      }
+      if (duplicateSpot){
+        alert('엑셀에 중복된 위치가 존재합니다.');
+        return;
+      }
+
+      let sendData = {
+        "material_table-insert": material_info_arr,
+        "stock_table-insert": stock_data
+      };
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: sendData,
+          "script_file_name": "rooting_원부자재_재고_등록_24_05_01_11_02_GZH.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\원부자재_재고_등록_24_05_01_11_02_718"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        console.log('result :>> ', result);
+        alert('원부자재 등록이 완료되었습니다');
+
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        alert(error);
+      }
     },
     editMaterialItem (item) {
       this.editedIndex = this.material_data.indexOf(item)
@@ -1574,39 +1673,53 @@ export default {
         if (this.materialImg){
           thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.materialImg));
         }
-        let listed_data = [];
-        stock_item.forEach(data =>{
-          listed_data.push({
-            "material_table.material_code": this.editRegistMaterial.item_code,
-            "material_table.classification": this.editRegistMaterial.classification,
-            "material_table.creater": this.editRegistMaterial.creater,
-            "material_table.manufacturer": this.editRegistMaterial.manufacturer,
-            "material_table.model": this.editRegistMaterial.model,
-            "material_table.name": this.editRegistMaterial.name,
-            "material_table.photo": this.editRegistMaterial.item_code + ".png",
-            "material_table.spec": this.editRegistMaterial.spec,
-            "material_table.thumbnail": thumbnail,
-            "material_table.type": this.editRegistMaterial.type,
-            "material_table.unit_price": this.editRegistMaterial.unit_price,
-            "stock_table.conditions": data.conditions,
-            "stock_table.creater": this.editRegistMaterial.creater,
-            "stock_table.product_code": this.editRegistMaterial.item_code,
-            "stock_table.spot": data.spot,
-            "stock_table.stock_num": data.stock_num,
-            "stock_table.type": this.editRegistMaterial.type
-          });
-        });
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
-          listed_data = listed_data.map(data => {
-            data["material_table.creater"] = this.$cookies.get(this.$configJson.cookies.id.key);
-            data["stock_table.creater"] = this.$cookies.get(this.$configJson.cookies.id.key);
-            return data;
+          let sendData = {
+            "material_table-insert": [{
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "material_code": this.editRegistMaterial.item_code,
+                "classification": this.editRegistMaterial.classification,
+                "manufacturer": this.editRegistMaterial.manufacturer,
+                "model": this.editRegistMaterial.model,
+                "name": this.editRegistMaterial.name,
+                "photo": thumbnail ? this.editRegistMaterial.item_code + ".png" : "",
+                "spec": this.editRegistMaterial.spec,
+                "thumbnail": thumbnail,
+                "type": this.editRegistMaterial.type,
+                "unit_price": this.editRegistMaterial.unit_price
+              },
+              "select_where": {"material_code": this.editRegistMaterial.item_code}
+            }]
+          };
+
+          let stock_data = [];
+          stock_item.forEach(data =>{
+            stock_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "conditions": data.conditions,
+                "product_code": this.editRegistMaterial.item_code,
+                "spot": data.spot,
+                "stock_num": data.stock_num,
+                "type": this.editRegistMaterial.type
+              },
+              "select_where": {"product_code": this.editRegistMaterial.item_code, "spot": data.spot}
+            });
           });
+          sendData["stock_table-insert"] = stock_data;
+
           const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
               path: '/api/sample_rest_api/',
-              params: listed_data,
+              params: sendData,
               "script_file_name": "rooting_원부자재_재고_등록_24_05_01_11_02_GZH.json",
               "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\원부자재_재고_등록_24_05_01_11_02_718"
             });
@@ -1623,16 +1736,61 @@ export default {
             alert(error);
           }
         }else{// 아니라면 수정
-          listed_data = listed_data.map(data => {
-            data["material_table.modifier"] = this.$cookies.get(this.$configJson.cookies.id.key);
-            data["stock_table.modifier"] = this.$cookies.get(this.$configJson.cookies.id.key);
-            return data;
+          let sendData = {
+            "material_table-update": [{
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data":{
+                "material_code": this.editRegistMaterial.item_code,
+                "classification": this.editRegistMaterial.classification,
+                "manufacturer": this.editRegistMaterial.manufacturer,
+                "model": this.editRegistMaterial.model,
+                "name": this.editRegistMaterial.name,
+                "photo": thumbnail ? this.editRegistMaterial.item_code + ".png" : "",
+                "spec": this.editRegistMaterial.spec,
+                "thumbnail": thumbnail,
+                "type": this.editRegistMaterial.type,
+                "unit_price": this.editRegistMaterial.unit_price
+              },
+              "where": {"material_code": this.editRegistMaterial.item_code}
+            }]
+          };
+
+          sendData["stock_table-delete"] = [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data": {},
+            "where": {"product_code": this.editRegistMaterial.item_code}
+          }];
+
+          let stock_data = [];
+          stock_item.forEach(data =>{
+            stock_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "conditions": data.conditions,
+                "product_code": this.editRegistMaterial.item_code,
+                "spot": data.spot,
+                "stock_num": data.stock_num,
+                "type": this.editRegistMaterial.type
+              },
+              "select_where": {"product_code": this.editRegistMaterial.item_code, "spot": data.spot}
+            });
           });
+          sendData["stock_table-insert"] = stock_data;
+
           const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
               path: '/api/sample_rest_api/',
-              params: listed_data,
+              params: sendData,
               "script_file_name": "rooting_원자재_재고_수정_24_05_02_13_40_R8Y.json",
               "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원자재_재고_수정_24_05_02_13_40_ERR"
               // "script_file_name": "rooting_원부자재_수정_삭_24_05_01_07_43_S8A.json",
@@ -1821,7 +1979,7 @@ export default {
       // this.module_set_material_data= item.belong_data
       this.module_dialog = true;
     },
-    uploadModule(){
+    async uploadModule(){
       // 저장버튼 클릭 시 registModuleInputs value를 editRegistModule에 전달
       // 수정, 등록 둘 다 editRegistModule에 요청, editedIndex에 따라 구분
       let module_input = this.registModuleInputs;
@@ -1863,12 +2021,190 @@ export default {
         })
 
         this.editRegistModule.type = '반제품'
+        
+        let thumbnail = '';
+        if (this.moduleImg){
+          thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.moduleImg));
+        }
+        
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
-          this.editRegistModule.creater = 'user_id';
-          alert('반제품 등록이 완료되었습니다');
+          let sendData = {
+            "module_table-insert": [{
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "module_code": this.editRegistModule.item_code,
+                "classification": this.editRegistModule.classification,
+                "manufacturer": this.editRegistModule.manufacturer,
+                "model": this.editRegistModule.model,
+                "name": this.editRegistModule.name,
+                "photo": thumbnail ? this.editRegistModule.item_code + ".png" : "",
+                "spec": this.editRegistModule.spec,
+                "thumbnail": thumbnail,
+                "type": this.editRegistModule.type,
+                "unit_price": this.editRegistModule.unit_price
+              },
+              "select_where": {"module_code": this.editRegistModule.item_code}
+            }]
+          };
+
+          let stock_data = [];
+          stock_item.forEach(data =>{
+            stock_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "conditions": data.conditions,
+                "product_code": this.editRegistModule.item_code,
+                "spot": data.spot,
+                "stock_num": data.stock_num,
+                "type": this.editRegistModule.type
+              },
+              "select_where": {"product_code": this.editRegistModule.item_code, "spot": data.spot}
+            });
+          });
+          sendData["stock_table-insert"] = stock_data;
+
+          let module_material_data = [];
+          this.module_set_material_data.forEach(data =>{
+            module_material_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "module_code": this.editRegistModule.item_code,
+                "material_code": data.item_code,
+                "material_num": data.num
+              },
+              "select_where": {"module_code": this.editRegistModule.item_code, "material_code": data.item_code}
+            });
+          });
+          sendData["module_material_table-insert"] = module_material_data;
+
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: sendData,
+              "script_file_name": "rooting_원부자재_재고_등록_24_05_01_11_02_GZH.json",
+              "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\원부자재_재고_등록_24_05_01_11_02_718"
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            console.log('result :>> ', result);
+            alert('반제품 등록이 완료되었습니다');
+
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            alert(error);
+          }
         }else{// 아니라면 수정
-          this.editRegistModule.modifier = 'user_id';
-          alert('반제품 수정이 완료되었습니다');
+          let sendData = {
+            "module_table-update": [{
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data":{
+                "module_code": this.editRegistModule.item_code,
+                "classification": this.editRegistModule.classification,
+                "manufacturer": this.editRegistModule.manufacturer,
+                "model": this.editRegistModule.model,
+                "name": this.editRegistModule.name,
+                "photo": thumbnail ? this.editRegistModule.item_code + ".png" : "",
+                "spec": this.editRegistModule.spec,
+                "thumbnail": thumbnail,
+                "type": this.editRegistModule.type,
+                "unit_price": this.editRegistModule.unit_price
+              },
+              "where": {"module_code": this.editRegistModule.item_code}
+            }]
+          };
+
+          sendData["stock_table-delete"] = [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data": {},
+            "where": {"product_code": this.editRegistModule.item_code}
+          }];
+
+          let stock_data = [];
+          stock_item.forEach(data =>{
+            stock_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "conditions": data.conditions,
+                "product_code": this.editRegistModule.item_code,
+                "spot": data.spot,
+                "stock_num": data.stock_num,
+                "type": this.editRegistModule.type
+              },
+              "select_where": {"product_code": this.editRegistModule.item_code, "spot": data.spot}
+            });
+          });
+          sendData["stock_table-insert"] = stock_data;
+
+          sendData["module_material_table-delete"] = [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data": {},
+            "where": {"module_code": this.editRegistModule.item_code}
+          }];
+
+          let module_material_data = [];
+          this.module_set_material_data.forEach(data =>{
+            module_material_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "module_code": this.editRegistModule.item_code,
+                "material_code": data.item_code,
+                "material_num": data.num
+              },
+              "select_where": {"module_code": this.editRegistModule.item_code, "material_code": data.item_code}
+            });
+          });
+          sendData["module_material_table-insert"] = module_material_data;
+
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: sendData,
+              "script_file_name": "rooting_원자재_재고_수정_24_05_02_13_40_R8Y.json",
+              "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원자재_재고_수정_24_05_02_13_40_ERR"
+              // "script_file_name": "rooting_원부자재_수정_삭_24_05_01_07_43_S8A.json",
+              // "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원부자재_수정_삭_24_05_01_07_44_PWY"
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            console.log('result :>> ', result);
+            alert('반제품 수정이 완료되었습니다');
+
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            alert(error);
+          }
         }
 
         console.log('반제품 데이터 : ' + JSON.stringify(this.editRegistModule));
@@ -1920,7 +2256,7 @@ export default {
       this.product_dialog = true;
     },
 
-    uploadProduct(){
+    async uploadProduct(){
       // 수정, 등록 둘 다 editRegistProduct에 요청, editedIndex에 따라 구분
       // 저장버튼 클릭 시 registProductInputs value를 editRegistProduct에 전달
       let product_input = this.registProductInputs;
@@ -1968,12 +2304,240 @@ export default {
         })
 
         this.editRegistProduct.type = '완제품'
+        let thumbnail = '';
+        if (this.productImg){
+          thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.productImg));
+        }
+        
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
-          this.editRegistProduct.creater = 'user_id';
-          alert('완제품 등록이 완료되었습니다');
+          let sendData = {
+            "product_table-insert": [{
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "product_code": this.editRegistProduct.item_code,
+                "classification": this.editRegistProduct.classification,
+                "manufacturer": this.editRegistProduct.manufacturer,
+                "model": this.editRegistProduct.model,
+                "name": this.editRegistProduct.name,
+                "photo": thumbnail ? this.editRegistProduct.item_code + ".png" : "",
+                "spec": this.editRegistProduct.spec,
+                "thumbnail": thumbnail,
+                "type": this.editRegistProduct.type,
+                "unit_price": this.editRegistProduct.unit_price
+              },
+              "select_where": {"product_code": this.editRegistProduct.item_code}
+            }]
+          };
+
+          let stock_data = [];
+          stock_item.forEach(data =>{
+            stock_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "conditions": data.conditions,
+                "product_code": this.editRegistProduct.item_code,
+                "spot": data.spot,
+                "stock_num": data.stock_num,
+                "type": this.editRegistProduct.type
+              },
+              "select_where": {"product_code": this.editRegistProduct.item_code, "spot": data.spot}
+            });
+          });
+          sendData["stock_table-insert"] = stock_data;
+
+          let product_module_data = [];
+          this.product_set_items_data.forEach(data =>{
+            if(data.type == '반제품'){
+              product_module_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "product_code": this.editRegistProduct.item_code,
+                  "module_code": data.item_code,
+                  "module_num": data.num
+                },
+                "select_where": {"product_code": this.editRegistProduct.item_code, "module_code": data.item_code}
+              });
+            }
+          });
+          sendData["product_module_table-insert"] = product_module_data;
+
+          let product_material_data = [];
+          this.product_set_items_data.forEach(data =>{
+            if(data.type == '원부자재'){
+              product_material_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "product_code": this.editRegistProduct.item_code,
+                  "material_code": data.item_code,
+                  "material_num": data.num
+                },
+                "select_where": {"product_code": this.editRegistProduct.item_code, "material_code": data.item_code}
+              });
+            }
+          });
+          sendData["product_material_table-insert"] = product_material_data;
+
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: sendData,
+              "script_file_name": "rooting_원부자재_재고_등록_24_05_01_11_02_GZH.json",
+              "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\원부자재_재고_등록_24_05_01_11_02_718"
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            console.log('result :>> ', result);
+            alert('완제품 등록이 완료되었습니다');
+
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            alert(error);
+          }
         }else{// 아니라면 수정
-          this.editRegistProduct.modifier = 'user_id';
-          alert('완제품 수정이 완료되었습니다');
+          let sendData = {
+            "product_table-update": [{
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data":{
+                "product_code": this.editRegistProduct.item_code,
+                "classification": this.editRegistProduct.classification,
+                "manufacturer": this.editRegistProduct.manufacturer,
+                "model": this.editRegistProduct.model,
+                "name": this.editRegistProduct.name,
+                "photo": thumbnail ? this.editRegistProduct.item_code + ".png" : "",
+                "spec": this.editRegistProduct.spec,
+                "thumbnail": thumbnail,
+                "type": this.editRegistProduct.type,
+                "unit_price": this.editRegistProduct.unit_price
+              },
+              "where": {"product_code": this.editRegistProduct.item_code}
+            }]
+          };
+
+          sendData["stock_table-delete"] = [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data": {},
+            "where": {"product_code": this.editRegistProduct.item_code}
+          }];
+
+          let stock_data = [];
+          stock_item.forEach(data =>{
+            stock_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "conditions": data.conditions,
+                "product_code": this.editRegistProduct.item_code,
+                "spot": data.spot,
+                "stock_num": data.stock_num,
+                "type": this.editRegistProduct.type
+              },
+              "select_where": {"product_code": this.editRegistProduct.item_code, "spot": data.spot}
+            });
+          });
+          sendData["stock_table-insert"] = stock_data;
+
+          sendData["product_module_table-delete"] = [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data": {},
+            "where": {"product_code": this.editRegistProduct.item_code}
+          }];
+
+          let product_module_data = [];
+          this.product_set_items_data.forEach(data =>{
+            if(data.type == '반제품'){
+              product_module_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "product_code": this.editRegistProduct.item_code,
+                  "module_code": data.item_code,
+                  "module_num": data.num
+                },
+                "select_where": {"product_code": this.editRegistProduct.item_code, "module_code": data.item_code}
+              });
+            }
+          });
+          sendData["product_module_table-insert"] = product_module_data;
+
+          sendData["product_material_table-delete"] = [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data": {},
+            "where": {"product_code": this.editRegistProduct.item_code}
+          }];
+
+          let product_material_data = [];
+          this.product_set_items_data.forEach(data =>{
+            if(data.type == '원부자재'){
+              product_material_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "product_code": this.editRegistProduct.item_code,
+                  "material_code": data.item_code,
+                  "material_num": data.num
+                },
+                "select_where": {"product_code": this.editRegistProduct.item_code, "material_code": data.item_code}
+              });
+            }
+          });
+          sendData["product_material_table-insert"] = product_material_data;
+
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: sendData,
+              "script_file_name": "rooting_원자재_재고_수정_24_05_02_13_40_R8Y.json",
+              "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원자재_재고_수정_24_05_02_13_40_ERR"
+              // "script_file_name": "rooting_원부자재_수정_삭_24_05_01_07_43_S8A.json",
+              // "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원부자재_수정_삭_24_05_01_07_44_PWY"
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            console.log('result :>> ', result);
+            alert('완제품 수정이 완료되었습니다');
+
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            alert(error);
+          }
         }
         console.log('완제품 데이터 : ' + JSON.stringify(this.editRegistProduct));
       }
