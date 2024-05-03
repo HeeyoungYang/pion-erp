@@ -755,6 +755,32 @@ mux.Util = {
     return URL.createObjectURL(new Blob([binary]));
   },
 
+  /**
+   * URL을 바이너리 데이터로 변환
+   * @param {string} url
+   * @returns {Promise<Uint8Array>}
+   */
+  async urlToBinary(url) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          const arrayBuffer = xhr.response;
+          const binaryData = new Uint8Array(arrayBuffer);
+          resolve(binaryData);
+        } else {
+          reject(new Error('Failed to load binary data from URL'));
+        }
+      };
+      xhr.onerror = function () {
+        reject(new Error('Failed to load binary data from URL'));
+      };
+      xhr.send();
+    });
+  },
+
   resizeImageToBinary(file, maxWidth, maxHeight){
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
