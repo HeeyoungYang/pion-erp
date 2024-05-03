@@ -74,7 +74,23 @@ export default {
     handleChangeAuthority(data) {
       // 사용자 권한 변경 결과를 확인하여 처리한다.
       // data ==> 변경된 사용자 정보
-      console.log('사용자 권한 변경 결과:', JSON.stringify(data));
+      console.log('data :>> ', data);
+      mux.Server.put({
+        path: '/api/admin/user/groups/',
+        data: {
+          user_name: data.user_id,
+          group_names: data.authCheck
+        }
+      }).then(result => {
+        if (result.code == 0) {
+          alert('사용자 권한 변경이 완료되었습니다.');
+          data.authority = data.authCheck;
+        } else {
+          alert(result.message);
+        }
+      }).catch(error => {
+        alert(error);
+      });
     },
     async initialize () {
       this.loading_dialog = true;
@@ -94,6 +110,7 @@ export default {
             user.department = data.department;
             user.position = data.position;
             user.authority = data.groups;
+            user.authCheck = data.groups;
             return user;
           });
         }else {
