@@ -265,7 +265,7 @@ export default {
                     // "material_table.name": "",
                     // "material_table.spec": "",
                     "stock_table.conditions": "",
-                    "stock_table.stock_num": searchStockMoreZero 
+                    "stock_table.stock_num": searchStockMoreZero
                 }
             ],
             "script_file_name": "rooting_반제품_검색_24_05_01_12_50_9BS.json",
@@ -280,20 +280,29 @@ export default {
         result.forEach(data => {
           let isExist = false;
           for (let i = 0; i < product_data_arr.length; i++) {
-            if (product_data_arr[i]._code === data._code) {
-              product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
+            if (product_data_arr[i].code === data.code) {
+              product_data_arr[i].spot_stock.push({product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)});
               isExist = true;
               break;
             }
           }
           if (!isExist) {
-            data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
+            data.spot_stock = [{product_code: data.code, spot: data.spot, stock_num: data.stock_num, stock_price: Math.round(data.unit_price * data.stock_num)}];
             product_data_arr.push(data);
           }
         });
         this.product_data = product_data_arr;
 
         this.product_data.forEach(data =>{
+          data.item_code = data.code;
+          delete data.code;
+
+          if(data.belong_data){
+            for(let b=0; b<data.belong_data.length; b++){
+              data.belong_data[b].item_code = data.belong_data[b].code;
+              delete data.belong_data[b].code;
+            }
+          }
           let stock_calc = 0;
           for(let d=0; d<data.spot_stock.length; d++){
             stock_calc += data.spot_stock[d].stock_num;
