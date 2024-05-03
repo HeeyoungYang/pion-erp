@@ -238,8 +238,9 @@
                                   :close-on-content-click="false"
                                   :nudge-width="100"
                                   offset-x
-                                  v-if="this.registMaterialInputs[this.registMaterialInputs.length-1].value"
+                                  v-if="materialImg"
                                 >
+                                  <!-- v-if="this.registMaterialInputs[this.registMaterialInputs.length-1].value" -->
                                   <template v-slot:activator="{ on, attrs }">
                                     <v-col cols="12" sm="1" align-self="center">
                                       <v-icon
@@ -1363,7 +1364,7 @@ export default {
 
 
     },
-    async imageBinary(thumbnail){
+    imageBinary(thumbnail){
       if(thumbnail){
         try {
           let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
@@ -1484,6 +1485,7 @@ export default {
 
     },
     registMaterialItem(){
+      this.materialImg = ''
       let material_input = this.registMaterialInputs;
       mux.Rules.rulesSet(material_input);
 
@@ -1509,6 +1511,7 @@ export default {
       let stock_spot_arr = item.spot_stock;
       let spot_input = this.registMaterialSpotInputs;
 
+      this.materialImg = this.imageBinary(item.thumbnail);
       for(let i=0; i<stock_spot_arr.length; i++){
         spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
         spot_input.push( {label:'재고수량'+[i+1], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].stock_num},)
@@ -2093,7 +2096,7 @@ export default {
             result = JSON.parse(result);
           }
           console.log('result :>> ', result);
-          alert('원부자재 등록이 완료되었습니다');
+          alert('삭제가 완료되었습니다');
 
         } catch (error) {
           if (prevURL !== window.location.href) return;
