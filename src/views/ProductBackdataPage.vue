@@ -1221,10 +1221,61 @@ export default {
     openDialog(){
       this.module_dialog = true
     },
-    initialize () {
+    async initialize () {
       this.material_data = []
-      this.manufacturer_list = ProductBackDataPageConfig.test_manufacturer_list;
-      this.classification_list = ProductBackDataPageConfig.test_classification_list;
+      // this.manufacturer_list = ProductBackDataPageConfig.test_manufacturer_list;
+      // this.classification_list = ProductBackDataPageConfig.test_classification_list;
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+
+          ],
+          "script_file_name": "자재분류전체검색.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재분류전체검색"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.classification_list = result;
+
+        result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+
+          ],
+          "script_file_name": "제조사목록전체검색.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\제조사목록전체검색"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.manufacturer_list = result;
+
+        // result = await mux.Server.post({
+        //   path: '/api/sample_rest_api/',
+        //   "params": [
+
+        //   ],
+        //   "script_file_name": "자재위치목록전체검색.json",
+        //   "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재위치목록전체검색"
+        // });
+        // if (prevURL !== window.location.href) return;
+
+        // if (typeof result === 'string'){
+        //   result = JSON.parse(result);
+        // }
+        // this.spot_list = result;
+
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        alert(error);
+      }
       mux.List.addProductBasicInfoLists(this.searchMaterialCardInputs, this.classification_list, this.manufacturer_list);
       mux.List.addProductBasicInfoLists(this.registMaterialInputs, this.classification_list, this.manufacturer_list);
       mux.List.addProductBasicInfoLists(this.searchModuleCardInputs, this.classification_list, this.manufacturer_list);
@@ -2687,18 +2738,10 @@ export default {
             path: '/api/sample_rest_api/',
             params: {
               "product_material_table-cancel": [{
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
                 "data": {},
                 "cancel_where": {"material_code": this.deleteItemList.material_code}
               }],
               "module_material_table-cancel": [{
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
                 "data": {},
                 "cancel_where": {"material_code": this.deleteItemList.material_code}
               }],

@@ -440,14 +440,64 @@ export default {
     async initialize () {
       this.today = new Date();
 
-      this.manufacturer_list = InboundRegisterPageConfig.test_manufacturer_list;
-      this.classification_list = InboundRegisterPageConfig.test_classification_list;
-      this.spot_list = InboundRegisterPageConfig.test_spot_list;
+      // this.manufacturer_list = InboundRegisterPageConfig.test_manufacturer_list;
+      // this.classification_list = InboundRegisterPageConfig.test_classification_list;
+      // this.spot_list = InboundRegisterPageConfig.test_spot_list;
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+
+          ],
+          "script_file_name": "자재분류전체검색.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재분류전체검색"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.classification_list = result;
+
+        result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+
+          ],
+          "script_file_name": "제조사목록전체검색.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\제조사목록전체검색"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.manufacturer_list = result;
+
+        result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+
+          ],
+          "script_file_name": "자재위치목록전체검색.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재위치목록전체검색"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.spot_list = result;
+
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        alert(error);
+      }
 
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
       mux.Rules.rulesSet(this.inboundCardInfoInputs);
 
-      const prevURL = window.location.href;
       try {
         console.log('사용자 계정 정보 가졍오기');
         let result = await mux.Server.get({

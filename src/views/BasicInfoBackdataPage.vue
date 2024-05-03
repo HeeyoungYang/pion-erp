@@ -291,10 +291,61 @@ export default {
       // result.response ==> 세부 정보 포함
       console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    initialize () {
-      this.classification_data = BasicInfoBackDataPageConfig.test_classification_data
-      this.manufacturer_data = BasicInfoBackDataPageConfig.test_manufacturer_data
-      this.spot_data = BasicInfoBackDataPageConfig.test_spot_data
+    async initialize () {
+      // this.classification_data = BasicInfoBackDataPageConfig.test_classification_data
+      // this.manufacturer_data = BasicInfoBackDataPageConfig.test_manufacturer_data
+      // this.spot_data = BasicInfoBackDataPageConfig.test_spot_data
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+
+          ],
+          "script_file_name": "자재분류전체검색.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재분류전체검색"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.classification_data = result;
+
+        result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+
+          ],
+          "script_file_name": "제조사목록전체검색.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\제조사목록전체검색"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.manufacturer_data = result;
+
+        result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+
+          ],
+          "script_file_name": "자재위치목록전체검색.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재위치목록전체검색"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.spot_data = result;
+
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        alert(error);
+      }
     },
     registProductInfo(type){
       this.registProductInfoInputs = [];
@@ -339,36 +390,210 @@ export default {
 
       const validate = this.$refs.laborForm.validate();
       if(validate){
-        product_info.forEach(data =>{
+        product_info.forEach(async data =>{
           if(data.column_name == 'classification'){
             item.classification_update = data.value;
             item.classification = this.classification_data[this.editedBasicInfoIndex].classification;
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
-            item.creater = 'user_id';
-              alert('분류 등록이 완료되었습니다.');
+              const prevURL = window.location.href;
+              try {
+                let result = await mux.Server.post({
+                  path: '/api/sample_rest_api/',
+                  params: {
+                    "classification_table-insert": [{
+                      "user_info": {
+                        "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                        "role": "creater"
+                      },
+                      "data":{
+                        "classification": item.classification_update
+                      },
+                      "select_where": {"classification": item.classification_update}
+                    }]
+                  },
+                  "script_file_name": "자재분류등록.json",
+                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재분류등록"
+                });
+                if (prevURL !== window.location.href) return;
+
+                if (typeof result === 'string'){
+                  result = JSON.parse(result);
+                }
+                console.log('result :>> ', result);
+                alert('분류 등록이 완료되었습니다.');
+
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                alert(error);
+              }
             }else{// 아니라면 수정
-            item.modifier = 'user_id';
-              alert('분류 수정이 완료되었습니다.');
+              const prevURL = window.location.href;
+              try {
+                let result = await mux.Server.post({
+                  path: '/api/sample_rest_api/',
+                  params: {
+                    "classification_table-update": [{
+                      "user_info": {
+                        "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                        "role": "modifier"
+                      },
+                      "data":{
+                        "classification": item.classification_update
+                      },
+                      "update_where": {"classification": item.classification}
+                    }]
+                  },
+                  "script_file_name": "자재분류수정.json",
+                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재분류수정"
+                });
+                if (prevURL !== window.location.href) return;
+
+                if (typeof result === 'string'){
+                  result = JSON.parse(result);
+                }
+                console.log('result :>> ', result);
+                alert('분류 수정이 완료되었습니다.');
+
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                alert(error);
+              }
             }
           }else if(data.column_name == 'manufacturer'){
             item.manufacturer_update = data.value;
             item.manufacturer = this.manufacturer_data[this.editedBasicInfoIndex].manufacturer;
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
-            item.creater = 'user_id';
-              alert('제조사 등록이 완료되었습니다.');
+              const prevURL = window.location.href;
+              try {
+                let result = await mux.Server.post({
+                  path: '/api/sample_rest_api/',
+                  params: {
+                    "manufacturer_table-insert": [{
+                      "user_info": {
+                        "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                        "role": "creater"
+                      },
+                      "data":{
+                        "manufacturer": item.manufacturer_update
+                      },
+                      "select_where": {"manufacturer": item.manufacturer_update}
+                    }]
+                  },
+                  "script_file_name": "제조사목록등록.json",
+                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\제조사목록등록"
+                });
+                if (prevURL !== window.location.href) return;
+
+                if (typeof result === 'string'){
+                  result = JSON.parse(result);
+                }
+                console.log('result :>> ', result);
+                alert('제조사 등록이 완료되었습니다.');
+
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                alert(error);
+              }
             }else{// 아니라면 수정
-            item.modifier = 'user_id';
-              alert('제조사 수정이 완료되었습니다.');
+              const prevURL = window.location.href;
+              try {
+                let result = await mux.Server.post({
+                  path: '/api/sample_rest_api/',
+                  params: {
+                    "manufacturer_table-update": [{
+                      "user_info": {
+                        "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                        "role": "modifier"
+                      },
+                      "data":{
+                        "manufacturer": item.manufacturer_update
+                      },
+                      "update_where": {"manufacturer": item.manufacturer}
+                    }]
+                  },
+                  "script_file_name": "제조사목록수정.json",
+                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\제조사목록수정"
+                });
+                if (prevURL !== window.location.href) return;
+
+                if (typeof result === 'string'){
+                  result = JSON.parse(result);
+                }
+                console.log('result :>> ', result);
+                alert('제조사 수정이 완료되었습니다.');
+
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                alert(error);
+              }
             }
           }else if(data.column_name == 'spot'){
             item.spot_update = data.value;
             item.spot = this.spot_data[this.editedBasicInfoIndex].spot;
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
-            item.creater = 'user_id';
-              alert('위치 등록이 완료되었습니다.');
+              const prevURL = window.location.href;
+              try {
+                let result = await mux.Server.post({
+                  path: '/api/sample_rest_api/',
+                  params: {
+                    "spot_table-insert": [{
+                      "user_info": {
+                        "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                        "role": "creater"
+                      },
+                      "data":{
+                        "spot": item.spot_update
+                      },
+                      "select_where": {"spot": item.spot_update}
+                    }]
+                  },
+                  "script_file_name": "자재위치목록등록.json",
+                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재위치목록등록"
+                });
+                if (prevURL !== window.location.href) return;
+
+                if (typeof result === 'string'){
+                  result = JSON.parse(result);
+                }
+                console.log('result :>> ', result);
+                alert('위치 등록이 완료되었습니다.');
+
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                alert(error);
+              }
             }else{// 아니라면 수정
-            item.modifier = 'user_id';
-              alert('위치 수정이 완료되었습니다.');
+              const prevURL = window.location.href;
+              try {
+                let result = await mux.Server.post({
+                  path: '/api/sample_rest_api/',
+                  params: {
+                    "spot_table-update": [{
+                      "user_info": {
+                        "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                        "role": "modifier"
+                      },
+                      "data":{
+                        "spot": item.spot_update
+                      },
+                      "update_where": {"spot": item.spot}
+                    }]
+                  },
+                  "script_file_name": "자재위치목록수정.json",
+                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재위치목록수정"
+                });
+                if (prevURL !== window.location.href) return;
+
+                if (typeof result === 'string'){
+                  result = JSON.parse(result);
+                }
+                console.log('result :>> ', result);
+                alert('위치 수정이 완료되었습니다.');
+
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                alert(error);
+              }
             }
           }
         })
@@ -391,22 +616,109 @@ export default {
       this.DialogDelete = true
     },
 
-    deleteProductInfoConfirm () {
+    async deleteProductInfoConfirm () {
       this.deleteBasicInfo = {};
       this.deleteBasicInfo.modifier = 'user_id';
 
       if(Object.keys(this.editedBasicInfo) == 'classification'){
         this.deleteBasicInfo.classification = this.editedBasicInfo.classification;
         console.log('자재 분류 삭제 : ' + JSON.stringify(this.deleteBasicInfo));
-        this.classification_data.splice(this.editedBasicInfoIndex, 1)
+        const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: {
+              "classification_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{},
+                "delete_where": {"classification": this.deleteBasicInfo.classification}
+              }]
+            },
+            "script_file_name": "자재분류삭제.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재분류삭제"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          console.log('result :>> ', result);
+          alert('분류 삭제가 완료되었습니다.');
+          this.classification_data.splice(this.editedBasicInfoIndex, 1)
+
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          alert(error);
+        }
       }else if(Object.keys(this.editedBasicInfo) == 'manufacturer'){
         this.deleteBasicInfo.manufacturer = this.editedBasicInfo.manufacturer;
         console.log('제조사 삭제 : ' + JSON.stringify(this.deleteBasicInfo));
-        this.manufacturer_data.splice(this.editedBasicInfoIndex, 1)
+        const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: {
+              "manufacturer_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{},
+                "delete_where": {"manufacturer": this.deleteBasicInfo.manufacturer}
+              }]
+            },
+            "script_file_name": "제조사목록삭제.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\제조사목록삭제"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          console.log('result :>> ', result);
+          alert('제조사 삭제가 완료되었습니다.');
+          this.manufacturer_data.splice(this.editedBasicInfoIndex, 1)
+
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          alert(error);
+        }
       }else if(Object.keys(this.editedBasicInfo) == 'spot'){
         this.deleteBasicInfo.spot = this.editedBasicInfo.spot;
-        console.log('제조사 삭제 : ' + JSON.stringify(this.deleteBasicInfo));
-        this.spot_data.splice(this.editedBasicInfoIndex, 1)
+        console.log('위치 삭제 : ' + JSON.stringify(this.deleteBasicInfo));
+        const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: {
+              "spot_table-delete": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{},
+                "delete_where": {"spot": this.deleteBasicInfo.spot}
+              }]
+            },
+            "script_file_name": "자재위치목록삭제.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재위치목록삭제"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          console.log('result :>> ', result);
+          alert('위치 삭제가 완료되었습니다.');
+          this.spot_data.splice(this.editedBasicInfoIndex, 1)
+
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          alert(error);
+        }
       }
 
       // 삭제 요청 = this.deleteBasicInfo
