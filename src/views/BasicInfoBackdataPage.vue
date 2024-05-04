@@ -410,9 +410,7 @@ export default {
                       },
                       "select_where": {"classification": item.classification_update}
                     }]
-                  },
-                  "script_file_name": "자재분류등록.json",
-                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재분류등록"
+                  }
                 });
                 if (prevURL !== window.location.href) return;
 
@@ -442,9 +440,7 @@ export default {
                       },
                       "update_where": {"classification": item.classification}
                     }]
-                  },
-                  "script_file_name": "자재분류수정.json",
-                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재분류수정"
+                  }
                 });
                 if (prevURL !== window.location.href) return;
 
@@ -478,9 +474,7 @@ export default {
                       },
                       "select_where": {"manufacturer": item.manufacturer_update}
                     }]
-                  },
-                  "script_file_name": "제조사목록등록.json",
-                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\제조사목록등록"
+                  }
                 });
                 if (prevURL !== window.location.href) return;
 
@@ -510,9 +504,7 @@ export default {
                       },
                       "update_where": {"manufacturer": item.manufacturer}
                     }]
-                  },
-                  "script_file_name": "제조사목록수정.json",
-                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\제조사목록수정"
+                  }
                 });
                 if (prevURL !== window.location.href) return;
 
@@ -546,9 +538,7 @@ export default {
                       },
                       "select_where": {"spot": item.spot_update}
                     }]
-                  },
-                  "script_file_name": "자재위치목록등록.json",
-                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재위치목록등록"
+                  }
                 });
                 if (prevURL !== window.location.href) return;
 
@@ -578,9 +568,7 @@ export default {
                       },
                       "update_where": {"spot": item.spot}
                     }]
-                  },
-                  "script_file_name": "자재위치목록수정.json",
-                  "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재위치목록수정"
+                  }
                 });
                 if (prevURL !== window.location.href) return;
 
@@ -636,9 +624,7 @@ export default {
                 "data":{},
                 "delete_where": {"classification": this.deleteBasicInfo.classification}
               }]
-            },
-            "script_file_name": "자재분류삭제.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재분류삭제"
+            }
           });
           if (prevURL !== window.location.href) return;
 
@@ -669,9 +655,7 @@ export default {
                 "data":{},
                 "delete_where": {"manufacturer": this.deleteBasicInfo.manufacturer}
               }]
-            },
-            "script_file_name": "제조사목록삭제.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\제조사목록삭제"
+            }
           });
           if (prevURL !== window.location.href) return;
 
@@ -702,9 +686,7 @@ export default {
                 "data":{},
                 "delete_where": {"spot": this.deleteBasicInfo.spot}
               }]
-            },
-            "script_file_name": "자재위치목록삭제.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\자재위치목록삭제"
+            }
           });
           if (prevURL !== window.location.href) return;
 

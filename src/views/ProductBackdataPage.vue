@@ -1634,9 +1634,7 @@ export default {
       try {
         let result = await mux.Server.post({
           path: '/api/sample_rest_api/',
-          params: sendData,
-          "script_file_name": "rooting_원부자재_재고_등록_24_05_01_11_02_GZH.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\원부자재_재고_등록_24_05_01_11_02_718"
+          params: sendData
         });
         if (prevURL !== window.location.href) return;
 
@@ -1768,9 +1766,7 @@ export default {
           try {
             let result = await mux.Server.post({
               path: '/api/sample_rest_api/',
-              params: sendData,
-              "script_file_name": "rooting_원부자재_재고_등록_24_05_01_11_02_GZH.json",
-              "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\원부자재_재고_등록_24_05_01_11_02_718"
+              params: sendData
             });
             if (prevURL !== window.location.href) return;
 
@@ -1839,11 +1835,7 @@ export default {
           try {
             let result = await mux.Server.post({
               path: '/api/sample_rest_api/',
-              params: sendData,
-              "script_file_name": "rooting_원자재_재고_수정_24_05_02_13_40_R8Y.json",
-              "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원자재_재고_수정_24_05_02_13_40_ERR"
-              // "script_file_name": "rooting_원부자재_수정_삭_24_05_01_07_43_S8A.json",
-              // "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원부자재_수정_삭_24_05_01_07_44_PWY"
+              params: sendData
             });
             if (prevURL !== window.location.href) return;
 
@@ -2116,9 +2108,7 @@ export default {
           try {
             let result = await mux.Server.post({
               path: '/api/sample_rest_api/',
-              params: sendData,
-              "script_file_name": "rooting_원부자재_재고_등록_24_05_01_11_02_GZH.json",
-              "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\원부자재_재고_등록_24_05_01_11_02_718"
+              params: sendData
             });
             if (prevURL !== window.location.href) return;
 
@@ -2213,11 +2203,7 @@ export default {
           try {
             let result = await mux.Server.post({
               path: '/api/sample_rest_api/',
-              params: sendData,
-              "script_file_name": "rooting_원자재_재고_수정_24_05_02_13_40_R8Y.json",
-              "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원자재_재고_수정_24_05_02_13_40_ERR"
-              // "script_file_name": "rooting_원부자재_수정_삭_24_05_01_07_43_S8A.json",
-              // "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원부자재_수정_삭_24_05_01_07_44_PWY"
+              params: sendData
             });
             if (prevURL !== window.location.href) return;
 
@@ -2480,9 +2466,7 @@ export default {
           try {
             let result = await mux.Server.post({
               path: '/api/sample_rest_api/',
-              params: sendData,
-              "script_file_name": "rooting_원부자재_재고_등록_24_05_01_11_02_GZH.json",
-              "script_file_path": "data_storage_pion\\json_sql\\stock\\3_원부자재_등록\\원부자재_재고_등록_24_05_01_11_02_718"
+              params: sendData
             });
             if (prevURL !== window.location.href) return;
 
@@ -2607,11 +2591,7 @@ export default {
           try {
             let result = await mux.Server.post({
               path: '/api/sample_rest_api/',
-              params: sendData,
-              "script_file_name": "rooting_원자재_재고_수정_24_05_02_13_40_R8Y.json",
-              "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원자재_재고_수정_24_05_02_13_40_ERR"
-              // "script_file_name": "rooting_원부자재_수정_삭_24_05_01_07_43_S8A.json",
-              // "script_file_path": "data_storage_pion\\json_sql\\stock\\4_원부자재_수정\\원부자재_수정_삭_24_05_01_07_44_PWY"
+              params: sendData
             });
             if (prevURL !== window.location.href) return;
 
@@ -2761,9 +2741,7 @@ export default {
                 "data": {},
                 "delete_where": {"material_code": this.deleteItemList.material_code, "type": "원부자재"}
               }],
-            },
-            "script_file_name": "rooting_원부자재_재고_삭제_24_05_01_11_28_X5S.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\5_원부자재_삭제\\원부자재_재고_삭제_24_05_01_11_28_VDT"
+            }
           });
           if (prevURL !== window.location.href) return;
 
@@ -2815,9 +2793,7 @@ export default {
                 "data": {},
                 "delete_where": {"module_code": this.deleteItemList.module_code}
               }]
-            },
-            "script_file_name": "rooting_원부자재_재고_삭제_24_05_01_11_28_X5S.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\5_원부자재_삭제\\원부자재_재고_삭제_24_05_01_11_28_VDT"
+            }
           });
           if (prevURL !== window.location.href) return;
 
@@ -2873,9 +2849,7 @@ export default {
                 "data": {},
                 "delete_where": {"product_code": this.deleteItemList.product_code}
               }]
-            },
-            "script_file_name": "rooting_원부자재_재고_삭제_24_05_01_11_28_X5S.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\5_원부자재_삭제\\원부자재_재고_삭제_24_05_01_11_28_VDT"
+            }
           });
           if (prevURL !== window.location.href) return;
 
