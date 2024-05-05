@@ -208,50 +208,16 @@ export default {
       // this.classification_list = MaterialSearchPageConfig.test_classification_list;
       const prevURL = window.location.href;
       try {
-        let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
-          "params": [
-
-          ],
-          "script_file_name": "rooting_원자재_검색_24_05_01_12_57_YJ7.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\2_원부자재_검색\\원자재_검색_24_05_01_12_57_EG9"
-        });
+        let result = await mux.Server.getPionBasicInfo();
         if (prevURL !== window.location.href) return;
 
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        this.classification_list = result;
 
-        result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
-          "params": [
-
-          ],
-          "script_file_name": "제조사목록전체검색.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\제조사목록전체검색"
-        });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        this.manufacturer_list = result;
-
-        // result = await mux.Server.post({
-        //   path: '/api/sample_rest_api/',
-        //   "params": [
-
-        //   ],
-        //   "script_file_name": "자재위치목록전체검색.json",
-        //   "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재위치목록전체검색"
-        // });
-        // if (prevURL !== window.location.href) return;
-
-        // if (typeof result === 'string'){
-        //   result = JSON.parse(result);
-        // }
-        // this.spot_list = result;
+        this.classification_list = result.classification;
+        this.manufacturer_list = result.manufacturer;
+        // this.spot_list = result.spot;
 
       } catch (error) {
         if (prevURL !== window.location.href) return;

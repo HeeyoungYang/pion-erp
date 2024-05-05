@@ -507,6 +507,39 @@ mux.Server = {
     }
   },
 
+  getPionBasicInfo() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await mux.Server.get({
+          path: '/api/get_page_display_info/',
+          data: {}
+        });
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        let basicInfo = {};
+        if (result.code == 0) {
+          basicInfo.classification = result.classification.map(data => {
+            return data.classification;
+          });
+          basicInfo.manufacturer = result.manufacturer.map(data => {
+            return data.manufacturer;
+          });
+          basicInfo.spot = result.spot.map(data => {
+            return data.spot;
+          });
+          resolve(basicInfo);
+        } else {
+          reject(result.message);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  
+  }
+
 }
 // Axios인스턴스 설정: 요청 시마다 헤더에 토큰을 추가
 mux.Server.axiosInstance.interceptors.request.use(
