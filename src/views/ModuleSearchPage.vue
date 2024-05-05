@@ -216,8 +216,8 @@ export default {
           "params": [
 
           ],
-          "script_file_name": "자재분류전체검색.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재분류전체검색"
+          "script_file_name": "완제품_검색_24_05_01_12_45_GC6.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_01_12_45_GC6"
         });
         if (prevURL !== window.location.href) return;
 

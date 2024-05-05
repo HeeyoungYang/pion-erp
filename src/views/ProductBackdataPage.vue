@@ -1073,7 +1073,8 @@ export default {
       editedIndex: -1,
       deleteItemList:{},
       excel_photos: [],
-      manufacturer_list:[],
+      //manufacturer_list:[],
+      manufacturer_list: ProductBackDataPageConfig.test_manufacturer_list,
       classification_list:[],
 
       //tabs
@@ -1232,8 +1233,8 @@ export default {
           "params": [
 
           ],
-          "script_file_name": "자재분류전체검색.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재분류전체검색"
+          "script_file_name": "완제품_검색_24_05_01_12_45_GC6.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_01_12_45_GC6"
         });
         if (prevURL !== window.location.href) return;
 
@@ -1553,13 +1554,13 @@ export default {
       }
       //material_excel_upload_data : 불러온 엑셀 데이터
       const type = '원부자재';
-        
+
       let thumbnail_dict = {};
       for (let i = 0; i < this.excel_photos.length; i++) {
         const file = this.excel_photos[i];
         thumbnail_dict[file.name] = mux.Util.uint8ArrayToHexString(await mux.Util.resizeImageToBinary(file, 100, 100));
       }
-      
+
       let noPhoto = false;
       let duplicateSpot = false;
       let material_info_arr = [];
@@ -1715,7 +1716,7 @@ export default {
           }
         })
         this.editRegistMaterial.type = '원부자재'
-        
+
         let thumbnail = '';
         if (this.materialImg){
           thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.materialImg));
@@ -2039,12 +2040,12 @@ export default {
         })
 
         this.editRegistModule.type = '반제품'
-        
+
         let thumbnail = '';
         if (this.moduleImg){
           thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.moduleImg));
         }
-        
+
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
           let sendData = {
             "module_table-insert": [{
@@ -2381,7 +2382,7 @@ export default {
         if (this.productImg){
           thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.productImg));
         }
-        
+
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
           let sendData = {
             "product_table-insert": [{

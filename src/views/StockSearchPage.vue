@@ -215,8 +215,8 @@ export default {
           "params": [
 
           ],
-          "script_file_name": "자재분류전체검색.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재분류전체검색"
+          "script_file_name": "완제품_검색_24_05_01_12_45_GC6.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\완제품_검색_24_05_01_12_45_GC6"
         });
         if (prevURL !== window.location.href) return;
 
@@ -231,7 +231,7 @@ export default {
 
           ],
           "script_file_name": "제조사목록전체검색.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\제조사목록전체검색"
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\제조사목록전체검색"
         });
         if (prevURL !== window.location.href) return;
 
@@ -246,7 +246,7 @@ export default {
 
         //   ],
         //   "script_file_name": "자재위치목록전체검색.json",
-        //   "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재위치목록전체검색"
+        //   "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\자재위치목록전체검색"
         // });
         // if (prevURL !== window.location.href) return;
 
