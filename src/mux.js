@@ -520,13 +520,13 @@ mux.Server = {
         }
         let basicInfo = {};
         if (result.code == 0) {
-          basicInfo.classification = result.classification.map(data => {
+          basicInfo.classification = result.data.classification.map(data => {
             return data.classification;
           });
-          basicInfo.manufacturer = result.manufacturer.map(data => {
+          basicInfo.manufacturer = result.data.manufacturer.map(data => {
             return data.manufacturer;
           });
-          basicInfo.spot = result.spot.map(data => {
+          basicInfo.spot = result.data.spot.map(data => {
             return data.spot;
           });
           resolve(basicInfo);
