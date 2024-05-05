@@ -1244,12 +1244,19 @@ export default {
         alert(error);
       }
       mux.List.addProductBasicInfoLists(this.searchMaterialCardInputs, this.classification_list, this.manufacturer_list);
+      this.searchMaterialCardInputs = JSON.parse(JSON.stringify(this.searchMaterialCardInputs));
       mux.List.addProductBasicInfoLists(this.registMaterialInputs, this.classification_list, this.manufacturer_list);
+      this.registMaterialInputs = JSON.parse(JSON.stringify(this.registMaterialInputs));
       mux.List.addProductBasicInfoLists(this.searchModuleCardInputs, this.classification_list, this.manufacturer_list);
+      this.searchModuleCardInputs = JSON.parse(JSON.stringify(this.searchModuleCardInputs));
       mux.List.addProductBasicInfoLists(this.registModuleInputs, this.classification_list, this.manufacturer_list);
+      this.registModuleInputs = JSON.parse(JSON.stringify(this.registModuleInputs));
       mux.List.addProductBasicInfoLists(this.moduleSearchMaterialInputs, this.classification_list, this.manufacturer_list);
+      this.moduleSearchMaterialInputs = JSON.parse(JSON.stringify(this.moduleSearchMaterialInputs));
       mux.List.addProductBasicInfoLists(this.registProductInputs, this.classification_list, this.manufacturer_list);
+      this.registProductInputs = JSON.parse(JSON.stringify(this.registProductInputs));
       mux.List.addProductBasicInfoLists(this.productSearchMaterialModuleInputs, this.classification_list, this.manufacturer_list);
+      this.productSearchMaterialModuleInputs = JSON.parse(JSON.stringify(this.productSearchMaterialModuleInputs));
 
       // this.material_data = ProductBackDataPageConfig.test_material_data
     },

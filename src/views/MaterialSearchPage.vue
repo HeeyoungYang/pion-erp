@@ -193,16 +193,6 @@ export default {
     //this.initialize()
   },
   methods: {
-    addProductBasicInfoLists(inputType){
-      inputType.forEach( inputs => {
-          if(inputs.label == '분류'){
-            inputs.list = this.classification_list;
-            inputs.list.unshift('All');
-          }else if(inputs.label == '제조사'){
-            inputs.list = this.manufacturer_list;
-          }
-        })
-    },
     async initialize () {
       // this.manufacturer_list = MaterialSearchPageConfig.test_manufacturer_list;
       // this.classification_list = MaterialSearchPageConfig.test_classification_list;
@@ -224,6 +214,7 @@ export default {
         alert(error);
       }
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
+      this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.

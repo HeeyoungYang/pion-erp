@@ -304,9 +304,15 @@ export default {
           result = JSON.parse(result);
         }
 
-        this.classification_data = result.classification;
-        this.manufacturer_data = result.manufacturer;
-        this.spot_data = result.spot;
+        this.classification_data = result.classification.map(data => {
+          return {classification: data}
+        });
+        this.manufacturer_data = result.manufacturer.map(data => {
+          return {manufacturer: data}
+        });
+        this.spot_data = result.spot.map(data => {
+          return {spot: data}
+        });
 
       } catch (error) {
         if (prevURL !== window.location.href) return;

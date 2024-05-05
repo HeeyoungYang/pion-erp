@@ -195,16 +195,6 @@ export default {
     this.initialize()
   },
   methods: {
-    // addProductBasicInfoLists(inputType){
-    //   inputType.forEach( inputs => {
-    //       if(inputs.label == '분류'){
-    //         inputs.list = this.classification_list;
-    //         inputs.list.unshift('All');
-    //       }else if(inputs.label == '제조사'){
-    //         inputs.list = this.manufacturer_list;
-    //       }
-    //     })
-    // },
     async initialize () {
       // this.manufacturer_list = StockSearchPageConfig.test_manufacturer_list;
       // this.classification_list = StockSearchPageConfig.test_classification_list;
@@ -227,6 +217,7 @@ export default {
       }
 
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
+      this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
@@ -251,10 +242,10 @@ export default {
         searchType = '%';
       let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
       if (searchClassification === 'All')
-        searchClassification = '%';
+        searchClassification = '';
       let searchConditions = this.searchCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
-        searchConditions = '%';
+        searchConditions = '';
       let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
       let searchProductName = this.searchCardInputs.find(x=>x.label === '제품명').value;
       let searchModelName = this.searchCardInputs.find(x=>x.label === '모델명').value;

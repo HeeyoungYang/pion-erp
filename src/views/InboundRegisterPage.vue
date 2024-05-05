@@ -462,6 +462,7 @@ export default {
       }
 
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
+      this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
       mux.Rules.rulesSet(this.inboundCardInfoInputs);
 
       try {
