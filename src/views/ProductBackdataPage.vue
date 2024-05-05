@@ -2706,7 +2706,7 @@ export default {
                   "role": "modifier"
                 },
                 "data": {},
-                "delete_where": {"material_code": this.deleteItemList.material_code, "type": "원부자재"}
+                "delete_where": {"product_code": this.deleteItemList.material_code, "type": "원부자재"}
               }],
             }
           });
