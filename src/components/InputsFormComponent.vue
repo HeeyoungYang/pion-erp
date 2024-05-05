@@ -171,6 +171,7 @@
  * @property {Boolean} [dense] - 줄간격 줄임 여부(default:false)
  * @property {Boolean} [hideDetails] - 디테일 숨김 여부(default:false)
  * @property {Boolean} [clearable] - 전역 clearable(default:false)
+ * @property {Boolean} [multiple] - 전역 multiple(default:false)
  * @property {Boolean} [filled] - 전역 filled(default:false)
  * @property {Boolean} [outlined] - 전역 outlined(default:false)
  * @property {Boolean} [smallChips] - 파일 선택 시 chip 사용 여부(default:false)
@@ -184,6 +185,7 @@ export default {
     dense: Boolean,
     hideDetails: Boolean,
     clearable: Boolean,
+    multiple: Boolean,
     filled: Boolean,
     outlined: Boolean,
     smallChips: Boolean
