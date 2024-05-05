@@ -365,7 +365,6 @@ export default {
         product_info.forEach(async data =>{
           if(data.column_name == 'classification'){
             item.classification_update = data.value;
-            item.classification = this.classification_data[this.editedBasicInfoIndex].classification;
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
               const prevURL = window.location.href;
               try {
@@ -391,12 +390,15 @@ export default {
                 }
                 console.log('result :>> ', result);
                 alert('분류 등록이 완료되었습니다.');
+                this.classification_data.push({classification: item.classification_update})
+                data.value = '';
 
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 alert(error);
               }
             }else{// 아니라면 수정
+              item.classification = this.classification_data[this.editedBasicInfoIndex].classification;
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({
@@ -421,6 +423,8 @@ export default {
                 }
                 console.log('result :>> ', result);
                 alert('분류 수정이 완료되었습니다.');
+                this.classification_data[this.editedBasicInfoIndex].classification = item.classification_update+'';
+                this.productInfoDialog = false;
 
               } catch (error) {
                 if (prevURL !== window.location.href) return;
@@ -429,7 +433,6 @@ export default {
             }
           }else if(data.column_name == 'manufacturer'){
             item.manufacturer_update = data.value;
-            item.manufacturer = this.manufacturer_data[this.editedBasicInfoIndex].manufacturer;
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
               const prevURL = window.location.href;
               try {
@@ -455,12 +458,15 @@ export default {
                 }
                 console.log('result :>> ', result);
                 alert('제조사 등록이 완료되었습니다.');
+                this.manufacturer_data.push({manufacturer: item.manufacturer_update})
+                data.value = '';
 
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 alert(error);
               }
             }else{// 아니라면 수정
+              item.manufacturer = this.manufacturer_data[this.editedBasicInfoIndex].manufacturer;
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({
@@ -485,6 +491,8 @@ export default {
                 }
                 console.log('result :>> ', result);
                 alert('제조사 수정이 완료되었습니다.');
+                this.manufacturer_data[this.editedBasicInfoIndex].manufacturer = item.manufacturer_update+'';
+                this.productInfoDialog = false;
 
               } catch (error) {
                 if (prevURL !== window.location.href) return;
@@ -493,7 +501,6 @@ export default {
             }
           }else if(data.column_name == 'spot'){
             item.spot_update = data.value;
-            item.spot = this.spot_data[this.editedBasicInfoIndex].spot;
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
               const prevURL = window.location.href;
               try {
@@ -519,12 +526,15 @@ export default {
                 }
                 console.log('result :>> ', result);
                 alert('위치 등록이 완료되었습니다.');
+                this.spot_data.push({spot: item.spot_update})
+                data.value = '';
 
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 alert(error);
               }
             }else{// 아니라면 수정
+              item.spot = this.spot_data[this.editedBasicInfoIndex].spot;
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({
@@ -549,6 +559,8 @@ export default {
                 }
                 console.log('result :>> ', result);
                 alert('위치 수정이 완료되었습니다.');
+                this.spot_data[this.editedBasicInfoIndex].spot = item.spot_update+'';
+                this.productInfoDialog = false;
 
               } catch (error) {
                 if (prevURL !== window.location.href) return;
