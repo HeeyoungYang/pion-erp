@@ -14,7 +14,7 @@
     {"label":"ID", "column_name":"user_id"},
     {"label":"이름", "column_name":"name"},
     {"label":"부서", "column_name":"department", "list":["인사", "재무", "개발", "디자인", "기획", "기획관리", "제조", "자재", "기술지원", "영업", "영업관리"]},
-    {"label":"직책", "column_name":"position", "list":["사원", "주임", "대리", "선임", "과장", "책임", "차장", "수석", "부장", "이사", "상무", "전무", "대표", "매니저"]},
+    {"label":"직책", "column_name":"position", "list":["사원", "주임", "대리", "선임", "과장", "책임", "차장", "수석", "부장", "팀장", "이사", "상무", "전무", "부사장", "대표", "매니저"]},
     {"label":"전화번호", "column_name":"office_phone_number"},
     {"label":"내선", "column_name":"office_internal_number"},
     {"label":"이메일", "column_name":"email"},
