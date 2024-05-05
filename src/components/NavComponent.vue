@@ -351,7 +351,9 @@ import mux from '@/mux';
     }),
     computed: {
       productPagesInfo() {
-        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
         let productPagesInfo = [];
         this.productPages.forEach(data => {
           if (data[data.length-1].length === 0){
@@ -367,7 +369,9 @@ import mux from '@/mux';
         return productPagesInfo;
       },
       inboundPagesInfo() {
-        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
         let inboundPagesInfo = [];
         this.inboundPages.forEach(data => {
           if (data[data.length-1].length === 0){
@@ -383,7 +387,9 @@ import mux from '@/mux';
         return inboundPagesInfo;
       },
       shipPagesInfo() {
-        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
         let shipPagesInfo = [];
         this.shipPages.forEach(data => {
           if (data[data.length-1].length === 0){
@@ -399,7 +405,9 @@ import mux from '@/mux';
         return shipPagesInfo;
       },
       estimatePagesInfo() {
-        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
         let estimatePagesInfo = [];
         this.estimatePages.forEach(data => {
           if (data[data.length-1].length === 0){
@@ -415,7 +423,9 @@ import mux from '@/mux';
         return estimatePagesInfo;
       },
       obtainOrderPagesInfo() {
-        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
         let obtainOrderPagesInfo = [];
         this.obtainOrderPages.forEach(data => {
           if (data[data.length-1].length === 0){
@@ -431,7 +441,9 @@ import mux from '@/mux';
         return obtainOrderPagesInfo;
       },
       backDataPagesInfo() {
-        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
         let backDataPagesInfo = [];
         this.backDataPages.forEach(data => {
           if (data[data.length-1].length === 0){
@@ -447,7 +459,9 @@ import mux from '@/mux';
         return backDataPagesInfo;
       },
       adminPagesInfo() {
-        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
         let adminPagesInfo = [];
         this.adminPages.forEach(data => {
           if (data[data.length-1].length === 0){

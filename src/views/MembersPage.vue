@@ -254,9 +254,11 @@ export default {
         return;
       }
 
-      const userDepartment = this.$cookies.get(this.$configJson.cookies.department.key);
-      if (userDepartment !== 'master'){
-        memberList = memberList.filter(data => data.department !== 'master');
+      const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);
+      if (userPosition !== 'master'){
+        memberList = memberList.filter(data => data.position !== 'master');
+      }else {
+        this.registMemberInputs.find(x=>x.column_name === 'position').list.push('master');
       }
 
       this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
