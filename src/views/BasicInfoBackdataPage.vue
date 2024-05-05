@@ -297,50 +297,16 @@ export default {
       // this.spot_data = BasicInfoBackDataPageConfig.test_spot_data
       const prevURL = window.location.href;
       try {
-        let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
-          "params": [
-
-          ],
-          "script_file_name": "완제품_검색_24_05_01_12_45_GC6.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_01_12_45_GC6"
-        });
+        let result = await mux.Server.getPionBasicInfo();
         if (prevURL !== window.location.href) return;
 
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        this.classification_data = result;
 
-        result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
-          "params": [
-
-          ],
-          "script_file_name": "제조사목록전체검색.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\제조사목록전체검색"
-        });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        this.manufacturer_data = result;
-
-        result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
-          "params": [
-
-          ],
-          "script_file_name": "자재위치목록전체검색.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\자재위치목록전체검색"
-        });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        this.spot_data = result;
+        this.classification_data = result.classification;
+        this.manufacturer_data = result.manufacturer;
+        this.spot_data = result.spot;
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
