@@ -23,6 +23,7 @@
       </v-list-item> -->
 
         <v-list-group
+          v-if="productPagesInfo.length > 0 || inboundPagesInfo.length > 0 || shipPagesInfo.length > 0"
           :value="productMenu"
           prepend-icon="mdi-archive-search"
         >
@@ -31,7 +32,7 @@
           </template>
 
           <v-list-item
-              v-for="([title, icon, to], i) in productPages"
+              v-for="([title, icon, to], i) in productPagesInfo"
               :key="i"
               link
               :to="to"
@@ -45,6 +46,7 @@
           </v-list-item>
 
           <v-list-group
+            v-if="inboundPagesInfo.length > 0"
             no-action
             sub-group
             :value="inboundMenu"
@@ -56,7 +58,7 @@
             </template>
 
             <v-list-item
-              v-for="([title, icon, to], i) in inboundPages"
+              v-for="([title, icon, to], i) in inboundPagesInfo"
               :key="i"
               link
               :to="to"
@@ -71,6 +73,7 @@
           </v-list-group>
 
           <v-list-group
+            v-if="shipPagesInfo.length > 0"
             no-action
             sub-group
             :value="shipMenu"
@@ -82,7 +85,7 @@
             </template>
 
             <v-list-item
-              v-for="([title, icon, to], i) in shipPages"
+              v-for="([title, icon, to], i) in shipPagesInfo"
               :key="i"
               link
               :to="to"
@@ -96,7 +99,9 @@
             </v-list-item>
           </v-list-group>
         </v-list-group>
+
         <v-list-group
+          v-if="estimatePagesInfo.length > 0 || obtainOrderPagesInfo.length > 0"
           :value="salesMenu"
           prepend-icon="mdi-clipboard-text"
         >
@@ -105,6 +110,7 @@
           </template>
 
           <v-list-group
+            v-if="estimatePagesInfo.length > 0"
             no-action
             sub-group
             :value="estimateMenu"
@@ -116,7 +122,7 @@
             </template>
 
             <v-list-item
-              v-for="([title, icon, to], i) in estimatePages"
+              v-for="([title, icon, to], i) in estimatePagesInfo"
               :key="i"
               link
               :to="to"
@@ -131,6 +137,7 @@
           </v-list-group>
 
           <v-list-group
+            v-if="obtainOrderPagesInfo.length > 0"
             no-action
             sub-group
             :value="obtainOrderMenu"
@@ -142,7 +149,7 @@
             </template>
 
             <v-list-item
-              v-for="([title, icon, to], i) in obtainOrderPages"
+              v-for="([title, icon, to], i) in obtainOrderPagesInfo"
               :key="i"
               link
               :to="to"
@@ -180,6 +187,7 @@
           </v-list-item>
         </v-list-group> -->
         <v-list-group
+          v-if="backDataPagesInfo.length > 0"
           :value="backDataMenu"
           prepend-icon="mdi-file-cog"
         >
@@ -188,7 +196,7 @@
           </template>
 
           <v-list-item
-              v-for="([title, icon, to], i) in backDataPages"
+              v-for="([title, icon, to], i) in backDataPagesInfo"
               :key="i"
               link
               :to="to"
@@ -202,6 +210,7 @@
           </v-list-item>
         </v-list-group>
         <v-list-group
+          v-if="adminPagesInfo.length > 0"
           :value="userMenu"
           prepend-icon="mdi-account-circle"
         >
@@ -210,7 +219,7 @@
           </template>
 
           <v-list-item
-              v-for="([title, icon, to], i) in adminPages"
+              v-for="([title, icon, to], i) in adminPagesInfo"
               :key="i"
               link
               :to="to"
@@ -298,30 +307,30 @@ import mux from '@/mux';
         right: null,
 
       productPages: [
-        ['재고 현황', '', '/stock-search'],
-        ['원부자재', '', '/material-search'],
-        ['반제품', '', '/module-search'],
-        ['완제품', '', '/product-search'],
-        ['원가', '', '/product-cost'],
+        ['재고 현황', '', '/stock-search', []],
+        ['원부자재', '', '/material-search', []],
+        ['반제품', '', '/module-search', []],
+        ['완제품', '', '/product-search', []],
+        ['원가', '', '/product-cost', ['master']],
       ],
 
       inboundPages: [
-        ['입고 현황', '', '/inbound-search'],
-        ['입고 신청', '', '/inbound-register'],
+        ['입고 현황', '', '/inbound-search', ['master']],
+        ['입고 신청', '', '/inbound-register', ['master']],
       ],
 
       shipPages: [
-        ['출고 현황', '', '/ship-search'],
-        ['출고 신청', '', '/ship-register'],
+        ['출고 현황', '', '/ship-search', ['master']],
+        ['출고 신청', '', '/ship-register', ['master']],
       ],
 
       estimatePages: [
-        ['견적서', '', '/estimate'],
-        ['견적서 현황', '', '/estimate-search'],
+        ['견적서', '', '/estimate', ['master']],
+        ['견적서 현황', '', '/estimate-search', ['master']],
       ],
       obtainOrderPages: [
-        ['수주서', '', '/obtain-order'],
-        ['수주서 현황', '', '/obtain-order-search'],
+        ['수주서', '', '/obtain-order', ['master']],
+        ['수주서 현황', '', '/obtain-order-search', ['master']],
       ],
       // estimatePages: [
       //   ['견적 작성', '', '/home'],
@@ -329,17 +338,131 @@ import mux from '@/mux';
       // ],
 
       backDataPages: [
-        ['재고 정보', '', '/product-backdata'],
-        ['노무비 정보', '', '/labor-cost-backdata'],
-        ['기본 정보', '', '/basic-info-backdata'],
+        ['재고 정보', '', '/product-backdata', []],
+        ['노무비 정보', '', '/labor-cost-backdata', ['master']],
+        ['기본 정보', '', '/basic-info-backdata', []],
       ],
 
       adminPages: [
-        ['계정 목록', '', '/member-list'],
-        ['권한 설정', '', '/member-authorization'],
-        ['페이지 설정', '', '/page-setting'],
+        ['계정 목록', '', '/member-list', ['master', '매니저']],
+        ['권한 설정', '', '/member-authorization', ['master']],
+        ['페이지 설정', '', '/page-setting', ['master']],
       ],
     }),
+    computed: {
+      productPagesInfo() {
+        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        let productPagesInfo = [];
+        this.productPages.forEach(data => {
+          if (data[data.length-1].length === 0){
+            productPagesInfo.push(data);
+          } else {
+            data[data.length-1].forEach(permission => {
+              if (permissionArr.includes(permission)){
+                productPagesInfo.push(data);
+              }
+            });
+          }
+        });
+        return productPagesInfo;
+      },
+      inboundPagesInfo() {
+        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        let inboundPagesInfo = [];
+        this.inboundPages.forEach(data => {
+          if (data[data.length-1].length === 0){
+            inboundPagesInfo.push(data);
+          } else {
+            data[data.length-1].forEach(permission => {
+              if (permissionArr.includes(permission)){
+                inboundPagesInfo.push(data);
+              }
+            });
+          }
+        });
+        return inboundPagesInfo;
+      },
+      shipPagesInfo() {
+        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        let shipPagesInfo = [];
+        this.shipPages.forEach(data => {
+          if (data[data.length-1].length === 0){
+            shipPagesInfo.push(data);
+          } else {
+            data[data.length-1].forEach(permission => {
+              if (permissionArr.includes(permission)){
+                shipPagesInfo.push(data);
+              }
+            });
+          }
+        });
+        return shipPagesInfo;
+      },
+      estimatePagesInfo() {
+        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        let estimatePagesInfo = [];
+        this.estimatePages.forEach(data => {
+          if (data[data.length-1].length === 0){
+            estimatePagesInfo.push(data);
+          } else {
+            data[data.length-1].forEach(permission => {
+              if (permissionArr.includes(permission)){
+                estimatePagesInfo.push(data);
+              }
+            });
+          }
+        });
+        return estimatePagesInfo;
+      },
+      obtainOrderPagesInfo() {
+        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        let obtainOrderPagesInfo = [];
+        this.obtainOrderPages.forEach(data => {
+          if (data[data.length-1].length === 0){
+            obtainOrderPagesInfo.push(data);
+          } else {
+            data[data.length-1].forEach(permission => {
+              if (permissionArr.includes(permission)){
+                obtainOrderPagesInfo.push(data);
+              }
+            });
+          }
+        });
+        return obtainOrderPagesInfo;
+      },
+      backDataPagesInfo() {
+        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        let backDataPagesInfo = [];
+        this.backDataPages.forEach(data => {
+          if (data[data.length-1].length === 0){
+            backDataPagesInfo.push(data);
+          } else {
+            data[data.length-1].forEach(permission => {
+              if (permissionArr.includes(permission)){
+                backDataPagesInfo.push(data);
+              }
+            });
+          }
+        });
+        return backDataPagesInfo;
+      },
+      adminPagesInfo() {
+        const permissionArr = [this.$cookies.get(this.$configJson.cookies.department.key)]; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        let adminPagesInfo = [];
+        this.adminPages.forEach(data => {
+          if (data[data.length-1].length === 0){
+            adminPagesInfo.push(data);
+          } else {
+            data[data.length-1].forEach(permission => {
+              if (permissionArr.includes(permission)){
+                adminPagesInfo.push(data);
+              }
+            });
+          }
+        });
+        return adminPagesInfo;
+      },
+    },
     methods: {
       clickUserMenu(item) {
         if (!item.to){
