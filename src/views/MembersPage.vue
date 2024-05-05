@@ -253,6 +253,12 @@ export default {
         alert(error);
         return;
       }
+
+      const userDepartment = this.$cookies.get(this.$configJson.cookies.department.key);
+      if (userDepartment !== 'master'){
+        memberList = memberList.filter(data => data.department !== 'master');
+      }
+
       this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
       this.loading_dialog = false;
     },
