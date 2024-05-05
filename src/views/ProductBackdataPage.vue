@@ -1269,7 +1269,7 @@ export default {
       let searchModelName;
       let searchProductSpec;
       let searchManufacturer;
-      let searchStockMoreZero = 0;
+      let searchStockMoreZero = '';
 
       if(this.tab_main == 1){
         searchType = '원부자재'
@@ -1468,16 +1468,18 @@ export default {
         let product_data_arr = [];
         result.forEach(data => {
           let isExist = false;
-          for (let i = 0; i < product_data_arr.length; i++) {
-            if (product_data_arr[i]._code === data._code) {
-              product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
-              isExist = true;
-              break;
+          if (!this.material_stock_more_0 || data.stock_num > 0){
+            for (let i = 0; i < product_data_arr.length; i++) {
+              if (product_data_arr[i]._code === data._code) {
+                product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
+                isExist = true;
+                break;
+              }
             }
-          }
-          if (!isExist) {
-            data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
-            product_data_arr.push(data);
+            if (!isExist) {
+              data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
+              product_data_arr.push(data);
+            }
           }
         });
 
@@ -1891,7 +1893,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        this.module_data = result;
+        this.module_data = result.filter(data=>(!this.stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
 
         this.module_data.forEach(data =>{
           data.item_code = data.code;

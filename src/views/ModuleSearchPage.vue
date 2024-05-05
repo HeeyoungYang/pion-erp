@@ -284,7 +284,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        this.product_data = result;
+        this.product_data = result.filter(data=>(!this.stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
 
         this.product_data.forEach(data =>{
           data.item_code = data.code;
