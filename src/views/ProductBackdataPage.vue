@@ -1342,16 +1342,18 @@ export default {
         let product_data_arr = [];
         result.forEach(data => {
           let isExist = false;
-          for (let i = 0; i < product_data_arr.length; i++) {
-            if (product_data_arr[i]._code === data._code) {
-              product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
-              isExist = true;
-              break;
+          if (data.type !== '완제품'){
+            for (let i = 0; i < product_data_arr.length; i++) {
+              if (product_data_arr[i]._code === data._code) {
+                product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
+                isExist = true;
+                break;
+              }
             }
-          }
-          if (!isExist) {
-            data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
-            product_data_arr.push(data);
+            if (!isExist) {
+              data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
+              product_data_arr.push(data);
+            }
           }
         });
 
