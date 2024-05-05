@@ -1189,7 +1189,7 @@ export default {
     registModuleInputsPhoto: {
       handler: async function (newInput) {
         if (newInput.value) {
-          this.moduleImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 300, 300));
+          this.moduleImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 100, 100));
         }else {
           this.moduleImg = '';
         }
@@ -1199,7 +1199,7 @@ export default {
     registProductInputsPhoto: {
       handler: async function (newInput) {
         if (newInput.value) {
-          this.productImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 300, 300));
+          this.productImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 100, 100));
         }else {
           this.productImg = '';
         }
