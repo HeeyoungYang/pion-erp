@@ -123,41 +123,41 @@ export default {
       dialogDelete: false,
       
       registMemberInputs:[
-        {label:'ID', column_name:'user_id',  col:'12', sm:'6', lg:'6', value: '',
+        {label:MemberPageConfig.regist_member_inputs[0].label, column_name:MemberPageConfig.regist_member_inputs[0].column_name, col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || 'ID 입력',
           v => !!(v &&   /[a-zA-Z]/.test(v) ) || '형식 확인(영문 대소문자)',
         ]},
-        {label:'이름', column_name:'name',  col:'12', sm:'6', lg:'6', value: '',
+        {label:MemberPageConfig.regist_member_inputs[1].label, column_name:MemberPageConfig.regist_member_inputs[1].column_name,  col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '이름 입력',
           v => !!(v &&  /[가-힣]/.test(v) ) || '형식 확인(한글)',
         ]},
-        {label:'부서', column_name:'department', type:'select', list:['기획관리', '영업팀'], value:'', col:'12', sm:'6', lg:'6',
+        {label:MemberPageConfig.regist_member_inputs[2].label, column_name:MemberPageConfig.regist_member_inputs[2].column_name, type:'select', list:MemberPageConfig.regist_member_inputs[2].list, value:'', col:'12', sm:'6', lg:'6',
         rules: [
           v => !!v || '부서 선택',
         ]},
-        {label:'직책', column_name:'position', type:'select', list:['사원', '주임', '대리', '매니저'], value:'', col:'12', sm:'6', lg:'6',
+        {label:MemberPageConfig.regist_member_inputs[3].label, column_name:MemberPageConfig.regist_member_inputs[3].column_name, type:'select', list:MemberPageConfig.regist_member_inputs[3].list, value:'', col:'12', sm:'6', lg:'6',
         rules: [
           v => !!v || '직책 선택',
         ]},
-        {label:'전화번호', column_name:'office_phone_number', col:'12', sm:'6', lg:'6', value: '',
+        {label:MemberPageConfig.regist_member_inputs[4].label, column_name:MemberPageConfig.regist_member_inputs[4].column_name, col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '전화번호 입력',
           v => !!(v &&  /^(0(2|3[1-3]|4[1-4]|5[1-5]|6[1-4]|70))-(\d{3,4})-(\d{4})$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
         ]},
-        {label:'내선', column_name:'office_internal_number', col:'12', sm:'6', lg:'6', value: '',
+        {label:MemberPageConfig.regist_member_inputs[5].label, column_name:MemberPageConfig.regist_member_inputs[5].column_name, col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '내선번호 입력',
           v => !!(v &&  /[0-9]$/.test(v) ) || '숫자만 입력',
         ]},
-        {label:'이메일', column_name:'email', col:'12', sm:'6', lg:'6', value: '',
+        {label:MemberPageConfig.regist_member_inputs[6].label, column_name:MemberPageConfig.regist_member_inputs[6].column_name, col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '이메일 입력',
         v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@gmail.com+/.test(v) ) || '이메일 형식 확인(@gmail.com)', // for test
         // v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)', // origin
         ]},
-        {label:'모바일', column_name:'phone_number', col:'12', sm:'6', lg:'6', value: '',
+        {label:MemberPageConfig.regist_member_inputs[7].label, column_name:MemberPageConfig.regist_member_inputs[7].column_name, col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '휴대전화번호 입력',
           v => !!(v &&  /^(?:(010-\d{4})|(01[1|6|7|8|9]-\d{3,4}))-(\d{4})$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
