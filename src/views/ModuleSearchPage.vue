@@ -229,6 +229,7 @@ export default {
     detailInfoItem(item){
       this.detail_dialog = true;
       this.stockDetails = item.spot_stock
+      console.log('this.stockDetails :>> ', this.stockDetails);
     },
     closeDetail () {
       this.detail_dialog = false
