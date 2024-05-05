@@ -247,9 +247,9 @@ export default {
           path: '/api/sample_rest_api/',
           "params": [
               {
-                "product_table.name": searchName,
-                "product_table.product_code": searchProductCode,
-                "product_table.spec": searchSpec
+                "product_table.name": searchName ? searchName : "",
+                "product_table.product_code": searchProductCode ? searchProductCode : "",
+                "product_table.spec": searchSpec ? searchSpec : ""
               }
           ],
           "script_file_name": "rooting_완제품_검색_24_05_01_12_44_A0W.json",

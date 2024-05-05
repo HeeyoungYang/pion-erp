@@ -239,7 +239,7 @@ export default {
         searchClassification = '%';
       let searchConditions = this.searchCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
-        searchConditions = '%';
+        searchConditions = '';
       let searchMaterialCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
       let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
       let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
@@ -253,15 +253,15 @@ export default {
           path: '/api/sample_rest_api/',
           params: [
             {
-              "material_table.classification": searchClassification,
-              "material_table.manufacturer": searchManufacturer,
-              "material_table.model": searchModel,
-              "material_table.name": searchName,
-              "material_table.material_code": searchMaterialCode,
-              "material_table.spec": searchSpec,
+              "material_table.classification": searchClassification ? searchClassification : "",
+              "material_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "material_table.model": searchModel ? searchModel : "",
+              "material_table.name": searchName ? searchName : "",
+              "material_table.material_code": searchMaterialCode ? searchMaterialCode : "",
+              "material_table.spec": searchSpec ? searchSpec : "",
               "material_table.type": "원부자재",
 
-              "stock_table.conditions": searchConditions,
+              "stock_table.conditions": searchConditions ? searchConditions : "",
               "stock_table.stock_num": searchStockMoreZero
             }
           ],

@@ -245,7 +245,7 @@ export default {
         searchClassification = '%';
       let searchConditions = this.searchCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
-        searchConditions = '%';
+        searchConditions = '';
       let searchModuleCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
       let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
       let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
@@ -259,19 +259,19 @@ export default {
           path: '/api/sample_rest_api/',
           "params": [
                 {
-                    "module_table.classification": searchClassification,
-                    "module_table.manufacturer": searchManufacturer,
-                    "module_table.model": searchModel,
-                    "module_table.module_code": searchModuleCode,
-                    "module_table.name": searchName,
-                    "module_table.spec": searchSpec,
+                    "module_table.classification": searchClassification ? searchClassification : "",
+                    "module_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+                    "module_table.model": searchModel ? searchModel : "",
+                    "module_table.module_code": searchModuleCode ? searchModuleCode : "",
+                    "module_table.name": searchName ? searchName : "",
+                    "module_table.spec": searchSpec ? searchSpec : "",
                     // "material_table.classification": "",
                     // "material_table.manufacturer": "",
                     // "material_table.material_code": "",
                     // "material_table.model": "",
                     // "material_table.name": "",
                     // "material_table.spec": "",
-                    "stock_table.conditions": "",
+                    "stock_table.conditions": searchConditions ? searchConditions : "",
                     "stock_table.stock_num": searchStockMoreZero
                 }
             ],

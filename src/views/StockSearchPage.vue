@@ -242,7 +242,7 @@ export default {
         searchType = '%';
       let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
       if (searchClassification === 'All')
-        searchClassification = '';
+        searchClassification = '%';
       let searchConditions = this.searchCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
         searchConditions = '';
@@ -259,31 +259,31 @@ export default {
           path: '/api/sample_rest_api/',
           params: [
             {
-              "product_table.classification": searchClassification,
-              "product_table.manufacturer": searchManufacturer,
-              "product_table.model": searchModelName,
-              "product_table.name": searchProductName,
-              "product_table.product_code": searchProductCode,
-              "product_table.spec": searchProductSpec,
-              "product_table.type": searchType,
+              "product_table.classification": searchClassification ? searchClassification : "",
+              "product_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "product_table.model": searchModelName ? searchModelName : "",
+              "product_table.name": searchProductName ? searchProductName : "",
+              "product_table.product_code": searchProductCode ? searchProductCode : "",
+              "product_table.spec": searchProductSpec ? searchProductSpec : "",
+              "product_table.type": searchType ? searchType : "",
 
-              "module_table.classification": searchClassification,
-              "module_table.manufacturer": searchManufacturer,
-              "module_table.model": searchModelName,
-              "module_table.name": searchProductName,
-              "module_table.module_code": searchProductCode,
-              "module_table.spec": searchProductSpec,
-              "module_table.type": searchType,
+              "module_table.classification": searchClassification ? searchClassification : "",
+              "module_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "module_table.model": searchModelName ? searchModelName : "",
+              "module_table.name": searchProductName ? searchProductName : "",
+              "module_table.module_code": searchProductCode ? searchProductCode : "",
+              "module_table.spec": searchProductSpec ? searchProductSpec : "",
+              "module_table.type": searchType ? searchType : "",
 
-              "material_table.classification": searchClassification,
-              "material_table.manufacturer": searchManufacturer,
-              "material_table.model": searchModelName,
-              "material_table.name": searchProductName,
-              "material_table.material_code": searchProductCode,
-              "material_table.spec": searchProductSpec,
-              "material_table.type": searchType,
+              "material_table.classification": searchClassification ? searchClassification : "",
+              "material_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "material_table.model": searchModelName ? searchModelName : "",
+              "material_table.name": searchProductName ? searchProductName : "",
+              "material_table.material_code": searchProductCode ? searchProductCode : "",
+              "material_table.spec": searchProductSpec ? searchProductSpec : "",
+              "material_table.type": searchType ? searchType : "",
 
-              "stock_table.conditions": searchConditions,
+              "stock_table.conditions": searchConditions ? searchConditions : "",
               "stock_table.stock_num": searchStockMoreZero
             }
           ],

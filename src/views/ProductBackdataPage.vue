@@ -1299,29 +1299,29 @@ export default {
           path: '/api/sample_rest_api/',
           params: [
             {
-              "product_table.classification": searchClassification,
-              "product_table.manufacturer": searchManufacturer,
-              "product_table.model": searchModelName,
-              "product_table.name": searchProductName,
-              "product_table.product_code": searchProductCode,
-              "product_table.spec": searchProductSpec,
-              "product_table.type": searchType,
+              "product_table.classification": searchClassification ? searchClassification : "",
+              "product_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "product_table.model": searchModelName ? searchModelName : "",
+              "product_table.name": searchProductName ? searchProductName : "",
+              "product_table.product_code": searchProductCode ? searchProductCode : "",
+              "product_table.spec": searchProductSpec ? searchProductSpec : "",
+              "product_table.type": searchType ? searchType : "",
 
-              "module_table.classification": searchClassification,
-              "module_table.manufacturer": searchManufacturer,
-              "module_table.model": searchModelName,
-              "module_table.name": searchProductName,
-              "module_table.module_code": searchProductCode,
-              "module_table.spec": searchProductSpec,
-              "module_table.type": searchType,
+              "module_table.classification": searchClassification ? searchClassification : "",
+              "module_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "module_table.model": searchModelName ? searchModelName : "",
+              "module_table.name": searchProductName ? searchProductName : "",
+              "module_table.module_code": searchProductCode ? searchProductCode : "",
+              "module_table.spec": searchProductSpec ? searchProductSpec : "",
+              "module_table.type": searchType ? searchType : "",
 
-              "material_table.classification": searchClassification,
-              "material_table.manufacturer": searchManufacturer,
-              "material_table.model": searchModelName,
-              "material_table.name": searchProductName,
-              "material_table.material_code": searchProductCode,
-              "material_table.spec": searchProductSpec,
-              "material_table.type": searchType,
+              "material_table.classification": searchClassification ? searchClassification : "",
+              "material_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "material_table.model": searchModelName ? searchModelName : "",
+              "material_table.name": searchProductName ? searchProductName : "",
+              "material_table.material_code": searchProductCode ? searchProductCode : "",
+              "material_table.spec": searchProductSpec ? searchProductSpec : "",
+              "material_table.type": searchType ? searchType : "",
 
               "stock_table.conditions": "",
               "stock_table.stock_num": searchStockMoreZero
@@ -1404,24 +1404,20 @@ export default {
       this.material_total_stock_num = 0;
       this.material_total_stock_price = 0;
 
-      let searchType;
-      let searchClassification;
-      let searchProductCode;
-      let searchProductName ;
-      let searchModelName;
-      let searchProductSpec;
-      let searchManufacturer;
       let searchStockMoreZero = this.material_stock_more_0 ? 0 : '';
 
-      searchType = '원부자재';
-      searchClassification = this.searchMaterialCardInputs.find(x=>x.label === '분류').value;
+      let searchType = '원부자재';
+      let searchClassification = this.searchMaterialCardInputs.find(x=>x.label === '분류').value;
       if (searchClassification === 'All')
         searchClassification = '%';
-      searchProductCode = this.searchMaterialCardInputs.find(x=>x.label === '관리코드').value;
-      searchProductName = this.searchMaterialCardInputs.find(x=>x.label === '제품명').value;
-      searchModelName = this.searchMaterialCardInputs.find(x=>x.label === '모델명').value;
-      searchProductSpec = this.searchMaterialCardInputs.find(x=>x.label === '사양').value;
-      searchManufacturer = this.searchMaterialCardInputs.find(x=>x.label === '제조사').value;
+      let searchConditions = this.searchMaterialCardInputs.find(x=>x.label === '상태').value;
+      if (searchConditions === 'All')
+        searchConditions = '';
+      let searchProductCode = this.searchMaterialCardInputs.find(x=>x.label === '관리코드').value;
+      let searchProductName = this.searchMaterialCardInputs.find(x=>x.label === '제품명').value;
+      let searchModelName = this.searchMaterialCardInputs.find(x=>x.label === '모델명').value;
+      let searchProductSpec = this.searchMaterialCardInputs.find(x=>x.label === '사양').value;
+      let searchManufacturer = this.searchMaterialCardInputs.find(x=>x.label === '제조사').value;
 
       const prevURL = window.location.href;
       try {
@@ -1429,31 +1425,31 @@ export default {
           path: '/api/sample_rest_api/',
           params: [
             {
-              "product_table.classification": searchClassification,
-              "product_table.manufacturer": searchManufacturer,
-              "product_table.model": searchModelName,
-              "product_table.name": searchProductName,
-              "product_table.product_code": searchProductCode,
-              "product_table.spec": searchProductSpec,
-              "product_table.type": searchType,
+              "product_table.classification": searchClassification ? searchClassification : "",
+              "product_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "product_table.model": searchModelName ? searchModelName : "",
+              "product_table.name": searchProductName ? searchProductName : "",
+              "product_table.product_code": searchProductCode ? searchProductCode : "",
+              "product_table.spec": searchProductSpec ? searchProductSpec : "",
+              "product_table.type": searchType ? searchType : "",
 
-              "module_table.classification": searchClassification,
-              "module_table.manufacturer": searchManufacturer,
-              "module_table.model": searchModelName,
-              "module_table.name": searchProductName,
-              "module_table.module_code": searchProductCode,
-              "module_table.spec": searchProductSpec,
-              "module_table.type": searchType,
+              "module_table.classification": searchClassification ? searchClassification : "",
+              "module_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "module_table.model": searchModelName ? searchModelName : "",
+              "module_table.name": searchProductName ? searchProductName : "",
+              "module_table.module_code": searchProductCode ? searchProductCode : "",
+              "module_table.spec": searchProductSpec ? searchProductSpec : "",
+              "module_table.type": searchType ? searchType : "",
 
-              "material_table.classification": searchClassification,
-              "material_table.manufacturer": searchManufacturer,
-              "material_table.model": searchModelName,
-              "material_table.name": searchProductName,
-              "material_table.material_code": searchProductCode,
-              "material_table.spec": searchProductSpec,
-              "material_table.type": searchType,
+              "material_table.classification": searchClassification ? searchClassification : "",
+              "material_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "material_table.model": searchModelName ? searchModelName : "",
+              "material_table.name": searchProductName ? searchProductName : "",
+              "material_table.material_code": searchProductCode ? searchProductCode : "",
+              "material_table.spec": searchProductSpec ? searchProductSpec : "",
+              "material_table.type": searchType ? searchType : "",
 
-              "stock_table.conditions": "",
+              "stock_table.conditions": searchConditions ? searchConditions : "",
               "stock_table.stock_num": searchStockMoreZero
             }
           ],
@@ -1857,7 +1853,7 @@ export default {
         searchClassification = '%';
       let searchConditions = this.searchModuleCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
-        searchConditions = '%';
+        searchConditions = '';
       let searchModuleCode = this.searchModuleCardInputs.find(x=>x.label === '관리코드').value;
       let searchName = this.searchModuleCardInputs.find(x=>x.label === '제품명').value;
       let searchModel = this.searchModuleCardInputs.find(x=>x.label === '모델명').value;
@@ -1871,19 +1867,19 @@ export default {
           path: '/api/sample_rest_api/',
           "params": [
                 {
-                    "module_table.classification": searchClassification,
-                    "module_table.manufacturer": searchManufacturer,
-                    "module_table.model": searchModel,
-                    "module_table.module_code": searchModuleCode,
-                    "module_table.name": searchName,
-                    "module_table.spec": searchSpec,
+                    "module_table.classification": searchClassification ? searchClassification : "",
+                    "module_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+                    "module_table.model": searchModel ? searchModel : "",
+                    "module_table.module_code": searchModuleCode ? searchModuleCode : "",
+                    "module_table.name": searchName ? searchName : "",
+                    "module_table.spec": searchSpec ? searchSpec : "",
                     // "material_table.classification": "",
                     // "material_table.manufacturer": "",
                     // "material_table.material_code": "",
                     // "material_table.model": "",
                     // "material_table.name": "",
                     // "material_table.spec": "",
-                    "stock_table.conditions": "",
+                    "stock_table.conditions": searchConditions ? searchConditions : "",
                     "stock_table.stock_num": searchStockMoreZero
                 }
             ],
@@ -2213,9 +2209,9 @@ export default {
           path: '/api/sample_rest_api/',
           "params": [
               {
-                "product_table.name": searchName,
-                "product_table.product_code": searchProductCode,
-                "product_table.spec": searchSpec
+                "product_table.name": searchName ? searchName : "",
+                "product_table.product_code": searchProductCode ? searchProductCode : "",
+                "product_table.spec": searchSpec ? searchSpec : ""
               }
           ],
           "script_file_name": "rooting_완제품_검색_24_05_01_12_44_A0W.json",
