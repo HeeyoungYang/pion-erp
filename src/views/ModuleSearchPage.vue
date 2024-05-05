@@ -252,7 +252,7 @@ export default {
       let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
       let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
       let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
-      let searchStockMoreZero = this.stock_more_0 ? 0 : '';
+      let searchStockMoreZero = '';
 
       const prevURL = window.location.href;
       try {

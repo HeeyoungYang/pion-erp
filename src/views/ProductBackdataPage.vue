@@ -1404,7 +1404,7 @@ export default {
       this.material_total_stock_num = 0;
       this.material_total_stock_price = 0;
 
-      let searchStockMoreZero = this.material_stock_more_0 ? 0 : '';
+      let searchStockMoreZero = '';
 
       let searchType = '원부자재';
       let searchClassification = this.searchMaterialCardInputs.find(x=>x.label === '분류').value;
@@ -1863,7 +1863,7 @@ export default {
       let searchModel = this.searchModuleCardInputs.find(x=>x.label === '모델명').value;
       let searchSpec = this.searchModuleCardInputs.find(x=>x.label === '사양').value;
       let searchManufacturer = this.searchModuleCardInputs.find(x=>x.label === '제조사').value;
-      let searchStockMoreZero = this.module_stock_more_0 ? 0 : '';
+      let searchStockMoreZero = '';
 
       const prevURL = window.location.href;
       try {
@@ -2206,7 +2206,7 @@ export default {
         searchProductCode = '%';
       let searchName = this.searchProductCardInputs.find(x=>x.label === '제품명').value;
       let searchSpec = this.searchProductCardInputs.find(x=>x.label === '사양').value;
-      // let searchStockMoreZero = this.stock_more_0 ? 0 : '';
+      // let searchStockMoreZero = '';
 
       const prevURL = window.location.href;
       try {
