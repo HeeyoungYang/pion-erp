@@ -2688,8 +2688,8 @@ export default {
       }
       set_item.forEach(item => {
         for(let d=0; d<selected_item.length; d++){
-          if(item._code === selected_item[d].item_code){
-            check_duplicate.push(item._code);
+          if(item.item_code === selected_item[d]._code){
+            check_duplicate.push(item.item_code);
           }
         }
       })
