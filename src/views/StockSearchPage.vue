@@ -287,8 +287,8 @@ export default {
               "stock_table.stock_num": searchStockMoreZero
             }
           ],
-          "script_file_name": "rooting_재고_검색_24_05_01_11_35_BHW.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_01_11_35_HPY"
+          "script_file_name": "rooting_재고_검색_24_05_05_16_53_9PE.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_05_16_53_X2W"
         });
         if (prevURL !== window.location.href) return;
 
