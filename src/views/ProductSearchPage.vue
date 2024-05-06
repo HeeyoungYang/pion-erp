@@ -295,8 +295,9 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        if(error.response['data']['failed_info'] !== undefined)
-          alert(JSON.stringify(error.response['data']['failed_info']));
+        console.error(error);
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
         else
           alert(error);
       }
