@@ -1300,14 +1300,6 @@ export default {
           path: '/api/sample_rest_api/',
           params: [
             {
-              "product_table.classification": searchClassification ? searchClassification : "",
-              "product_table.manufacturer": searchManufacturer ? searchManufacturer : "",
-              "product_table.model": searchModelName ? searchModelName : "",
-              "product_table.name": searchProductName ? searchProductName : "",
-              "product_table.product_code": searchProductCode ? searchProductCode : "",
-              "product_table.spec": searchProductSpec ? searchProductSpec : "",
-              "product_table.type": searchType ? searchType : "",
-
               "module_table.classification": searchClassification ? searchClassification : "",
               "module_table.manufacturer": searchManufacturer ? searchManufacturer : "",
               "module_table.model": searchModelName ? searchModelName : "",
