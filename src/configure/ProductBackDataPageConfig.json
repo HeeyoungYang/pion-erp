@@ -341,7 +341,7 @@
   },
   "product_headers": [
     { "text": "", "align": "center", "value": "" },
-    { "text": "제품코드", "align": "center", "value": "product_item_code"},
+    { "text": "제품코드", "align": "center", "value": "item_code"},
     { "text": "제품명", "align": "center", "value": "name"},
     { "text": "모델명", "align": "center", "value": "model"},
     { "text": "사양", "align": "center", "value": "spec"},

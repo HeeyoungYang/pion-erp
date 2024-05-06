@@ -793,6 +793,7 @@
                             cols="12"
                           >
                           <DataTableComponent
+                              v-if="data.belong_data"
                               :headers="product_headers"
                               :items="data.belong_data"
                               :item-key="data.belong_data.item_code"
