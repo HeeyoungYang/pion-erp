@@ -822,7 +822,7 @@ export default {
     imageBinary(thumbnail){
       if(thumbnail){
         try {
-          let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
+          let imgURL = mux.Util.binaryToURL(thumbnail);
           return imgURL
         } catch{
           return '';

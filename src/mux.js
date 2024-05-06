@@ -788,7 +788,11 @@ mux.Util = {
 
 
   binaryToURL(binary){
-    return URL.createObjectURL(new Blob([binary]));
+    if (binary){
+      return URL.createObjectURL(new Blob([binary]));
+    }else {
+      return '';
+    }
   },
 
   /**
