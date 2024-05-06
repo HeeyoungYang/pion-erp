@@ -399,7 +399,10 @@ export default {
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
-                alert(error);
+                if(error.response['data']['failed_info'] !== undefined)
+                  alert(JSON.stringify(error.response['data']['failed_info']));
+                else
+                  alert(error);
               }
             }else{// 아니라면 수정
               item.classification = this.classification_data[this.editedBasicInfoIndex].classification;
@@ -436,7 +439,10 @@ export default {
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
-                alert(error);
+                if(error.response['data']['failed_info'] !== undefined)
+                  alert(JSON.stringify(error.response['data']['failed_info']));
+                else
+                  alert(error);
               }
             }
           }else if(data.column_name == 'manufacturer'){
@@ -475,7 +481,10 @@ export default {
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
-                alert(error);
+                if(error.response['data']['failed_info'] !== undefined)
+                  alert(JSON.stringify(error.response['data']['failed_info']));
+                else
+                  alert(error);
               }
             }else{// 아니라면 수정
               item.manufacturer = this.manufacturer_data[this.editedBasicInfoIndex].manufacturer;
@@ -512,7 +521,10 @@ export default {
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
-                alert(error);
+                if(error.response['data']['failed_info'] !== undefined)
+                  alert(JSON.stringify(error.response['data']['failed_info']));
+                else
+                  alert(error);
               }
             }
           }else if(data.column_name == 'spot'){
@@ -551,7 +563,10 @@ export default {
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
-                alert(error);
+                if(error.response['data']['failed_info'] !== undefined)
+                  alert(JSON.stringify(error.response['data']['failed_info']));
+                else
+                  alert(error);
               }
             }else{// 아니라면 수정
               item.spot = this.spot_data[this.editedBasicInfoIndex].spot;
@@ -588,7 +603,10 @@ export default {
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
-                alert(error);
+                if(error.response['data']['failed_info'] !== undefined)
+                  alert(JSON.stringify(error.response['data']['failed_info']));
+                else
+                  alert(error);
               }
             }
           }
@@ -649,7 +667,10 @@ export default {
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          alert(error);
+          if(error.response['data']['failed_info'] !== undefined)
+            alert(JSON.stringify(error.response['data']['failed_info']));
+          else
+            alert(error);
         }
       }else if(Object.keys(this.editedBasicInfo) == 'manufacturer'){
         this.deleteBasicInfo.manufacturer = this.editedBasicInfo.manufacturer;
@@ -684,7 +705,10 @@ export default {
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          alert(error);
+          if(error.response['data']['failed_info'] !== undefined)
+            alert(JSON.stringify(error.response['data']['failed_info']));
+          else
+            alert(error);
         }
       }else if(Object.keys(this.editedBasicInfo) == 'spot'){
         this.deleteBasicInfo.spot = this.editedBasicInfo.spot;
@@ -717,10 +741,12 @@ export default {
             if (prevURL !== window.location.href) return;
             alert(result['failed_info']);
           }
-
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          alert(error);
+          if(error.response['data']['failed_info'] !== undefined)
+            alert(JSON.stringify(error.response['data']['failed_info']));
+          else
+            alert(error);
         }
       }
 

@@ -1383,7 +1383,10 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        if(error.response['data']['failed_info'] !== undefined)
+          alert(JSON.stringify(error.response['data']['failed_info']));
+        else
+          alert(error);
       }
 
       // if(this.tab_main == 1){
@@ -1512,7 +1515,10 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        if(error.response['data']['failed_info'] !== undefined)
+          alert(JSON.stringify(error.response['data']['failed_info']));
+        else
+          alert(error);
       }
 
     },
@@ -1633,7 +1639,10 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        if(error.response['data']['failed_info'] !== undefined)
+          alert(JSON.stringify(error.response['data']['failed_info']));
+        else
+          alert(error);
       }
     },
     editMaterialItem (item) {
@@ -1771,7 +1780,10 @@ export default {
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
-            alert(error);
+            if(error.response['data']['failed_info'] !== undefined)
+              alert(JSON.stringify(error.response['data']['failed_info']));
+            else
+              alert(error);
           }
         }else{// 아니라면 수정
           let sendData = {
@@ -1844,7 +1856,10 @@ export default {
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
-            alert(error);
+            if(error.response['data']['failed_info'] !== undefined)
+              alert(JSON.stringify(error.response['data']['failed_info']));
+            else
+              alert(error);
           }
         }
         console.log('원부자재 데이터 : ' + JSON.stringify(this.editRegistMaterial));
@@ -1948,7 +1963,10 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        if(error.response['data']['failed_info'] !== undefined)
+          alert(JSON.stringify(error.response['data']['failed_info']));
+        else
+          alert(error);
       }
 
     },
@@ -2127,7 +2145,10 @@ export default {
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
-            alert(error);
+            if(error.response['data']['failed_info'] !== undefined)
+              alert(JSON.stringify(error.response['data']['failed_info']));
+            else
+              alert(error);
           }
         }else{// 아니라면 수정
           let sendData = {
@@ -2226,7 +2247,10 @@ export default {
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
-            alert(error);
+            if(error.response['data']['failed_info'] !== undefined)
+              alert(JSON.stringify(error.response['data']['failed_info']));
+            else
+              alert(error);
           }
         }
 
@@ -2299,7 +2323,10 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        if(error.response['data']['failed_info'] !== undefined)
+          alert(JSON.stringify(error.response['data']['failed_info']));
+        else
+          alert(error);
       }
     },
 
@@ -2497,7 +2524,10 @@ export default {
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
-            alert(error);
+            if(error.response['data']['failed_info'] !== undefined)
+              alert(JSON.stringify(error.response['data']['failed_info']));
+            else
+              alert(error);
           }
         }else{// 아니라면 수정
           let sendData = {
@@ -2626,7 +2656,10 @@ export default {
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
-            alert(error);
+            if(error.response['data']['failed_info'] !== undefined)
+              alert(JSON.stringify(error.response['data']['failed_info']));
+            else
+              alert(error);
           }
         }
         console.log('완제품 데이터 : ' + JSON.stringify(this.editRegistProduct));
@@ -2781,7 +2814,10 @@ export default {
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          alert(error);
+          if(error.response['data']['failed_info'] !== undefined)
+            alert(JSON.stringify(error.response['data']['failed_info']));
+          else
+            alert(error);
         }
       }else if(this.tab_main == 1){
         this.deleteItemList.module_code = this.editRegistModule.item_code;
@@ -2837,7 +2873,10 @@ export default {
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          alert(error);
+          if(error.response['data']['failed_info'] !== undefined)
+            alert(JSON.stringify(error.response['data']['failed_info']));
+          else
+            alert(error);
         }
       }else if(this.tab_main == 2){
         this.deleteItemList.product_code = this.editRegistProduct.item_code;
@@ -2897,7 +2936,10 @@ export default {
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          alert(error);
+          if(error.response['data']['failed_info'] !== undefined)
+            alert(JSON.stringify(error.response['data']['failed_info']));
+          else
+            alert(error);
         }
       }
 

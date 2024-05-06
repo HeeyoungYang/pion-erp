@@ -314,7 +314,10 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        if(error.response['data']['failed_info'] !== undefined)
+          alert(JSON.stringify(error.response['data']['failed_info']));
+        else
+          alert(error);
       }
       // this.product_data = ModuleSearchPageConfig.test_product_data;
     }
