@@ -388,11 +388,15 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                console.log('result :>> ', result);
-                alert('분류 등록이 완료되었습니다.');
-                this.classification_data.push({classification: item.classification_update})
-                data.value = '';
-
+                if(result['code'] == 0){
+                  console.log('result :>> ', result);
+                  alert('분류 등록이 완료되었습니다.');
+                  this.classification_data.push({classification: item.classification_update})
+                  data.value = '';
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  alert(result['failed_info']);
+                }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 alert(error);
@@ -421,11 +425,15 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                console.log('result :>> ', result);
-                alert('분류 수정이 완료되었습니다.');
-                this.classification_data[this.editedBasicInfoIndex].classification = item.classification_update+'';
-                this.productInfoDialog = false;
-
+                if(result['code'] == 0){
+                  console.log('result :>> ', result);
+                  alert('분류 수정이 완료되었습니다.');
+                  this.classification_data[this.editedBasicInfoIndex].classification = item.classification_update+'';
+                  this.productInfoDialog = false;
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  alert(result['failed_info']);
+                }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 alert(error);
@@ -456,11 +464,15 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                console.log('result :>> ', result);
-                alert('제조사 등록이 완료되었습니다.');
-                this.manufacturer_data.push({manufacturer: item.manufacturer_update})
-                data.value = '';
-
+                if(result['code'] == 0){
+                  console.log('result :>> ', result);
+                  alert('제조사 등록이 완료되었습니다.');
+                  this.manufacturer_data.push({manufacturer: item.manufacturer_update})
+                  data.value = '';
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  alert(result['failed_info']);
+                }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 alert(error);
@@ -489,11 +501,15 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                console.log('result :>> ', result);
-                alert('제조사 수정이 완료되었습니다.');
-                this.manufacturer_data[this.editedBasicInfoIndex].manufacturer = item.manufacturer_update+'';
-                this.productInfoDialog = false;
-
+                if(result['code'] == 0){
+                  console.log('result :>> ', result);
+                  alert('제조사 수정이 완료되었습니다.');
+                  this.manufacturer_data[this.editedBasicInfoIndex].manufacturer = item.manufacturer_update+'';
+                  this.productInfoDialog = false;
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  alert(result['failed_info']);
+                }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 alert(error);
@@ -524,11 +540,15 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                console.log('result :>> ', result);
-                alert('위치 등록이 완료되었습니다.');
-                this.spot_data.push({spot: item.spot_update})
-                data.value = '';
-
+                if(result['code'] == 0){
+                  console.log('result :>> ', result);
+                  alert('위치 등록이 완료되었습니다.');
+                  this.spot_data.push({spot: item.spot_update})
+                  data.value = '';
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  alert(result['failed_info']);
+                }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 alert(error);
@@ -557,11 +577,15 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                console.log('result :>> ', result);
-                alert('위치 수정이 완료되었습니다.');
-                this.spot_data[this.editedBasicInfoIndex].spot = item.spot_update+'';
-                this.productInfoDialog = false;
-
+                if(result['code'] == 0){
+                  console.log('result :>> ', result);
+                  alert('위치 수정이 완료되었습니다.');
+                  this.spot_data[this.editedBasicInfoIndex].spot = item.spot_update+'';
+                  this.productInfoDialog = false;
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  alert(result['failed_info']);
+                }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 alert(error);
@@ -615,10 +639,14 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          console.log('result :>> ', result);
-          alert('분류 삭제가 완료되었습니다.');
-          this.classification_data.splice(this.editedBasicInfoIndex, 1)
-
+          if(result['code'] == 0){
+            console.log('result :>> ', result);
+            alert('분류 삭제가 완료되었습니다.');
+            this.classification_data.splice(this.editedBasicInfoIndex, 1)
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+          }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           alert(error);
@@ -646,10 +674,14 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          console.log('result :>> ', result);
-          alert('제조사 삭제가 완료되었습니다.');
-          this.manufacturer_data.splice(this.editedBasicInfoIndex, 1)
-
+          if(result['code'] == 0){
+            console.log('result :>> ', result);
+            alert('제조사 삭제가 완료되었습니다.');
+            this.manufacturer_data.splice(this.editedBasicInfoIndex, 1)
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+          }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           alert(error);
@@ -677,9 +709,14 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          console.log('result :>> ', result);
-          alert('위치 삭제가 완료되었습니다.');
-          this.spot_data.splice(this.editedBasicInfoIndex, 1)
+          if(result['code'] == 0){
+            console.log('result :>> ', result);
+            alert('위치 삭제가 완료되었습니다.');
+            this.spot_data.splice(this.editedBasicInfoIndex, 1)
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+          }
 
         } catch (error) {
           if (prevURL !== window.location.href) return;

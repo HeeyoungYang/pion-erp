@@ -295,47 +295,51 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        result = result.map(a => {
-          a.stock_price = Math.round(a.unit_price * a.stock_num)
-          return a;
-        });
-        let product_data_arr = [];
-        result.forEach(data => {
-          let isExist = false;
-          if (!this.stock_more_0 || data.stock_num > 0){
-            for (let i = 0; i < product_data_arr.length; i++) {
-              if (product_data_arr[i]._code === data._code) {
-                product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
-                isExist = true;
-                break;
+        if(result['code'] == 0){
+
+          result = result['data'].map(a => {
+            a.stock_price = Math.round(a.unit_price * a.stock_num)
+            return a;
+          });
+
+          let product_data_arr = [];
+          result.forEach(data => {
+            let isExist = false;
+            if (!this.stock_more_0 || data.stock_num > 0){
+              for (let i = 0; i < product_data_arr.length; i++) {
+                if (product_data_arr[i]._code === data._code) {
+                  product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
+                  isExist = true;
+                  break;
+                }
+              }
+              if (!isExist) {
+                data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
+                product_data_arr.push(data);
               }
             }
-            if (!isExist) {
-              data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
-              product_data_arr.push(data);
-            }
-          }
-        });
-        this.product_data = product_data_arr;
-        // this.product_data = StockSearchPageConfig.test_product_data;
+          });
+          this.product_data = product_data_arr;
+          // this.product_data = StockSearchPageConfig.test_product_data;
 
-        this.product_data.forEach(data =>{
-          let stock_calc = 0;
-          for(let d=0; d<data.spot_stock.length; d++){
-            stock_calc += data.spot_stock[d].stock_num;
-          }
-          data.total_stock = stock_calc
-          data.item_price = data.unit_price * data.total_stock
-          this.total_stock_num += data.total_stock
-          this.total_stock_price += data.item_price
-        })
+          this.product_data.forEach(data =>{
+            let stock_calc = 0;
+            for(let d=0; d<data.spot_stock.length; d++){
+              stock_calc += data.spot_stock[d].stock_num;
+            }
+            data.total_stock = stock_calc
+            data.item_price = data.unit_price * data.total_stock
+            this.total_stock_num += data.total_stock
+            this.total_stock_price += data.item_price
+          })
+        } else {
+          if (prevURL !== window.location.href) return;
+          alert(result['failed_info']);
+        }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
-
-
-
     }
   }
 }

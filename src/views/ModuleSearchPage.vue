@@ -284,37 +284,39 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        this.product_data = result.filter(data=>(!this.stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
+        if(result['code'] == 0){
+          this.product_data = result['data'].filter(data=>(!this.stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
 
-        this.product_data.forEach(data =>{
-          data.item_code = data.code;
-          delete data.code;
+          this.product_data.forEach(data =>{
+            data.item_code = data.code;
+            delete data.code;
 
-          if(data.belong_data){
-            for(let b=0; b<data.belong_data.length; b++){
-              data.belong_data[b].item_code = data.belong_data[b].code;
-              delete data.belong_data[b].code;
+            if(data.belong_data){
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].item_code = data.belong_data[b].code;
+                delete data.belong_data[b].code;
+              }
             }
-          }
-          let stock_calc = 0;
-          if (data.spot_stock){
-            for(let d=0; d<data.spot_stock.length; d++){
-              stock_calc += data.spot_stock[d].stock_num;
+            let stock_calc = 0;
+            if (data.spot_stock){
+              for(let d=0; d<data.spot_stock.length; d++){
+                stock_calc += data.spot_stock[d].stock_num;
+              }
             }
-          }
-          data.total_stock = stock_calc
-          data.item_price = data.unit_price * data.total_stock
-          this.total_stock_num += data.total_stock
-          this.total_stock_price += data.item_price
-        })
+            data.total_stock = stock_calc
+            data.item_price = data.unit_price * data.total_stock
+            this.total_stock_num += data.total_stock
+            this.total_stock_price += data.item_price
+          })
+        }else{
+          if (prevURL !== window.location.href) return;
+          alert(result['failed_info']);
+        }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
-
       // this.product_data = ModuleSearchPageConfig.test_product_data;
-
-
     }
   }
 }

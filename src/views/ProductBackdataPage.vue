@@ -1335,53 +1335,56 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        result = result.map(a => {
-          a.stock_price = Math.round(a.unit_price * a.stock_num)
-          return a;
-        });
-        let product_data_arr = [];
-        result.forEach(data => {
-          let isExist = false;
-          if (data.type !== '완제품'){
-            for (let i = 0; i < product_data_arr.length; i++) {
-              if (product_data_arr[i]._code === data._code) {
-                product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
-                isExist = true;
-                break;
+        if(result['code'] == 0){
+          result = result['data'].map(a => {
+            a.stock_price = Math.round(a.unit_price * a.stock_num)
+            return a;
+          });
+          let product_data_arr = [];
+          result.forEach(data => {
+            let isExist = false;
+            if (data.type !== '완제품'){
+              for (let i = 0; i < product_data_arr.length; i++) {
+                if (product_data_arr[i]._code === data._code) {
+                  product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
+                  isExist = true;
+                  break;
+                }
+              }
+              if (!isExist) {
+                data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
+                product_data_arr.push(data);
               }
             }
-            if (!isExist) {
-              data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
-              product_data_arr.push(data);
-            }
-          }
-        });
+          });
 
-        if(this.tab_main == 1){
-          this.search_material_for_module_data = product_data_arr;
-          this.selected_material_for_module_data = []
+          if(this.tab_main == 1){
+            this.search_material_for_module_data = product_data_arr;
+            this.selected_material_for_module_data = []
+          }else{
+            this.search_items_for_product_data = product_data_arr;
+            this.selected_items_for_product_data = []
+          }
+
+          this.product_data.forEach(data =>{
+            let stock_calc = 0;
+            for(let d=0; d<data.spot_stock.length; d++){
+              stock_calc += data.spot_stock[d].stock_num;
+            }
+            data.total_stock = stock_calc
+            data.item_price = data.unit_price * data.total_stock
+            this.total_stock_num += data.total_stock
+            this.total_stock_price += data.item_price
+          })
         }else{
-          this.search_items_for_product_data = product_data_arr;
-          this.selected_items_for_product_data = []
+          if (prevURL !== window.location.href) return;
+          alert(result['failed_info']);
         }
 
-        this.product_data.forEach(data =>{
-          let stock_calc = 0;
-          for(let d=0; d<data.spot_stock.length; d++){
-            stock_calc += data.spot_stock[d].stock_num;
-          }
-          data.total_stock = stock_calc
-          data.item_price = data.unit_price * data.total_stock
-          this.total_stock_num += data.total_stock
-          this.total_stock_price += data.item_price
-        })
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
-
-
-
 
       // if(this.tab_main == 1){
       //   this.search_material_for_module_data = ProductBackDataPageConfig.test_search_material_for_module_data;
@@ -1463,44 +1466,50 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        result = result.map(a => {
-          a.stock_price = Math.round(a.unit_price * a.stock_num)
-          return a;
-        });
-        let product_data_arr = [];
-        result.forEach(data => {
-          let isExist = false;
-          if (!this.material_stock_more_0 || data.stock_num > 0){
-            for (let i = 0; i < product_data_arr.length; i++) {
-              if (product_data_arr[i]._code === data._code) {
-                product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
-                isExist = true;
-                break;
+        if(result['code'] == 0){
+          result = result['data'].map(a => {
+            a.stock_price = Math.round(a.unit_price * a.stock_num)
+            return a;
+          });
+          let product_data_arr = [];
+          result.forEach(data => {
+            let isExist = false;
+            if (!this.material_stock_more_0 || data.stock_num > 0){
+              for (let i = 0; i < product_data_arr.length; i++) {
+                if (product_data_arr[i]._code === data._code) {
+                  product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
+                  isExist = true;
+                  break;
+                }
+              }
+              if (!isExist) {
+                data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
+                product_data_arr.push(data);
               }
             }
-            if (!isExist) {
-              data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
-              product_data_arr.push(data);
+          });
+
+          this.material_data = product_data_arr;
+          // this.material_data = ProductBackDataPageConfig.test_material_data;
+
+          this.material_data.forEach(data =>{
+            data.item_code = data._code;
+            delete data._code;
+            let stock_calc = 0;
+            for(let d=0; d<data.spot_stock.length; d++){
+              stock_calc += data.spot_stock[d].stock_num;
             }
-          }
-        });
+            data.total_stock = stock_calc
+            data.item_price = data.unit_price * data.total_stock
+            this.material_total_stock_num += data.total_stock
+            this.material_total_stock_price += data.item_price
+          })
+          console.log(this.material_data)
+        }else{
+          if (prevURL !== window.location.href) return;
+          alert(result['failed_info']);
+        }
 
-        this.material_data = product_data_arr;
-        // this.material_data = ProductBackDataPageConfig.test_material_data;
-
-        this.material_data.forEach(data =>{
-          data.item_code = data._code;
-          delete data._code;
-          let stock_calc = 0;
-          for(let d=0; d<data.spot_stock.length; d++){
-            stock_calc += data.spot_stock[d].stock_num;
-          }
-          data.total_stock = stock_calc
-          data.item_price = data.unit_price * data.total_stock
-          this.material_total_stock_num += data.total_stock
-          this.material_total_stock_price += data.item_price
-        })
-        console.log(this.material_data)
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
@@ -1615,9 +1624,13 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        console.log('result :>> ', result);
-        alert('원부자재 등록이 완료되었습니다');
-
+        if(result['code'] == 0){
+          console.log('result :>> ', result);
+          alert('원부자재 등록이 완료되었습니다');
+        } else {
+          if (prevURL !== window.location.href) return;
+          alert(result['failed_info']);
+        }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
@@ -1749,9 +1762,13 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            console.log('result :>> ', result);
-            alert('원부자재 등록이 완료되었습니다');
-
+            if(result['code'] == 0){
+              console.log('result :>> ', result);
+              alert('원부자재 등록이 완료되었습니다');
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             alert(error);
@@ -1818,9 +1835,13 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            console.log('result :>> ', result);
-            alert('원부자재 수정이 완료되었습니다');
-
+            if(result['code'] == 0){
+              console.log('result :>> ', result);
+              alert('원부자재 수정이 완료되었습니다');
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             alert(error);
@@ -1897,29 +1918,34 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        this.module_data = result.filter(data=>(!this.module_stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
+        if(result['code'] == 0){
+          this.module_data = result['data'].filter(data=>(!this.module_stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
 
-        this.module_data.forEach(data =>{
-          data.item_code = data.code;
-          delete data.code;
+          this.module_data.forEach(data =>{
+            data.item_code = data.code;
+            delete data.code;
 
-          if(data.belong_data){
-            for(let b=0; b<data.belong_data.length; b++){
-              data.belong_data[b].item_code = data.belong_data[b].code;
-              delete data.belong_data[b].code;
+            if(data.belong_data){
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].item_code = data.belong_data[b].code;
+                delete data.belong_data[b].code;
+              }
             }
-          }
-          let stock_calc = 0;
-          if (data.spot_stock){
-            for(let d=0; d<data.spot_stock.length; d++){
-              stock_calc += data.spot_stock[d].stock_num;
+            let stock_calc = 0;
+            if (data.spot_stock){
+              for(let d=0; d<data.spot_stock.length; d++){
+                stock_calc += data.spot_stock[d].stock_num;
+              }
             }
-          }
-          data.total_stock = stock_calc
-          data.item_price = data.unit_price * data.total_stock
-          this.module_total_stock_num += data.total_stock
-          this.module_total_stock_price += data.item_price
-        })
+            data.total_stock = stock_calc
+            data.item_price = data.unit_price * data.total_stock
+            this.module_total_stock_num += data.total_stock
+            this.module_total_stock_price += data.item_price
+          })
+        }else{
+          if (prevURL !== window.location.href) return;
+          alert(result['failed_info']);
+        }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
@@ -2092,9 +2118,13 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            console.log('result :>> ', result);
-            alert('반제품 등록이 완료되었습니다');
-
+            if(result['code'] == 0){
+              console.log('result :>> ', result);
+              alert('반제품 등록이 완료되었습니다');
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             alert(error);
@@ -2187,9 +2217,13 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            console.log('result :>> ', result);
-            alert('반제품 수정이 완료되었습니다');
-
+            if(result['code'] == 0){
+              console.log('result :>> ', result);
+              alert('반제품 수정이 완료되었습니다');
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             alert(error);
@@ -2229,36 +2263,40 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        this.product_data = result;
+        if(result['code'] == 0){
+          this.product_data = result['data'];
 
-        this.product_data.forEach(data =>{
-          data.item_code = data.code;
-          delete data.code;
+          this.product_data.forEach(data =>{
+            data.item_code = data.code;
+            delete data.code;
 
-          if(data.belong_data){
-            for(let b=0; b<data.belong_data.length; b++){
-              data.belong_data[b].item_code = data.belong_data[b].code;
-              delete data.belong_data[b].code;
-              if(data.belong_data[b].belong_data){
-                for(let c=0; c<data.belong_data[b].belong_data.length; c++){
-                  data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
-                  delete data.belong_data[b].belong_data[c].code;
+            if(data.belong_data){
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].item_code = data.belong_data[b].code;
+                delete data.belong_data[b].code;
+                if(data.belong_data[b].belong_data){
+                  for(let c=0; c<data.belong_data[b].belong_data.length; c++){
+                    data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
+                    delete data.belong_data[b].belong_data[c].code;
+                  }
                 }
               }
             }
-          }
-          let stock_calc = 0;
-          if (data.spot_stock){
-            for(let d=0; d<data.spot_stock.length; d++){
-              stock_calc += data.spot_stock[d].stock_num;
+            let stock_calc = 0;
+            if (data.spot_stock){
+              for(let d=0; d<data.spot_stock.length; d++){
+                stock_calc += data.spot_stock[d].stock_num;
+              }
             }
-          }
-          data.total_stock = stock_calc
-          data.item_price = data.unit_price * data.total_stock
-          // this.total_stock_num += data.total_stock
-          // this.total_stock_price += data.item_price
-        })
-
+            data.total_stock = stock_calc
+            data.item_price = data.unit_price * data.total_stock
+            // this.total_stock_num += data.total_stock
+            // this.total_stock_price += data.item_price
+          })
+        }else{
+          if (prevURL !== window.location.href) return;
+          alert(result['failed_info']);
+        }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
@@ -2450,9 +2488,13 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            console.log('result :>> ', result);
-            alert('완제품 등록이 완료되었습니다');
-
+            if(result['code'] == 0){
+              console.log('result :>> ', result);
+              alert('완제품 등록이 완료되었습니다');
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             alert(error);
@@ -2575,9 +2617,13 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            console.log('result :>> ', result);
-            alert('완제품 수정이 완료되었습니다');
-
+            if(result['code'] == 0){
+              console.log('result :>> ', result);
+              alert('완제품 수정이 완료되었습니다');
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             alert(error);
@@ -2725,10 +2771,14 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          console.log('result :>> ', result);
-          alert('삭제가 완료되었습니다');
-          this.material_data.splice(this.editedIndex, 1)
-
+          if(result['code'] == 0){
+            console.log('result :>> ', result);
+            alert('삭제가 완료되었습니다');
+            this.material_data.splice(this.editedIndex, 1)
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+          }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           alert(error);
@@ -2777,10 +2827,14 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          console.log('result :>> ', result);
-          alert('삭제가 완료되었습니다');
-          this.module_data.splice(this.editedIndex, 1)
-
+          if(result['code'] == 0){
+            console.log('result :>> ', result);
+            alert('삭제가 완료되었습니다');
+            this.module_data.splice(this.editedIndex, 1)
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+          }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           alert(error);
@@ -2833,10 +2887,14 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          console.log('result :>> ', result);
-          alert('삭제가 완료되었습니다');
-          this.product_data.splice(this.editedIndex, 1)
-
+          if(result['code'] == 0){
+            console.log('result :>> ', result);
+            alert('삭제가 완료되었습니다');
+            this.product_data.splice(this.editedIndex, 1)
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+          }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           alert(error);

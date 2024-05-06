@@ -260,43 +260,44 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        this.product_data = result;
+        if(result['code'] == 0){
+          this.product_data = result['data'];
+          this.product_data.forEach(data =>{
+            data.item_code = data.code;
+            delete data.code;
 
-        this.product_data.forEach(data =>{
-          data.item_code = data.code;
-          delete data.code;
-
-          if(data.belong_data){
-            for(let b=0; b<data.belong_data.length; b++){
-              data.belong_data[b].item_code = data.belong_data[b].code;
-              delete data.belong_data[b].code;
-              if(data.belong_data[b].belong_data){
-                for(let c=0; c<data.belong_data[b].belong_data.length; c++){
-                  data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
-                  delete data.belong_data[b].belong_data[c].code;
+            if(data.belong_data){
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].item_code = data.belong_data[b].code;
+                delete data.belong_data[b].code;
+                if(data.belong_data[b].belong_data){
+                  for(let c=0; c<data.belong_data[b].belong_data.length; c++){
+                    data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
+                    delete data.belong_data[b].belong_data[c].code;
+                  }
                 }
               }
             }
-          }
-          let stock_calc = 0;
-          if (data.spot_stock){
-            for(let d=0; d<data.spot_stock.length; d++){
-              stock_calc += data.spot_stock[d].stock_num;
+            let stock_calc = 0;
+            if (data.spot_stock){
+              for(let d=0; d<data.spot_stock.length; d++){
+                stock_calc += data.spot_stock[d].stock_num;
+              }
             }
-          }
-          data.total_stock = stock_calc
-          data.item_price = data.unit_price * data.total_stock
-          // this.total_stock_num += data.total_stock
-          // this.total_stock_price += data.item_price
-        })
-
+            data.total_stock = stock_calc
+            data.item_price = data.unit_price * data.total_stock
+            // this.total_stock_num += data.total_stock
+            // this.total_stock_price += data.item_price
+          })
+        }else{
+          if (prevURL !== window.location.href) return;
+          alert(result['failed_info']);
+        }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
-
       // this.product_data = ProductSearchPageConfig.test_product_data;
-
     }
   },
   computed: {
