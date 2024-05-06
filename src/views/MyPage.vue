@@ -230,23 +230,23 @@ export default {
         this.userInputs = [
           {icon: 'mdi-crowd', column_name:'department', label: '부서', value:  this.user_info.department, col:'12', sm:'6', lg:'6', disabled:true},
           {icon: 'mdi-map-marker-account', column_name:'position', label: '직책', value:  this.user_info.position, col:'12', sm:'6', lg:'6', disabled:true},
-          {icon: 'mdi-phone-dial', column_name:'phone', label: '전화번호', value: this.user_info.office_phone_number, col:'12', sm:'6', lg:'6', disabled:true,
+          {icon: 'mdi-phone-dial', column_name:'office_phone_number', label: '전화번호', value: this.user_info.office_phone_number, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [
             v => !!v || '전화번호 입력',
             v => !!(v &&  /^(0(2|3[1-3]|4[1-4]|5[1-5]|6[1-4]|70))-(\d{3,4})-(\d{4})$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
           ]},
-          {icon: 'mdi-phone-in-talk', column_name:'extension', label: '내선', value:this.user_info.internal_number, col:'12', sm:'6', lg:'6', disabled:true,
+          {icon: 'mdi-phone-in-talk', column_name:'internal_number', label: '내선', value:this.user_info.internal_number, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [
             v => !!v || '내선번호 입력',
             v => !!(v &&  /[0-9]$/.test(v) ) || '숫자만 입력',
           ]},
-          {icon: 'mdi-email-fast', column_name:'email', label: '이메일', value: this.user_info.email_address, col:'12', sm:'6', lg:'6', disabled:true,
+          {icon: 'mdi-email-fast', column_name:'email_address', label: '이메일', value: this.user_info.email_address, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [
             v => !!v || '이메일 입력',
             v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@gmail.com+/.test(v) ) || '이메일 형식 확인(@gmail.com)', // test
             // v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)', // origin
           ]},
-          {icon: 'mdi-cellphone-text', column_name:'mobile', label: '모바일', value: this.user_info.phone_number, col:'12', sm:'6', lg:'6', disabled:true,
+          {icon: 'mdi-cellphone-text', column_name:'phone_number', label: '모바일', value: this.user_info.phone_number, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [
             v => !!v || '휴대전화번호 입력',
             v => !!(v &&  /^(?:(010-\d{4})|(01[1|6|7|8|9]-\d{3,4}))-(\d{4})$/.test(v) ) || '번호 형식 확인(ex : 010-1234-5678)',
@@ -281,18 +281,25 @@ export default {
             user_name: this.$cookies.get(this.$configJson.cookies.id.key),
             given_name: this.user_info.given_name,
             family_name: ' ',
-            phone_number: this.user_info.phone_number.replaceAll('-', ''),
-            email: this.user_info.email_address,
-            office_phone_number: this.user_info.office_phone_number.replaceAll('-', ''),
-            internal_number: this.user_info.internal_number,
-            position: this.user_info.position,
-            department: this.user_info.department
+            phone_number: this.userInputs.find(x=>x.column_name === 'phone_number').value.replaceAll('-', ''),
+            email: this.userInputs.find(x=>x.column_name === 'email_address').value,
+            office_phone_number: this.userInputs.find(x=>x.column_name === 'office_phone_number').value.replaceAll('-', ''),
+            internal_number: this.userInputs.find(x=>x.column_name === 'internal_number').value,
+            position: this.userInputs.find(x=>x.column_name === 'position').value,
+            department: this.userInputs.find(x=>x.column_name === 'department').value
           });
           if (prevURL !== window.location.href) return;
           // alert('저장이 완료되었습니다.')
           alert(result.message);
           // 성공시
           if (result.code == 0){
+            this.user_info.phone_number = this.userInputs.find(x=>x.column_name === 'phone_number').value;
+            this.user_info.email_address = this.userInputs.find(x=>x.column_name === 'email_address').value;
+            this.user_info.office_phone_number = this.userInputs.find(x=>x.column_name === 'office_phone_number').value;
+            this.user_info.internal_number = this.userInputs.find(x=>x.column_name === 'internal_number').value;
+            this.user_info.position = this.userInputs.find(x=>x.column_name === 'position').value;
+            this.user_info.department = this.userInputs.find(x=>x.column_name === 'department').value;
+
             this.$cookies.set(this.$configJson.cookies.name.key, this.user_info.given_name);
             this.$cookies.set(this.$configJson.cookies.phone_number.key, this.user_info.phone_number);
             this.$cookies.set(this.$configJson.cookies.email.key, this.user_info.email_address);
