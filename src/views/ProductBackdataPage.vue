@@ -2373,13 +2373,17 @@ export default {
         }
       })
 
-      for(let i=0; i<spot.length; i++){
-        spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: spot[i].spot},)
-        spot_input.push( {label:'재고수량'+[i+1], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: spot[i].stock_num},)
-        spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: spot[i].conditions},)
+      if (spot){
+        for(let i=0; i<spot.length; i++){
+          spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: spot[i].spot},)
+          spot_input.push( {label:'재고수량'+[i+1], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: spot[i].stock_num},)
+          spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: spot[i].conditions},)
+        }
       }
-      for(let d=0; d<item.belong_data.length; d++){
-        this.product_set_items_data.push(item.belong_data[d])
+      if (item.belong_data){
+        for(let d=0; d<item.belong_data.length; d++){
+          this.product_set_items_data.push(item.belong_data[d])
+        }
       }
       this.product_dialog = true;
     },
