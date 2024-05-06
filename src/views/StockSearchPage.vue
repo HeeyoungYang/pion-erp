@@ -336,8 +336,10 @@ export default {
 
           this.product_data.forEach(data =>{
             let stock_calc = 0;
-            for(let d=0; d<data.spot_stock.length; d++){
-              stock_calc += data.spot_stock[d].stock_num;
+            if (data.spot_stock){
+              for(let d=0; d<data.spot_stock.length; d++){
+                stock_calc += data.spot_stock[d].stock_num;
+              }
             }
             data.total_stock = stock_calc
             data.item_price = data.unit_price * data.total_stock
