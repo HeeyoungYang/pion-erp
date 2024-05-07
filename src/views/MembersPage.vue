@@ -154,8 +154,8 @@ export default {
         {label:MemberPageConfig.regist_member_inputs[6].label, column_name:MemberPageConfig.regist_member_inputs[6].column_name, col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '이메일 입력',
-        v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@gmail.com+/.test(v) ) || '이메일 형식 확인(@gmail.com)', // for test
-        // v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)', // origin
+          // v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@gmail.com+/.test(v) ) || '이메일 형식 확인(@gmail.com)', // for test
+          v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)', // origin
         ]},
         {label:MemberPageConfig.regist_member_inputs[7].label, column_name:MemberPageConfig.regist_member_inputs[7].column_name, col:'12', sm:'6', lg:'6', value: '',
         rules: [

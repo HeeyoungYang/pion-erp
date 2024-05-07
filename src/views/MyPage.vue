@@ -243,8 +243,8 @@ export default {
           {icon: 'mdi-email-fast', column_name:'email_address', label: '이메일', value: this.user_info.email_address, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [
             v => !!v || '이메일 입력',
-            v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@gmail.com+/.test(v) ) || '이메일 형식 확인(@gmail.com)', // test
-            // v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)', // origin
+            // v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@gmail.com+/.test(v) ) || '이메일 형식 확인(@gmail.com)', // test
+            v => !!(v &&  /^[A-Za-z0-9_\\.\\-]+@pionelectric.com+/.test(v) ) || '이메일 형식 확인(@pionelectric.com)', // origin
           ]},
           {icon: 'mdi-cellphone-text', column_name:'phone_number', label: '모바일', value: this.user_info.phone_number, col:'12', sm:'6', lg:'6', disabled:true,
           rules: [
