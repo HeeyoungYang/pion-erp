@@ -1606,6 +1606,8 @@ export default {
         return;
       }
 
+      this.loading_dialog = true;
+      
       //material_excel_upload_data : 불러온 엑셀 데이터
       const type = '원부자재';
 
@@ -1673,10 +1675,12 @@ export default {
       }
       if (noPhoto){
         alert('엑셀에 등록된 사진이 첨부되지 않았습니다.');
+        this.loading_dialog = false;
         return;
       }
       if (duplicateSpot){
         alert('엑셀에 중복된 위치가 존재합니다.');
+        this.loading_dialog = false;
         return;
       }
 
@@ -1685,7 +1689,6 @@ export default {
         "stock_table-insert": stock_data
       };
 
-      this.loading_dialog = true;
       const prevURL = window.location.href;
 
       try {
@@ -1752,7 +1755,16 @@ export default {
       let material_input = this.registMaterialInputs;
       let item = this.editRegistMaterial;
       let stock_input = this.registMaterialSpotInputs;
-      let stock_item = this.editRegistMaterial.spot_stock;
+      let stock_item = JSON.parse(JSON.stringify(this.editRegistMaterial.spot_stock));
+      let updateSpotArr = [];
+      for (let i = 0; i < stock_item.length; i++) {
+        const data = stock_item[i];
+        if (updateSpotArr.includes(data.spot)){
+          alert('중복된 위치가 존재합니다.');
+          return;
+        }
+        updateSpotArr.push(data.spot);
+      }
       stock_item = [];
       const validate = this.$refs.materialForm.validate();
       if(validate){
@@ -2116,7 +2128,16 @@ export default {
       let module_input = this.registModuleInputs;
       let item = this.editRegistModule;
       let stock_input = this.registModuleSpotInputs;
-      let stock_item = this.editRegistModule.spot_stock;
+      let stock_item = JSON.parse(JSON.stringify(this.editRegistModule.spot_stock));
+      let updateSpotArr = [];
+      for (let i = 0; i < stock_item.length; i++) {
+        const data = stock_item[i];
+        if (updateSpotArr.includes(data.spot)){
+          alert('중복된 위치가 존재합니다.');
+          return;
+        }
+        updateSpotArr.push(data.spot);
+      }
       const validate = this.$refs.moduleForm.validate();
       if(validate){
         let stock_spot_arr=[];
@@ -2488,8 +2509,16 @@ export default {
       let product_input = this.registProductInputs;
       let item = this.editRegistProduct;
       let stock_input = this.registProductSpotInputs;
-      let stock_item = this.editRegistProduct.spot_stock;
-
+      let stock_item = JSON.parse(JSON.stringify(this.editRegistProduct.spot_stock));
+      let updateSpotArr = [];
+      for (let i = 0; i < stock_item.length; i++) {
+        const data = stock_item[i];
+        if (updateSpotArr.includes(data.spot)){
+          alert('중복된 위치가 존재합니다.');
+          return;
+        }
+        updateSpotArr.push(data.spot);
+      }
       const validate = this.$refs.productForm.validate();
       if(validate){
         let stock_spot_arr=[];
