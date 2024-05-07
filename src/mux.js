@@ -2352,12 +2352,14 @@ mux.Rules = {
    */
     rulesSet(inputs){
       inputs.forEach(input =>{
-        if(input.text_type == 'number'){
-          input.rules =  [v => !!v || input.label + " 입력(숫자)"]
-        }else if(input.column_name == 'formula2'){
-          input.rules =  [v => !!v || '백분율(%) 혹은 숫자 입력']
-        }else if(input.type != 'file'){
-          input.rules =  [v => !!v || input.label + " 입력"]
+        if(input.column_name != 'model'){
+          if(input.text_type == 'number'){
+            input.rules =  [v => !!v || input.label + " 입력(숫자)"]
+          }else if(input.column_name == 'formula2'){
+            input.rules =  [v => !!v || '백분율(%) 혹은 숫자 입력']
+          }else if(input.type != 'file'){
+            input.rules =  [v => !!v || input.label + " 입력"]
+          }
         }
       })
     },
