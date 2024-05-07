@@ -204,21 +204,22 @@ export default {
     this.initialize()
   },
   methods: {
+    // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
-      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     async initialize() {
       const prevURL = window.location.href;
       try {
-        console.log('사용자 계정 정보 가졍오기');
-        let result = await mux.Server.get({
-          path: '/api/user/',
-        });
+        // console.log('사용자 계정 정보 가졍오기');
+        // let result = await mux.Server.get({
+        //   path: '/api/user/',
+        // });
         if (prevURL !== window.location.href) return;
-        console.log('result :>> ', result);
+        // console.log('result :>> ', result);
         this.user_info.phone_number = this.$cookies.get(this.$configJson.cookies.phone_number.key);
         this.user_info.given_name = this.$cookies.get(this.$configJson.cookies.name.key);
         this.user_info.email_address = this.$cookies.get(this.$configJson.cookies.email.key);

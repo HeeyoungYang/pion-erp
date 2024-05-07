@@ -466,12 +466,12 @@ export default {
       mux.Rules.rulesSet(this.inboundCardInfoInputs);
 
       try {
-        console.log('사용자 계정 정보 가졍오기');
+        // console.log('사용자 계정 정보 가졍오기');
         let result = await mux.Server.get({
           path: '/api/user/',
         });
         if (prevURL !== window.location.href) return;
-        console.log('result :>> ', result);
+        // console.log('result :>> ', result);
         this.inbound_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.inbound_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
       } catch (error) {
@@ -491,11 +491,12 @@ export default {
     searchProduct(){
       this.product_search_data = InboundRegisterPageConfig.test_product_search_data
     },
+    // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
-      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     addProductInboundData(){
       if(this.add_self == false){
@@ -620,8 +621,8 @@ export default {
         }
 
         if(success == true){
-          console.log('입고 정보 : ' + JSON.stringify(item));
-          console.log('입고 제품 : ' + JSON.stringify(inbound_product_data));
+          // console.log('입고 정보 : ' + JSON.stringify(item));
+          // console.log('입고 제품 : ' + JSON.stringify(inbound_product_data));
           alert('요청이 완료되었습니다.');
         }
       }

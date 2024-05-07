@@ -213,16 +213,17 @@ export default {
   },
 
   methods: {
+    // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
-      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     async initialize () {
       this.loading_dialog = true;
       this.headers = MemberPageConfig.table_header;
-      console.log("MemberPageConfig.table_header=", MemberPageConfig.table_header);
+      // console.log("MemberPageConfig.table_header=", MemberPageConfig.table_header);
       let memberList = [];
       const prevURL = window.location.href;
       try {
@@ -330,7 +331,7 @@ export default {
               department: item.department
             });
             if (prevURL !== window.location.href) return;
-            console.log('result :>> ', result);
+            // console.log('result :>> ', result);
             alert(result.message);
             // 성공시 다이얼로그 닫기
             if (result.code == 0){
@@ -344,7 +345,7 @@ export default {
           // this.editedItem.modifier = 'user_id';
           const prevURL = window.location.href;
           try {
-            console.log('item :>> ', item);
+            // console.log('item :>> ', item);
             let result = await mux.Server.put({
               path: '/api/user/',
               user_name: item.user_id,
@@ -358,7 +359,7 @@ export default {
               department: item.department
             });
             if (prevURL !== window.location.href) return;
-            console.log('result :>> ', result);
+            // console.log('result :>> ', result);
             // alert('수정이 완료되었습니다');
             alert(result.message);
             // 성공시 다이얼로그 닫기
@@ -390,8 +391,8 @@ export default {
       // this.deleteMemeber = {};
       // this.deleteMemeber.modifier = 'user_id'
       // this.deleteMemeber.user_id = this.editedItem.user_id;
-      // console.log('계정 삭제 : ' + JSON.stringify(this.deleteMemeber));
-      console.log('this.editedItem.user_id :>> ', this.editedItem.user_id);
+      // // console.log('계정 삭제 : ' + JSON.stringify(this.deleteMemeber));
+      // console.log('this.editedItem.user_id :>> ', this.editedItem.user_id);
       
       const prevURL = window.location.href;
       try {
@@ -399,7 +400,7 @@ export default {
           path: `/api/admin/user/?user_name=${this.editedItem.user_id}`
         });
         if (prevURL !== window.location.href) return;
-        console.log('result :>> ', result);
+        // console.log('result :>> ', result);
         alert(result.message);
         // 성공시 다이얼로그 닫기
         if (result.code == 0){
@@ -409,7 +410,7 @@ export default {
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
-        console.log('error :>> ', error);
+        // console.log('error :>> ', error);
       }
     },
 
