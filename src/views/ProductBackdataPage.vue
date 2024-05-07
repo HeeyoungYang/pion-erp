@@ -734,7 +734,7 @@
                                         alt="Pionelectric Logo"
                                         class="shrink mr-2"
                                         contain
-                                        :src="data.thumbnail"
+                                        :src="imageBinary(data.thumbnail)"
                                         transition="scale-transition"
                                         width="150"
                                       />
