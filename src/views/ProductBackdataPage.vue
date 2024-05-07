@@ -2096,6 +2096,7 @@ export default {
       let spot_input = this.registModuleSpotInputs;
       // alert (JSON.stringify(stock_spot_arr));
 
+      this.moduleImg = this.imageBinary(item.thumbnail);
       if (stock_spot_arr){
         for(let i=0; i<stock_spot_arr.length; i++){
           spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
@@ -2488,6 +2489,7 @@ export default {
         }
       })
 
+      this.productImg = this.imageBinary(item.thumbnail);
       if (spot){
         for(let i=0; i<spot.length; i++){
           spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: spot[i].spot},)

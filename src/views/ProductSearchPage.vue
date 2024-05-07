@@ -86,7 +86,7 @@
                                 alt="Pionelectric Logo"
                                 class="shrink mr-2"
                                 contain
-                                :src="data.thumbnail"
+                                :src="imageBinary(data.thumbnail)"
                                 transition="scale-transition"
                                 width="150"
                               />
@@ -237,6 +237,17 @@ export default {
       this.detail_dialog = false
     },
 
+    imageBinary(thumbnail){
+      if(thumbnail){
+        try {
+          let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
+          return imgURL
+        } catch{
+          return '';
+        }
+      }
+    },
+    
     async searchButton() {
       this.loading_dialog = true;
 
