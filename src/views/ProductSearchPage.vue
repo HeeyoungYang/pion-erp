@@ -5,6 +5,7 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
+      <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
       <v-row justify="center">
         <v-col
           cols="12"
@@ -178,6 +179,7 @@ import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
+import LoadingModalComponent from "@/components/LoadingModalComponent";
 import ProductSearchPageConfig from "@/configure/ProductSearchPageConfig.json";
 import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
@@ -191,6 +193,7 @@ export default {
                 CardComponent,
                 InputsFormComponent,
                 ModalDialogComponent,
+                LoadingModalComponent,
               },
   mounted(){
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
@@ -234,6 +237,7 @@ export default {
     },
 
     async searchButton() {
+      this.loading_dialog = true;
 
       let searchProductCode = this.searchCardInputs.find(x=>x.label === '제품코드').value;
       if (!searchProductCode)
@@ -306,12 +310,14 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
         // console.error(error);
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           alert(error.response['data']['failed_info'].msg);
         else
           alert(error);
       }
+      this.loading_dialog = false;
       // this.product_data = ProductSearchPageConfig.test_product_data;
     }
   },

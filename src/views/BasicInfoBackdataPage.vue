@@ -5,6 +5,7 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
+      <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
       <v-row justify="center">
         <v-col cols="12" sm="11">
           <v-tabs
@@ -217,6 +218,7 @@ import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
+import LoadingModalComponent from "@/components/LoadingModalComponent";
 import CardComponent from "@/components/CardComponent.vue";
 import BasicInfoBackDataPageConfig from "@/configure/BasicInfoBackDataPageConfig.json";
 import mux from "@/mux";
@@ -234,6 +236,7 @@ export default {
     DataTableComponent,
     InputsFormComponent,
     CardComponent,
+    LoadingModalComponent,
   },
   data() {
     return {
@@ -244,6 +247,7 @@ export default {
       search_manufacturer: '',
       search_spot: '',
 
+      loading_dialog: false,
       productInfoDialog: false,
       DialogDelete: false,
 
@@ -296,6 +300,7 @@ export default {
       // this.classification_data = BasicInfoBackDataPageConfig.test_classification_data
       // this.manufacturer_data = BasicInfoBackDataPageConfig.test_manufacturer_data
       // this.spot_data = BasicInfoBackDataPageConfig.test_spot_data
+      this.loading_dialog = true;
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.getPionBasicInfo();
@@ -317,8 +322,10 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
         alert(error);
       }
+      this.loading_dialog = false;
     },
     registProductInfo(type){
       this.registProductInfoInputs = [];

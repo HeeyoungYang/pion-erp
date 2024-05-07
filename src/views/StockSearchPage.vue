@@ -5,6 +5,7 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
+      <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
       <v-row justify="center">
         <v-col
           cols="12"
@@ -145,6 +146,7 @@ import DataTableComponent from "@/components/DataTableComponent";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
+import LoadingModalComponent from "@/components/LoadingModalComponent";
 import StockSearchPageConfig from "@/configure/StockSearchPageConfig.json";
 import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
@@ -161,6 +163,7 @@ export default {
                 CardComponent,
                 InputsFormComponent,
                 ModalDialogComponent,
+                LoadingModalComponent,
               },
   data(){
     return{
@@ -170,6 +173,7 @@ export default {
       classification_list:[],
       stock_more_0: true,
       detail_dialog: false,
+      loading_dialog: false,
       stockDetails:[],
       inboundDetails:[],
       stock_detail_header:StockSearchPageConfig.stock_detail_header,
@@ -234,6 +238,9 @@ export default {
       this.detail_dialog = false
     },
     async searchButton() {
+
+      this.loading_dialog = true;
+
       this.total_stock_num = 0;
       this.total_stock_price = 0;
       // alert(this.searchCardInputs.find(x=>x.label === '일자').value.sort());
@@ -374,11 +381,13 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           alert(error.response['data']['failed_info'].msg);
         else
           alert(error);
       }
+      this.loading_dialog = false;
     }
   }
 }

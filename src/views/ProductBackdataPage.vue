@@ -5,6 +5,7 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
+      <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
       <v-row justify="center">
         <v-col cols="12" sm="11">
           <v-tabs
@@ -120,6 +121,7 @@
                           :card-elevation="'0'"
                           :persistent="true"
                         >
+
                           <v-container>
                             <v-row>
                               <v-col
@@ -1046,6 +1048,7 @@ import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import InputsDataTableComponent from "@/components/InputsDataTableComponent.vue";
+import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import ProductBackDataPageConfig from "@/configure/ProductBackDataPageConfig.json";
 import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
@@ -1060,6 +1063,7 @@ export default {
     ModalDialogComponent,
     DataTableComponent,
     InputsDataTableComponent,
+    LoadingModalComponent,
     ExpansionPanelComponent,
     CardComponent,
     InputsFormComponent,
@@ -1084,6 +1088,7 @@ export default {
 
       //Dialog
       dialog_excel: false,
+      loading_dialog: false,
       material_dialog: false,
       delete_dialog: false,
       module_dialog: false,
@@ -1432,6 +1437,7 @@ export default {
     },
     async searchMaterial() {
       //검색 시 총 재고, 총 금액 초기화
+      this.loading_dialog = true;
       this.material_total_stock_num = 0;
       this.material_total_stock_price = 0;
 
@@ -1572,12 +1578,13 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           alert(error.response['data']['failed_info'].msg);
         else
           alert(error);
       }
-
+        this.loading_dialog = false;
     },
     registMaterialItem(){
       this.materialImg = ''
@@ -1597,6 +1604,7 @@ export default {
         alert("업로드할 엑셀을 선택해주세요")
         return;
       }
+
       //material_excel_upload_data : 불러온 엑셀 데이터
       const type = '원부자재';
 
@@ -1676,7 +1684,9 @@ export default {
         "stock_table-insert": stock_data
       };
 
+      this.loading_dialog = true;
       const prevURL = window.location.href;
+
       try {
         let result = await mux.Server.post({
           path: '/api/sample_rest_api/',
@@ -1696,11 +1706,14 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           alert(error.response['data']['failed_info'].msg);
         else
           alert(error);
       }
+      this.loading_dialog = false;
+      this.close();
     },
     editMaterialItem (item) {
       this.editedIndex = this.material_data.indexOf(item)
@@ -1945,6 +1958,8 @@ export default {
       this.module_total_stock_num = 0;
       this.module_total_stock_price = 0;
 
+      this.loading_dialog = true;
+
       // this.module_data = ProductBackDataPageConfig.test_module_data;
 
       let searchClassification = this.searchModuleCardInputs.find(x=>x.label === '분류').value;
@@ -2038,12 +2053,13 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           alert(error.response['data']['failed_info'].msg);
         else
           alert(error);
       }
-
+      this.loading_dialog = false;
     },
     registModuleItem(){
       let module_input = this.registModuleInputs;
@@ -2336,6 +2352,9 @@ export default {
     async searchProduct() {
       // this.product_data = ProductBackDataPageConfig.test_product_data;
 
+
+      this.loading_dialog = true;
+
       let searchProductCode = this.searchProductCardInputs.find(x=>x.label === '제품코드').value;
       if (!searchProductCode)
         searchProductCode = '%';
@@ -2408,11 +2427,13 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           alert(error.response['data']['failed_info'].msg);
         else
           alert(error);
       }
+      this.loading_dialog = false;
     },
 
     registProductItem(){
