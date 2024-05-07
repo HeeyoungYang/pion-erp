@@ -281,11 +281,17 @@ export default {
             let stock_calc = 0;
             if (data.spot_stock){
               for(let d=0; d<data.spot_stock.length; d++){
-                stock_calc += data.spot_stock[d].stock_num;
+                if (typeof data.spot_stock[d].stock_num === 'number'){
+                  stock_calc += data.spot_stock[d].stock_num;
+                }
               }
             }
             data.total_stock = stock_calc
-            data.item_price = data.unit_price * data.total_stock
+            if (typeof data.unit_price === 'number'){
+              data.item_price = data.unit_price * data.total_stock
+            }else {
+              data.item_price = 0;
+            }
             // this.total_stock_num += data.total_stock
             // this.total_stock_price += data.item_price
           })
