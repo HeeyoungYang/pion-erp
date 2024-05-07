@@ -1244,20 +1244,21 @@ export default {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
-      mux.List.addProductBasicInfoLists(this.searchMaterialCardInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addProductBasicInfoLists(this.searchMaterialCardInputs, this.classification_list, this.manufacturer_list, true);
       this.searchMaterialCardInputs = JSON.parse(JSON.stringify(this.searchMaterialCardInputs));
-      mux.List.addProductBasicInfoLists(this.registMaterialInputs, this.classification_list, this.manufacturer_list);
-      this.registMaterialInputs = JSON.parse(JSON.stringify(this.registMaterialInputs));
-      mux.List.addProductBasicInfoLists(this.searchModuleCardInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addProductBasicInfoLists(this.searchModuleCardInputs, this.classification_list, this.manufacturer_list, true);
       this.searchModuleCardInputs = JSON.parse(JSON.stringify(this.searchModuleCardInputs));
-      mux.List.addProductBasicInfoLists(this.registModuleInputs, this.classification_list, this.manufacturer_list);
-      this.registModuleInputs = JSON.parse(JSON.stringify(this.registModuleInputs));
-      mux.List.addProductBasicInfoLists(this.moduleSearchMaterialInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addProductBasicInfoLists(this.moduleSearchMaterialInputs, this.classification_list, this.manufacturer_list, true);
       this.moduleSearchMaterialInputs = JSON.parse(JSON.stringify(this.moduleSearchMaterialInputs));
-      mux.List.addProductBasicInfoLists(this.registProductInputs, this.classification_list, this.manufacturer_list);
-      this.registProductInputs = JSON.parse(JSON.stringify(this.registProductInputs));
-      mux.List.addProductBasicInfoLists(this.productSearchMaterialModuleInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addProductBasicInfoLists(this.productSearchMaterialModuleInputs, this.classification_list, this.manufacturer_list, true);
       this.productSearchMaterialModuleInputs = JSON.parse(JSON.stringify(this.productSearchMaterialModuleInputs));
+
+      mux.List.addProductBasicInfoLists(this.registMaterialInputs, this.classification_list, this.manufacturer_list, false);
+      this.registMaterialInputs = JSON.parse(JSON.stringify(this.registMaterialInputs));
+      mux.List.addProductBasicInfoLists(this.registModuleInputs, this.classification_list, this.manufacturer_list, false);
+      this.registModuleInputs = JSON.parse(JSON.stringify(this.registModuleInputs));
+      mux.List.addProductBasicInfoLists(this.registProductInputs, this.classification_list, this.manufacturer_list, false);
+      this.registProductInputs = JSON.parse(JSON.stringify(this.registProductInputs));
 
       // this.material_data = ProductBackDataPageConfig.test_material_data
     },
@@ -1434,10 +1435,10 @@ export default {
       let searchConditions = this.searchMaterialCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
         searchConditions = '';
-      let searchProductCode = this.searchMaterialCardInputs.find(x=>x.label === '관리코드').value;
-      let searchProductName = this.searchMaterialCardInputs.find(x=>x.label === '제품명').value;
-      let searchModelName = this.searchMaterialCardInputs.find(x=>x.label === '모델명').value;
-      let searchProductSpec = this.searchMaterialCardInputs.find(x=>x.label === '사양').value;
+      let searchProductCode = this.searchMaterialCardInputs.find(x=>x.label === '관리코드').value.trim();
+      let searchProductName = this.searchMaterialCardInputs.find(x=>x.label === '제품명').value.trim();
+      let searchModelName = this.searchMaterialCardInputs.find(x=>x.label === '모델명').value.trim();
+      let searchProductSpec = this.searchMaterialCardInputs.find(x=>x.label === '사양').value.trim();
       let searchManufacturer = this.searchMaterialCardInputs.find(x=>x.label === '제조사').value;
 
       const prevURL = window.location.href;
@@ -1913,10 +1914,10 @@ export default {
       let searchConditions = this.searchModuleCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
         searchConditions = '';
-      let searchModuleCode = this.searchModuleCardInputs.find(x=>x.label === '관리코드').value;
-      let searchName = this.searchModuleCardInputs.find(x=>x.label === '제품명').value;
-      let searchModel = this.searchModuleCardInputs.find(x=>x.label === '모델명').value;
-      let searchSpec = this.searchModuleCardInputs.find(x=>x.label === '사양').value;
+      let searchModuleCode = this.searchModuleCardInputs.find(x=>x.label === '관리코드').value.trim();
+      let searchName = this.searchModuleCardInputs.find(x=>x.label === '제품명').value.trim();
+      let searchModel = this.searchModuleCardInputs.find(x=>x.label === '모델명').value.trim();
+      let searchSpec = this.searchModuleCardInputs.find(x=>x.label === '사양').value.trim();
       let searchManufacturer = this.searchModuleCardInputs.find(x=>x.label === '제조사').value;
       let searchStockMoreZero = '';
 
@@ -2284,11 +2285,11 @@ export default {
     async searchProduct() {
       // this.product_data = ProductBackDataPageConfig.test_product_data;
 
-      let searchProductCode = this.searchProductCardInputs.find(x=>x.label === '제품코드').value;
+      let searchProductCode = this.searchProductCardInputs.find(x=>x.label === '제품코드').value.trim();
       if (!searchProductCode)
         searchProductCode = '%';
-      let searchName = this.searchProductCardInputs.find(x=>x.label === '제품명').value;
-      let searchSpec = this.searchProductCardInputs.find(x=>x.label === '사양').value;
+      let searchName = this.searchProductCardInputs.find(x=>x.label === '제품명').value.trim();
+      let searchSpec = this.searchProductCardInputs.find(x=>x.label === '사양').value.trim();
       // let searchStockMoreZero = '';
 
       const prevURL = window.location.href;

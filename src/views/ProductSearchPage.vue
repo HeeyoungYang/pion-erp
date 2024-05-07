@@ -234,11 +234,11 @@ export default {
 
     async searchButton() {
 
-      let searchProductCode = this.searchCardInputs.find(x=>x.label === '제품코드').value;
+      let searchProductCode = this.searchCardInputs.find(x=>x.label === '제품코드').value.trim();
       if (!searchProductCode)
         searchProductCode = '%';
-      let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
-      let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
+      let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value.trim();
+      let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value.trim();
 
 
       const prevURL = window.location.href;

@@ -247,10 +247,10 @@ export default {
       let searchConditions = this.searchCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
         searchConditions = '';
-      let searchModuleCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
-      let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
-      let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
-      let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
+      let searchModuleCode = this.searchCardInputs.find(x=>x.label === '관리코드').value.trim();
+      let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value.trim();
+      let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value.trim();
+      let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value.trim();
       let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
       let searchStockMoreZero = '';
 
