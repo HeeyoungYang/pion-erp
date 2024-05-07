@@ -1902,7 +1902,7 @@ export default {
                 "stock_num": data.stock_num,
                 "type": this.editRegistMaterial.type
               },
-              "select_where": {"product_code": this.editRegistMaterial.item_code, "spot": data.spot}
+              "select_where": {"product_code": "!JUST_INSERT!"}
             });
           });
           sendData["stock_table-insert"] = stock_data;
@@ -2288,7 +2288,7 @@ export default {
                 "stock_num": data.stock_num,
                 "type": this.editRegistModule.type
               },
-              "select_where": {"product_code": this.editRegistModule.item_code, "spot": data.spot}
+              "select_where": {"product_code": "!JUST_INSERT!"}
             });
           });
           sendData["stock_table-insert"] = stock_data;
@@ -2314,7 +2314,7 @@ export default {
                 "material_code": data.item_code,
                 "material_num": data.num
               },
-              "select_where": {"module_code": this.editRegistModule.item_code, "material_code": data.item_code}
+              "select_where": {"module_code": "!JUST_INSERT!"}
             });
           });
           sendData["module_material_table-insert"] = module_material_data;
@@ -2686,7 +2686,7 @@ export default {
                 "stock_num": data.stock_num,
                 "type": this.editRegistProduct.type
               },
-              "select_where": {"product_code": this.editRegistProduct.item_code, "spot": data.spot}
+              "select_where": {"product_code": "!JUST_INSERT!"}
             });
           });
           sendData["stock_table-insert"] = stock_data;
@@ -2713,7 +2713,7 @@ export default {
                   "module_code": data.item_code,
                   "module_num": data.num
                 },
-                "select_where": {"product_code": this.editRegistProduct.item_code, "module_code": data.item_code}
+                "select_where": {"product_code": "!JUST_INSERT!"}
               });
             }
           });
@@ -2741,7 +2741,7 @@ export default {
                   "material_code": data.item_code,
                   "material_num": data.num
                 },
-                "select_where": {"product_code": this.editRegistProduct.item_code, "material_code": data.item_code}
+                "select_where": {"product_code": "!JUST_INSERT!"}
               });
             }
           });
