@@ -56,7 +56,7 @@
                     class="text-body-1 font-weight-bold black--text ml-2"
                     item-align-center
                   >
-                    : {{ data.code }}
+                    : {{ data.item_code }}
                   </span>
                   <v-menu
                     open-on-hover
@@ -117,7 +117,7 @@
                       v-if="data.belong_data"
                       :headers="headers"
                       :items="data.belong_data"
-                      :item-key="data.belong_data.code"
+                      :item-key="data.belong_data.item_code"
                       hide-default-footer
                       disable-pagination
                       children-key="belong_data"
