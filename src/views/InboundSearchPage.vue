@@ -5,6 +5,7 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
+      <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
       <v-row justify="center">
         <v-col
           cols="12"
@@ -139,6 +140,7 @@ import DataTableComponent from "@/components/DataTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
+import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import InboundSearchPageConfig from "@/configure/InboundSearchPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import mux from "@/mux";
@@ -154,12 +156,14 @@ export default {
                 ModalDialogComponent,
                 CardComponent,
                 InputsFormComponent,
+                LoadingModalComponent,
               },
   data(){
     return{
       today:'',
       dates: [],
       inbound_product_list_dialog: false,
+      loading_dialog: false,
 
       inbound_info_data:{},
       inbound_product_list_data:[],
@@ -215,7 +219,11 @@ export default {
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     searchButton(){
+      this.loading_dialog = true;
+
       this.inbound_approve_data = InboundSearchPageConfig.test_inbound_approve_data
+      
+      this.loading_dialog = false;
     },
     closeProductList(){
       this.inbound_product_list_dialog = false;

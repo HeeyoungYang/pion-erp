@@ -5,6 +5,7 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
+      <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
       <v-row justify="center">
         <v-col
           cols="12"
@@ -165,6 +166,7 @@ import DataTableComponent from "@/components/DataTableComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent.vue";
+import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import ShipRegisterPageConfig from "@/configure/ShipRegisterPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import mux from "@/mux";
@@ -177,6 +179,7 @@ export default {
                 InputsFormComponent,
                 CardComponent,
                 MemberSearchDialogComponent,
+                LoadingModalComponent,
               },
   mounted(){
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
@@ -190,6 +193,7 @@ export default {
       dates: [],
       menu: false,
       member_dialog: false,
+      loading_dialog: false,
 
       member_type_index:0,
       members_list:[],
@@ -252,26 +256,22 @@ export default {
         // console.log('result :>> ', result);
         this.approve_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.approve_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
+        this.approve_member_info[0].user_id =this.$cookies.get(this.$configJson.cookies.email.key);
+        this.login_id = this.$cookies.get(this.$configJson.cookies.email.key);
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
 
-      this.members_list.forEach(mem => {
-        if(this.approve_member_info[0].name === mem.name && this.approve_member_info[0].email === mem.email){
-          this.approve_member_info[0].user_id = mem.user_id;
-          this.login_id = mem.user_id
-        }
-      })
-
-
     },
     searchButton(){
+      this.loading_dialog = true;
       this.product_search_data = ShipRegisterPageConfig.test_product_search_data;
       this.product_search_data.forEach(data => {
         data.product_info = data.product_code + '/' + data.spot
       })
 
+      this.loading_dialog = false;
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -370,9 +370,11 @@ export default {
         }
 
         if(success == true){
+          this.loading_dialog = true;
           // console.log('출고 정보 : ' + JSON.stringify(item));
           // console.log('출고 제품 : ' + JSON.stringify(ship_product_data));
           alert('요청이 완료되었습니다.');
+          this.loading_dialog = false;
         }
       }
     },

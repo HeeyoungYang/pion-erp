@@ -5,6 +5,7 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
+      <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
       <v-row justify="center">
         <v-col
           cols="12"
@@ -383,6 +384,7 @@ import DataTableComponent from "@/components/DataTableComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent.vue";
+import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import InboundRegisterPageConfig from "@/configure/InboundRegisterPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import mux from "@/mux";
@@ -398,11 +400,13 @@ export default {
                 InputsFormComponent,
                 CardComponent,
                 MemberSearchDialogComponent,
+                LoadingModalComponent,
               },
   data(){
     return{
       login_id:'',
       member_dialog: false,
+      loading_dialog: false,
       add_self: false,
       select_product: true,
       today:'',
@@ -474,22 +478,21 @@ export default {
         // console.log('result :>> ', result);
         this.inbound_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.inbound_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
+        this.inbound_member_info[0].user_id =  this.$cookies.get(this.$configJson.cookies.id.key);
+        this.login_id =  this.$cookies.get(this.$configJson.cookies.id.key);
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
 
-      this.members_list.forEach(mem => {
-        if(this.inbound_member_info[0].name === mem.name && this.inbound_member_info[0].email === mem.email){
-          this.inbound_member_info[0].user_id = mem.user_id;
-          this.login_id = mem.user_id
-        }
-      })
-
-
     },
     searchProduct(){
+      this.loading_dialog = true;
+
       this.product_search_data = InboundRegisterPageConfig.test_product_search_data
+
+
+      this.loading_dialog = false;
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -621,8 +624,10 @@ export default {
         }
 
         if(success == true){
+          this.loading_dialog = true;
           // console.log('입고 정보 : ' + JSON.stringify(item));
           // console.log('입고 제품 : ' + JSON.stringify(inbound_product_data));
+          this.loading_dialog = false;
           alert('요청이 완료되었습니다.');
         }
       }
