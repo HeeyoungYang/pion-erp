@@ -1180,7 +1180,7 @@ export default {
     registMaterialInputsPhoto: {
       handler: async function (newInput) {
         if (newInput.value) {
-          this.materialImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 100, 100));
+          this.materialImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 500, 500));
         }else {
           this.materialImg = '';
         }
@@ -1190,7 +1190,7 @@ export default {
     registModuleInputsPhoto: {
       handler: async function (newInput) {
         if (newInput.value) {
-          this.moduleImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 100, 100));
+          this.moduleImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 500, 500));
         }else {
           this.moduleImg = '';
         }
@@ -1200,7 +1200,7 @@ export default {
     registProductInputsPhoto: {
       handler: async function (newInput) {
         if (newInput.value) {
-          this.productImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 100, 100));
+          this.productImg = mux.Util.binaryToURL(await mux.Util.resizeImageToBinary(newInput.value, 500, 500));
         }else {
           this.productImg = '';
         }
@@ -1414,7 +1414,7 @@ export default {
     imageBinary(thumbnail){
       if(thumbnail){
         try {
-          let imgURL = mux.Util.binaryToURL(thumbnail);
+          let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
           return imgURL
         } catch{
           return '';
@@ -1447,6 +1447,22 @@ export default {
           path: '/api/sample_rest_api/',
           params: [
             {
+              "product_table.classification": searchClassification ? searchClassification : "",
+              "product_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "product_table.model": searchModelName ? searchModelName : "",
+              "product_table.name": searchProductName ? searchProductName : "",
+              "product_table.product_code": searchProductCode ? searchProductCode : "",
+              "product_table.spec": searchProductSpec ? searchProductSpec : "",
+              "product_table.type": searchType ? searchType : "",
+
+              "module_table.classification": searchClassification ? searchClassification : "",
+              "module_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "module_table.model": searchModelName ? searchModelName : "",
+              "module_table.name": searchProductName ? searchProductName : "",
+              "module_table.module_code": searchProductCode ? searchProductCode : "",
+              "module_table.spec": searchProductSpec ? searchProductSpec : "",
+              "module_table.type": searchType ? searchType : "",
+
               "material_table.classification": searchClassification ? searchClassification : "",
               "material_table.manufacturer": searchManufacturer ? searchManufacturer : "",
               "material_table.model": searchModelName ? searchModelName : "",
@@ -1564,7 +1580,7 @@ export default {
       let thumbnail_dict = {};
       for (let i = 0; i < this.excel_photos.length; i++) {
         const file = this.excel_photos[i];
-        thumbnail_dict[file.name] = mux.Util.uint8ArrayToHexString(await mux.Util.resizeImageToBinary(file, 100, 100));
+        thumbnail_dict[file.name] = mux.Util.uint8ArrayToHexString(await mux.Util.resizeImageToBinary(file, 500, 500));
       }
 
       let noPhoto = false;
@@ -1890,7 +1906,7 @@ export default {
       // let files = this.$refs.material_photo.$refs.input.files;
       // if (files.length > 0){
       //   // 업로드할 때, 이미지 파일을 리사이징하고 바이너리 데이터 생성(백엔드로 전달해 DB에 저장할 데이터)
-      //   const thumbnailBuffer = await mux.Util.resizeImageToBinary(files[0], 300, 300);
+      //   const thumbnailBuffer = await mux.Util.resizeImageToBinary(files[0], 500, 500);
 
       //   // // 업로드할 때, 원본도 AWS S3 버킷에 업로드해야 함.
       //   // mux.Server.uploadFile(reqObj);
