@@ -1659,7 +1659,7 @@ mux.Excel = {
         const workbook = XLSX.read(data, { type: 'array' });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
         self.updateTableData(headers, items, jsonData);
       };
 
@@ -1699,7 +1699,7 @@ mux.Excel = {
           const workbook = XLSX.read(data, { type: 'array' });
           const sheetName = workbook.SheetNames[0]; // 첫 번째 시트를 사용한다고 가정
           const worksheet = workbook.Sheets[sheetName];
-          const excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          const excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
           self.updateTableData(headers, items, excelData);
         };
         reader.readAsArrayBuffer(this.files[0]);
@@ -1757,7 +1757,15 @@ mux.Excel = {
     items.splice(0, items.length, ...jsonData.slice(1).map((row) => {
       const newRow = {};
       headers.forEach((header, index) => {
-        newRow[header.value] = row[arrExcelColIndex[index]];
+        if (header.type && header.type === 'number'){
+          if (!row[arrExcelColIndex[index]]){
+            newRow[header.value] = 0;
+          }else {
+            newRow[header.value] = row[arrExcelColIndex[index]];
+          }
+        }else {
+          newRow[header.value] = row[arrExcelColIndex[index]];
+        }
       });
       return newRow;
     }));

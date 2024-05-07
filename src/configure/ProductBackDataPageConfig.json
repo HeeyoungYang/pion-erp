@@ -40,9 +40,9 @@
     { "text": "모델명", "align": "center", "value": "model"},
     { "text": "사양", "align": "center", "value": "spec"},
     { "text": "제조사", "align": "center", "value": "manufacturer"},
-    { "text": "재고", "align": "center", "value": "stock_num"},
+    { "text": "재고", "align": "center", "value": "stock_num", "type": "number"},
     { "text": "상태", "align": "center", "value": "conditions"},
-    { "text": "단가", "align": "center", "value": "unit_price"},
+    { "text": "단가", "align": "center", "value": "unit_price", "type": "number"},
     { "text": "사진", "align": "center", "value": "photo"}
   ],
 
