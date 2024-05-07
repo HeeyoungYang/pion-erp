@@ -8,6 +8,10 @@ Vue.config.productionTip = false;
 
 Vue.prototype.$configJson = configJson;
 
+if (process.env.NODE_ENV === 'production') {
+  Vue.config.silent = true;
+}
+
 new Vue({
   router,
   vuetify,

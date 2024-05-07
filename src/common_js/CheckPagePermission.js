@@ -23,7 +23,7 @@ export default function(check_page_permission_url){
         this.$emit('resultCheckPagePermission',  this.page_permission);
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        console.error('페이지 권한 REST API 호출 오류:', error);
+        // console.error('페이지 권한 REST API 호출 오류:', error);
         this.page_permission.code = -1;
         this.page_permission.response = error;
         this.$emit('resultCheckPagePermission',  this.page_permission);

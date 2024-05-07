@@ -125,18 +125,19 @@ export default {
     },
   },
   methods: {
+    // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
-      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     async initialize () {
       this.loading_dialog = true;
       this.headers = PageSettingPageConfig.table_header;
       this.page_resources = [];
 
-      console.log("PageSettingPageConfig.table_header=", PageSettingPageConfig.table_header);
+      // console.log("PageSettingPageConfig.table_header=", PageSettingPageConfig.table_header);
 
       let page_resourceList = [];
       const prevURL = window.location.href;
@@ -214,7 +215,7 @@ export default {
           let page_name = item.page_name;
           let page_alias = item.page_alias;
           let page_url = item.page_url;
-          console.log("page_name : "+page_name + ", page_alias : " +page_alias+ ", page_url : " +page_url)
+          // console.log("page_name : "+page_name + ", page_alias : " +page_alias+ ", page_url : " +page_url)
 
           let result;
           if(this.editedIndex === -1){ // Page Resource 추가
@@ -255,14 +256,14 @@ export default {
       this.dialogDelete = true
     },
     async deletePageResourceConfirm(){
-      console.log('페이지 삭제 : ' + JSON.stringify(this.editedItem.page_name));
+      // console.log('페이지 삭제 : ' + JSON.stringify(this.editedItem.page_name));
       this.page_resources.splice(this.editedIndex, 1)
 
       const prevURL = window.location.href;
       try {
 
         let page_name = this.editedItem.page_name;
-        console.log("page_name : "+page_name)
+        // console.log("page_name : "+page_name)
 
         let result = await mux.Server.delete(`/api/admin/page_resource/?page_name=${page_name}`);
         if (prevURL !== window.location.href) return;

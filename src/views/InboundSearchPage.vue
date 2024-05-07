@@ -192,12 +192,12 @@ export default {
       this.today = new Date();
       const prevURL = window.location.href;
       try {
-        console.log('사용자 계정 정보 가졍오기');
+        // console.log('사용자 계정 정보 가졍오기');
         let result = await mux.Server.get({
           path: '/api/user/',
         });
         if (prevURL !== window.location.href) return;
-        console.log('result :>> ', result);
+        // console.log('result :>> ', result);
         // this.login_info.name = (result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value).trim();
         // this.login_info.email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
         this.login_info.name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
@@ -207,11 +207,12 @@ export default {
         alert(error);
       }
     },
+    // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
-      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     searchButton(){
       this.inbound_approve_data = InboundSearchPageConfig.test_inbound_approve_data
@@ -278,7 +279,7 @@ export default {
           }
         }
       }
-      console.log(JSON.stringify(this.change_approve));
+      // console.log(JSON.stringify(this.change_approve));
 
     }
   },

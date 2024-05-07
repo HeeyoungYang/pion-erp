@@ -79,14 +79,14 @@ mux.Server = {
 
     } catch (error) {
       if (axios.isCancel(error)) {
-        console.error(defaultObj.path+' Move canceled:', error.message); // 요청이 취소된 경우
+        // console.error(defaultObj.path+' Move canceled:', error.message); // 요청이 취소된 경우
       } else if (error.response) {
         // 요청은 성공했으나 서버가 상태 코드를 반환한 경우
-        console.error(defaultObj.path+' Move Server responded with a non 2xx status:', error.message);
+        // console.error(defaultObj.path+' Move Server responded with a non 2xx status:', error.message);
       } else if (error.message === 'timeout') {
-        console.error(defaultObj.path+' Move timeout:', error.message); // 타임아웃이 발생한 경우
+        // console.error(defaultObj.path+' Move timeout:', error.message); // 타임아웃이 발생한 경우
       } else {
-        console.error(defaultObj.path+' Move error:', error.message); // 기타 에러
+        // console.error(defaultObj.path+' Move error:', error.message); // 기타 에러
       }
     }
     this.axiosInstance.defaults.timeout = this.defaultTimeout;
@@ -364,7 +364,7 @@ mux.Server = {
           if (response && response.data && response.data.data && response.data.data.AuthenticationResult){
             if (response.data.data.AuthenticationResult.AccessToken){
               localStorage.setItem('AccessToken', response.data.data.AuthenticationResult.AccessToken)
-              console.log('response.data.data.AuthenticationResult.ExpiresIn :>> ', response.data.data.AuthenticationResult.ExpiresIn);
+              // console.log('response.data.data.AuthenticationResult.ExpiresIn :>> ', response.data.data.AuthenticationResult.ExpiresIn);
             }
             if (response.data.data.AuthenticationResult.RefreshToken){
               Vue.$cookies.set(configJson.cookies.RefreshToken.key, response.data.data.AuthenticationResult.RefreshToken, configJson.cookies.RefreshToken.expiration);
@@ -375,14 +375,14 @@ mux.Server = {
         resolve(response);
       } catch (error) {
         if (axios.isCancel(error)) {
-          console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Request canceled:', error.message); // 요청이 취소된 경우
+          // console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Request canceled:', error.message); // 요청이 취소된 경우
         } else if (error.response) {
           // 요청은 성공했으나 서버가 상태 코드를 반환한 경우
-          console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Server responded with a non 2xx status:', error.message);
+          // console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Server responded with a non 2xx status:', error.message);
         } else if (error.message === 'timeout') {
-          console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Request timeout:', error.message); // 타임아웃이 발생한 경우
+          // console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Request timeout:', error.message); // 타임아웃이 발생한 경우
         } else {
-          console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Request error:', error.message); // 기타 에러
+          // console.error(`${method.toUpperCase()} ${defaultObj.path} `+'Request error:', error.message); // 기타 에러
         }
         this.axiosInstance.defaults.timeout = this.defaultTimeout;
         reject(error);
@@ -415,11 +415,11 @@ mux.Server = {
           Vue.$cookies.set(configJson.cookies.department.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:department').Value, configJson.cookies.department.expiration);
           resolve();
         } else {
-          console.log('사용자 정보 조회 실패:', result.message);
+          // console.log('사용자 정보 조회 실패:', result.message);
           reject(result.message);
         }
       }).catch((error) => {
-        console.log('사용자 정보 조회 에러:', error);
+        // console.log('사용자 정보 조회 에러:', error);
         reject(error);
       });
     });
@@ -447,7 +447,7 @@ mux.Server = {
             result.data.path = '/home';
             this.move(result.data);
           }).catch((error) => {
-            console.log('사용자 정보 쿠키 저장 실패:', error);
+            // console.log('사용자 정보 쿠키 저장 실패:', error);
             alert('로그인 실패:', error);
             mux.Server.logOut();
           });
@@ -456,11 +456,11 @@ mux.Server = {
           this.move(result.data);
         }
       }else {
-        console.error('로그인 실패:', result.message);
+        // console.error('로그인 실패:', result.message);
         alert(result.message);
       }
     }).catch(err => {
-      console.error('err :>>>>> ', err);
+      // console.error('err :>>>>> ', err);
       switch (err.message) {
         // case 'password':
         //   alert('비밀번호 오류');
@@ -485,7 +485,7 @@ mux.Server = {
     try {
       await this.post({path:'/api/user/logout/'});
     } catch (error) {
-      console.log('logout error :>> ', error);
+      // console.log('logout error :>> ', error);
     }
     localStorage.clear();
     Vue.$cookies.keys().forEach(key =>{
@@ -590,19 +590,20 @@ mux.Server.axiosInstance.interceptors.response.use(
               originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
               return axios(originalRequest);
             } else {
-              console.error('AccessToken 갱신 후 사용자 정보 저장 실패:', result.message);
+              // console.error('AccessToken 갱신 후 사용자 정보 저장 실패:', result.message);
             }
           }).catch((error) => {
-            console.error('AccessToken 갱신 후 사용자 정보 저장 에러:', error);
+            // console.error('AccessToken 갱신 후 사용자 정보 저장 에러:', error);
+            return Promise.reject(error);
           });
         } catch (refreshError) {
           // RefreshToken을 사용하여 AccessToken을 갱신하는데 실패한 경우 로그아웃 처리 등을 수행할 수 있습니다.
-          console.error('AccessToken 갱신 실패:', refreshError);
+          // console.error('AccessToken 갱신 실패:', refreshError);
           // 로그아웃
           try {
             await axios.post({path:'/api/user/logout/'});
           } catch (error) {
-            console.log('logout error :>> ', error);
+            // console.log('logout error :>> ', error);
           }
           localStorage.clear();
           Vue.$cookies.keys().forEach(key =>{
@@ -761,7 +762,7 @@ mux.Util = {
         }, 1000);
 
       } catch (error) {
-        console.warn(error);
+        // console.warn(error);
         reject(error);
       }
     });
@@ -1012,7 +1013,7 @@ mux.Valid = {
             if (methods.customRegex instanceof RegExp) {
                 return methods.customRegex.test(value);
             } else {
-                console.error('Invalid validation method');
+                // console.error('Invalid validation method');
                 return false;
             }
         }
@@ -1047,7 +1048,7 @@ mux.Style = {
   borderColor(element, color, direction) {
     // 전달된 element가 유효한지 확인
     if (!(element instanceof HTMLElement)) {
-        console.error("borderColor(): 유효한 HTMLElement를 전달해주세요.");
+        // console.error("borderColor(): 유효한 HTMLElement를 전달해주세요.");
         return;
     }
 
@@ -1089,7 +1090,7 @@ mux.Style = {
   borderWidth(element, thickness) {
     // 전달된 element가 유효한지 확인
     if (!(element instanceof HTMLElement)) {
-        console.error("borderWidth(): 유효한 HTMLElement를 전달해주세요.");
+        // console.error("borderWidth(): 유효한 HTMLElement를 전달해주세요.");
         return;
     }
 
@@ -1127,7 +1128,7 @@ mux.Style = {
   fontSize(element, size) {
     // 전달된 element가 유효한지 확인
     if (!(element instanceof HTMLElement)) {
-        console.error("fontSize(): 유효한 HTMLElement를 전달해주세요.");
+        // console.error("fontSize(): 유효한 HTMLElement를 전달해주세요.");
         return;
     }
 
@@ -1166,7 +1167,7 @@ mux.Style = {
   fontWeight(element, weight) {
     // 전달된 element가 유효한지 확인
     if (!(element instanceof HTMLElement)) {
-        console.error("fontWeight(): 유효한 HTMLElement를 전달해주세요.");
+        // console.error("fontWeight(): 유효한 HTMLElement를 전달해주세요.");
         return;
     }
 
@@ -1193,7 +1194,7 @@ mux.Style = {
   fontColor(element, color) {
     // 전달된 element가 유효한지 확인
     if (!(element instanceof HTMLElement)) {
-        console.error("fontColor(): 유효한 HTMLElement를 전달해주세요.");
+        // console.error("fontColor(): 유효한 HTMLElement를 전달해주세요.");
         return;
     }
 
@@ -1664,7 +1665,7 @@ mux.Excel = {
 
       reader.readAsArrayBuffer(file);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   },
 
@@ -1706,7 +1707,7 @@ mux.Excel = {
       input.click();
 
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   },
 

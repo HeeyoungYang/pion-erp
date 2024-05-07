@@ -1463,11 +1463,11 @@ export default {
 
   async mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
-    console.log('this.$cookies.keys() :>> ', this.$cookies.keys());
-    console.log('this.$configJson.cookies.name.key :>> ', this.$configJson.cookies.name.key);
-    console.log('this.$cookies.get(this.$configJson.cookies.name.key) :>> ', this.$cookies.get(this.$configJson.cookies.name.key));
+    // console.log('this.$cookies.keys() :>> ', this.$cookies.keys());
+    // console.log('this.$configJson.cookies.name.key :>> ', this.$configJson.cookies.name.key);
+    // console.log('this.$cookies.get(this.$configJson.cookies.name.key) :>> ', this.$cookies.get(this.$configJson.cookies.name.key));
     this.username = this.$cookies.get(this.$configJson.cookies.name.key);
-    console.log('this.username :>> ', this.username);
+    // console.log('this.username :>> ', this.username);
     this.todayDate = mux.Date.format(new Date(), 'yyyy-MM-dd');
     // const prevURL = window.location.href;
     // try {
@@ -1533,15 +1533,16 @@ export default {
   },
 
   methods: {
+    // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
-      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     search(){
       const keyword = this.searching_product_name.trim();
-      console.log('keyword :>> ', keyword);
+      // console.log('keyword :>> ', keyword);
 
       const searchResult = ProductCostPageConfig.search_result;
 
@@ -1553,7 +1554,7 @@ export default {
       const product_code = this.search_complete_product_code.trim();
       const product_name = this.search_complete_product_name.trim();
       const product_capacity = this.search_product_capacity.trim();
-      console.log(`${product_code} / ${product_name} / ${product_capacity}`);
+      // console.log(`${product_code} / ${product_name} / ${product_capacity}`);
 
       const searchResult = ProductCostPageConfig.dialog_search_product_data;
 

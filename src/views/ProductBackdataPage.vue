@@ -1214,11 +1214,12 @@ export default {
   },
 
   methods: {
+    // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
-      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     openDialog(){
       this.module_dialog = true
@@ -1541,7 +1542,7 @@ export default {
             this.material_total_stock_num += data.total_stock
             this.material_total_stock_price += data.item_price
           })
-          console.log(this.material_data)
+          // console.log(this.material_data)
         }else{
           if (prevURL !== window.location.href) return;
           alert(result['failed_info']);
@@ -1665,7 +1666,7 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
-          console.log('result :>> ', result);
+          // console.log('result :>> ', result);
           alert('원부자재 등록이 완료되었습니다');
         } else {
           if (prevURL !== window.location.href) return;
@@ -1806,7 +1807,7 @@ export default {
               result = JSON.parse(result);
             }
             if(result['code'] == 0){
-              console.log('result :>> ', result);
+              // console.log('result :>> ', result);
               alert('원부자재 등록이 완료되었습니다');
             } else {
               if (prevURL !== window.location.href) return;
@@ -1882,7 +1883,7 @@ export default {
               result = JSON.parse(result);
             }
             if(result['code'] == 0){
-              console.log('result :>> ', result);
+              // console.log('result :>> ', result);
               alert('원부자재 수정이 완료되었습니다');
             } else {
               if (prevURL !== window.location.href) return;
@@ -1896,7 +1897,7 @@ export default {
               alert(error);
           }
         }
-        console.log('원부자재 데이터 : ' + JSON.stringify(this.editRegistMaterial));
+        // console.log('원부자재 데이터 : ' + JSON.stringify(this.editRegistMaterial));
       }
 
       //editRegistMaterial를 전달 Back으로 전달
@@ -2177,7 +2178,7 @@ export default {
               result = JSON.parse(result);
             }
             if(result['code'] == 0){
-              console.log('result :>> ', result);
+              // console.log('result :>> ', result);
               alert('반제품 등록이 완료되었습니다');
             } else {
               if (prevURL !== window.location.href) return;
@@ -2279,7 +2280,7 @@ export default {
               result = JSON.parse(result);
             }
             if(result['code'] == 0){
-              console.log('result :>> ', result);
+              // console.log('result :>> ', result);
               alert('반제품 수정이 완료되었습니다');
             } else {
               if (prevURL !== window.location.href) return;
@@ -2294,7 +2295,7 @@ export default {
           }
         }
 
-        console.log('반제품 데이터 : ' + JSON.stringify(this.editRegistModule));
+        // console.log('반제품 데이터 : ' + JSON.stringify(this.editRegistModule));
       }
     },
 
@@ -2566,7 +2567,7 @@ export default {
               result = JSON.parse(result);
             }
             if(result['code'] == 0){
-              console.log('result :>> ', result);
+              // console.log('result :>> ', result);
               alert('완제품 등록이 완료되었습니다');
             } else {
               if (prevURL !== window.location.href) return;
@@ -2698,7 +2699,7 @@ export default {
               result = JSON.parse(result);
             }
             if(result['code'] == 0){
-              console.log('result :>> ', result);
+              // console.log('result :>> ', result);
               alert('완제품 수정이 완료되었습니다');
             } else {
               if (prevURL !== window.location.href) return;
@@ -2712,7 +2713,7 @@ export default {
               alert(error);
           }
         }
-        console.log('완제품 데이터 : ' + JSON.stringify(this.editRegistProduct));
+        // console.log('완제품 데이터 : ' + JSON.stringify(this.editRegistProduct));
       }
     },
 
@@ -2816,7 +2817,7 @@ export default {
       this.deleteItemList.modifier = this.$cookies.get(this.$configJson.cookies.id.key);
       if(this.tab_main == 0){
         this.deleteItemList.material_code = this.editRegistMaterial.item_code;
-        console.log('원부자재 삭제 : ' + JSON.stringify(this.deleteItemList));
+        // console.log('원부자재 삭제 : ' + JSON.stringify(this.deleteItemList));
 
         const prevURL = window.location.href;
         try {
@@ -2855,7 +2856,7 @@ export default {
             result = JSON.parse(result);
           }
           if(result['code'] == 0){
-            console.log('result :>> ', result);
+            // console.log('result :>> ', result);
             alert('삭제가 완료되었습니다');
             this.material_data.splice(this.editedIndex, 1)
           } else {
@@ -2871,7 +2872,7 @@ export default {
         }
       }else if(this.tab_main == 1){
         this.deleteItemList.module_code = this.editRegistModule.item_code;
-        console.log('반제품 삭제 : ' + JSON.stringify(this.deleteItemList));
+        // console.log('반제품 삭제 : ' + JSON.stringify(this.deleteItemList));
 
         const prevURL = window.location.href;
         try {
@@ -2914,7 +2915,7 @@ export default {
             result = JSON.parse(result);
           }
           if(result['code'] == 0){
-            console.log('result :>> ', result);
+            // console.log('result :>> ', result);
             alert('삭제가 완료되었습니다');
             this.module_data.splice(this.editedIndex, 1)
           } else {
@@ -2930,7 +2931,7 @@ export default {
         }
       }else if(this.tab_main == 2){
         this.deleteItemList.product_code = this.editRegistProduct.item_code;
-        console.log('완제품 삭제 : ' + JSON.stringify(this.deleteItemList));
+        // console.log('완제품 삭제 : ' + JSON.stringify(this.deleteItemList));
 
         const prevURL = window.location.href;
         try {
@@ -2977,7 +2978,7 @@ export default {
             result = JSON.parse(result);
           }
           if(result['code'] == 0){
-            console.log('result :>> ', result);
+            // console.log('result :>> ', result);
             alert('삭제가 완료되었습니다');
             this.product_data.splice(this.editedIndex, 1)
           } else {

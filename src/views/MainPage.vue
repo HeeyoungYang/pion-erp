@@ -64,11 +64,12 @@ export default {
     }
   },
   methods: {
+    // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
-      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     save() {
       const validate = this.$refs.pwForm.validate();
@@ -96,12 +97,12 @@ export default {
           }
         }else {
           alert('비밀번호 변경 실패');
-          console.log('비밀번호 변경 실패:', response);
+          // console.log('비밀번호 변경 실패:', response);
         }
       }).catch((error) => {
         if (prevURL !== window.location.href) return;
         alert('비밀번호 변경 에러');
-        console.log('비밀번호 변경 에러:', error);
+        // console.log('비밀번호 변경 에러:', error);
       });
     }
   },

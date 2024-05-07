@@ -327,11 +327,12 @@ export default {
   },
 
   methods: {
+    // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
-      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     initialize () {
       this.labor_data = LaborCostBackDataPageConfig.test_labor_data
@@ -537,7 +538,7 @@ export default {
 
         item.formula = formula;
         item.modifier = 'user_id';
-        console.log('수정된 정보 : ' + JSON.stringify(item));
+        // console.log('수정된 정보 : ' + JSON.stringify(item));
       }
     },
 
@@ -558,11 +559,11 @@ export default {
 
       if(this.tab_main == 0){
         this.deleteDataList.code = this.editedLaborItem.code;
-        console.log('노무비 정보 삭제 : ' + JSON.stringify(this.deleteDataList));
+        // console.log('노무비 정보 삭제 : ' + JSON.stringify(this.deleteDataList));
         this.labor_data.splice(this.editedLaborIndex, 1)
       }else if(this.tab_main == 1){
         this.deleteDataList.occupation = this.editedWageItem.occupation;
-        console.log('시중노임단가 정보 삭제 : ' + JSON.stringify(this.deleteDataList));
+        // console.log('시중노임단가 정보 삭제 : ' + JSON.stringify(this.deleteDataList));
         this.wage_data.splice(this.editedWageIndex, 1)
       }
 

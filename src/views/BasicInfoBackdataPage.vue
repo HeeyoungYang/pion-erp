@@ -285,11 +285,12 @@ export default {
   },
 
   methods: {
+    // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
-      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     async initialize () {
       // this.classification_data = BasicInfoBackDataPageConfig.test_classification_data
@@ -389,7 +390,7 @@ export default {
                   result = JSON.parse(result);
                 }
                 if(result['code'] == 0){
-                  console.log('result :>> ', result);
+                  // console.log('result :>> ', result);
                   alert('분류 등록이 완료되었습니다.');
                   this.classification_data.push({classification: item.classification_update})
                   data.value = '';
@@ -429,7 +430,7 @@ export default {
                   result = JSON.parse(result);
                 }
                 if(result['code'] == 0){
-                  console.log('result :>> ', result);
+                  // console.log('result :>> ', result);
                   alert('분류 수정이 완료되었습니다.');
                   this.classification_data[this.editedBasicInfoIndex].classification = item.classification_update+'';
                   this.productInfoDialog = false;
@@ -471,7 +472,7 @@ export default {
                   result = JSON.parse(result);
                 }
                 if(result['code'] == 0){
-                  console.log('result :>> ', result);
+                  // console.log('result :>> ', result);
                   alert('제조사 등록이 완료되었습니다.');
                   this.manufacturer_data.push({manufacturer: item.manufacturer_update})
                   data.value = '';
@@ -511,7 +512,7 @@ export default {
                   result = JSON.parse(result);
                 }
                 if(result['code'] == 0){
-                  console.log('result :>> ', result);
+                  // console.log('result :>> ', result);
                   alert('제조사 수정이 완료되었습니다.');
                   this.manufacturer_data[this.editedBasicInfoIndex].manufacturer = item.manufacturer_update+'';
                   this.productInfoDialog = false;
@@ -553,7 +554,7 @@ export default {
                   result = JSON.parse(result);
                 }
                 if(result['code'] == 0){
-                  console.log('result :>> ', result);
+                  // console.log('result :>> ', result);
                   alert('위치 등록이 완료되었습니다.');
                   this.spot_data.push({spot: item.spot_update})
                   data.value = '';
@@ -593,7 +594,7 @@ export default {
                   result = JSON.parse(result);
                 }
                 if(result['code'] == 0){
-                  console.log('result :>> ', result);
+                  // console.log('result :>> ', result);
                   alert('위치 수정이 완료되었습니다.');
                   this.spot_data[this.editedBasicInfoIndex].spot = item.spot_update+'';
                   this.productInfoDialog = false;
@@ -636,7 +637,7 @@ export default {
 
       if(Object.keys(this.editedBasicInfo) == 'classification'){
         this.deleteBasicInfo.classification = this.editedBasicInfo.classification;
-        console.log('자재 분류 삭제 : ' + JSON.stringify(this.deleteBasicInfo));
+        // console.log('자재 분류 삭제 : ' + JSON.stringify(this.deleteBasicInfo));
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
@@ -658,7 +659,7 @@ export default {
             result = JSON.parse(result);
           }
           if(result['code'] == 0){
-            console.log('result :>> ', result);
+            // console.log('result :>> ', result);
             alert('분류 삭제가 완료되었습니다.');
             this.classification_data.splice(this.editedBasicInfoIndex, 1)
           } else {
@@ -674,7 +675,7 @@ export default {
         }
       }else if(Object.keys(this.editedBasicInfo) == 'manufacturer'){
         this.deleteBasicInfo.manufacturer = this.editedBasicInfo.manufacturer;
-        console.log('제조사 삭제 : ' + JSON.stringify(this.deleteBasicInfo));
+        // console.log('제조사 삭제 : ' + JSON.stringify(this.deleteBasicInfo));
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
@@ -696,7 +697,7 @@ export default {
             result = JSON.parse(result);
           }
           if(result['code'] == 0){
-            console.log('result :>> ', result);
+            // console.log('result :>> ', result);
             alert('제조사 삭제가 완료되었습니다.');
             this.manufacturer_data.splice(this.editedBasicInfoIndex, 1)
           } else {
@@ -712,7 +713,7 @@ export default {
         }
       }else if(Object.keys(this.editedBasicInfo) == 'spot'){
         this.deleteBasicInfo.spot = this.editedBasicInfo.spot;
-        console.log('위치 삭제 : ' + JSON.stringify(this.deleteBasicInfo));
+        // console.log('위치 삭제 : ' + JSON.stringify(this.deleteBasicInfo));
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
@@ -734,7 +735,7 @@ export default {
             result = JSON.parse(result);
           }
           if(result['code'] == 0){
-            console.log('result :>> ', result);
+            // console.log('result :>> ', result);
             alert('위치 삭제가 완료되었습니다.');
             this.spot_data.splice(this.editedBasicInfoIndex, 1)
           } else {

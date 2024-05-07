@@ -806,7 +806,7 @@ export default {
         try {
           let result = await mux.Server.get({path: '/api/admin/groups/'});
           if (prevURL !== window.location.href) return;
-          console.log('result :>> ', result);
+          // console.log('result :>> ', result);
           //alert(result.message);
           // 성공시
           if (result.code == 0){

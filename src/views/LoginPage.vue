@@ -191,7 +191,7 @@
 import mux from '@/mux';
 export default {
   mounted(){
-    console.log('this.$cookies.keys() :>> ', this.$cookies.keys());
+    // console.log('this.$cookies.keys() :>> ', this.$cookies.keys());
   },
   data(){
     return{
@@ -231,9 +231,9 @@ export default {
         }else{
           alert("아이디를 확인해주세요.");
         }
-      }).catch(err => {
+      }).catch(() => {
         if (prevURL !== window.location.href) return;
-        console.error('err :>> ', err);
+        // console.error('err :>> ', err);
         alert('아이디를 확인해주세요.');
       });
     },
@@ -257,9 +257,9 @@ export default {
         }else{
           alert("확인코드를 확인해주세요.");
         }
-      }).catch(err => {
+      }).catch(() => {
         if (prevURL !== window.location.href) return;
-        console.error('err :>> ', err);
+        // console.error('err :>> ', err);
         alert('확인코드를 확인해주세요.');
       });
     },

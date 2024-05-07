@@ -65,16 +65,17 @@ export default {
     this.initialize()
   },
   methods: {
+    // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
       // 사용자 페이지 권한 결과를 확인하여 처리한다.
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
-      console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     handleChangeAuthority(data) {
       // 사용자 권한 변경 결과를 확인하여 처리한다.
       // data ==> 변경된 사용자 정보
-      console.log('data :>> ', data);
+      // console.log('data :>> ', data);
       mux.Server.put({
         path: '/api/admin/user/groups/',
         data: {
@@ -95,7 +96,7 @@ export default {
     async initialize () {
       this.loading_dialog = true;
       this.headers = AuthorizationPageConfig.table_header;
-      console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
+      // console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
 
       let memberList = [];
       const prevURL = window.location.href;
@@ -131,7 +132,7 @@ export default {
     /*async initialize () {
       this.loading_dialog = true;
       this.headers = AuthorizationPageConfig.table_header;
-      console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
+      // console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
 
       let memberList = [];
       const prevURL = window.location.href;
