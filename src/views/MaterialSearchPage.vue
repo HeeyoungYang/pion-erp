@@ -242,10 +242,24 @@ export default {
       if (searchConditions === 'All')
         searchConditions = '';
       let searchMaterialCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+      if (searchMaterialCode)
+      searchMaterialCode = searchMaterialCode.trim();
+
       let searchName = this.searchCardInputs.find(x=>x.label === '제품명').value;
+      if (searchName)
+      searchName = searchName.trim();
+
       let searchModel = this.searchCardInputs.find(x=>x.label === '모델명').value;
+      if (searchModel)
+      searchModel = searchModel.trim();
+
       let searchSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
+      if (searchSpec)
+      searchSpec = searchSpec.trim();
+
       let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
+      if (searchManufacturer)
+      searchManufacturer = searchManufacturer.trim();
       let searchStockMoreZero = '';
 
       const prevURL = window.location.href;

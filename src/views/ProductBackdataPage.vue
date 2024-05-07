@@ -1441,13 +1441,27 @@ export default {
       let searchClassification = this.searchMaterialCardInputs.find(x=>x.label === '분류').value;
       if (searchClassification === 'All')
         searchClassification = '%';
+
       let searchConditions = this.searchMaterialCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
         searchConditions = '';
-      let searchProductCode = this.searchMaterialCardInputs.find(x=>x.label === '관리코드').value.trim();
-      let searchProductName = this.searchMaterialCardInputs.find(x=>x.label === '제품명').value.trim();
-      let searchModelName = this.searchMaterialCardInputs.find(x=>x.label === '모델명').value.trim();
-      let searchProductSpec = this.searchMaterialCardInputs.find(x=>x.label === '사양').value.trim();
+
+      let searchProductCode = this.searchMaterialCardInputs.find(x=>x.label === '관리코드').value;
+      if (searchProductCode)
+        searchProductCode = searchProductCode.trim();
+
+      let searchProductName = this.searchMaterialCardInputs.find(x=>x.label === '제품명').value;
+      if (searchProductName)
+        searchProductName = searchProductName.trim();
+
+      let searchModelName = this.searchMaterialCardInputs.find(x=>x.label === '모델명').value;
+      if (searchModelName)
+        searchModelName = searchModelName.trim();
+
+      let searchProductSpec = this.searchMaterialCardInputs.find(x=>x.label === '사양').value;
+      if (searchProductSpec)
+        searchProductSpec = searchProductSpec.trim();
+
       let searchManufacturer = this.searchMaterialCardInputs.find(x=>x.label === '제조사').value;
 
       const prevURL = window.location.href;
@@ -1939,10 +1953,22 @@ export default {
       let searchConditions = this.searchModuleCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
         searchConditions = '';
-      let searchModuleCode = this.searchModuleCardInputs.find(x=>x.label === '관리코드').value.trim();
-      let searchName = this.searchModuleCardInputs.find(x=>x.label === '제품명').value.trim();
-      let searchModel = this.searchModuleCardInputs.find(x=>x.label === '모델명').value.trim();
-      let searchSpec = this.searchModuleCardInputs.find(x=>x.label === '사양').value.trim();
+      let searchModuleCode = this.searchModuleCardInputs.find(x=>x.label === '관리코드').value;
+      if (searchModuleCode)
+        searchModuleCode = searchModuleCode.trim();
+
+      let searchName = this.searchModuleCardInputs.find(x=>x.label === '제품명').value;
+      if (searchName)
+        searchName = searchName.trim();
+
+      let searchModel = this.searchModuleCardInputs.find(x=>x.label === '모델명').value;
+      if (searchModel)
+        searchModel = searchModel.trim();
+
+      let searchSpec = this.searchModuleCardInputs.find(x=>x.label === '사양').value;
+      if (searchSpec)
+        searchSpec = searchSpec.trim();
+
       let searchManufacturer = this.searchModuleCardInputs.find(x=>x.label === '제조사').value;
       let searchStockMoreZero = '';
 
@@ -2310,11 +2336,15 @@ export default {
     async searchProduct() {
       // this.product_data = ProductBackDataPageConfig.test_product_data;
 
-      let searchProductCode = this.searchProductCardInputs.find(x=>x.label === '제품코드').value.trim();
+      let searchProductCode = this.searchProductCardInputs.find(x=>x.label === '제품코드').value;
       if (!searchProductCode)
         searchProductCode = '%';
-      let searchName = this.searchProductCardInputs.find(x=>x.label === '제품명').value.trim();
-      let searchSpec = this.searchProductCardInputs.find(x=>x.label === '사양').value.trim();
+      let searchName = this.searchProductCardInputs.find(x=>x.label === '제품명').value;
+      if (searchName)
+        searchName = searchName.trim();
+      let searchSpec = this.searchProductCardInputs.find(x=>x.label === '사양').value;
+      if (searchSpec)
+        searchSpec = searchSpec.trim();
       // let searchStockMoreZero = '';
 
       const prevURL = window.location.href;
