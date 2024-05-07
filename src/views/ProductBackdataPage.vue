@@ -706,6 +706,7 @@
                             : {{ data.item_code }}
                           </span>
                           <v-menu
+                            v-if="data.thumbnail"
                             open-on-hover
                             :close-on-content-click="false"
                             :nudge-width="100"

@@ -387,6 +387,7 @@
                 </td>
                 <td v-if="showPhoto" align="center">
                   <v-menu
+                    v-if="item.thumbnail"
                     open-on-hover
                     :close-on-content-click="false"
                     :nudge-width="100"
