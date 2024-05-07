@@ -1541,7 +1541,7 @@ export default {
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     search(){
-      const keyword = this.searching_product_name.trim();
+      // const keyword = this.searching_product_name.trim();
       // console.log('keyword :>> ', keyword);
 
       const searchResult = ProductCostPageConfig.search_result;
@@ -1551,9 +1551,9 @@ export default {
 
     },
     searchProduct(){
-      const product_code = this.search_complete_product_code.trim();
-      const product_name = this.search_complete_product_name.trim();
-      const product_capacity = this.search_product_capacity.trim();
+      // const product_code = this.search_complete_product_code.trim();
+      // const product_name = this.search_complete_product_name.trim();
+      // const product_capacity = this.search_product_capacity.trim();
       // console.log(`${product_code} / ${product_name} / ${product_capacity}`);
 
       const searchResult = ProductCostPageConfig.dialog_search_product_data;
@@ -1933,7 +1933,7 @@ export default {
 
         // 품번 기준 정렬
         this.labor_cost_data.sort((a,b) => a.no.localeCompare(b.no));
-        
+
         // const prevURL = window.location.href;
         // try {
         //   const result = await mux.Server.put({path:'/api/product-cost/labor', data: this.labor_cost_data});
@@ -2032,7 +2032,7 @@ export default {
       // 유효성 검사
       const validate = this.$refs.surveyCostForm.validate();
       if(validate) {
-        
+
         // const prevURL = window.location.href;
         // try {
         //   const result = await mux.Server.put({path:'/api/product-cost/survey-cost-num', data: this.calc_cost_detail_data});
@@ -2057,9 +2057,9 @@ export default {
                 return x;
               }
             });
-      
+
             this.searchDataCalcProcess(this.searched_datas);
-            
+
             this.edit_survey_cost_num_disabled = true;
         //   }else {
         //     alert(result.message);

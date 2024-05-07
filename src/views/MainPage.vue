@@ -87,7 +87,7 @@ export default {
         if (response.code == 0) {
           try {
             mux.Server.logIn(
-              this.$cookies.get(this.$configJson.cookies.id.key), 
+              this.$cookies.get(this.$configJson.cookies.id.key),
               this.passwords.newPassword,
               this.$cookies.get(this.$configJson.cookies.savedID.key) ? true : false
             );
@@ -99,7 +99,8 @@ export default {
           alert('비밀번호 변경 실패');
           // console.log('비밀번호 변경 실패:', response);
         }
-      }).catch((error) => {
+      // }).catch((error) => {
+      }).catch(() => {
         if (prevURL !== window.location.href) return;
         alert('비밀번호 변경 에러');
         // console.log('비밀번호 변경 에러:', error);

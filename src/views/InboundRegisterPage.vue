@@ -467,9 +467,9 @@ export default {
 
       try {
         // console.log('사용자 계정 정보 가졍오기');
-        let result = await mux.Server.get({
-          path: '/api/user/',
-        });
+        // let result = await mux.Server.get({
+        //   path: '/api/user/',
+        // });
         if (prevURL !== window.location.href) return;
         // console.log('result :>> ', result);
         this.inbound_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
