@@ -60,6 +60,7 @@
                     : {{ data.item_code }}
                   </span>
                   <v-menu
+                    v-if="data.thumbnail"
                     open-on-hover
                     :close-on-content-click="false"
                     :nudge-width="100"
@@ -85,7 +86,7 @@
                                 alt="Pionelectric Logo"
                                 class="shrink mr-2"
                                 contain
-                                src="../assets/img/pion_logo.png"
+                                :src="data.thumbnail"
                                 transition="scale-transition"
                                 width="150"
                               />
