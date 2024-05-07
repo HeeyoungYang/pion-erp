@@ -190,7 +190,7 @@ export default {
   },
 
   created () {
-    //this.initialize()
+    this.initialize()
   },
   methods: {
     async initialize () {
@@ -265,8 +265,8 @@ export default {
               "stock_table.stock_num": searchStockMoreZero
             }
           ],
-          "script_file_name": "rooting_재고_검색_24_05_05_16_53_9PE.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_05_16_53_X2W"
+          "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
         });
         if (prevURL !== window.location.href) return;
 
