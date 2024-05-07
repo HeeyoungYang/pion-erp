@@ -537,7 +537,7 @@ mux.Server = {
         reject(error);
       }
     });
-  
+
   }
 
 }
@@ -564,7 +564,7 @@ mux.Server.axiosInstance.interceptors.response.use(
   },
   async error => {
     const originalRequest = error.config;
-    if ((error.response.data && error.response.data.code === 5193) 
+    if ((error.response.data && error.response.data.code === 5193)
     && !originalRequest._retry) {
       originalRequest._retry = true;
       const userName = Vue.$cookies.get(configJson.cookies.id.key);
@@ -585,7 +585,7 @@ mux.Server.axiosInstance.interceptors.response.use(
               Vue.$cookies.set(configJson.cookies.office_internal_number.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:internal_number').Value, configJson.cookies.office_internal_number.expiration);
               Vue.$cookies.set(configJson.cookies.position.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:position').Value, configJson.cookies.position.expiration);
               Vue.$cookies.set(configJson.cookies.department.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:department').Value, configJson.cookies.department.expiration);
-              
+
               // 기존 요청을 재시도합니다.
               originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
               return axios(originalRequest);
@@ -2307,11 +2307,15 @@ mux.List = {
    * @param {Array} classificationList
    * @param {Array} manufacturerList
    */
-  addProductBasicInfoLists(inputType, classificationList, manufacturerList){
+  addProductBasicInfoLists(inputType, classificationList, manufacturerList, useAll){
     inputType.forEach( inputs => {
       if(inputs.label == '분류'){
         inputs.list = classificationList;
-        inputs.list.unshift('All');
+        if(useAll){
+          inputs.list.unshift('All');
+        }else{
+          inputs.list = inputs.list.filter((e) => e !== 'All');
+        }
       }else if(inputs.label == '제조사'){
         inputs.list = manufacturerList;
       }

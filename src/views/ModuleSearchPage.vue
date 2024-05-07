@@ -216,7 +216,7 @@ export default {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
-      mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list);
+      mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list, true);
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
     handleResultCheckPagePermission(result) {
