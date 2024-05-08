@@ -576,6 +576,7 @@
                 <td v-if="notEditableBelong"></td>
                 <td v-if="showPhoto" align="center">
                   <v-menu
+                    v-if="data.thumbnail"
                     open-on-hover
                     :close-on-content-click="false"
                     :nudge-width="100"
@@ -599,7 +600,7 @@
                                 alt="Pionelectric Logo"
                                 class="shrink mr-2"
                                 contain
-                                :src="imageBinary(item.thumbnail)"
+                                :src="imageBinary(data.thumbnail)"
                                 transition="scale-transition"
                                 width="150"
                               />
