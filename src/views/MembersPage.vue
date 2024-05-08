@@ -371,6 +371,16 @@ export default {
                   return a;
                 }
               });
+              // 본인 정보 수정일 경우 쿠키 수정
+              if (item.user_id === this.$cookies.get(this.$configJson.cookies.user_id.key)){
+                this.$cookies.set(this.$configJson.cookies.name.key, item.name);
+                this.$cookies.set(this.$configJson.cookies.phone_number.key, item.phone_number);
+                this.$cookies.set(this.$configJson.cookies.email.key, item.email);
+                this.$cookies.set(this.$configJson.cookies.office_phone_number.key, item.office_phone_number);
+                this.$cookies.set(this.$configJson.cookies.office_internal_number.key, item.office_internal_number);
+                this.$cookies.set(this.$configJson.cookies.position.key, item.position);
+                this.$cookies.set(this.$configJson.cookies.department.key, item.department);
+              }
               this.dialog = false;
             }
           } catch (error) {
