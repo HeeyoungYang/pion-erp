@@ -1800,7 +1800,7 @@ export default {
         })
         this.editRegistMaterial.type = '원부자재'
 
-        let thumbnail = '';
+        let thumbnail = 'NULL';
         if (this.materialImg){
           thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.materialImg));
         }
@@ -2176,7 +2176,7 @@ export default {
 
         this.editRegistModule.type = '반제품'
 
-        let thumbnail = '';
+        let thumbnail = 'NULL';
         if (this.moduleImg){
           thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.moduleImg));
         }
@@ -2560,7 +2560,7 @@ export default {
         })
 
         this.editRegistProduct.type = '완제품'
-        let thumbnail = '';
+        let thumbnail = 'NULL';
         if (this.productImg){
           thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.productImg));
         }
