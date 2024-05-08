@@ -286,13 +286,15 @@
                                   </p>
                                 </v-col>
                                 <v-col cols="9">
-                                  <InputsFormComponent
-                                    dense
-                                    clearable
-                                    filled
-                                    col_class="py-0"
-                                    :inputs="registMaterialSpotInputs"
-                                  ></InputsFormComponent>
+                                  <v-form ref="materialSpotForm">
+                                    <InputsFormComponent
+                                      dense
+                                      clearable
+                                      filled
+                                      col_class="py-0"
+                                      :inputs="registMaterialSpotInputs"
+                                    ></InputsFormComponent>
+                                  </v-form>
                                 </v-col>
                               </v-row>
                             </v-container>
@@ -525,13 +527,15 @@
                                 </p>
                               </v-col>
                               <v-col cols="9">
-                                <InputsFormComponent
-                                  dense
-                                  clearable
-                                  filled
-                                  col_class="py-0"
-                                  :inputs="registModuleSpotInputs"
-                                ></InputsFormComponent>
+                                <v-form ref="moduleSpotForm">
+                                  <InputsFormComponent
+                                    dense
+                                    clearable
+                                    filled
+                                    col_class="py-0"
+                                    :inputs="registModuleSpotInputs"
+                                  ></InputsFormComponent>
+                                </v-form>
                               </v-col>
                             </v-row>
                             <v-divider class="my-7"></v-divider>
@@ -911,13 +915,15 @@
                           </p>
                         </v-col>
                         <v-col cols="9">
-                          <InputsFormComponent
-                            dense
-                            clearable
-                            filled
-                            col_class="py-0"
-                            :inputs="registProductSpotInputs"
-                          ></InputsFormComponent>
+                          <v-form ref="productSpotForm">
+                            <InputsFormComponent
+                              dense
+                              clearable
+                              filled
+                              col_class="py-0"
+                              :inputs="registProductSpotInputs"
+                            ></InputsFormComponent>
+                          </v-form>
                         </v-col>
                       </v-row>
                       <v-divider class="my-7"></v-divider>
@@ -1607,7 +1613,7 @@ export default {
       }
 
       this.loading_dialog = true;
-      
+
       //material_excel_upload_data : 불러온 엑셀 데이터
       const type = '원부자재';
 
@@ -1755,19 +1761,10 @@ export default {
       let material_input = this.registMaterialInputs;
       let item = this.editRegistMaterial;
       let stock_input = this.registMaterialSpotInputs;
-      let stock_item = JSON.parse(JSON.stringify(this.editRegistMaterial.spot_stock));
-      let updateSpotArr = [];
-      for (let i = 0; i < stock_item.length; i++) {
-        const data = stock_item[i];
-        if (updateSpotArr.includes(data.spot)){
-          alert('중복된 위치가 존재합니다.');
-          return;
-        }
-        updateSpotArr.push(data.spot);
-      }
-      stock_item = [];
+      let stock_item = this.editRegistMaterial.spot_stock;
       const validate = this.$refs.materialForm.validate();
-      if(validate){
+      const validate_spot = this.$refs.materialSpotForm.validate();
+      if(validate && validate_spot){
         let stock_spot_arr=[];
         let stock_num_arr=[];
         let stock_conditions_arr=[];
@@ -1779,6 +1776,12 @@ export default {
           }else if(stock_input[i].column_name == 'conditions'){
             stock_conditions_arr.push(stock_input[i].value ? stock_input[i].value : '');
           }
+        }
+
+        let set_stock_spot_arr = new Set(stock_spot_arr);
+        if(stock_spot_arr.length !== set_stock_spot_arr.size){
+          alert('중복된 위치가 존재합니다.');
+          return;
         }
 
         for(let x=0; x<stock_spot_arr.length; x++){
@@ -2129,18 +2132,10 @@ export default {
       let module_input = this.registModuleInputs;
       let item = this.editRegistModule;
       let stock_input = this.registModuleSpotInputs;
-      let stock_item = JSON.parse(JSON.stringify(this.editRegistModule.spot_stock));
-      let updateSpotArr = [];
-      for (let i = 0; i < stock_item.length; i++) {
-        const data = stock_item[i];
-        if (updateSpotArr.includes(data.spot)){
-          alert('중복된 위치가 존재합니다.');
-          return;
-        }
-        updateSpotArr.push(data.spot);
-      }
+      let stock_item = this.editRegistModule.spot_stock;
       const validate = this.$refs.moduleForm.validate();
-      if(validate){
+      const validate_spot = this.$refs.moduleSpotForm.validate();
+      if(validate && validate_spot){
         let stock_spot_arr=[];
         let stock_num_arr=[];
         let stock_conditions_arr=[];
@@ -2152,6 +2147,12 @@ export default {
           }else if(stock_input[i].column_name == 'conditions'){
             stock_conditions_arr.push(stock_input[i].value ? stock_input[i].value : '');
           }
+        }
+
+        let set_stock_spot_arr = new Set(stock_spot_arr);
+        if(stock_spot_arr.length !== set_stock_spot_arr.size){
+          alert('중복된 위치가 존재합니다.');
+          return;
         }
 
         for(let x=0; x<stock_spot_arr.length; x++){
@@ -2511,18 +2512,10 @@ export default {
       let product_input = this.registProductInputs;
       let item = this.editRegistProduct;
       let stock_input = this.registProductSpotInputs;
-      let stock_item = JSON.parse(JSON.stringify(this.editRegistProduct.spot_stock));
-      let updateSpotArr = [];
-      for (let i = 0; i < stock_item.length; i++) {
-        const data = stock_item[i];
-        if (updateSpotArr.includes(data.spot)){
-          alert('중복된 위치가 존재합니다.');
-          return;
-        }
-        updateSpotArr.push(data.spot);
-      }
+      let stock_item = this.editRegistProduct.spot_stock;
       const validate = this.$refs.productForm.validate();
-      if(validate){
+      const validate_spot = this.$refs.productSpotForm.validate();
+      if(validate && validate_spot){
         let stock_spot_arr=[];
         let stock_num_arr=[];
         let stock_conditions_arr=[];
@@ -2534,6 +2527,12 @@ export default {
           }else if(stock_input[i].column_name == 'conditions'){
             stock_conditions_arr.push(stock_input[i].value ? stock_input[i].value : '');
           }
+        }
+
+        let set_stock_spot_arr = new Set(stock_spot_arr);
+        if(stock_spot_arr.length !== set_stock_spot_arr.size){
+          alert('중복된 위치가 존재합니다.');
+          return;
         }
 
         for(let x=0; x<stock_spot_arr.length; x++){
@@ -2864,6 +2863,7 @@ export default {
       spot_input.push( {label:'재고수량'+[length], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value:''},)
       spot_input.push( {label:'재고상태'+[length], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value:''},)
 
+      mux.Rules.rulesSet(spot_input);
     },
 
     deleteSpotInputs(type){
