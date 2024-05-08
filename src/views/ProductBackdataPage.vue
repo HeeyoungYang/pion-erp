@@ -92,7 +92,7 @@
                           text-color="white"
                           small
                         >
-                          총 재고 : {{ material_total_stock_num }}
+                          총 재고 : {{ Number(material_total_stock_num).toLocaleString() }}
                         </v-chip>
                         <v-chip
                           class="mr-2"
@@ -100,7 +100,7 @@
                           text-color="white"
                           small
                         >
-                          총 금액 : {{ material_total_stock_price }}
+                          총 금액 : ₩ {{ Number(material_total_stock_price).toLocaleString() }}
                         </v-chip>
                       </v-col>
 
@@ -414,14 +414,14 @@
                           text-color="white"
                           small
                         >
-                          반제품 총 재고 : {{ module_total_stock_num }}
+                          반제품 총 재고 : {{ Number(module_total_stock_num).toLocaleString() }}
                         </v-chip>
                         <v-chip
                           color="indigo"
                           text-color="white"
                           small
                         >
-                          반제품 총 금액 : {{ module_total_stock_price }}
+                          반제품 총 금액 : ₩ {{ Number(module_total_stock_price).toLocaleString() }}
                         </v-chip>
                       </v-col>
                       <v-col

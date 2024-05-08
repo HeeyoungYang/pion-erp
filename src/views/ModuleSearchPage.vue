@@ -75,7 +75,7 @@
                     text-color="white"
                     small
                   >
-                    총 재고 : {{ total_stock_num }}
+                    총 재고 : {{ Number(total_stock_num).toLocaleString() }}
                   </v-chip>
                   <v-chip
                     class="ma-2"
@@ -83,7 +83,7 @@
                     text-color="white"
                     small
                   >
-                    총 금액 : {{ total_stock_price }}
+                    총 금액 : ₩ {{ Number(total_stock_price).toLocaleString() }}
                   </v-chip>
                   <DataTableComponent
                     :headers="headers"

@@ -343,13 +343,25 @@
                       class="mr-2"
                       color="yellow lighten-4"
                       small
-                    >총 재고 : {{ item.total_stock }}</v-chip>
+                    >총 재고 : {{ Number(item.total_stock).toLocaleString() }}</v-chip>
                     <v-chip
                       class="mr-2"
                       color="yellow lighten-4"
                       small
-                    >재고 총액 : {{ item.total_stock * item.unit_price }}</v-chip>
+                    >재고 총액 : ₩ {{ Number(item.total_stock * item.unit_price).toLocaleString() }}</v-chip>
                   </p>
+                  <!-- <p v-if="stockNumInfo" class="my-2">
+                    <v-chip
+                      class="mr-2"
+                      color="yellow lighten-4"
+                      small
+                    >총 재고 : {{ Number(item.total_stock).toLocaleString() }}</v-chip>
+                    <v-chip
+                      class="mr-2"
+                      color="yellow lighten-4"
+                      small
+                    >재고 총액 : ₩ {{ Number(item.total_stock * item.unit_price).toLocaleString() }}</v-chip>
+                  </p> -->
                   <p v-if="itemNumInfo" class="my-2">
                     <v-chip
                       class="mr-2"
