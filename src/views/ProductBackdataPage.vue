@@ -1745,7 +1745,6 @@ export default {
           // console.log('result :>> ', result);
           alert('원부자재 등록이 완료되었습니다');
         } else {
-          if (prevURL !== window.location.href) return;
           alert(result['failed_info']);
         }
       } catch (error) {

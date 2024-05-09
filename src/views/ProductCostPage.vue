@@ -1697,24 +1697,75 @@ export default {
     deleteItem () {
       this.dialogDelete = true;
     },
-    deleteItemConfirm () {
-      for (let i = this.search_cost_data.length - 1; i >= 0; i--) {
-        const data = this.search_cost_data[i];
-        if (data.cost_calc_code === this.clickedProductCost.cost_calc_code){
-          this.search_cost_data.splice(i, 1);
-        }
-      }
-      Object.keys(this.searched_datas).forEach(key => {
-        for (let i = this.searched_datas[key].length - 1; i >= 0; i--) {
-          const data = this.searched_datas[key][i];
-          if (data.cost_calc_code === this.clickedProductCost.cost_calc_code){
-            this.searched_datas[key].splice(i, 1);
-          }
-        }
-      });
+    async deleteItemConfirm () {
+      let sendData = {
+        "product_cost_table-delete": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{},
+          "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code}
+        }],
+        "product_cost_calc_detail-delete": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{},
+          "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code}
+        }],
+        "labor_cost_calc_detail_table-delete": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{},
+          "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code}
+        }],
+      };
 
-      this.clearClicked();
-      this.closeDelete();
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: sendData
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          for (let i = this.search_cost_data.length - 1; i >= 0; i--) {
+            const data = this.search_cost_data[i];
+            if (data.cost_calc_code === this.clickedProductCost.cost_calc_code){
+              this.search_cost_data.splice(i, 1);
+            }
+          }
+          Object.keys(this.searched_datas).forEach(key => {
+            for (let i = this.searched_datas[key].length - 1; i >= 0; i--) {
+              const data = this.searched_datas[key][i];
+              if (data.cost_calc_code === this.clickedProductCost.cost_calc_code){
+                this.searched_datas[key].splice(i, 1);
+              }
+            }
+          });
+          alert('삭제되었습니다.');
+          this.clearClicked();
+          this.closeDelete();
+        } else {
+          alert(result['failed_info']);
+          return;
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+        return;
+      }
     },
     closeDelete(){
       this.dialogDelete = false;
@@ -1934,26 +1985,61 @@ export default {
         // 품번 기준 정렬
         this.labor_cost_data.sort((a,b) => a.no.localeCompare(b.no));
 
-        // const prevURL = window.location.href;
-        // try {
-        //   const result = await mux.Server.put({path:'/api/product-cost/labor', data: this.labor_cost_data});
-        //   if (prevURL !== window.location.href) return;
-        //   if (result.code === 0){
+        let sendData = {
+          "labor_cost_calc_detail_table-delete": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{},
+            "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code}
+          }],
+          "labor_cost_calc_detail_table-insert": []
+        };
+        this.labor_cost_data.forEach(data => {
+          sendData["labor_cost_calc_detail_table-insert"].push({
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "creater"
+            },
+            "data": data,
+            "select_where": {"cost_calc_code": "!JUST_INSERT!"}
+          });
+        });
+
+        const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: sendData
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0){
+
             this.origin_labor_cost_data = this.labor_cost_data;
             this.searched_datas.labor_cost_calc_detail = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
             this.labor_cost_data.forEach(data => {
               this.searched_datas.labor_cost_calc_detail.push(data);
             });
             this.searchDataCalcProcess(this.searched_datas);
-        //   }else {
-        //     alert(result.message);
-        //     return;
-        //   }
-        // } catch (error) {
-        //   if (prevURL !== window.location.href) return;
-        //   alert(error);
-        //   return;
-        // }
+            alert('저장되었습니다.');
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+            return;
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            alert(error.response['data']['failed_info'].msg);
+          else
+            alert(error);
+          return;
+        }
 
       }else {
         // 계산
@@ -2033,11 +2119,41 @@ export default {
       const validate = this.$refs.surveyCostForm.validate();
       if(validate) {
 
-        // const prevURL = window.location.href;
-        // try {
-        //   const result = await mux.Server.put({path:'/api/product-cost/survey-cost-num', data: this.calc_cost_detail_data});
-        //   if (prevURL !== window.location.href) return;
-        //   if (result.code === 0){
+        let sendData = {
+          "product_cost_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{
+              "employment_insurance_num": this.calc_cost_detail_data_employment_insurance.cost_num,
+              "tool_rent_fee_num": this.calc_cost_detail_data_tool_rent_fee.cost_num,
+              "transportation_fee_num": this.calc_cost_detail_data_transportation_fee.cost_num,
+              "industrial_accident_num": this.calc_cost_detail_data_industrial_accident.cost_num,
+              "taxes_dues_num": this.calc_cost_detail_data_taxes_dues.cost_num,
+              "welfare_benefits_num": this.calc_cost_detail_data_welfare_benefits.cost_num,
+              "retirement_num": this.calc_cost_detail_data_retirement.cost_num,
+              "expendables_num": this.calc_cost_detail_data_expendables.cost_num,
+              "industrial_safety_num": this.calc_cost_detail_data_industrial_safety.cost_num,
+              "normal_maintenance_fee_num": this.calc_cost_detail_data_normal_maintenance_fee.cost_num,
+              "profite_num": this.calc_cost_detail_data_profite.cost_num,
+            },
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code}
+          }]
+        };
+
+        const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: sendData
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0){
             this.origin_calc_cost_detail_data = this.calc_cost_detail_data;
             this.clickedProductCost.employment_insurance_num = this.calc_cost_detail_data_employment_insurance.cost_num;
             this.clickedProductCost.tool_rent_fee_num = this.calc_cost_detail_data_tool_rent_fee.cost_num;
@@ -2057,19 +2173,24 @@ export default {
                 return x;
               }
             });
-
+    
             this.searchDataCalcProcess(this.searched_datas);
-
+    
             this.edit_survey_cost_num_disabled = true;
-        //   }else {
-        //     alert(result.message);
-        //     return;
-        //   }
-        // } catch (error) {
-        //   if (prevURL !== window.location.href) return;
-        //   alert(error);
-        //   return;
-        // }
+            alert('수정되었습니다.');
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            alert(error.response['data']['failed_info'].msg);
+          else
+            alert(error);
+        }
+
+
       }
 
     },
@@ -2085,21 +2206,154 @@ export default {
       }
       const validate = this.$refs.surveyCostForm2.validate();
       if(validate){
-        // const prevURL = window.location.href;
-        // try {
-        //   const result = await mux.Server.post({path:'/api/product-cost/', data: this.calc_cost_detail_data2});
-        //   if (prevURL !== window.location.href) return;
-        //   if (result.code === 0){
-            alert('저장되었습니다.');
-        //   }else {
-        //     alert(result.message);
-        //     return;
-        //   }
-        // }catch (error) {
-        //   if (prevURL !== window.location.href) return;
-        //   alert(error);
-        //   return;
-        // }
+        const new_cost_calc_code = this.dialog_selected_product_data.product_code + '/' + mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
+        let sendData = {
+          "product_cost_table-insert": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "creater"
+            },
+            "data":{
+              cost_calc_code: new_cost_calc_code,
+              product_code: this.dialog_selected_product_data.product_code,
+              product_name: this.dialog_selected_product_data.complete_product_name,
+              product_spec: this.dialog_selected_product_data.product_spec,
+              indirect_labor_num: this.calc_cost_detail_data_indirect_labor2.cost_num,
+              indirect_labor_ratio: this.new_indirect_labor_ratio,
+              indirect_labor_formula: this.new_indirect_labor_formula,
+              employment_insurance_num: this.calc_cost_detail_data_employment_insurance2.cost_num,
+              employment_insurance_ratio: this.new_employment_insurance_ratio,
+              employment_insurance_formula: this.new_employment_insurance_formula,
+              tool_rent_fee_num: this.calc_cost_detail_data_tool_rent_fee2.cost_num,
+              tool_rent_fee_ratio: this.new_tool_rent_fee_ratio,
+              tool_rent_fee_formula: this.new_tool_rent_fee_formula,
+              transportation_fee_num: this.calc_cost_detail_data_transportation_fee2.cost_num,
+              transportation_fee_ratio: this.new_transportation_fee_ratio,
+              transportation_fee_fomula: this.new_transportation_fee_fomula,
+              industrial_accident_num: this.calc_cost_detail_data_industrial_accident2.cost_num,
+              industrial_accident_ratio: this.new_industrial_accident_ratio,
+              industrial_accident_formula: this.new_industrial_accident_formula,
+              taxes_dues_num: this.calc_cost_detail_data_taxes_dues2.cost_num,
+              taxes_dues_ratio: this.new_taxes_dues_ratio,
+              taxes_dues_formula: this.new_taxes_dues_formula,
+              welfare_benefits_num: this.calc_cost_detail_data_welfare_benefits2.cost_num,
+              welfare_benefits_ratio: this.new_welfare_benefits_ratio,
+              welfare_benefits_formula: this.new_welfare_benefits_formula,
+              retirement_num: this.calc_cost_detail_data_retirement2.cost_num,
+              retirement_ratio: this.new_retirement_ratio,
+              retirement_formula: this.new_retirement_formula,
+              expendables_num: this.calc_cost_detail_data_expendables2.cost_num,
+              expendables_ratio: this.new_expendables_ratio,
+              expendables_formula: this.new_expendables_formula,
+              industrial_safety_num: this.calc_cost_detail_data_industrial_safety2.cost_num,
+              industrial_safety_ratio: this.new_industrial_safety_ratio,
+              industrial_safety_formula: this.new_industrial_safety_formula,
+              normal_maintenance_fee_num: this.calc_cost_detail_data_normal_maintenance_fee2.cost_num,
+              normal_maintenance_fee_ratio: this.new_normal_maintenance_fee_ratio,
+              normal_maintenance_fee_formula: this.new_normal_maintenance_fee_formula,
+              profite_num: this.calc_cost_detail_data_profite2.cost_num,
+              profite_ratio: this.new_profite_ratio,
+              profite_formula: this.new_profite_formula,
+            },
+            "select_where": {"cost_calc_code": new_cost_calc_code}
+          }],
+          "product_cost_calc_detail_table-insert":[],
+          "labor_cost_calc_detail_table-insert":[],
+        };
+        if (this.dialog_selected_product_data.belong_data){
+          this.dialog_selected_product_data.belong_data.forEach(data => {
+            sendData["product_cost_calc_detail_table-insert"].push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                cost_calc_code: new_cost_calc_code,
+                product_code: this.dialog_selected_product_data.product_code,
+                product_name: this.dialog_selected_product_data.complete_product_name,
+                product_spec: this.dialog_selected_product_data.product_spec,
+                module_name: data.type === 'module' ? data.cost_list : '',
+                module_num: data.type === 'module' ? data.cost_num : 0,
+                module_unit_price: data.type === 'module' ? data.cost_unit_price : '',
+                material_name: data.type === 'material' ? data.cost_list : '',
+                material_num: data.type === 'material' ? data.cost_num : 0,
+                material_unit_price: data.type === 'material' ? data.cost_unit_price : ''
+              },
+              "select_where": {"cost_calc_code": new_cost_calc_code, "module_name": data.type === 'module' ? data.cost_list : '', "material_name": data.type === 'material' ? data.cost_list : ''}
+            });
+          });
+        }
+        this.labor_cost_list.forEach(data => {
+          sendData["labor_cost_calc_detail_table-insert"].push({
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "creater"
+            },
+            "data": {
+              cost_calc_code: new_cost_calc_code,
+              product_code: this.dialog_selected_product_data.product_code,
+              no: data.no,
+              name: data.name,
+              type: data.type,
+              occupation: data.occupation,
+              man_per_day: data.man_per_day,
+              surcharge_ratio: data.surcharge_ratio,
+              adjustment_ratio: data.adjustment_ratio,
+              man_per_hour: data.man_per_hour,
+              unit_price: data.unit_price,
+              quantity: data.quantity
+            },
+            "select_where": {"cost_calc_code": new_cost_calc_code, "product_code": this.dialog_selected_product_data.product_code, "name": data.name, "type": data.type, "occupation": data.occupation}
+          });
+        });
+
+        const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: sendData
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0){
+            this.origin_calc_cost_detail_data = this.calc_cost_detail_data;
+            this.clickedProductCost.employment_insurance_num = this.calc_cost_detail_data_employment_insurance.cost_num;
+            this.clickedProductCost.tool_rent_fee_num = this.calc_cost_detail_data_tool_rent_fee.cost_num;
+            this.clickedProductCost.transportation_fee_num = this.calc_cost_detail_data_transportation_fee.cost_num;
+            this.clickedProductCost.industrial_accident_num = this.calc_cost_detail_data_industrial_accident.cost_num;
+            this.clickedProductCost.taxes_dues_num = this.calc_cost_detail_data_taxes_dues.cost_num;
+            this.clickedProductCost.welfare_benefits_num = this.calc_cost_detail_data_welfare_benefits.cost_num;
+            this.clickedProductCost.retirement_num = this.calc_cost_detail_data_retirement.cost_num;
+            this.clickedProductCost.expendables_num = this.calc_cost_detail_data_expendables.cost_num;
+            this.clickedProductCost.industrial_safety_num = this.calc_cost_detail_data_industrial_safety.cost_num;
+            this.clickedProductCost.normal_maintenance_fee_num = this.calc_cost_detail_data_normal_maintenance_fee.cost_num;
+            this.clickedProductCost.profite_num = this.calc_cost_detail_data_profite.cost_num;
+            this.searched_datas.product_cost = this.searched_datas.product_cost.map(x=> {
+              if (x.cost_calc_code === this.clickedProductCost.cost_calc_code){
+                return this.clickedProductCost;
+              }else {
+                return x;
+              }
+            });
+    
+            this.searchDataCalcProcess(this.searched_datas);
+    
+            this.edit_survey_cost_num_disabled = true;
+            alert('등록되었습니다.');
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            alert(error.response['data']['failed_info'].msg);
+          else
+            alert(error);
+        }
       }
     },
 

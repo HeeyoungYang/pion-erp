@@ -398,7 +398,6 @@ export default {
             this.total_stock_price += data.item_price
           })
         } else {
-          if (prevURL !== window.location.href) return;
           alert(result['failed_info']);
         }
       } catch (error) {

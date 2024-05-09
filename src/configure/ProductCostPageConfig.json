@@ -93,8 +93,8 @@
       "unit_price":"a",
       "product_price":"a",
       "belong_data":[
-        {"cost_list" : "PCS Ass`Y", "cost_unit":"SET", "cost_num": 1, "cost_unit_price": 100},
-        {"cost_list" : "제어기 Ass`Y", "cost_unit":"SET", "cost_num": 1, "cost_unit_price": 100}
+        {"cost_list" : "PCS Ass`Y", "cost_unit":"SET", "cost_num": 1, "cost_unit_price": 100, "type": "module"},
+        {"cost_list" : "제어기 Ass`Y", "cost_unit":"SET", "cost_num": 1, "cost_unit_price": 100, "type": "material"}
       ]
     }
   ],
@@ -451,7 +451,7 @@
         "module_num": 10,
         "module_unit_price": 100,
         "material_name": "",
-        "material_num": "",
+        "material_num": 0,
         "material_unit_price": ""
       },
       {
@@ -463,7 +463,7 @@
         "module_num": 22,
         "module_unit_price": 200,
         "material_name": "",
-        "material_num": "",
+        "material_num": 0,
         "material_unit_price": ""
       },
       {
@@ -475,7 +475,7 @@
         "module_num": 15,
         "module_unit_price": 300,
         "material_name": "",
-        "material_num": "",
+        "material_num": 0,
         "material_unit_price": ""
       },
       {
@@ -487,7 +487,7 @@
         "module_num": 21,
         "module_unit_price": 150,
         "material_name": "",
-        "material_num": "",
+        "material_num": 0,
         "material_unit_price": ""
       },
       {
