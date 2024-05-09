@@ -104,7 +104,6 @@
               :items="inbound_product_list_data"
               item-key="product_code"
               dense
-              show-photo
             />
           </v-col>
         </v-row>
@@ -222,7 +221,7 @@ export default {
       this.loading_dialog = true;
 
       this.inbound_approve_data = InboundSearchPageConfig.test_inbound_approve_data
-      
+
       this.loading_dialog = false;
     },
     closeProductList(){

@@ -105,17 +105,32 @@
                   <v-col
                     cols="12"
                   >
-                  <v-chip
-                    class="ma-2"
-                    color="indigo"
-                    text-color="white"
-                    small
-                    v-for="(spot_stock, idx) in data.spot_stock"
-                    :key="idx"
-                  >
-                    {{ spot_stock.spot }} : {{ spot_stock.stock_num }}개
-                  </v-chip>
-                  <DataTableComponent
+                    <v-btn
+                      small
+                      color="default"
+                      class="mr-2"
+                      @click="detailInfoItem(data, 'product')"
+                    >완제품 상세</v-btn>
+                    <v-btn
+                      small
+                      color="success"
+                      @click="downloadToExcel"
+                    >엑셀 다운로드</v-btn>
+                    <!-- <v-chip
+                      class="ma-2"
+                      color="indigo"
+                      text-color="white"
+                      small
+                      v-for="(spot_stock, idx) in data.spot_stock"
+                      :key="idx"
+                    >
+                      {{ spot_stock.spot }} : {{ spot_stock.stock_num }}개
+                    </v-chip> -->
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <DataTableComponent
                       v-if="data.belong_data"
                       :headers="headers"
                       :items="data.belong_data"
@@ -124,7 +139,6 @@
                       disable-pagination
                       children-key="belong_data"
                       table-style=""
-                      show-photo
                       dense
                       itemNumInfo
                       itemNumInfoBelong
@@ -148,7 +162,38 @@
       @close="closeDetail"
       >
         <v-row>
-          <v-col cols="12" sm="6">
+          <v-col cols="12" :sm="detailForProduct ? 6 : 4" class="mb-3">
+            <p class="text-h6 font-weight-bold primary--text">사진</p>
+            <v-card class="pa-7 mt-5" color="grey lighten-3">
+              <!-- <v-img
+                alt="Pionelectric Logo"
+                class="shrink mr-2"
+                contain
+                :src="imageBinary(item.thumbnail)"
+                transition="scale-transition"
+                width="350"
+              /> -->
+              <v-img
+                alt="Pionelectric Logo"
+                class="shrink"
+                contain
+                src="../assets/img/pion_logo.png"
+                transition="scale-transition"
+                style="margin:0px auto; width:100%"
+              />
+            </v-card>
+          </v-col>
+          <v-col cols="12" :sm="detailForProduct ? 6 : 4" v-if="detailForProduct">
+            <p class="text-h6 font-weight-bold primary--text">기본 정보</p>
+            <DataTableComponent
+              :headers="product_detail_header"
+              :items="product_data"
+              hide-default-footer
+              disable-pagination
+              dense
+            />
+          </v-col>
+          <v-col cols="12" :sm="detailForProduct ? 6 : 4">
             <p class="text-h6 font-weight-bold primary--text">재고 정보</p>
             <DataTableComponent
               :headers="stock_detail_header"
@@ -158,7 +203,7 @@
               dense
             />
           </v-col>
-          <v-col cols="12" sm="6">
+          <v-col cols="12" :sm="detailForProduct ? 6 : 4">
             <p class="text-h6 font-weight-bold primary--text">입고 정보</p>
             <DataTableComponent
               :headers="inbound_detail_header"
@@ -202,6 +247,7 @@ export default {
   },
   data(){
     return{
+      detailForProduct: false,
       menu: false,
       detail_dialog: false,
       stockDetails:[],
@@ -209,6 +255,7 @@ export default {
 
       stock_detail_header:ProductSearchPageConfig.stock_detail_header,
       inbound_detail_header:ProductSearchPageConfig.inbound_detail_header,
+      product_detail_header:ProductSearchPageConfig.product_detail_header,
       searchCardInputs:ProductSearchPageConfig.searchCardInputs,
       headers:ProductSearchPageConfig.headers,
       product_data: []
@@ -229,9 +276,14 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    detailInfoItem(item){
+    detailInfoItem(item, type){
       this.detail_dialog = true;
       this.stockDetails = item.spot_stock
+      if(type === 'product'){
+        this.detailForProduct  = true;
+      }else{
+        this.detailForProduct  = false;
+      }
     },
     closeDetail () {
       this.detail_dialog = false
@@ -247,7 +299,7 @@ export default {
         }
       }
     },
-    
+
     async searchButton() {
       this.loading_dialog = true;
 

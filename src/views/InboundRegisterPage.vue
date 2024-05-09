@@ -60,7 +60,6 @@
                   :items="product_search_data"
                   item-key="product_code"
                   show-select
-                  show-photo
                   />
               </v-col>
             </InputsFormComponent>

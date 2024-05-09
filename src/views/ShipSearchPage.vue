@@ -84,7 +84,6 @@
               :items="ship_product_list_data"
               item-key="product_code"
               dense
-              show-photo
             />
           </v-col>
         </v-row>

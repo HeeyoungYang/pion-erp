@@ -67,9 +67,10 @@
               <v-row>
                 <v-col
                   cols="12"
+                  sm="7"
                 >
                   <v-chip
-                    class="ma-2"
+                    class="mr-2"
                     color="indigo"
                     text-color="white"
                     small
@@ -77,28 +78,40 @@
                     총 재고 : {{ Number(total_stock_num).toLocaleString() }}
                   </v-chip>
                   <v-chip
-                    class="ma-2"
                     color="indigo"
                     text-color="white"
                     small
                   >
                     총 금액 : ₩ {{ Number(total_stock_price).toLocaleString() }}
                   </v-chip>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="5"
+                >
+                  <v-btn
+                    small
+                    color="success"
+                    class="float-right"
+                    @click="downloadToExcel"
+                  >엑셀 다운로드</v-btn>
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col
+                  cols="12"
+                >
                   <DataTableComponent
                     :headers="headers"
                     :items="product_data"
                     :item-key="product_data.material_code"
-                    show-photo
                     dense
                     stockNumInfo
                     show-item-details
                     @itemDetials="detailInfoItem"
                   />
                 </v-col>
-              </v-row>
-
-              <v-row>
-
               </v-row>
             </v-card-text>
           </v-card>
@@ -115,7 +128,28 @@
       @close="closeDetail"
       >
         <v-row>
-          <v-col cols="12" sm="6">
+          <v-col cols="12" sm="4">
+            <p class="text-h6 font-weight-bold primary--text">사진</p>
+            <v-card class="pa-0 mt-5" color="grey lighten-3">
+              <!-- <v-img
+                alt="Pionelectric Logo"
+                class="shrink mr-2"
+                contain
+                :src="imageBinary(item.thumbnail)"
+                transition="scale-transition"
+                width="350"
+              /> -->
+              <v-img
+                alt="Pionelectric Logo"
+                class="shrink mr-2"
+                contain
+                src="../assets/img/pion_logo.png"
+                transition="scale-transition"
+                width="350"
+              />
+            </v-card>
+          </v-col>
+          <v-col cols="12" sm="4">
             <p class="text-h6 font-weight-bold primary--text">재고 정보</p>
             <DataTableComponent
               :headers="stock_detail_header"
@@ -125,7 +159,7 @@
               dense
             />
           </v-col>
-          <v-col cols="12" sm="6">
+          <v-col cols="12" sm="4">
             <p class="text-h6 font-weight-bold primary--text">입고 정보</p>
             <DataTableComponent
               :headers="inbound_detail_header"
@@ -377,6 +411,20 @@ export default {
       }
       this.loading_dialog = false;
       // this.product_data = MaterialSearchPageConfig.test_product_data;
+    },
+    downloadToExcel(){
+      let excelHeaders = [];
+      this.headers.forEach(data => {
+        excelHeaders.push(data)
+      })
+      excelHeaders.push({ "text": "총 재고", "align": "center", "value": "stock_num" });
+      excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" })
+
+      let items = this.product_data;
+      // this.product_data.forEach(data => {
+      //   items.push(data)
+      // })
+      mux.Excel.downloadTable(excelHeaders, items, '원부자재_엑셀다운로드');
     }
   },
 }

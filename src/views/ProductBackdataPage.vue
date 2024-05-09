@@ -306,7 +306,6 @@
                         <DataTableComponent
                           :headers="material_headers"
                           :items="material_data"
-                          show-photo
                           show-item-details
                           editable
                           deletable
@@ -639,7 +638,6 @@
                             notEditableBelong
                             @edit="editModuleItem"
                             @delete="deleteItem"
-                            show-photo
                             stockNumInfo
                             itemNumInfoBelong
                             show-item-details
@@ -711,43 +709,6 @@
                           >
                             : {{ data.item_code }}
                           </span>
-                          <v-menu
-                            v-if="data.thumbnail"
-                            open-on-hover
-                            :close-on-content-click="false"
-                            :nudge-width="100"
-                            offset-x
-                          >
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-icon
-                                small
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                mdi-image
-                              </v-icon>
-                            </template>
-
-                            <v-card class="pa-0">
-                              <v-list class="pa-0">
-                                <v-list-item class="pa-0">
-                                  <v-list-item-content class="pa-3">
-                                    <v-list-item-subtitle>
-                                      제품이미지영역
-                                      <v-img
-                                        alt="Pionelectric Logo"
-                                        class="shrink mr-2"
-                                        contain
-                                        :src="imageBinary(data.thumbnail)"
-                                        transition="scale-transition"
-                                        width="150"
-                                      />
-                                    </v-list-item-subtitle>
-                                  </v-list-item-content>
-                                </v-list-item>
-                              </v-list>
-                            </v-card>
-                          </v-menu>
                         </p>
 
                       </template>
@@ -759,7 +720,18 @@
                             sm="6"
                             align-self="center"
                           >
-                            <v-chip
+                            <v-btn
+                              small
+                              color="default"
+                              class="mr-2"
+                              @click="detailInfoItem(data, 'product')"
+                            >완제품 상세</v-btn>
+                            <v-btn
+                              small
+                              color="success"
+                              @click="downloadToExcel"
+                            >엑셀 다운로드</v-btn>
+                            <!-- <v-chip
                               class="mr-2"
                               color="indigo"
                               text-color="white"
@@ -768,7 +740,7 @@
                               :key="idx"
                             >
                               {{ stock.spot }} : {{ stock.stock_num }}개
-                            </v-chip>
+                            </v-chip> -->
                           </v-col>
                           <v-col
                             cols="12"
@@ -808,7 +780,6 @@
                               disable-pagination
                               children-key="belong_data"
                               table-style=""
-                              show-photo
                               dense
                               itemNumInfo
                               itemNumInfoBelong
@@ -989,6 +960,14 @@
                             show-select
                             dense
                           />
+                          <v-data-table
+                            v-model="selected_items_for_product_data"
+                            :headers="product_search_item_headers"
+                            :items="search_items_for_product_data"
+                            item-key="_code"
+                            show-select
+                            dense
+                          ></v-data-table>
                         </v-col>
                       </v-row>
                       <v-row>
@@ -1021,6 +1000,59 @@
         @close="closeDetail"
       >
         <v-row>
+          <v-col cols="12" :sm="detailForProduct ? 6 : 4" class="mb-3">
+            <p class="text-h6 font-weight-bold primary--text">사진</p>
+            <v-card class="pa-7 mt-5" color="grey lighten-3">
+              <!-- <v-img
+                alt="Pionelectric Logo"
+                class="shrink mr-2"
+                contain
+                :src="imageBinary(item.thumbnail)"
+                transition="scale-transition"
+                width="350"
+              /> -->
+              <v-img
+                alt="Pionelectric Logo"
+                class="shrink"
+                contain
+                src="../assets/img/pion_logo.png"
+                transition="scale-transition"
+                style="margin:0px auto; width:100%"
+              />
+            </v-card>
+          </v-col>
+          <v-col cols="12" :sm="detailForProduct ? 6 : 4" v-if="detailForProduct">
+            <p class="text-h6 font-weight-bold primary--text">기본 정보</p>
+            <DataTableComponent
+              :headers="product_detail_header"
+              :items="product_data"
+              hide-default-footer
+              disable-pagination
+              dense
+            />
+          </v-col>
+          <v-col cols="12" :sm="detailForProduct ? 6 : 4">
+            <p class="text-h6 font-weight-bold primary--text">재고 정보</p>
+            <DataTableComponent
+              :headers="stock_detail_header"
+              :items="stockDetails"
+              hide-default-footer
+              disable-pagination
+              dense
+            />
+          </v-col>
+          <v-col cols="12" :sm="detailForProduct ? 6 : 4">
+            <p class="text-h6 font-weight-bold primary--text">입고 정보</p>
+            <DataTableComponent
+              :headers="inbound_detail_header"
+              :items="inboundDetails"
+              hide-default-footer
+              disable-pagination
+              dense
+            />
+          </v-col>
+        </v-row>
+        <!-- <v-row>
           <v-col cols="12" sm="6">
             <p class="text-h6 font-weight-bold primary--text">재고 정보</p>
             <DataTableComponent
@@ -1041,7 +1073,7 @@
               dense
             />
           </v-col>
-        </v-row>
+        </v-row> -->
       </ModalDialogComponent>
     </v-main>
   </div>
@@ -1088,6 +1120,7 @@ export default {
       //manufacturer_list:[],
       manufacturer_list: ProductBackDataPageConfig.test_manufacturer_list,
       classification_list:[],
+      detailForProduct: false,
 
       //tabs
       tab_main: null,
@@ -1160,6 +1193,7 @@ export default {
       stockDetails:[],
       inboundDetails:[],
       stock_detail_header:ProductBackDataPageConfig.stock_detail_header,
+      product_detail_header:ProductBackDataPageConfig.product_detail_header,
       inbound_detail_header:ProductBackDataPageConfig.inbound_detail_header,
     }
   },
@@ -2839,9 +2873,14 @@ export default {
       }
     },
 
-    detailInfoItem(item){
+    detailInfoItem(item, type){
       this.detail_dialog = true;
       this.stockDetails = item.spot_stock
+      if(type === 'product'){
+        this.detailForProduct  = true;
+      }else{
+        this.detailForProduct  = false;
+      }
     },
 
     addSpotInputs(type){

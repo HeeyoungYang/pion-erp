@@ -507,6 +507,11 @@
     { "text": "수량", "align": "center", "value": "stock_num"},
     { "text": "상태", "align": "center", "value": "conditions"}
   ],
+  "product_detail_header":[
+    { "text": "모델명", "align": "center", "value": "model"},
+    { "text": "제조사", "align": "center", "value": "manufacturer"},
+    { "text": "단가", "align": "center", "value": "unit_price"}
+  ],
   "inbound_detail_header":[
     { "text": "위치", "align": "center", "value": "spot"},
     { "text": "수량", "align": "center", "value": "inbound_num"},
