@@ -101,13 +101,43 @@
               <v-tabs-items v-model="tab_search" class="pb-1">
                 <!-- 원가 계산서 -->
                 <v-tab-item>
-                  <v-card>
+                  <v-card ref="calcCostCard">
+                    <v-menu offset-y>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          color="success"
+                          fab
+                          x-small
+                          class="float-right dont_print"
+                          elevation="0"
+                          v-bind="attrs"
+                          v-on="on"
+                          data-html2canvas-ignore="true"
+                        >
+                          <v-icon
+                            small
+                          >mdi-content-save</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item
+                          v-for="(item, index) in save_costs"
+                          :key="index"
+                          dense
+                          @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                                  : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                        >
+                          <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                     <v-card-title>
                       <v-row>
                         <v-col align-self="center" cols="12" sm="10">
-                          <p class="text-h5 font-weight-black black--text mb-3">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }}<br>
+                          <p style="font-weight: bold; font-size: 23px; margin-bottom:10px">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }}
+                          </p>
                             <!-- <span>2024-02-29</span> -->
-                            <table style="  border-spacing: 0px;" class="mt-1">
+                            <table style=" border-spacing: 0px;" class="mt-1">
                               <tr class="text-body-1">
                                 <td class="cost_search_info info_title" style="border-left:1px solid #b6b6b6">작성자</td>
                                 <td class="cost_search_info">{{ clickedProductCost.cost_creater ? clickedProductCost.cost_creater : '' }}</td>
@@ -115,7 +145,6 @@
                                 <td class="cost_search_info">{{ clickedProductCost.cost_created_time ? clickedProductCost.cost_created_time : '' }}</td>
                               </tr>
                             </table>
-                          </p>
                         </v-col>
                         <v-col align-self="center" cols="12" sm="2">
                           <v-img
@@ -125,6 +154,7 @@
                             src="../assets/img/pion_logo.png"
                             transition="scale-transition"
                             width="140"
+                            style="margin-top:10px"
                           />
                         </v-col>
                       </v-row>
@@ -773,6 +803,7 @@ export default {
       edit_buttons_show: false,
       print_labor_table: false,
       editedIndex: -1,
+      save_costs: ProductCostPageConfig.save_costs,
       content_save_items: ProductCostPageConfig.content_save_items,
       labor_selectable: [],
       labor_occupation_selectable: [],

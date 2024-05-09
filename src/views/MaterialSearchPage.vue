@@ -418,8 +418,13 @@ export default {
       })
       excelHeaders.push({ "text": "총 재고", "align": "center", "value": "stock_num" });
       excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" })
+      excelHeaders.unshift({ "text": "No.", "align": "center", "value": "no" });
 
-      let items = this.product_data;
+      let items = [];
+      this.product_data.forEach((data, index) => {
+        data.no = index+1;
+        items.push(data)
+      });
       // this.product_data.forEach(data => {
       //   items.push(data)
       // })
