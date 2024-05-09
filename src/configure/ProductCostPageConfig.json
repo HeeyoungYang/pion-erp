@@ -1,4 +1,8 @@
 {
+  "save_costs": [
+    {"title":"출력", "click":"print"},
+    {"title":"PDF", "click":"pdf"}
+  ],
   "content_save_items": [
     {"title":"출력", "click":"print"},
     {"title":"엑셀", "click":"excel"},
