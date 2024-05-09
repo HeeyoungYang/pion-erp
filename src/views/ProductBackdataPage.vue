@@ -962,14 +962,14 @@
                             show-select
                             dense
                           />
-                          <v-data-table
+                          <!-- <v-data-table
                             v-model="selected_items_for_product_data"
                             :headers="product_search_item_headers"
                             :items="search_items_for_product_data"
                             item-key="_code"
                             show-select
                             dense
-                          ></v-data-table>
+                          ></v-data-table> -->
                         </v-col>
                       </v-row>
                       <v-row>
