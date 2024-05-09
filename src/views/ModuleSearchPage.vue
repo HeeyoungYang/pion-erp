@@ -389,14 +389,34 @@ export default {
       this.headers.forEach(data => {
         excelHeaders.push(data)
       })
+      excelHeaders.shift();
+      excelHeaders.push({ "text": "필요수량", "align": "center", "value": "num" });
+      excelHeaders.push({ "text": "금액", "align": "center", "value": "num_price" });
       excelHeaders.push({ "text": "총 재고", "align": "center", "value": "total_stock" });
-      excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" })
+      excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" });
+      excelHeaders.unshift({ "text": "No.", "align": "center", "value": "no" });
 
-      let items = this.product_data;
-      // this.product_data.forEach(data => {
-      //   items.push(data)
-      // })
-      mux.Excel.downloadTable(excelHeaders, items, '재고현황_엑셀다운로드');
+      let items = [];
+      this.product_data.forEach((data, index) => {
+        let total_stock_calc = 0;
+        for(let i=0; i<data.belong_data.length; i++){
+          for(let s=0; s<data.belong_data[i].spot_stock.length; s++){
+            total_stock_calc += data.belong_data[i].spot_stock[s].stock_num
+          }
+          data.belong_data[i].total_stock = total_stock_calc;
+          data.belong_data[i].stock_price = total_stock_calc* data.belong_data[i].unit_price;
+          data.belong_data[i].num_price = data.belong_data[i].num* data.belong_data[i].unit_price;
+          data.belong_data[i].no = (index+1)+'-'+(i+1)
+          total_stock_calc = 0;
+        }
+        data.no = index+1;
+        items.push(data)
+      })
+
+      items.forEach(data =>{
+        data.stock_price = data.total_stock * data.unit_price;
+      })
+      mux.Excel.downloadTable(excelHeaders, items, '반제품_엑셀다운로드');
     }
   }
 }

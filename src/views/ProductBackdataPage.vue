@@ -109,7 +109,8 @@
                         sm="6"
                         align-self="center"
                       >
-                        <v-btn color="primary" small outlined class="mb-2 float-right" @click="dialog_excel = true">엑셀 업로드</v-btn>
+                        <v-btn color="default" small outlined class="float-right" @click="downloadToExcel('material')">엑셀 다운로드</v-btn>
+                        <v-btn color="primary" small outlined class="mb-2 mr-2 float-right" @click="dialog_excel = true">엑셀 업로드</v-btn>
                         <v-btn color="success" small class="mb-2 mr-2 float-right" @click="registMaterialItem">등록</v-btn>
                         <!-- ▼ 엑셀 업로드 Modal -->
                         <ModalDialogComponent
@@ -428,6 +429,7 @@
                         sm="6"
                         align-self="center"
                       >
+                        <v-btn color="default" small outlined class="float-right" @click="downloadToExcel('module')">엑셀 다운로드</v-btn>
                         <v-btn color="success" small class="mr-2 float-right" @click="registModuleItem">등록</v-btn>
 
                         <!-- 반제품 등록 Modal -->
@@ -729,7 +731,7 @@
                             <v-btn
                               small
                               color="success"
-                              @click="downloadToExcel"
+                              @click="downloadToExcel('product')"
                             >엑셀 다운로드</v-btn>
                             <!-- <v-chip
                               class="mr-2"
@@ -3126,6 +3128,100 @@ export default {
 
       // 삭제 요청 = this.deleteItemList
       this.closeDelete()
+    },
+    downloadToExcel(type){
+      let excelHeaders = [];
+      let items = [];
+      if(type === 'material'){
+        this.material_headers.forEach(data => {
+          excelHeaders.push(data)
+        })
+        excelHeaders.push({ "text": "총 재고", "align": "center", "value": "stock_num" });
+        excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" })
+        excelHeaders.unshift({ "text": "No.", "align": "center", "value": "no" });
+
+        this.material_data.forEach((data, index) => {
+          data.no = index+1;
+          items.push(data)
+        });
+        mux.Excel.downloadTable(excelHeaders, items, '원부자재_엑셀다운로드');
+      }else if(type === 'module'){
+        this.module_headers.forEach(data => {
+          excelHeaders.push(data)
+        })
+        excelHeaders.shift();
+        excelHeaders.push({ "text": "필요수량", "align": "center", "value": "num" });
+        excelHeaders.push({ "text": "금액", "align": "center", "value": "num_price" });
+        excelHeaders.push({ "text": "총 재고", "align": "center", "value": "total_stock" });
+        excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" });
+        excelHeaders.unshift({ "text": "No.", "align": "center", "value": "no" });
+
+        this.module_data.forEach((data, index) => {
+          let total_stock_calc = 0;
+          for(let i=0; i<data.belong_data.length; i++){
+            for(let s=0; s<data.belong_data[i].spot_stock.length; s++){
+              total_stock_calc += data.belong_data[i].spot_stock[s].stock_num
+            }
+            data.belong_data[i].total_stock = total_stock_calc;
+            data.belong_data[i].stock_price = total_stock_calc* data.belong_data[i].unit_price;
+            data.belong_data[i].num_price = data.belong_data[i].num* data.belong_data[i].unit_price;
+            data.belong_data[i].no = (index+1)+'-'+(i+1)
+            total_stock_calc = 0;
+          }
+          data.no = index+1;
+          items.push(data)
+        })
+
+        items.forEach(data =>{
+          data.stock_price = data.total_stock * data.unit_price;
+        })
+        mux.Excel.downloadTable(excelHeaders, items, '반제품_엑셀다운로드');
+      }else if(type === 'product'){
+        this.product_headers.forEach(data => {
+          excelHeaders.push(data)
+        })
+        excelHeaders.shift();
+        excelHeaders.push({ "text": "필요수량", "align": "center", "value": "num" });
+        excelHeaders.push({ "text": "금액", "align": "center", "value": "num_price" });
+        excelHeaders.push({ "text": "총 재고", "align": "center", "value": "total_stock" });
+        excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" });
+        excelHeaders.unshift({ "text": "No.", "align": "center", "value": "no" });
+
+        this.product_data.forEach((data, index) => {
+          let total_stock_calc = 0;
+          let belong_total_stock_calc = 0;
+          for(let i=0; i<data.belong_data.length; i++){
+            for(let s=0; s<data.belong_data[i].spot_stock.length; s++){
+              total_stock_calc += data.belong_data[i].spot_stock[s].stock_num
+            }
+            if(data.belong_data[i].belong_data){
+              for(let b=0; b<data.belong_data[i].belong_data.length; b++){
+                for(let bs=0; bs<data.belong_data[i].belong_data[b].spot_stock.length; bs++){
+                  belong_total_stock_calc += data.belong_data[i].belong_data[b].spot_stock[bs].stock_num
+                }
+                data.belong_data[i].belong_data[b].total_stock = belong_total_stock_calc;
+                data.belong_data[i].belong_data[b].stock_price = belong_total_stock_calc* data.belong_data[i].belong_data[b].unit_price;
+                data.belong_data[i].belong_data[b].num_price = data.belong_data[i].belong_data[b].num* data.belong_data[i].belong_data[b].unit_price;
+                data.belong_data[i].belong_data[b].no = (index+1)+'-'+(i+1)+'-'+(b+1)
+                belong_total_stock_calc = 0;
+              }
+            }
+            data.belong_data[i].total_stock = total_stock_calc;
+            data.belong_data[i].stock_price = total_stock_calc* data.belong_data[i].unit_price;
+            data.belong_data[i].num_price = data.belong_data[i].num* data.belong_data[i].unit_price;
+            data.belong_data[i].no = (index+1)+'-'+(i+1)
+            total_stock_calc = 0;
+          }
+          data.no = index+1;
+          items.push(data)
+        })
+
+        items.forEach(data =>{
+          data.stock_price = data.total_stock * data.unit_price;
+        })
+        mux.Excel.downloadTable(excelHeaders, items, items[0].name+'_엑셀다운로드');
+
+      }
     },
 
     close () {
