@@ -589,14 +589,22 @@
                                 </InputsFormComponent>
                               </v-col>
                               <v-col cols="12">
-                              <DataTableComponent
+                              <!-- <DataTableComponent
                                 dense
                                 v-model="selected_material_for_module_data"
                                 :headers="module_search_material_headers"
                                 :items="search_material_for_module_data"
                                 item-key="_code"
                                 show-select
-                              />
+                              /> -->
+                              <v-data-table
+                                v-model="selected_material_for_module_data"
+                                :headers="module_search_material_headers"
+                                :items="search_material_for_module_data"
+                                item-key="_code"
+                                show-select
+                                dense
+                              ></v-data-table>
                               </v-col>
                             </v-row>
                             <v-row>
@@ -954,22 +962,22 @@
                           </InputsFormComponent>
                         </v-col>
                         <v-col cols="12">
-                          <DataTableComponent
+                          <!-- <DataTableComponent
                             v-model="selected_items_for_product_data"
                             :headers="product_search_item_headers"
                             :items="search_items_for_product_data"
                             item-key="_code"
                             show-select
                             dense
-                          />
-                          <!-- <v-data-table
+                          /> -->
+                          <v-data-table
                             v-model="selected_items_for_product_data"
                             :headers="product_search_item_headers"
                             :items="search_items_for_product_data"
                             item-key="_code"
                             show-select
                             dense
-                          ></v-data-table> -->
+                          ></v-data-table>
                         </v-col>
                       </v-row>
                       <v-row>
