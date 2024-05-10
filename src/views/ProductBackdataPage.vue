@@ -1700,7 +1700,8 @@ export default {
               "photo": row.photo ? row.item_code + ".png" : "",
               "thumbnail": row.photo ? thumbnail_dict[row.photo] : ""
             },
-            "ignore_where": {"material_code": row.item_code}
+            "select_where": {"material_code": row.item_code},
+            "rollback": "ignore"
           });
         }
         if (stock_data.find(x => x.data.product_code === row.item_code && x.data.spot === row.spot)) {
@@ -1719,7 +1720,8 @@ export default {
               "stock_num": row.stock_num,
               "type": type
             },
-            "select_where": {"product_code": this.editRegistMaterial.item_code, "spot": row.spot}
+            "select_where": {"product_code": this.editRegistMaterial.item_code, "spot": row.spot},
+            "rollback": "yes"
           });
         }
       }
@@ -1866,7 +1868,8 @@ export default {
                 "type": this.editRegistMaterial.type,
                 "unit_price": this.editRegistMaterial.unit_price
               },
-              "select_where": {"material_code": this.editRegistMaterial.item_code}
+              "select_where": {"material_code": this.editRegistMaterial.item_code},
+              "rollback": "yes"
             }]
           };
 
@@ -1884,7 +1887,8 @@ export default {
                 "stock_num": data.stock_num,
                 "type": this.editRegistMaterial.type
               },
-              "select_where": {"product_code": this.editRegistMaterial.item_code, "spot": data.spot}
+              "select_where": {"product_code": this.editRegistMaterial.item_code, "spot": data.spot},
+              "rollback": "yes"
             });
           });
           sendData["stock_table-insert"] = stock_data;
@@ -1933,7 +1937,8 @@ export default {
                 "type": this.editRegistMaterial.type,
                 "unit_price": this.editRegistMaterial.unit_price
               },
-              "update_where": {"material_code": this.editRegistMaterial.item_code}
+              "update_where": {"material_code": this.editRegistMaterial.item_code},
+              "rollback": "yes"
             }]
           };
 
@@ -1943,7 +1948,8 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "delete_where": {"product_code": this.editRegistMaterial.item_code}
+            "delete_where": {"product_code": this.editRegistMaterial.item_code},
+            "rollback": "no"
           }];
 
           let stock_data = [];
@@ -1960,7 +1966,8 @@ export default {
                 "stock_num": data.stock_num,
                 "type": this.editRegistMaterial.type
               },
-              "select_where": {"product_code": "!JUST_INSERT!"}
+              "select_where": {"product_code": "!JUST_INSERT!"},
+              "rollback": "no"
             });
           });
           sendData["stock_table-insert"] = stock_data;
@@ -2243,7 +2250,8 @@ export default {
                 "type": this.editRegistModule.type,
                 "unit_price": this.editRegistModule.unit_price
               },
-              "select_where": {"module_code": this.editRegistModule.item_code}
+              "select_where": {"module_code": this.editRegistModule.item_code},
+              "rollback": "yes"
             }]
           };
 
@@ -2261,7 +2269,8 @@ export default {
                 "stock_num": data.stock_num,
                 "type": this.editRegistModule.type
               },
-              "select_where": {"product_code": this.editRegistModule.item_code, "spot": data.spot}
+              "select_where": {"product_code": this.editRegistModule.item_code, "spot": data.spot},
+              "rollback": "yes"
             });
           });
           sendData["stock_table-insert"] = stock_data;
@@ -2278,7 +2287,8 @@ export default {
                 "material_code": data.item_code,
                 "material_num": data.num
               },
-              "select_where": {"module_code": this.editRegistModule.item_code, "material_code": data.item_code}
+              "select_where": {"module_code": this.editRegistModule.item_code, "material_code": data.item_code},
+              "rollback": "yes"
             });
           });
           sendData["module_material_table-insert"] = module_material_data;
@@ -2327,7 +2337,8 @@ export default {
                 "type": this.editRegistModule.type,
                 "unit_price": this.editRegistModule.unit_price
               },
-              "update_where": {"module_code": this.editRegistModule.item_code}
+              "update_where": {"module_code": this.editRegistModule.item_code},
+              "rollback": "yes"
             }]
           };
 
@@ -2337,7 +2348,8 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "delete_where": {"product_code": this.editRegistModule.item_code}
+            "delete_where": {"product_code": this.editRegistModule.item_code},
+            "rollback": "no"
           }];
 
           let stock_data = [];
@@ -2354,7 +2366,8 @@ export default {
                 "stock_num": data.stock_num,
                 "type": this.editRegistModule.type
               },
-              "select_where": {"product_code": "!JUST_INSERT!"}
+              "select_where": {"product_code": "!JUST_INSERT!"},
+              "rollback": "no"
             });
           });
           sendData["stock_table-insert"] = stock_data;
@@ -2365,7 +2378,8 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "delete_where": {"module_code": this.editRegistModule.item_code}
+            "delete_where": {"module_code": this.editRegistModule.item_code},
+            "rollback": "no"
           }];
 
           let module_material_data = [];
@@ -2380,7 +2394,8 @@ export default {
                 "material_code": data.item_code,
                 "material_num": data.num
               },
-              "select_where": {"module_code": "!JUST_INSERT!"}
+              "select_where": {"module_code": "!JUST_INSERT!"},
+              "rollback": "no"
             });
           });
           sendData["module_material_table-insert"] = module_material_data;
@@ -2627,7 +2642,8 @@ export default {
                 "type": this.editRegistProduct.type,
                 "unit_price": this.editRegistProduct.unit_price
               },
-              "select_where": {"product_code": this.editRegistProduct.item_code}
+              "select_where": {"product_code": this.editRegistProduct.item_code},
+              "rollback": "yes"
             }]
           };
 
@@ -2645,7 +2661,8 @@ export default {
                 "stock_num": data.stock_num,
                 "type": this.editRegistProduct.type
               },
-              "select_where": {"product_code": this.editRegistProduct.item_code, "spot": data.spot}
+              "select_where": {"product_code": this.editRegistProduct.item_code, "spot": data.spot},
+              "rollback": "yes"
             });
           });
           sendData["stock_table-insert"] = stock_data;
@@ -2663,7 +2680,8 @@ export default {
                   "module_code": data.item_code,
                   "module_num": data.num
                 },
-                "select_where": {"product_code": this.editRegistProduct.item_code, "module_code": data.item_code}
+                "select_where": {"product_code": this.editRegistProduct.item_code, "module_code": data.item_code},
+                "rollback": "yes"
               });
             }
           });
@@ -2682,7 +2700,8 @@ export default {
                   "material_code": data.item_code,
                   "material_num": data.num
                 },
-                "select_where": {"product_code": this.editRegistProduct.item_code, "material_code": data.item_code}
+                "select_where": {"product_code": this.editRegistProduct.item_code, "material_code": data.item_code},
+                "rollback": "yes"
               });
             }
           });
@@ -2732,7 +2751,8 @@ export default {
                 "type": this.editRegistProduct.type,
                 "unit_price": this.editRegistProduct.unit_price
               },
-              "update_where": {"product_code": this.editRegistProduct.item_code}
+              "update_where": {"product_code": this.editRegistProduct.item_code},
+              "rollback": "yes"
             }]
           };
 
@@ -2742,7 +2762,8 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "delete_where": {"product_code": this.editRegistProduct.item_code}
+            "delete_where": {"product_code": this.editRegistProduct.item_code},
+            "rollback": "no"
           }];
 
           let stock_data = [];
@@ -2759,7 +2780,8 @@ export default {
                 "stock_num": data.stock_num,
                 "type": this.editRegistProduct.type
               },
-              "select_where": {"product_code": "!JUST_INSERT!"}
+              "select_where": {"product_code": "!JUST_INSERT!"},
+              "rollback": "no"
             });
           });
           sendData["stock_table-insert"] = stock_data;
@@ -2770,7 +2792,8 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "delete_where": {"product_code": this.editRegistProduct.item_code}
+            "delete_where": {"product_code": this.editRegistProduct.item_code},
+            "rollback": "no"
           }];
 
           let product_module_data = [];
@@ -2786,7 +2809,8 @@ export default {
                   "module_code": data.item_code,
                   "module_num": data.num
                 },
-                "select_where": {"product_code": "!JUST_INSERT!"}
+                "select_where": {"product_code": "!JUST_INSERT!"},
+                "rollback": "no"
               });
             }
           });
@@ -2798,7 +2822,8 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "delete_where": {"product_code": this.editRegistProduct.item_code}
+            "delete_where": {"product_code": this.editRegistProduct.item_code},
+            "rollback": "no"
           }];
 
           let product_material_data = [];
@@ -2814,7 +2839,8 @@ export default {
                   "material_code": data.item_code,
                   "material_num": data.num
                 },
-                "select_where": {"product_code": "!JUST_INSERT!"}
+                "select_where": {"product_code": "!JUST_INSERT!"},
+                "rollback": "no"
               });
             }
           });
@@ -2977,7 +3003,8 @@ export default {
                   "role": "modifier"
                 },
                 "data": {},
-                "delete_where": {"material_code": this.deleteItemList.material_code}
+                "delete_where": {"material_code": this.deleteItemList.material_code},
+                "rollback": "yes"
               }],
               "stock_table-delete": [{
                 "user_info": {
@@ -2985,7 +3012,8 @@ export default {
                   "role": "modifier"
                 },
                 "data": {},
-                "delete_where": {"product_code": this.deleteItemList.material_code, "type": "원부자재"}
+                "delete_where": {"product_code": this.deleteItemList.material_code, "type": "원부자재"},
+                "rollback": "no"
               }],
             }
           });
@@ -3028,7 +3056,8 @@ export default {
                   "role": "modifier"
                 },
                 "data": {},
-                "delete_where": {"module_code": this.deleteItemList.module_code}
+                "delete_where": {"module_code": this.deleteItemList.module_code},
+                "rollback": "yes"
               }],
               "stock_table-delete": [{
                 "user_info": {
@@ -3036,7 +3065,8 @@ export default {
                   "role": "modifier"
                 },
                 "data": {},
-                "delete_where": {"product_code": this.deleteItemList.module_code, "type": "반제품"}
+                "delete_where": {"product_code": this.deleteItemList.module_code, "type": "반제품"},
+                "rollback": "no"
               }],
               "module_material_table-delete": [{
                 "user_info": {
@@ -3044,7 +3074,8 @@ export default {
                   "role": "modifier"
                 },
                 "data": {},
-                "delete_where": {"module_code": this.deleteItemList.module_code}
+                "delete_where": {"module_code": this.deleteItemList.module_code},
+                "rollback": "no"
               }]
             }
           });
@@ -3083,7 +3114,8 @@ export default {
                   "role": "modifier"
                 },
                 "data": {},
-                "delete_where": {"product_code": this.deleteItemList.product_code}
+                "delete_where": {"product_code": this.deleteItemList.product_code},
+                "rollback": "yes"
               }],
               "stock_table-delete": [{
                 "user_info": {
@@ -3091,7 +3123,8 @@ export default {
                   "role": "modifier"
                 },
                 "data": {},
-                "delete_where": {"product_code": this.deleteItemList.product_code, "type": "완제품"}
+                "delete_where": {"product_code": this.deleteItemList.product_code, "type": "완제품"},
+                "rollback": "no"
               }],
               "product_module_table-delete": [{
                 "user_info": {
@@ -3099,7 +3132,8 @@ export default {
                   "role": "modifier"
                 },
                 "data": {},
-                "delete_where": {"product_code": this.deleteItemList.product_code}
+                "delete_where": {"product_code": this.deleteItemList.product_code},
+                "rollback": "no"
               }],
               "product_material_table-delete": [{
                 "user_info": {
@@ -3107,7 +3141,8 @@ export default {
                   "role": "modifier"
                 },
                 "data": {},
-                "delete_where": {"product_code": this.deleteItemList.product_code}
+                "delete_where": {"product_code": this.deleteItemList.product_code},
+                "rollback": "no"
               }]
             }
           });

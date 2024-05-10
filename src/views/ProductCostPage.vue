@@ -1736,7 +1736,8 @@ export default {
             "role": "modifier"
           },
           "data":{},
-          "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code}
+          "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+          "rollback": "yes"
         }],
         "product_cost_calc_detail-delete": [{
           "user_info": {
@@ -1744,7 +1745,8 @@ export default {
             "role": "modifier"
           },
           "data":{},
-          "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code}
+          "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+          "rollback": "yes"
         }],
         "labor_cost_calc_detail_table-delete": [{
           "user_info": {
@@ -1752,7 +1754,8 @@ export default {
             "role": "modifier"
           },
           "data":{},
-          "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code}
+          "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+          "rollback": "yes"
         }],
       };
 
@@ -2023,7 +2026,8 @@ export default {
               "role": "modifier"
             },
             "data":{},
-            "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code}
+            "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "no"
           }],
           "labor_cost_calc_detail_table-insert": []
         };
@@ -2034,7 +2038,8 @@ export default {
               "role": "creater"
             },
             "data": data,
-            "select_where": {"cost_calc_code": "!JUST_INSERT!"}
+            "select_where": {"cost_calc_code": "!JUST_INSERT!"},
+            "rollback": "no"
           });
         });
 
@@ -2169,7 +2174,8 @@ export default {
               "normal_maintenance_fee_num": this.calc_cost_detail_data_normal_maintenance_fee.cost_num,
               "profite_num": this.calc_cost_detail_data_profite.cost_num,
             },
-            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code}
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "yes"
           }]
         };
 
@@ -2286,7 +2292,8 @@ export default {
               profite_ratio: this.new_profite_ratio,
               profite_formula: this.new_profite_formula,
             },
-            "select_where": {"cost_calc_code": new_cost_calc_code}
+            "select_where": {"cost_calc_code": new_cost_calc_code},
+            "rollback": "yes"
           }],
           "product_cost_calc_detail_table-insert":[],
           "labor_cost_calc_detail_table-insert":[],
@@ -2310,7 +2317,8 @@ export default {
                 material_num: data.type === 'material' ? data.cost_num : 0,
                 material_unit_price: data.type === 'material' ? data.cost_unit_price : ''
               },
-              "select_where": {"cost_calc_code": new_cost_calc_code, "module_name": data.type === 'module' ? data.cost_list : '', "material_name": data.type === 'material' ? data.cost_list : ''}
+              "select_where": {"cost_calc_code": new_cost_calc_code, "module_name": data.type === 'module' ? data.cost_list : '', "material_name": data.type === 'material' ? data.cost_list : ''},
+              "rollback": "yes"
             });
           });
         }
@@ -2334,7 +2342,8 @@ export default {
               unit_price: data.unit_price,
               quantity: data.quantity
             },
-            "select_where": {"cost_calc_code": new_cost_calc_code, "product_code": this.dialog_selected_product_data.product_code, "name": data.name, "type": data.type, "occupation": data.occupation}
+            "select_where": {"cost_calc_code": new_cost_calc_code, "name": data.name, "type": data.type, "occupation": data.occupation},
+            "rollback": "yes"
           });
         });
 

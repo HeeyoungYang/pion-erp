@@ -387,7 +387,8 @@ export default {
                       "data":{
                         "classification": item.classification_update
                       },
-                      "select_where": {"classification": item.classification_update}
+                      "select_where": {"classification": item.classification_update},
+                      "rollback": "yes"
                     }]
                   }
                 });
@@ -427,7 +428,8 @@ export default {
                       "data":{
                         "classification": item.classification_update
                       },
-                      "update_where": {"classification": item.classification}
+                      "update_where": {"classification": item.classification},
+                      "rollback": "yes"
                     }]
                   }
                 });
@@ -469,7 +471,8 @@ export default {
                       "data":{
                         "manufacturer": item.manufacturer_update
                       },
-                      "select_where": {"manufacturer": item.manufacturer_update}
+                      "select_where": {"manufacturer": item.manufacturer_update},
+                      "rollback": "yes"
                     }]
                   }
                 });
@@ -509,7 +512,8 @@ export default {
                       "data":{
                         "manufacturer": item.manufacturer_update
                       },
-                      "update_where": {"manufacturer": item.manufacturer}
+                      "update_where": {"manufacturer": item.manufacturer},
+                      "rollback": "yes"
                     }]
                   }
                 });
@@ -551,7 +555,8 @@ export default {
                       "data":{
                         "spot": item.spot_update
                       },
-                      "select_where": {"spot": item.spot_update}
+                      "select_where": {"spot": item.spot_update},
+                      "rollback": "yes"
                     }]
                   }
                 });
@@ -591,7 +596,8 @@ export default {
                       "data":{
                         "spot": item.spot_update
                       },
-                      "update_where": {"spot": item.spot}
+                      "update_where": {"spot": item.spot},
+                      "rollback": "yes"
                     }]
                   }
                 });
@@ -656,7 +662,8 @@ export default {
                   "role": "modifier"
                 },
                 "data":{},
-                "delete_where": {"classification": this.deleteBasicInfo.classification}
+                "delete_where": {"classification": this.deleteBasicInfo.classification},
+                "rollback": "yes"
               }]
             }
           });
@@ -694,7 +701,8 @@ export default {
                   "role": "modifier"
                 },
                 "data":{},
-                "delete_where": {"manufacturer": this.deleteBasicInfo.manufacturer}
+                "delete_where": {"manufacturer": this.deleteBasicInfo.manufacturer},
+                "rollback": "yes"
               }]
             }
           });
@@ -732,7 +740,8 @@ export default {
                   "role": "modifier"
                 },
                 "data":{},
-                "delete_where": {"spot": this.deleteBasicInfo.spot}
+                "delete_where": {"spot": this.deleteBasicInfo.spot},
+                "rollback": "yes"
               }]
             }
           });
