@@ -1781,10 +1781,10 @@ mux.Date = {
   /**
    * Date 객체나 날짜 형식의 문자열을 원하는 형태의 문자열로 변환하여 반환
    * @param {Date | string} date
-   * @param {string} format - yyyy, yy, y, Y, MM, M, dd, d, D, HH, H, mm, m, ss, s
+   * @param {string} format - yyyy, yy, y, Y, MM, M, dd, d, D, HH, H, mm, m, ss, s, fff, f
    * @returns {string}
    * @example mux.Date.format('2024.1-02', 'yy-MM-dd') -> '24-01-02'
-   * @example mux.Date.format('2024.1-02 1:03:31', 'Y년 M월 D일 시간: H:mm') -> '2024년 1월 2일 시간: 1:03'
+   * @example mux.Date.format('2024.1-02 1:03:31.033', 'Y년 M월 D일 시간: H:mm.fff') -> '2024년 1월 2일 시간: 1:03.033'
    * @example mux.Date.format('2024.1-02', 'D') -> '2'
    */
   format(date, format) {
@@ -1799,6 +1799,7 @@ mux.Date = {
     const hours = date.getHours();
     const minutes = date.getMinutes();
     const seconds = date.getSeconds();
+    const milliSeconds = date.getMilliseconds();
 
     const formatTokens = {
       'yyyy': year,
@@ -1815,7 +1816,9 @@ mux.Date = {
       'mm': minutes.toString().padStart(2, '0'),
       'm': minutes,
       'ss': seconds.toString().padStart(2, '0'),
-      's': seconds
+      's': seconds,
+      'fff': milliSeconds.toString().padStart(3, '0'),
+      'f': milliSeconds
     };
 
     const regex = new RegExp(Object.keys(formatTokens).join('|'), 'g');

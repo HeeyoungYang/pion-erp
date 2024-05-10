@@ -2237,7 +2237,7 @@ export default {
       }
       const validate = this.$refs.surveyCostForm2.validate();
       if(validate){
-        const new_cost_calc_code = this.dialog_selected_product_data.product_code + '/' + mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
+        const new_cost_calc_code = this.dialog_selected_product_data.product_code + '/' + mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
         let sendData = {
           "product_cost_table-insert": [{
             "user_info": {
