@@ -314,7 +314,7 @@ export default {
       try {
         let result = await mux.Server.post({
           path: '/api/sample_rest_api/',
-          params: [
+          params:
             {
               "product_table.classification": searchClassification ? searchClassification : "",
               "product_table.manufacturer": searchManufacturer ? searchManufacturer : "",
@@ -343,7 +343,7 @@ export default {
               "stock_table.conditions": searchConditions ? searchConditions : "",
               "stock_table.stock_num": searchStockMoreZero
             }
-          ]
+
         });
         if (prevURL !== window.location.href) return;
 
