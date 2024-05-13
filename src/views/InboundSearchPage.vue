@@ -102,7 +102,8 @@
             <DataTableComponent
               :headers="inbound_product_list_headers"
               :items="inbound_product_list_data"
-              item-key="product_code"
+              :item-key="inbound_product_list_data.product_code"
+              children-key="belong_data"
               dense
             />
           </v-col>
@@ -110,7 +111,8 @@
         <v-row>
           <v-col cols="12" sm="4" v-if="inbound_info_data.receiving_inspection">
             <p class="font-weight-bold primary--text mb-0">▼ 수입검사서</p>
-            <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+inbound_info_data.receiving_inspection"></iframe>
+            <!-- <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+inbound_info_data.receiving_inspection"></iframe> -->
+
           </v-col>
           <v-col cols="12" sm="4" v-if="inbound_info_data.inspection_report">
             <p class="font-weight-bold primary--text mb-0">▼ 시험성적서</p>
@@ -234,6 +236,12 @@ export default {
       belong_datas.forEach(data =>{
         data.inbound_price = data.unit_price * data.inbound_num;
         this.inbound_product_list_data.push(data);
+
+        if(data.belong_data){
+          data.belong_data.forEach(shipdata => {
+          shipdata.inbound_price = shipdata.unit_price * shipdata.inbound_num;
+        })
+        }
       })
       let file_name = item.files.split(',');
       if(!file_name[0]){
@@ -292,6 +300,9 @@ export default {
   },
 }
 </script>
+
 <style lang="">
 
 </style>
+
+

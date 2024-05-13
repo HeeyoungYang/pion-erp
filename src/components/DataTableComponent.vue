@@ -69,6 +69,10 @@
 
             <template v-slot:item="{ index, item, select, isSelected, expand }">
               <tr  @click="clickTr(item)">
+                <td v-if="addToTable || exceptFromTable" align="center">
+                  <v-btn v-if="addToTable" @click="addData(item)" :disabled="checkAddToTableDisalbed(item)" x-small color="success">추가</v-btn>
+                  <v-btn v-if="exceptFromTable" @click="exceptData(index)" x-small color="grey" class="white--text">제외</v-btn>
+                </td>
                 <td v-if="approval" align="center">
                   <v-menu
                     v-if="item.approval_phase == '미승인' || item.approval_phase == '미확인'"
@@ -668,6 +672,8 @@
  * @property {Boolean} [deletableBelong] - 내부 항목 삭제 버튼 여부(default:false)
  * @property {Boolean} [notEditableBelong] - 편집 및 삭제 컬럼 여부(default:false)
  * @property {Boolean} [showPhoto] - 자재 사진 노출 여부(default:false)
+ * @property {String} [addToTable] - 추가버튼 노출 여부(default:false)
+ * @property {String} [exceptFromTable] - 제외버튼 노출 여부(default:false)
  * @property {String} [approval] - 승인 노출 여부(default:undefined)
  * @property {Boolean} [showFiles] - 첨부파일 노출 여부(default:false)
  * @property {Boolean} [showAuthority] - 권한 설정 여부(default:false)
@@ -728,6 +734,8 @@ export default {
     deletableBelong: Boolean,
     notEditableBelong: Boolean,
     showPhoto: Boolean,
+    addToTable: Boolean,
+    exceptFromTable: Boolean,
     approval: String,
     showFiles: Boolean,
     showAuthority: Boolean,
@@ -791,6 +799,9 @@ export default {
     }
     if (this.showAuthority){
       this.addedHeaders.push({ text: '권한', align: 'center', value: 'authority', sortable: false });
+    }
+    if (this.addToTable || this.exceptFromTable){
+      this.addedHeaders.unshift({ text: '', align: 'center', value: 'add', sortable: false });
     }
     if (this.approval){
       this.addedHeaders.unshift({ text: '승인', align: 'center', value: 'approval', sortable: false });
@@ -877,6 +888,19 @@ export default {
     },
     detailItem(item){
       this.$emit("itemDetials", item);
+    },
+    checkAddToTableDisalbed(item){
+      if(item.inbound_code){
+        return true;
+      }else{
+        return false;
+      }
+    },
+    addData(item){
+      this.$emit("addDataToTable", item);
+    },
+    exceptData(index){
+      this.$emit("exceptDataToTable", index);
     },
     changeApprovalPhase(item, change, reason){
       this.$emit("setApprovalPhase", item, change, reason);

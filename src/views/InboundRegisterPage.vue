@@ -351,17 +351,9 @@
 
                           </v-text-field>
                         </td>
-                        <!-- <td align="center">
-                          <v-file-input
-                            small-chips
-                            filled
-                            dense
-                            hide-details
-                            hide-input
-                            v-model="item.photo"
-                            prepend-icon="mdi-image"
-                          ></v-file-input>
-                        </td> -->
+                        <td align="center">
+                          <v-icon color="default" style="cursor:pointer" @click="selectShipData(item, index)">mdi-magnify</v-icon>
+                        </td>
                         <td align="center">
                           <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
                         </td>
@@ -374,6 +366,122 @@
           </CardComponent>
         </v-col>
       </v-row>
+
+      <!-- 출하데이터 조회 Modal -->
+      <ModalDialogComponent
+        :dialog-value="ship_dialog"
+        max-width="90%"
+        title-class=" "
+        :dialog-transition="'slide-x-transition'"
+        :dialog-custom="'custom-dialog elevation-0 white'"
+        :card-elevation="'0'"
+        :persistent="true"
+      >
+        <v-container>
+          <!-- 모달 내용 구성 -->
+          <v-row>
+            <v-col
+              cols="6"
+            >
+              <p class="text-h6 font-weight-black float-left mb-0">출하 정보 검색</p>
+            </v-col>
+            <v-col
+              cols="6"
+            >
+              <p class="text-h6 font-weight-black float-left mb-0">선택 출하 정보</p>
+              <v-btn
+                color="blue-grey darken-1"
+                x-small
+                class="mr-2 float-right white--text"
+                elevation="2"
+                @click="close"
+                fab
+              >
+                <v-icon> mdi-close-thick </v-icon>
+              </v-btn>
+            </v-col>
+            <v-col cols="6">
+              <InputsFormComponent
+                dense
+                filled
+                clearable
+                hide-details
+                :inputs="searchShipaDataInputs"
+                @enter="searchShipData"
+              >
+                <v-col
+                  cols="12"
+                  sm="4"
+                  lg="3"
+                  align-self="center"
+                >
+                  <v-btn
+                    color="primary"
+                    elevation="2"
+                    class="mr-2"
+                    small
+                    @click="searchShipData"
+                  >
+                    검색
+                  </v-btn>
+                </v-col>
+              </InputsFormComponent>
+            </v-col>
+            <v-col cols="6">
+              <v-btn
+                color="success"
+                small
+                class="ml-2 float-left"
+                elevation="2"
+                @click="applyToInboundData"
+              >
+                저장
+              </v-btn>
+            </v-col>
+            <v-col cols="6">
+              <DataTableComponent
+                :headers="ship_search_headers"
+                :items="ship_search_data"
+                :item-key="ship_search_data.code"
+                hide-default-footer
+                disable-pagination
+                children-key="belong_data"
+                dense
+                addToTable
+                @addDataToTable="addShipData"
+              />
+            <!-- <v-data-table
+              :headers="ship_search_headers"
+              :items="ship_search_data"
+              item-key="product_code"
+              show-select
+              dense
+            ></v-data-table> -->
+            </v-col>
+            <v-col cols="6">
+              <DataTableComponent
+                :headers="ship_search_headers"
+                :items="ship_selected_data"
+                item-key="code"
+                hide-default-footer
+                disable-pagination
+                children-key="belong_data"
+                dense
+                exceptFromTable
+                @exceptDataToTable="exceptShipData"
+              />
+            <!-- <v-data-table
+              :headers="ship_search_headers"
+              :items="ship_search_data"
+              item-key="product_code"
+              show-select
+              dense
+            ></v-data-table> -->
+            </v-col>
+          </v-row>
+
+        </v-container>
+      </ModalDialogComponent>
     </v-main>
   </div>
 </template>
@@ -381,6 +489,7 @@
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
+import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
@@ -400,14 +509,17 @@ export default {
                 CardComponent,
                 MemberSearchDialogComponent,
                 LoadingModalComponent,
+                ModalDialogComponent,
               },
   data(){
     return{
       login_id:'',
       member_dialog: false,
       loading_dialog: false,
+      ship_dialog: false,
       add_self: false,
       select_product: true,
+      inbound_index:-1,
       today:'',
       inbound_date_set:'',
       dates: [],
@@ -430,7 +542,11 @@ export default {
       inboundCardInfoInputs:InboundRegisterPageConfig.inboundCardInfoInputs,
       product_inbound_headers:InboundRegisterPageConfig.product_inbound_headers,
       product_search_headers:InboundRegisterPageConfig.product_search_headers,
+      searchShipaDataInputs:InboundRegisterPageConfig.searchShipaDataInputs,
+      ship_search_headers:InboundRegisterPageConfig.ship_search_headers,
       product_search_data:[],
+      ship_search_data:[],
+      ship_selected_data:[]
     }
   },
 
@@ -506,6 +622,8 @@ export default {
         this.product_inbound_data = [];
         this.select_product = false;
       }
+      this.product_inbound_headers.splice(this.product_inbound_headers.length-1, 0, { "text": "출하선택", "align": "center", "value": "ship_select"})
+
       this.add_self = true;
       this.product_inbound_data.push({
         product_type:'',
@@ -527,6 +645,9 @@ export default {
         this.product_inbound_data = [];
         this.select_product = true;
       }
+
+      let ship_select = this.product_inbound_headers.findIndex(obj => obj.text === '출하선택');
+      this.product_inbound_headers.splice(ship_select,1)
       this.add_self = false;
     },
     setSpotAtOnce(){
@@ -654,8 +775,40 @@ export default {
       this.inbound_date_set = item
     },
     close(){
-      this.member_dialog = false
+      this.member_dialog = false;
+      this.ship_dialog = false
+      this.ship_search_data = [];
+      this.ship_selected_data = [];
     },
+    selectShipData(item, index){
+      this.ship_dialog = true;
+      this.inbound_index = index;
+      if(item.belong_data){
+        this.ship_selected_data = item.belong_data
+      }
+    },
+    searchShipData(){
+      this.ship_search_data = InboundRegisterPageConfig.test_ship_search_data;
+    },
+    addShipData(item){
+      for(let i=0; i<this.ship_selected_data.length; i++){
+        if(this.ship_selected_data[i].code === item.code){
+          alert("이미 추가한 데이터입니다.");
+          return;
+        }
+      }
+      this.ship_selected_data.push(item)
+    },
+    exceptShipData(index){
+      this.ship_selected_data.splice(index,1);
+    },
+    applyToInboundData(){
+      this.product_inbound_data[this.inbound_index].belong_data = [];
+      this.ship_selected_data.forEach(data => {
+        this.product_inbound_data[this.inbound_index].belong_data.push(data);
+      })
+      this.close();
+    }
   },
 
   computed: {

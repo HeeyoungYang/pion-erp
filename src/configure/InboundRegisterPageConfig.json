@@ -50,6 +50,75 @@
     {"type": "구매담당자", "name": "", "user_id": "", "email": ""},
     {"type": "자재담당자", "name": "", "user_id": "", "email": ""}
   ],
+
+  "searchShipaDataInputs":[
+    {"label":"프로젝트", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"출고목적", "col":"12", "sm":"4", "lg":"3", "value": ""}
+  ],
+
+  "ship_search_headers": [
+    { "text": "출고목적", "align": "center", "value": "purpose"},
+    { "text": "출고요청일", "align": "center", "value": "ship_date"},
+    { "text": "종류", "align": "center", "value": "type"},
+    { "text": "분류", "align": "center", "value": "classification"},
+    { "text": "관리코드", "align": "center", "value": "product_code"},
+    { "text": "제품명", "align": "center", "value": "name"},
+    { "text": "모델명", "align": "center", "value": "model"},
+    { "text": "사양", "align": "center", "value": "spec"},
+    { "text": "제조사", "align": "center", "value": "manufacturer"},
+    { "text": "출고수량", "align": "center", "value": "ship_num"}
+  ],
+
+  "test_ship_search_data":[
+    {
+      "code" : "SHIP-001",
+      "ship_date" : "2024-02-01",
+      "purpose" : "반제품A생산",
+      "inbound_code" : "",
+      "belong_data": [
+        {
+          "type" : "원부자재",
+          "classification" : "GFM",
+          "product_code" : "원부자재-001",
+          "name" : "원부자재명1",
+          "model" : "모델명1",
+          "spec" : "스펙1",
+          "manufacturer" : "파이온일렉트릭",
+          "ship_num" : "10"
+        },
+        {
+          "type" : "원부자재",
+          "classification" : "GFM",
+          "product_code" : "원부자재-002",
+          "name" : "원부자재명2",
+          "model" : "모델명2",
+          "spec" : "스펙2",
+          "manufacturer" : "파이온일렉트릭",
+          "ship_num" : "21"
+        }
+      ]
+    },      
+    {
+      "code" : "SHIP-002",
+      "ship_date" : "2024-02-05",
+      "purpose" : "완제품A생산",
+      "inbound_code" : "inbound-0001",
+      "belong_data": [
+        {    
+          "type" : "반제품",
+          "classification" : "GFM",
+          "product_code" : "반제품-001",
+          "name" : "반제품명1",
+          "model" : "반제품모델명1",
+          "spec" : "반제품스펙1",
+          "manufacturer" : "파이온일렉트릭",
+          "ship_num" : "2"
+        }
+      ]
+    }
+  ],
+
+
   
   "inbound_confirmation_data":{
     "code" : "",

@@ -80,7 +80,7 @@
       "inspection_report":"2021.10_MKOR_ERP_SYSTEM_MANUAL.pdf",
       "files":"warehouse.jpg,warehouse.jpg,warehouse.jpg",
       "note":"비고 작성한 내용 노출",
-      "add_data": "",
+      "add_data": "직접기입형",
       "belong_data":[
         {
           "type":"원부자재",
@@ -92,8 +92,7 @@
           "spec": "사양1",
           "model": "모델1",
           "manufacturer": "파이온일렉트릭",
-          "unit_price": 1,
-          "photo":""
+          "unit_price": 1
         },
         {
           "type":"원부자재",
@@ -105,11 +104,10 @@
           "spec": "사양2",
           "model": "모델2",
           "manufacturer": "파이온일렉트릭",
-          "unit_price": 4,
-          "photo":""
+          "unit_price": 4
         },
         {
-          "type":"원부자재",
+          "type":"반제품",
           "classification":"일반",
           "product_code": "공장2F_E-09-03",
           "name": "보호회로",
@@ -119,7 +117,34 @@
           "model": "모델3",
           "manufacturer": "파이온일렉트릭",
           "unit_price": 2,
-          "photo":""
+          "belong_data": [
+            {
+              "type" : "원부자재",
+              "classification" : "GFM",
+              "product_code" : "원부자재-001",
+              "name" : "원부자재명1",
+              "inbound_num" : "100",
+              "spot" : "공장동1층",
+              "model" : "모델명1",
+              "spec" : "스펙1",
+              "manufacturer" : "파이온일렉트릭",
+              "ship_num" : "10",
+              "unit_price" : 1
+            },
+            {
+              "type" : "원부자재",
+              "classification" : "GFM",
+              "product_code" : "원부자재-002",
+              "name" : "원부자재명2",
+              "inbound_num" : "100",
+              "spot" : "공장동1층",
+              "model" : "모델명2",
+              "spec" : "스펙2",
+              "manufacturer" : "파이온일렉트릭",
+              "ship_num" : "21",
+              "unit_price" : 1
+            }
+          ]
         }
       ]
     },
@@ -161,8 +186,7 @@
           "spec": "사양1",
           "model": "모델1",
           "manufacturer": "파이온일렉트릭",
-          "unit_price": 1,
-          "photo":""
+          "unit_price": 1
         },
         {
           "type":"원부자재",
@@ -174,8 +198,7 @@
           "spec": "사양2",
           "model": "모델2",
           "manufacturer": "파이온일렉트릭",
-          "unit_price": 4,
-          "photo":""
+          "unit_price": 4
         },
         {
           "type":"원부자재",
@@ -187,8 +210,7 @@
           "spec": "사양3",
           "model": "모델3",
           "manufacturer": "파이온일렉트릭",
-          "unit_price": 2,
-          "photo":""
+          "unit_price": 2
         }
       ]
     },
@@ -230,8 +252,7 @@
           "spec": "사양1",
           "model": "모델1",
           "manufacturer": "파이온일렉트릭",
-          "unit_price": 1,
-          "photo":""
+          "unit_price": 1
         },
         {
           "type":"원부자재",
@@ -243,8 +264,7 @@
           "spec": "사양2",
           "model": "모델2",
           "manufacturer": "파이온일렉트릭",
-          "unit_price": 4,
-          "photo":""
+          "unit_price": 4
         },
         {
           "type":"원부자재",
@@ -256,8 +276,7 @@
           "spec": "사양3",
           "model": "모델3",
           "manufacturer": "파이온일렉트릭",
-          "unit_price": 2,
-          "photo":""
+          "unit_price": 2
         }
       ]
     },
@@ -299,8 +318,7 @@
           "spec": "사양1",
           "model": "모델1",
           "manufacturer": "파이온일렉트릭",
-          "unit_price": 1,
-          "photo":""
+          "unit_price": 1
         },
         {
           "type":"원부자재",
@@ -312,8 +330,7 @@
           "spec": "사양2",
           "model": "모델2",
           "manufacturer": "파이온일렉트릭",
-          "unit_price": 4,
-          "photo":""
+          "unit_price": 4
         },
         {
           "type":"원부자재",
@@ -325,8 +342,7 @@
           "spec": "사양3",
           "model": "모델3",
           "manufacturer": "파이온일렉트릭",
-          "unit_price": 2,
-          "photo":""
+          "unit_price": 2
         }
       ]
     }
