@@ -389,6 +389,10 @@ export default {
       // this.product_data = ModuleSearchPageConfig.test_product_data;
     },
     downloadToExcel(){
+      if( this.product_data.length === 0){
+        alert('다운로드할 데이터가 검색 결과에 없습니다.')
+        return;
+      }
       let excelHeaders = [];
       this.headers.forEach(data => {
         excelHeaders.push(data)
