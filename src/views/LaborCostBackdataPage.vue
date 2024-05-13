@@ -469,7 +469,7 @@ export default {
     },
 
     editRatioItem (item) {
-      this.editedRatioIndex = this.ratio_data.indexOf(item)
+      this.editedRatioIndex = this.ratio_data.findIndex(item => item.type === item.type);
       let ratio_input = this.registRatioInputs;
       mux.Rules.rulesSet(ratio_input);
       let split_formula = item.formula.split('X');
@@ -504,7 +504,7 @@ export default {
       })
       this.ratioDialog = true
     },
-    uploadRatioItem () {
+    async uploadRatioItem () {
       let ratio_input = this.registRatioInputs;
       let item = this.editedRatioItem;
       const validate = this.$refs.ratioForm.validate();
@@ -537,8 +537,48 @@ export default {
         }
 
         item.formula = formula;
-        item.modifier = 'user_id';
         // console.log('수정된 정보 : ' + JSON.stringify(item));
+        const prevURL = window.location.href;
+        try {
+          let sendData = {"cost_ratio_table-update": [
+            {
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data":{
+                "formula": item.formula,
+                "ratio": item.ratio
+              },
+              "update_where": {"type": item.type},
+              "rollback": "yes"
+            }
+          ]};
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: sendData
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0){
+            // console.log('result :>> ', result);
+            this.ratio_data[this.editedRatioIndex] = {type: item.type, formula: item.formula};
+            alert('수정이 완료되었습니다.');
+            this.ratioDialog = false;
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            alert(error.response['data']['failed_info'].msg);
+          else
+            alert(error);
+        }
       }
     },
 

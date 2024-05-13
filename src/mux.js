@@ -6,6 +6,9 @@ import configJson from '@/mux.json';
 import Vue from 'vue';
 import VueCookies from 'vue-cookies';
 import html2pdf from 'html2pdf.js' // npm install html2pdf.js
+import * as pdfjsLib from 'pdfjs-dist/build/pdf.js'; // npm install pdfjs-dist@3.11.174
+// pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.js`
+pdfjsLib.GlobalWorkerOptions.workerSrc = `@/../node_modules/pdfjs-dist/build/pdf.worker.js`
 
 Vue.use(VueCookies);
 
@@ -865,6 +868,48 @@ mux.Util = {
       reader.onerror = function(error) {
         reject(error);
       };
+    });
+  },
+
+  getPdfThumbnail(file, pageNumber = 1, getURL = false, maxWidth = 9999, maxHeight = 9999){
+    return new Promise((resolve, reject) => {
+      try {
+        // PDF 파일을 로드합니다.
+        const fileReader = new FileReader();
+        fileReader.onload = async () => {
+          const worker = new pdfjsLib.PDFWorker();
+          const arrayBuffer = fileReader.result;
+          const pdf = await pdfjsLib.getDocument({data: arrayBuffer, worker: worker}).promise.then(pdf => pdf);
+          
+          // 첫 번째 페이지를 렌더링합니다.
+          const page = await pdf.getPage(pageNumber);
+          
+          // Canvas에 페이지를 렌더링합니다.
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          let viewport = page.getViewport({ scale: 2 });
+          if (viewport.width > maxWidth || viewport.height > maxHeight) {
+            const scaleFactor = Math.min(maxWidth / viewport.width, maxHeight / viewport.height);
+            viewport = page.getViewport({ scale: scaleFactor });
+          }
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          await page.render({ canvasContext: context, viewport }).promise;
+          
+          // Canvas를 이미지로 변환합니다.
+          const imageDataUrl = canvas.toDataURL();
+          if (getURL){
+            resolve(imageDataUrl);
+          }else {
+            // 이미지 데이터를 바이너리로 변환합니다.
+            const binaryData = atob(imageDataUrl.split(',')[1]);
+            resolve(binaryData);
+          }
+        };
+        fileReader.readAsArrayBuffer(file);
+      } catch (error) {
+        reject(error);
+      }
     });
   },
 

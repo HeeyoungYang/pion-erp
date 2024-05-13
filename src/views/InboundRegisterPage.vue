@@ -662,12 +662,14 @@ export default {
       let success = true;
       const validate = this.$refs.inboundForm.validate();
       if(validate){
-        inbound_input.forEach(data => {
+        inbound_input.forEach(async data => {
           for(let i=0; i<Object.keys(item).length; i++){
             if(data.column_name == Object.keys(item)[i]){
               if(data.type == 'file'){
                 if(data.value){
                   item[Object.keys(item)[i]] = data.value.name;
+                  const getPdfThumbnail = await mux.Util.getPdfThumbnail(data.value, 1, true);
+                  console.log('getPdfThumbnail :>> ', getPdfThumbnail);
                 }else{
                   item[Object.keys(item)[i]] = '';
                 }
