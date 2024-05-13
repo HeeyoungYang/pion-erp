@@ -1829,6 +1829,7 @@ export default {
           return;
         }
 
+        stock_item = [];
         for(let x=0; x<stock_spot_arr.length; x++){
           if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
             continue
@@ -2205,6 +2206,7 @@ export default {
           return;
         }
 
+        stock_item = [];
         for(let x=0; x<stock_spot_arr.length; x++){
           if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
             continue
@@ -2593,6 +2595,7 @@ export default {
           return;
         }
 
+        stock_item = [];
         for(let x=0; x<stock_spot_arr.length; x++){
           if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
             continue
