@@ -267,6 +267,9 @@ export default {
     detailInfoItem(item){
       this.detail_dialog = true;
       this.stockDetails = item.spot_stock
+      this.stockDetails.forEach(data => {
+        data.stock_num = Number(data.stock_num).toLocaleString();
+      })
     },
     closeDetail () {
       this.detail_dialog = false
@@ -403,6 +406,7 @@ export default {
             data.total_stock = stock_calc
             if (typeof data.unit_price === 'number'){
               data.item_price = data.unit_price * data.total_stock
+              data.unit_price = Number(data.unit_price).toLocaleString()
             }else {
               data.item_price = 0;
             }
@@ -429,11 +433,15 @@ export default {
       })
       excelHeaders.push({ "text": "총 재고", "align": "center", "value": "stock_num" });
       excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" })
+      excelHeaders.unshift({ "text": "No.", "align": "center", "value": "no" });
 
-      let items = this.product_data;
-      // this.product_data.forEach(data => {
-      //   items.push(data)
-      // })
+      let items = [];
+      this.product_data.forEach((data, index) => {
+        data.no = index+1;
+        data.stock_num = Number(data.stock_num).toLocaleString();
+        data.stock_price = Number(data.stock_price).toLocaleString();
+        items.push(data)
+      });
       mux.Excel.downloadTable(excelHeaders, items, '재고현황_엑셀다운로드');
     }
   }

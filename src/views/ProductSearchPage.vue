@@ -343,10 +343,12 @@ export default {
               for(let b=0; b<data.belong_data.length; b++){
                 data.belong_data[b].item_code = data.belong_data[b].code;
                 delete data.belong_data[b].code;
+                data.belong_data[b].unit_price = Number(data.belong_data[b].unit_price).toLocaleString()
                 if(data.belong_data[b].belong_data){
                   for(let c=0; c<data.belong_data[b].belong_data.length; c++){
                     data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
                     delete data.belong_data[b].belong_data[c].code;
+                    data.belong_data[b].belong_data[c].unit_price = Number(data.belong_data[b].belong_data[c].unit_price).toLocaleString()
                   }
                 }
               }
@@ -362,6 +364,7 @@ export default {
             data.total_stock = stock_calc
             if (typeof data.unit_price === 'number'){
               data.item_price = data.unit_price * data.total_stock
+              data.unit_price = Number(data.unit_price).toLocaleString()
             }else {
               data.item_price = 0;
             }
@@ -409,16 +412,16 @@ export default {
               for(let bs=0; bs<data.belong_data[i].belong_data[b].spot_stock.length; bs++){
                 belong_total_stock_calc += data.belong_data[i].belong_data[b].spot_stock[bs].stock_num
               }
-              data.belong_data[i].belong_data[b].total_stock = belong_total_stock_calc;
-              data.belong_data[i].belong_data[b].stock_price = belong_total_stock_calc* data.belong_data[i].belong_data[b].unit_price;
-              data.belong_data[i].belong_data[b].num_price = data.belong_data[i].belong_data[b].num* data.belong_data[i].belong_data[b].unit_price;
+              data.belong_data[i].belong_data[b].total_stock = Number(belong_total_stock_calc).toLocaleString();
+              data.belong_data[i].belong_data[b].stock_price = Number(belong_total_stock_calc* data.belong_data[i].belong_data[b].unit_price.replace(/,/g,'')).toLocaleString();
+              data.belong_data[i].belong_data[b].num_price = Number(data.belong_data[i].belong_data[b].num* data.belong_data[i].belong_data[b].unit_price.replace(/,/g,'')).toLocaleString();
               data.belong_data[i].belong_data[b].no = (index+1)+'-'+(i+1)+'-'+(b+1)
               belong_total_stock_calc = 0;
             }
           }
-          data.belong_data[i].total_stock = total_stock_calc;
-          data.belong_data[i].stock_price = total_stock_calc* data.belong_data[i].unit_price;
-          data.belong_data[i].num_price = data.belong_data[i].num* data.belong_data[i].unit_price;
+          data.belong_data[i].total_stock = Number(total_stock_calc).toLocaleString();
+          data.belong_data[i].stock_price = Number(total_stock_calc* data.belong_data[i].unit_price.replace(/,/g,'')).toLocaleString();
+          data.belong_data[i].num_price = Number(data.belong_data[i].num* data.belong_data[i].unit_price.replace(/,/g,'')).toLocaleString();
           data.belong_data[i].no = (index+1)+'-'+(i+1)
           total_stock_calc = 0;
         }
@@ -427,7 +430,7 @@ export default {
       })
 
       items.forEach(data =>{
-        data.stock_price = data.total_stock * data.unit_price;
+        data.stock_price = data.total_stock * data.unit_price.replace(/,/g,'');
       })
       mux.Excel.downloadTable(excelHeaders, items, items[0].name+'_엑셀다운로드');
     }

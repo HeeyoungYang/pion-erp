@@ -348,7 +348,7 @@
                       class="mr-2"
                       color="yellow lighten-4"
                       small
-                    >재고 총액 : ₩ {{ Number(item.total_stock * item.unit_price).toLocaleString() }}</v-chip>
+                    >재고 총액 : ₩ {{ Number(item.total_stock * item.unit_price.replace(/\,/g,'') ).toLocaleString() }}</v-chip>
                   </p>
                   <!-- <p v-if="stockNumInfo" class="my-2">
                     <v-chip
@@ -367,12 +367,12 @@
                       class="mr-2"
                       color="yellow lighten-4"
                       small
-                    >필요수량 : {{ item.num }}</v-chip>
+                    >필요수량 : {{ Number(item.num).toLocaleString() }}</v-chip>
                     <v-chip
                       class="mr-2"
                       color="yellow lighten-4"
                       small
-                    >금액 : {{ item.num * item.unit_price }}</v-chip>
+                    >금액 : ₩ {{ Number(item.num * item.unit_price.replace(/\,/g,'') ).toLocaleString() }}</v-chip>
                   </p>
                 </td>
                 <td v-if="showItemDetails" align="center">
@@ -571,11 +571,11 @@
                       class="mr-2"
                       color="white"
                       small
-                    >필요수량 : {{ data.num }}</v-chip>
+                    >필요수량 : {{ Number(data.num).toLocaleString() }}</v-chip>
                     <v-chip
                       class="mr-2 white"
                       small
-                    >금액 : {{ data.num * data.unit_price }}</v-chip>
+                    >금액 : ₩ {{ Number(data.num * data.unit_price.replace(/\,/g,'')).toLocaleString() }}</v-chip>
                   </p>
                 </td>
                 <td v-if="showItemDetails" align="center">
