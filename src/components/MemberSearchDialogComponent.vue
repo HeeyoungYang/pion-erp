@@ -45,6 +45,7 @@
 
 <script>
 import MemberSearchDialogConfig from "@/configure/MemberSearchDialogConfig.json";
+import mux from "@/mux";
 // import DataTableComponent from "@/components/DataTableComponent";
 /**
  * @file ModalDialogComponent.vue
@@ -111,7 +112,37 @@ export default {
   methods: {
     async initialize () {
       this.headers = MemberSearchDialogConfig.table_header;
-      this.members = MemberSearchDialogConfig.test_members
+      // this.members = MemberSearchDialogConfig.test_members
+      // let memberList = [];
+      const prevURL = window.location.href;
+      try {
+        const result = await mux.Server.get({path:'/api/admin/users/'});
+        if (prevURL !== window.location.href) return;
+        if (result.code == 0){
+          this.members = result.data.Users.map(data => {
+            let user = {};
+            user.user_id = data.Username;
+            user.name = (data.Attributes.find(x=>x.Name === 'family_name') ? data.Attributes.find(x=>x.Name === 'family_name').Value : '') + (data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '');
+            user.email = data.Attributes.find(x=>x.Name === 'email') ? data.Attributes.find(x=>x.Name === 'email').Value : '';
+            user.phone_number = data.Attributes.find(x=>x.Name === 'phone_number') ? mux.Number.formatPhoneNumber(data.Attributes.find(x=>x.Name === 'phone_number').Value) : '';
+            user.office_phone_number = data.Attributes.find(x=>x.Name === 'custom:office_phone_number') ? mux.Number.formatTelNumber(data.Attributes.find(x=>x.Name === 'custom:office_phone_number').Value) : '';
+            user.office_internal_number = data.Attributes.find(x=>x.Name === 'custom:internal_number') ? data.Attributes.find(x=>x.Name === 'custom:internal_number').Value : '';
+            user.position = data.Attributes.find(x=>x.Name === 'custom:position') ? data.Attributes.find(x=>x.Name === 'custom:position').Value : '';
+            user.department = data.Attributes.find(x=>x.Name === 'custom:department') ? data.Attributes.find(x=>x.Name === 'custom:department').Value : '';
+            return user;
+          });
+
+        }else {
+          this.loading_dialog = false;
+          alert(result.message);
+          return;
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        alert(error);
+        return;
+      }
       this.$emit("members",this.members)
     },
     close() {
