@@ -422,7 +422,7 @@ export default {
       })
 
       items.forEach(data =>{
-        data.stock_price = data.total_stock * data.unit_price.replace(/,/g,'');
+        data.stock_price = Number(data.total_stock * data.unit_price.replace(/,/g,'')).toLocaleString();
         data.total_stock = Number(data.total_stock).toLocaleString();
       })
       mux.Excel.downloadTable(excelHeaders, items, '반제품_엑셀다운로드');

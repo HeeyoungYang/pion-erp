@@ -279,6 +279,9 @@ export default {
     detailInfoItem(item, type){
       this.detail_dialog = true;
       this.stockDetails = item.spot_stock
+      this.stockDetails.forEach(data => {
+        data.stock_num = Number(data.stock_num).toLocaleString();
+      })
       if(type === 'product'){
         this.detailForProduct  = true;
       }else{
@@ -434,7 +437,8 @@ export default {
       })
 
       items.forEach(data =>{
-        data.stock_price = data.total_stock * data.unit_price.replace(/,/g,'');
+        data.stock_price = Number(data.total_stock * data.unit_price.replace(/,/g,'')).toLocaleString();
+          data.total_stock = Number(data.total_stock).toLocaleString();
       })
       mux.Excel.downloadTable(excelHeaders, items, items[0].name+'_엑셀다운로드');
     }
