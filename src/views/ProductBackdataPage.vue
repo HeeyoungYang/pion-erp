@@ -312,6 +312,7 @@
                           deletable
                           dense
                           stockNumInfo
+                          stockPriceInfo
                           @edit="editMaterialItem"
                           @delete="deleteItem"
                           @itemDetials="detailInfoItem"
@@ -650,6 +651,8 @@
                             @delete="deleteItem"
                             stockNumInfo
                             itemNumInfoBelong
+                            stockPriceInfo
+                            itemPriceInfoBelong
                             show-item-details
                             @itemDetials="detailInfoItem"
                         />

@@ -10,12 +10,12 @@
     {"label":"할증율", "column_name":"surcharge_ratio", "text_type":"number", "col":"12", "sm":"6", "lg":"6", "value": ""}
   ],
   "labor_headers": [
-    { "text": "품번", "align": "center", "value": "no"},
-    { "text": "공종", "align": "center", "value": "name"},
-    { "text": "규격", "align": "center", "value": "type"},
-    { "text": "직종", "align": "center", "value": "occupation"},
-    { "text": "공량(M/D)", "align": "center", "value": "man_per_day"},
-    { "text": "할증율", "align": "center", "value": "surcharge_ratio"}
+    { "text": "품번", "align": "start", "value": "no"},
+    { "text": "공종", "align": "start", "value": "name"},
+    { "text": "규격", "align": "start", "value": "type"},
+    { "text": "직종", "align": "start", "value": "occupation"},
+    { "text": "공량(M/D)", "align": "start", "value": "man_per_day"},
+    { "text": "할증율", "align": "start", "value": "surcharge_ratio"}
   ],
   "editedLaborItem": {
     "code":"",
@@ -171,9 +171,9 @@
     {"label":"설계 조정율", "column_name":"adjustment_ratio", "text_type":"number", "col":"12", "sm":"6", "lg":"6", "value": ""}
   ],
   "wage_headers": [
-    { "text": "직종", "align": "center", "value": "occupation"},
-    { "text": "단가", "align": "center", "value": "unit_price"},
-    { "text": "설계 조정률", "align": "center", "value": "adjustment_ratio"}
+    { "text": "직종", "align": "start", "value": "occupation"},
+    { "text": "단가", "align": "start", "value": "unit_price"},
+    { "text": "설계 조정률", "align": "start", "value": "adjustment_ratio"}
   ],
   "editedWageItem": {
     "occupation":"",
@@ -224,8 +224,8 @@
     {"label":"", "column_name":"formula2", "col":"12", "sm":"3", "lg":"3", "value": "", "suffix": ""}
   ],
   "ratio_headers": [
-    { "text": "종류", "align": "center", "value": "type"},
-    { "text": "계산식", "align": "center", "value": "formula"}
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "계산식", "align": "start", "value": "formula"}
   ],
   "editedRatioItem": {
     "type":"",

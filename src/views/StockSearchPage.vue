@@ -109,6 +109,7 @@
                     :item-key="product_data._code"
                     dense
                     stockNumInfo
+                    stockPriceInfo
                     show-item-details
                     @itemDetials="detailInfoItem"
                   />

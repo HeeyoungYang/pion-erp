@@ -22,13 +22,13 @@
   ],
 
   "headers": [
-    { "text": "분류", "align": "center", "value": "classification"},
-    { "text": "관리코드", "align": "center", "value": "_code"},
-    { "text": "제품명", "align": "center", "value": "name"},
-    { "text": "모델명", "align": "center", "value": "model"},
-    { "text": "사양", "align": "center", "value": "spec"},
-    { "text": "제조사", "align": "center", "value": "manufacturer"},
-    { "text": "단가", "align": "center", "value": "unit_price"}
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "단가", "align": "start", "value": "unit_price"}
   ],
 
 

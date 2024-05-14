@@ -22,14 +22,14 @@
     {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":""}
   ],
   "headers": [
-    { "text": "종류", "align": "center", "value": "type" },
-    { "text": "분류", "align": "center", "value": "classification"},
-    { "text": "관리코드", "align": "center", "value": "_code"},
-    { "text": "제품명", "align": "center", "value": "name"},
-    { "text": "모델명", "align": "center", "value": "model"},
-    { "text": "사양", "align": "center", "value": "spec"},
-    { "text": "제조사", "align": "center", "value": "manufacturer"},
-    { "text": "단가", "align": "center", "value": "unit_price"}
+    { "text": "종류", "align": "start", "value": "type" },
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "단가", "align": "start", "value": "unit_price"}
   ],
 
   "test_manufacturer_list": ["파이온일렉트릭", "라온코리아", "액트솔루션", "옵토마린", "성민우텍"],

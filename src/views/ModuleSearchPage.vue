@@ -112,7 +112,9 @@
                     children-key="belong_data"
                     table-style=""
                     stockNumInfo
+                    stockPriceInfo
                     itemNumInfoBelong
+                    itemPriceInfoBelong
                     show-item-details
                     @itemDetials="detailInfoItem"
                     dense

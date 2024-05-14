@@ -330,7 +330,7 @@
                     v-model="selected_data" :value="item" @input="select(!isSelected)"
                   ></v-checkbox>
                 </td>
-                <td v-for="(header,id) in headers" :class="Object.keys(item).includes(header.value) && (!groupBy || header.value !== groupBy) ? 'text-center' : 'text-right'" :key="index+'_'+id"
+                <td v-for="(header,id) in headers" :class="Object.keys(item).includes(header.value) && (!groupBy || header.value !== groupBy) ? 'text-' + header.align : 'text-center'" :key="index+'_'+id"
                 @click="childrenKey && item[childrenKey] && item[childrenKey].length > 0 ? toggleExpanded(item, expand) : null">
                   <v-btn small icon color="default"
                     v-if="item[childrenKey] && item[childrenKey].length > 0
@@ -341,39 +341,29 @@
                   </v-btn>
                   {{ Object.keys(item).includes(header.value) && (!groupBy || header.value !== groupBy) ? item[header.value] : '' }}
                 </td>
-                <td v-if="stockNumInfo || itemNumInfo" align="center">
+                <td v-if="stockNumInfo || itemNumInfo" align="left">
                   <p v-if="stockNumInfo" class="my-2">
                     <v-chip
-                      class="mr-2"
                       color="yellow lighten-4"
                       small
                     >총 재고 : {{ Number(item.total_stock).toLocaleString() }}</v-chip>
+                  </p>
+                  <p v-if="itemNumInfo" class="my-2">
                     <v-chip
-                      class="mr-2"
+                      color="yellow lighten-4"
+                      small
+                    >필요수량 : {{ Number(item.num).toLocaleString() }}</v-chip>
+                  </p>
+                </td>
+                <td v-if="stockPriceInfo || itemPriceInfo" align="left">
+                  <p v-if="stockPriceInfo" class="my-2">
+                    <v-chip
                       color="yellow lighten-4"
                       small
                     >재고 총액 : ₩ {{ Number(item.total_stock * item.unit_price.replace(/\,/g,'').replace(/₩ /g,'') ).toLocaleString() }}</v-chip>
                   </p>
-                  <!-- <p v-if="stockNumInfo" class="my-2">
+                  <p v-if="itemPriceInfo" class="my-2">
                     <v-chip
-                      class="mr-2"
-                      color="yellow lighten-4"
-                      small
-                    >총 재고 : {{ Number(item.total_stock).toLocaleString() }}</v-chip>
-                    <v-chip
-                      class="mr-2"
-                      color="yellow lighten-4"
-                      small
-                    >재고 총액 : ₩ {{ Number(item.total_stock * item.unit_price).toLocaleString() }}</v-chip>
-                  </p> -->
-                  <p v-if="itemNumInfo" class="my-2">
-                    <v-chip
-                      class="mr-2"
-                      color="yellow lighten-4"
-                      small
-                    >필요수량 : {{ Number(item.num).toLocaleString() }}</v-chip>
-                    <v-chip
-                      class="mr-2"
                       color="yellow lighten-4"
                       small
                     >금액 : ₩ {{ Number(item.num * item.unit_price.replace(/\,/g,'').replace(/₩ /g,'') ).toLocaleString() }}</v-chip>
@@ -540,7 +530,7 @@
                     v-model="selected_data" :value="data" @input="select(!isSelected)"
                   ></v-checkbox>
                 </td>
-                <td v-for="(header,id) in headers" class="text-center" :key="index+'_'+idx+'_'+id">
+                <td v-for="(header,id) in headers" :class="header.align ? 'text-' + header.align : 'text-center'" :key="index+'_'+idx+'_'+id">
                   {{ Object.keys(data).includes(header.value) ? data[header.value] : '' }}
                 </td>
                 <td v-if="editableBelong || deletableBelong">
@@ -557,27 +547,30 @@
                     mdi-delete
                   </v-icon>
                 </td>
-                <td v-if="stockNumInfoBelong || itemNumInfoBelong" align="center">
+                <td v-if="stockNumInfoBelong || itemNumInfoBelong" align="left">
                   <p v-if="stockNumInfoBelong" class="my-2">
                     <v-chip
-                      class="mr-2"
                       color="white"
                       small
                     >총 재고 : {{ data.total_stock }}</v-chip>
+                  </p>
+                  <p v-if="itemNumInfoBelong" class="my-2">
                     <v-chip
-                      class="mr-2"
+                      color="white"
+                      small
+                    >필요수량 : {{ Number(data.num).toLocaleString() }}</v-chip>
+                  </p>
+                </td>
+                <td v-if="stockPriceInfoBelong || itemPriceInfoBelong" align="left">
+                  <p v-if="stockPriceInfoBelong" class="my-2">
+                    <v-chip
                       color="white"
                       small
                     >재고 총액 : {{ data.total_stock * data.unit_price }}</v-chip>
                   </p>
-                  <p v-if="itemNumInfoBelong" class="my-2">
+                  <p v-if="itemPriceInfoBelong" class="my-2">
                     <v-chip
-                      class="mr-2"
-                      color="white"
-                      small
-                    >필요수량 : {{ Number(data.num).toLocaleString() }}</v-chip>
-                    <v-chip
-                      class="mr-2 white"
+                    color="white"
                       small
                     >금액 : ₩ {{ Number(data.num * data.unit_price.replace(/\,/g,'').replace(/₩ /g,'')).toLocaleString() }}</v-chip>
                   </p>
@@ -679,9 +672,13 @@
  * @property {Boolean} [showAuthority] - 권한 설정 여부(default:false)
  * @property {Boolean} [showItemDetails] - 자재 상세 내역 노출 여부(default:false)
  * @property {Boolean} [stockNumInfo] - 자재 수량 정보 노출 여부(default:false)
+ * @property {Boolean} [stockPriceInfo] - 자재 수량 정보 노출 여부(default:false)
  * @property {Boolean} [itemNumInfo] - 필요 수량 정보 노출 여부(default:false)
+ * @property {Boolean} [itemPriceInfo] - 필요 수량 정보 노출 여부(default:false)
  * @property {Boolean} [stockNumInfoBelong] - 내부 항목 자재 수량 정보 노출 여부(default:false)
+ * @property {Boolean} [stockPriceInfoBelong] - 내부 항목 자재 금액 정보 노출 여부(default:false)
  * @property {Boolean} [itemNumInfoBelong] - 내부 항목 필요 수량 정보 노출 여부(default:false)
+ * @property {Boolean} [itemPriceInfoBelong] - 내부 항목 필요 수량 정보 노출 여부(default:false)
  * @property {String} [tableStyle] - 테이블 style(default:'')
  * @property {Boolean} [hideDefaultFooter] - 기본 footer 숨기기 여부(default:false)
  * @property {Boolean} [disablePagination] - 페이징 방지 여부(default:false)
@@ -742,8 +739,12 @@ export default {
     showItemDetails: Boolean,
     stockNumInfo: Boolean,
     itemNumInfo: Boolean,
+    stockPriceInfo: Boolean,
+    itemPriceInfo: Boolean,
     stockNumInfoBelong: Boolean,
+    stockPriceInfoBelong: Boolean,
     itemNumInfoBelong: Boolean,
+    itemPriceInfoBelong: Boolean,
     tableStyle: String,
     hideDefaultFooter: Boolean,
     disablePagination: Boolean,
@@ -781,7 +782,10 @@ export default {
           return obj;
     }).filter(element => element);
     if (this.stockNumInfo || this.itemNumInfo || this.stockNumInfoBelong || this.itemNumInfoBelong ){
-      this.addedHeaders.push({ text: '수량', align: 'center', value: 'details', sortable: false });
+      this.addedHeaders.push({ text: '수량', align: 'start', value: 'details', sortable: false });
+    }
+    if (this.stockPriceInfo || this.itemPriceInfo || this.stockPriceInfoBelong || this.itemPriceInfoBelong ){
+      this.addedHeaders.push({ text: '금액', align: 'start', value: 'details', sortable: false });
     }
     if (this.showItemDetails){
       this.addedHeaders.push({ text: '상세', align: 'center', value: 'details', sortable: false });

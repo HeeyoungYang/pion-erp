@@ -18,32 +18,32 @@
     "산출내역서", "노무비 산출"
   ],
   "search_cost_headers": [
-    { "text": "제품명", "align": "center", "value": "product_name"},
-    { "text": "작성일", "align": "center", "value": "cost_created_time"},
-    { "text": "작성자", "align": "center", "value": "cost_creater"},
-    { "text": "총액", "align": "center", "value": "cost_total_amount"}
+    { "text": "제품명", "align": "start", "value": "product_name"},
+    { "text": "작성일", "align": "start", "value": "cost_created_time"},
+    { "text": "작성자", "align": "start", "value": "cost_creater"},
+    { "text": "총액", "align": "start", "value": "cost_total_amount"}
   ],
   "survey_cost_headers": [
-    { "text": "No.", "align": "center", "value": ""},
-    { "text": "항목", "align": "center", "value": "cost_list"},
-    { "text": "단위", "align": "center", "value": "cost_unit"},
-    { "text": "수량", "align": "center", "value": "cost_num"},
-    { "text": "단가", "align": "center", "value": "cost_unit_price"},
-    { "text": "합계", "align": "center", "value": "cost_total"}
+    { "text": "No.", "align": "start", "value": ""},
+    { "text": "항목", "align": "start", "value": "cost_list"},
+    { "text": "단위", "align": "start", "value": "cost_unit"},
+    { "text": "수량", "align": "start", "value": "cost_num"},
+    { "text": "단가", "align": "start", "value": "cost_unit_price"},
+    { "text": "합계", "align": "start", "value": "cost_total"}
   ],
   "labor_cost_headers": [
-    { "text": "품번", "align": "center", "value": "no"},
-    { "text": "공종", "align": "center", "value": "name"},
-    { "text": "규격", "align": "center", "value": "type"},
-    { "text": "직종", "align": "center", "value": "occupation"},
-    { "text": "공량(M/D)", "align": "center", "value": "man_per_day"},
-    { "text": "할증율", "align": "center", "value": "surcharge_ratio"},
-    { "text": "설계조정률", "align": "center", "value": "adjustment_ratio"},
-    { "text": "공량(M/H)", "align": "center", "value": "man_per_hour"},
-    { "text": "단가(M/D)", "align": "center", "value": "unit_price"},
-    { "text": "수량", "align": "center", "value": "quantity"},
-    { "text": "금액", "align": "center", "value": "total_amount"},
-    { "text": "공정별 금액", "align": "center", "value": "no_total_amount"}
+    { "text": "품번", "align": "start", "value": "no"},
+    { "text": "공종", "align": "start", "value": "name"},
+    { "text": "규격", "align": "start", "value": "type"},
+    { "text": "직종", "align": "start", "value": "occupation"},
+    { "text": "공량(M/D)", "align": "start", "value": "man_per_day"},
+    { "text": "할증율", "align": "start", "value": "surcharge_ratio"},
+    { "text": "설계조정률", "align": "start", "value": "adjustment_ratio"},
+    { "text": "공량(M/H)", "align": "start", "value": "man_per_hour"},
+    { "text": "단가(M/D)", "align": "start", "value": "unit_price"},
+    { "text": "수량", "align": "start", "value": "quantity"},
+    { "text": "금액", "align": "start", "value": "total_amount"},
+    { "text": "공정별 금액", "align": "start", "value": "no_total_amount"}
   ],
   "labor_list_headers": [
     { "text": "품번", "align": "center", "value": "no"},
