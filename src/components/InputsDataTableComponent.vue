@@ -27,7 +27,7 @@
           ></v-text-field>
         </template>
         <template v-slot:[`item.item_price`] = "{ item }">
-          {{  Number(item.num ? item.unit_price.replace(/,/g,'') * item.num.replace(/,/g,'') :  0).toLocaleString() }}
+          {{  Number(item.num ? item.unit_price.replace(/,/g,'').replace(/₩ /g,'') * item.num.replace(/,/g,'') :  0).toLocaleString() }}
         </template>
         <template v-slot:[`item.edit_item`]="{ item, index }">
           <v-icon

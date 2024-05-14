@@ -352,7 +352,7 @@ export default {
               for(let b=0; b<data.belong_data.length; b++){
                 data.belong_data[b].item_code = data.belong_data[b].code;
                 delete data.belong_data[b].code;
-                data.belong_data[b].unit_price = Number(data.belong_data[b].unit_price).toLocaleString()
+                data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
               }
             }
             let stock_calc = 0;
@@ -366,7 +366,7 @@ export default {
             data.total_stock = stock_calc
             if (typeof data.unit_price === 'number'){
               data.item_price = data.unit_price * data.total_stock
-              data.unit_price = Number(data.unit_price).toLocaleString()
+              data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
             }else {
               data.item_price = 0;
             }
@@ -412,8 +412,8 @@ export default {
             total_stock_calc += data.belong_data[i].spot_stock[s].stock_num
           }
           data.belong_data[i].total_stock = Number(total_stock_calc).toLocaleString();
-          data.belong_data[i].stock_price = Number(total_stock_calc* data.belong_data[i].unit_price.replace(/,/g,'')).toLocaleString();
-          data.belong_data[i].num_price = Number(data.belong_data[i].num* data.belong_data[i].unit_price.replace(/,/g,'')).toLocaleString();
+          data.belong_data[i].stock_price = Number(total_stock_calc* data.belong_data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
+          data.belong_data[i].num_price = Number(data.belong_data[i].num* data.belong_data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
           data.belong_data[i].no = (index+1)+'-'+(i+1)
           total_stock_calc = 0;
         }
@@ -422,8 +422,8 @@ export default {
       })
 
       items.forEach(data =>{
-        data.stock_price = Number(data.total_stock * data.unit_price.replace(/,/g,'')).toLocaleString();
-        data.total_stock = Number(data.total_stock).toLocaleString();
+        data.total_stock = typeof data.total_stock === "number" ? Number(data.total_stock).toLocaleString() : data.total_stock;
+        data.stock_price = '₩ '+Number(data.total_stock.replace(/,/g,'') * data.unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
       })
       mux.Excel.downloadTable(excelHeaders, items, '반제품_엑셀다운로드');
     }
