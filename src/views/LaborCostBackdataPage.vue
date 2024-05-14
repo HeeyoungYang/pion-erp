@@ -389,7 +389,7 @@ export default {
 
     },
 
-    uploadLaborItem () {
+    async uploadLaborItem () {
       let labor_input = this.registLaborInputs;
       let item = this.editedLaborItem;
 
@@ -408,11 +408,99 @@ export default {
         })
 
         if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
-          this.editedLaborItem.creater = 'user_id';
-          alert('등록이 완료되었습니다.');
+          item.code = item.no + '/' + mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
+          const prevURL = window.location.href;
+          try {
+            let sendData = {"labor_cost_table-insert": [
+              {
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "code": item.code,
+                  "no": item.no,
+                  "name": item.name,
+                  "type": item.type,
+                  "occupation": item.occupation,
+                  "man_per_day": item.man_per_day,
+                  "surcharge_ratio": item.surcharge_ratio
+                },
+                "select_where": {"code": item.code},
+                "rollback": "yes"
+              }
+            ]};
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: sendData
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            if(result['code'] == 0){
+              // console.log('result :>> ', result);
+              this.labor_data.push(item);
+              alert('등록이 완료되었습니다.');
+              this.laborDialog = false;
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              alert(error.response['data']['failed_info'].msg);
+            else
+              alert(error);
+          }
         }else{// 아니라면 수정
-          this.editedLaborItem.modifier = 'user_id';
-          alert('수정이 완료되었습니다.');
+          const prevURL = window.location.href;
+          try {
+            let sendData = {"labor_cost_table-update": [
+              {
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{
+                  "no": item.no,
+                  "name": item.name,
+                  "type": item.type,
+                  "occupation": item.occupation,
+                  "man_per_day": item.man_per_day,
+                  "surcharge_ratio": item.surcharge_ratio
+                },
+                "update_where": {"code": item.code},
+                "rollback": "yes"
+              }
+            ]};
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: sendData
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            if(result['code'] == 0){
+              // console.log('result :>> ', result);
+              this.labor_data[this.editedLaborIndex] = JSON.parse(JSON.stringify(item));
+              alert('수정이 완료되었습니다.');
+              this.laborDialog = false;
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              alert(error.response['data']['failed_info'].msg);
+            else
+              alert(error);
+          }
         }
       }
     },
@@ -446,7 +534,7 @@ export default {
       this.wageDialog = true
 
     },
-    uploadWageItem () {
+    async uploadWageItem () {
       let wage_input = this.registWageInputs;
       let item = this.editedWageItem;
       const validate = this.$refs.wageForm.validate();
@@ -461,15 +549,101 @@ export default {
         })
 
         if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
-          this.editedLaborItem.creater = 'user_id';
+          if (this.wage_data.find(x => x.occupation === item.occupation)) {
+            alert('이미 등록된 직종입니다.');
+            return;
+          }
+          item.code = item.no + '/' + mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
+          const prevURL = window.location.href;
+          try {
+            let sendData = {"labor_current_unit_price_table-insert": [
+              {
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "occupation": item.occupation,
+                  "unit_price": item.unit_price,
+                  "adjustment_ratio": item.adjustment_ratio
+                },
+                "select_where": {"occupation": item.occupation},
+                "rollback": "yes"
+              }
+            ]};
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: sendData
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            if(result['code'] == 0){
+              // console.log('result :>> ', result);
+              this.wage_data.push(item);
+              alert('등록이 완료되었습니다.');
+              this.wageDialog = false;
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              alert(error.response['data']['failed_info'].msg);
+            else
+              alert(error);
+          }
         }else{// 아니라면 수정
-          this.editedLaborItem.modifier = 'user_id';
+          const prevURL = window.location.href;
+          try {
+            let sendData = {"labor_current_unit_price_table-update": [
+              {
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{
+                  "unit_price": item.unit_price,
+                  "adjustment_ratio": item.adjustment_ratio
+                },
+                "update_where": {"occupation": item.occupation},
+                "rollback": "yes"
+              }
+            ]};
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: sendData
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            if(result['code'] == 0){
+              // console.log('result :>> ', result);
+              this.wage_data[this.editedWageIndex] = JSON.parse(JSON.stringify(item));
+              alert('수정이 완료되었습니다.');
+              this.wageDialog = false;
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              alert(error.response['data']['failed_info'].msg);
+            else
+              alert(error);
+          }
         }
       }
     },
 
     editRatioItem (item) {
-      this.editedRatioIndex = this.ratio_data.findIndex(item => item.type === item.type);
+      this.editedRatioIndex = this.ratio_data.findIndex(x => x.type === item.type);
       let ratio_input = this.registRatioInputs;
       mux.Rules.rulesSet(ratio_input);
       let split_formula = item.formula.split('X');
@@ -566,6 +740,7 @@ export default {
           if(result['code'] == 0){
             // console.log('result :>> ', result);
             this.ratio_data[this.editedRatioIndex] = {type: item.type, formula: item.formula};
+            this.ratio_data = JSON.parse(JSON.stringify(this.ratio_data));
             alert('수정이 완료되었습니다.');
             this.ratioDialog = false;
           } else {
@@ -593,21 +768,90 @@ export default {
       this.DialogDelete = true
     },
 
-    deleteItemConfirm () {
+    async deleteItemConfirm () {
       this.deleteDataList = {};
-      this.deleteDataList.modifier = 'user_id';
 
       if(this.tab_main == 0){
         this.deleteDataList.code = this.editedLaborItem.code;
         // console.log('노무비 정보 삭제 : ' + JSON.stringify(this.deleteDataList));
-        this.labor_data.splice(this.editedLaborIndex, 1)
+        const prevURL = window.location.href;
+        try {
+          let sendData = {"labor_cost_table-delete": [
+            {
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data":{},
+              "delete_where": {"code": this.deleteDataList.code},
+              "rollback": "yes"
+            }
+          ]};
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: sendData
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0){
+            // console.log('result :>> ', result);
+            this.labor_data.splice(this.editedLaborIndex, 1);
+            alert('삭제가 완료되었습니다.');
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            alert(error.response['data']['failed_info'].msg);
+          else
+            alert(error);
+        }
       }else if(this.tab_main == 1){
         this.deleteDataList.occupation = this.editedWageItem.occupation;
         // console.log('시중노임단가 정보 삭제 : ' + JSON.stringify(this.deleteDataList));
-        this.wage_data.splice(this.editedWageIndex, 1)
-      }
+        const prevURL = window.location.href;
+        try {
+          let sendData = {"labor_current_unit_price_table-delete": [
+            {
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data":{},
+              "delete_where": {"occupation": this.deleteDataList.occupation},
+              "rollback": "yes"
+            }
+          ]};
+          let result = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: sendData
+          });
+          if (prevURL !== window.location.href) return;
 
-      // 삭제 요청 = this.deleteDataList
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0){
+            // console.log('result :>> ', result);
+            this.wage_data.splice(this.editedWageIndex, 1);
+            alert('삭제가 완료되었습니다.');
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            alert(error.response['data']['failed_info'].msg);
+          else
+            alert(error);
+        }
+      }
 
       this.closeDelete()
     },
