@@ -880,10 +880,10 @@ mux.Util = {
           const worker = new pdfjsLib.PDFWorker();
           const arrayBuffer = fileReader.result;
           const pdf = await pdfjsLib.getDocument({data: arrayBuffer, worker: worker}).promise.then(pdf => pdf);
-          
+
           // 첫 번째 페이지를 렌더링합니다.
           const page = await pdf.getPage(pageNumber);
-          
+
           // Canvas에 페이지를 렌더링합니다.
           const canvas = document.createElement('canvas');
           const context = canvas.getContext('2d');
@@ -895,7 +895,7 @@ mux.Util = {
           canvas.height = viewport.height;
           canvas.width = viewport.width;
           await page.render({ canvasContext: context, viewport }).promise;
-          
+
           // Canvas를 이미지로 변환합니다.
           const imageDataUrl = canvas.toDataURL();
           if (getURL){
@@ -2411,6 +2411,9 @@ mux.Rules = {
         if(input.column_name != 'model'){
           if(input.text_type == 'number'){
             input.rules =  [v => !!v || input.label + " 입력(숫자)"]
+          }else if(input.type == 'number_comma'){
+            input.rules =  [v => !!v || input.label + " 입력(숫자)",
+                            v => !!(/^[0-9,]*$/.test(v.replace(/,/g,'')) ) || '숫자만 입력']
           }else if(input.column_name == 'formula2'){
             input.rules =  [v => !!v || '백분율(%) 혹은 숫자 입력']
           }else if(input.type != 'file'){

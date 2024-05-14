@@ -29,14 +29,20 @@
                 cols="12"
                 sm="4"
                 lg="3"
+                align-self="center"
               >
                 <v-btn
                   color="primary"
                   elevation="2"
+                  class="mr-2"
                   @click="searchButton"
                 >
                   <v-icon>mdi-magnify</v-icon>검색
                 </v-btn>
+                <v-btn
+                  color="success"
+                  @click="downloadToExcel"
+                >엑셀 다운로드</v-btn>
               </v-col>
             </InputsFormComponent>
           </CardComponent>
@@ -111,11 +117,6 @@
                       class="mr-2"
                       @click="detailInfoItem(data, 'product')"
                     >완제품 상세</v-btn>
-                    <v-btn
-                      small
-                      color="success"
-                      @click="downloadToExcel"
-                    >엑셀 다운로드</v-btn>
                     <!-- <v-chip
                       class="ma-2"
                       color="indigo"
@@ -187,7 +188,7 @@
             <p class="text-h6 font-weight-bold primary--text">기본 정보</p>
             <DataTableComponent
               :headers="product_detail_header"
-              :items="product_data"
+              :items="productDetails"
               hide-default-footer
               disable-pagination
               dense
@@ -250,6 +251,7 @@ export default {
       detailForProduct: false,
       menu: false,
       detail_dialog: false,
+      productDetails:[],
       stockDetails:[],
       inboundDetails:[],
 
@@ -277,10 +279,19 @@ export default {
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     detailInfoItem(item, type){
+      this.productDetails= [];
+      this.stockDetails= [];
+      this.inboundDetails= [];
       this.detail_dialog = true;
-      this.stockDetails = item.spot_stock
+
+      this.productDetails.push({model:item.model, manufacturer:item.manufacturer, unit_price:item.unit_price })
+
+      // this.stockDetails = item.spot_stock
+      for(let i=0; i<item.spot_stock.length; i++){
+        this.stockDetails.push(item.spot_stock[i]);
+      }
       this.stockDetails.forEach(data => {
-        data.stock_num = Number(data.stock_num).toLocaleString();
+        data.stock_num = typeof data.stock_num === "number" ? Number(data.stock_num).toLocaleString() : data.stock_num ;
       })
       if(type === 'product'){
         this.detailForProduct  = true;
@@ -346,12 +357,12 @@ export default {
               for(let b=0; b<data.belong_data.length; b++){
                 data.belong_data[b].item_code = data.belong_data[b].code;
                 delete data.belong_data[b].code;
-                data.belong_data[b].unit_price = Number(data.belong_data[b].unit_price).toLocaleString()
+                data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 if(data.belong_data[b].belong_data){
                   for(let c=0; c<data.belong_data[b].belong_data.length; c++){
                     data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
                     delete data.belong_data[b].belong_data[c].code;
-                    data.belong_data[b].belong_data[c].unit_price = Number(data.belong_data[b].belong_data[c].unit_price).toLocaleString()
+                    data.belong_data[b].belong_data[c].unit_price = '₩ '+ Number(data.belong_data[b].belong_data[c].unit_price).toLocaleString()
                   }
                 }
               }
@@ -367,7 +378,7 @@ export default {
             data.total_stock = stock_calc
             if (typeof data.unit_price === 'number'){
               data.item_price = data.unit_price * data.total_stock
-              data.unit_price = Number(data.unit_price).toLocaleString()
+              data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
             }else {
               data.item_price = 0;
             }
@@ -420,15 +431,15 @@ export default {
                 belong_total_stock_calc += data.belong_data[i].belong_data[b].spot_stock[bs].stock_num
               }
               data.belong_data[i].belong_data[b].total_stock = Number(belong_total_stock_calc).toLocaleString();
-              data.belong_data[i].belong_data[b].stock_price = Number(belong_total_stock_calc* data.belong_data[i].belong_data[b].unit_price.replace(/,/g,'')).toLocaleString();
-              data.belong_data[i].belong_data[b].num_price = Number(data.belong_data[i].belong_data[b].num* data.belong_data[i].belong_data[b].unit_price.replace(/,/g,'')).toLocaleString();
+              data.belong_data[i].belong_data[b].stock_price = '₩ '+ Number(belong_total_stock_calc* data.belong_data[i].belong_data[b].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
+              data.belong_data[i].belong_data[b].num_price = '₩ '+ Number(data.belong_data[i].belong_data[b].num* data.belong_data[i].belong_data[b].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
               data.belong_data[i].belong_data[b].no = (index+1)+'-'+(i+1)+'-'+(b+1)
               belong_total_stock_calc = 0;
             }
           }
           data.belong_data[i].total_stock = Number(total_stock_calc).toLocaleString();
-          data.belong_data[i].stock_price = Number(total_stock_calc* data.belong_data[i].unit_price.replace(/,/g,'')).toLocaleString();
-          data.belong_data[i].num_price = Number(data.belong_data[i].num* data.belong_data[i].unit_price.replace(/,/g,'')).toLocaleString();
+          data.belong_data[i].stock_price = '₩ '+ Number(total_stock_calc* data.belong_data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
+          data.belong_data[i].num_price = '₩ '+ Number(data.belong_data[i].num* data.belong_data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
           data.belong_data[i].no = (index+1)+'-'+(i+1)
           total_stock_calc = 0;
         }
@@ -437,8 +448,8 @@ export default {
       })
 
       items.forEach(data =>{
-        data.stock_price = Number(data.total_stock * data.unit_price.replace(/,/g,'')).toLocaleString();
-          data.total_stock = Number(data.total_stock).toLocaleString();
+        data.total_stock = typeof data.total_stock === "number" ? Number(data.total_stock).toLocaleString() : data.total_stock;
+        data.stock_price = '₩ '+ Number(data.total_stock.replace(/,/g,'') * data.unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
       })
       mux.Excel.downloadTable(excelHeaders, items, items[0].name+'_엑셀다운로드');
     }
