@@ -1424,6 +1424,7 @@ export default {
                 if (data.stock_num){
                   data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
                 }
+                data.unit_price = Number(data.unit_price).toLocaleString();
                 product_data_arr.push(data);
               }
             }
@@ -1437,24 +1438,24 @@ export default {
             this.selected_items_for_product_data = []
           }
 
-          this.product_data.forEach(data =>{
-            let stock_calc = 0;
-            if (data.spot_stock){
-              for(let d=0; d<data.spot_stock.length; d++){
-                if (typeof data.spot_stock[d].stock_num === 'number'){
-                  stock_calc += data.spot_stock[d].stock_num;
-                }
-              }
-            }
-            data.total_stock = stock_calc
-            if (typeof data.unit_price === 'number'){
-              data.item_price = data.unit_price * data.total_stock
-            }else {
-              data.item_price = 0;
-            }
-            this.total_stock_num += data.total_stock
-            this.total_stock_price += data.item_price
-          })
+          // this.product_data.forEach(data =>{
+          //   let stock_calc = 0;
+          //   if (data.spot_stock){
+          //     for(let d=0; d<data.spot_stock.length; d++){
+          //       if (typeof data.spot_stock[d].stock_num === 'number'){
+          //         stock_calc += data.spot_stock[d].stock_num;
+          //       }
+          //     }
+          //   }
+          //   data.total_stock = stock_calc
+          //   if (typeof data.unit_price === 'number'){
+          //     data.item_price = data.unit_price * data.total_stock
+          //   }else {
+          //     data.item_price = 0;
+          //   }
+          //   this.total_stock_num += data.total_stock
+          //   this.total_stock_price += data.item_price
+          // })
         }else{
           if (prevURL !== window.location.href) return;
           alert(result['failed_info']);
@@ -1783,7 +1784,7 @@ export default {
       if (stock_spot_arr){
         for(let i=0; i<stock_spot_arr.length; i++){
           spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
-          spot_input.push( {label:'재고수량'+[i+1], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].stock_num},)
+          spot_input.push( {label:'재고수량'+[i+1], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].stock_num},)
           spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].conditions},)
         }
       }
@@ -1795,6 +1796,11 @@ export default {
         for(let i=0; i<Object.keys(item).length; i++){
           if(data.column_name == Object.keys(item)[i]){
             data.value = Object.values(item)[i];
+            // if(data.column_name == 'unit_price'){
+            //   data.value = Object.values(item)[i].replace(/,/g,'');
+            // }else{
+            //   data.value = Object.values(item)[i];
+            // }
           }
         }
       })
@@ -2157,7 +2163,7 @@ export default {
       if (stock_spot_arr){
         for(let i=0; i<stock_spot_arr.length; i++){
           spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
-          spot_input.push( {label:'재고수량'+[i+1], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].stock_num},)
+          spot_input.push( {label:'재고수량'+[i+1], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].stock_num},)
           spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].conditions},)
         }
       }
@@ -2560,7 +2566,7 @@ export default {
       if (spot){
         for(let i=0; i<spot.length; i++){
           spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: spot[i].spot},)
-          spot_input.push( {label:'재고수량'+[i+1], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: spot[i].stock_num},)
+          spot_input.push( {label:'재고수량'+[i+1], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: spot[i].stock_num},)
           spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: spot[i].conditions},)
         }
       }
@@ -2946,7 +2952,7 @@ export default {
         length = (spot_input.length/3)+1
       }
       spot_input.push({label:'위치'+[length], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value:''},)
-      spot_input.push( {label:'재고수량'+[length], text_type:'number', column_name:'stock_num', col:'12', sm:'4', lg:'4', value:''},)
+      spot_input.push( {label:'재고수량'+[length], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value:''},)
       spot_input.push( {label:'재고상태'+[length], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value:''},)
 
       mux.Rules.rulesSet(spot_input);

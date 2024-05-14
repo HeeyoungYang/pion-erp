@@ -20,6 +20,23 @@
         :rules="input.rules"
         @keyup.enter="enterKeyup">
       </v-text-field>
+
+      <v-text-field v-else-if="input.type === 'number_comma'"
+        v-model="input.value"
+        :oninput="input.value = input.value.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+        :type="input.text_type"
+        :dense="dense"
+        :hide-details="hideDetails"
+        :clearable="input.clearable === undefined ? (clearable ? clearable : false) : input.clearable"
+        :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
+        :outlined="input.outlined === undefined ? (outlined ? outlined : false) : input.outlined"
+        :prepend-icon="input.icon"
+        :label="input.label"
+        :disabled="input.disabled"
+        :suffix="input.suffix"
+        :rules="input.rules"
+        @keyup.enter="enterKeyup">
+      </v-text-field>
       <v-select v-else-if="input.type === 'combo' || input.type === 'select'"
         v-model="input.value"
         :dense="dense"

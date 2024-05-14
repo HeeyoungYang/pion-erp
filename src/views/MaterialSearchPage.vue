@@ -380,7 +380,6 @@ export default {
             }
           });
           this.product_data = product_data_arr;
-          // this.product_data = StockSearchPageConfig.test_product_data;
 
           this.product_data.forEach(data =>{
             let stock_calc = 0;

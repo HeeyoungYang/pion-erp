@@ -22,12 +22,12 @@
             hide-details
             v-model="item.num"
             style="width:100px;font-size: 0.775rem !important;"
-            type="number"
             filled
+            :oninput="!item.num ? '' : item.num = item.num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
           ></v-text-field>
         </template>
         <template v-slot:[`item.item_price`] = "{ item }">
-          {{  item.unit_price * item.num ? item.unit_price * item.num :  0 }}
+          {{  Number(item.num ? item.unit_price.replace(/,/g,'') * item.num.replace(/,/g,'') :  0).toLocaleString() }}
         </template>
         <template v-slot:[`item.edit_item`]="{ item, index }">
           <v-icon
