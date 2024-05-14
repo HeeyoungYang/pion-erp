@@ -1599,7 +1599,7 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
-          searchResult = result;
+          searchResult = result.data;
           // const searchResult = ProductCostPageConfig.search_result;
           console.log(result);
         }else{

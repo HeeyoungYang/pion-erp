@@ -239,13 +239,8 @@ export default {
       searchProductName = searchProductName.trim();
 
       let searchInboundDate = this.searchCardInputs.find(x=>x.label === '입고일자').value;
-      let searchInboundStartDate;
-      let searchInboundEndDate;
-      if (searchInboundDate){
-        let splitInboundDate = searchInboundDate.split('~');
-        searchInboundStartDate = splitInboundDate[0];
-        searchInboundEndDate = splitInboundDate[1];
-      }
+      let searchInboundStartDate = searchInboundDate[0];
+      let searchInboundEndDate = searchInboundDate[1];
 
 
       const prevURL = window.location.href;

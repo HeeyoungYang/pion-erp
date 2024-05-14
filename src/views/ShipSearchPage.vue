@@ -229,14 +229,9 @@ export default {
       if (searchPurpose)
       searchPurpose = searchPurpose.trim();
 
-      let searchShipDate = this.searchCardInputs.find(x=>x.label === '출고일자').value;
-      let searchShipStartDate;
-      let searchShipEndDate;
-      if (searchShipDate){
-        let splitShipDate = searchShipDate.split('~');
-        searchShipStartDate = splitShipDate[0];
-        searchShipEndDate = splitShipDate[1];
-      }
+      let searchShipDate = this.searchCardInputs.find(x=>x.label === '출고 요청일').value;
+      let searchShipStartDate = searchShipDate[0];
+      let searchShipEndDate = searchShipDate[1];
 
 
       const prevURL = window.location.href;
@@ -246,7 +241,7 @@ export default {
           params: [
             {
               "ship_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
-              "ship_confirmation_table.ship_date_start_date": searchShipStartDate ? searchShipStartDate : searchShipStartDate,
+              "ship_confirmation_table.ship_date_start_date": searchShipStartDate ? searchShipStartDate : "",
               "ship_confirmation_table.ship_date_end_date": searchShipEndDate ? searchShipEndDate : "",
               "ship_product_table.product_code": searchProductCode ? searchProductCode : "",
               "ship_product_table.name": searchProductName ?  searchProductName : "",
