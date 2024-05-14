@@ -219,11 +219,71 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    searchButton(){
+    async searchButton(){
       this.loading_dialog = true;
 
-      this.inbound_approve_data = InboundSearchPageConfig.test_inbound_approve_data
 
+      let searchApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
+      if (searchApprovalPhase === 'All')
+        searchApprovalPhase = '';
+      let searchOrderCode = this.searchCardInputs.find(x=>x.label === '발주번호').value;
+      if (searchOrderCode)
+      searchOrderCode = searchOrderCode.trim();
+
+      let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+      if (searchProductCode)
+      searchProductCode = searchProductCode.trim();
+
+      let searchProductName = this.searchCardInputs.find(x=>x.label === '제품명').value;
+      if (searchProductName)
+      searchProductName = searchProductName.trim();
+
+      let searchInboundDate = this.searchCardInputs.find(x=>x.label === '입고일자').value;
+      let searchInboundStartDate;
+      let searchInboundEndDate;
+      if (searchInboundDate){
+        let splitInboundDate = searchInboundDate.split('~');
+        searchInboundStartDate = splitInboundDate[0];
+        searchInboundEndDate = splitInboundDate[1];
+      }
+
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: [
+            {
+            "inbound_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
+            "inbound_product_table.product_code": searchProductCode ? searchProductCode : "",
+            "inbound_product_table.name": searchProductName ?  searchProductName: "",
+            "inbound_confirmation_table.order_code": searchOrderCode ? searchOrderCode : "",
+            "inbound_confirmation_table.inbound_date_start_date": searchInboundStartDate ? searchInboundStartDate : "",
+            "inbound_confirmation_table.inbound_date_end_date": searchInboundEndDate ? searchInboundEndDate : ""
+            }
+          ],
+          "script_file_name": "rooting_입고_검색_24_05_14_12_37_MSE.json",
+          "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_검색_24_05_14_12_37_P4D"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          // this.inbound_approve_data  = result
+          console.log(result);
+        }else{
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+      }
       this.loading_dialog = false;
     },
     closeProductList(){

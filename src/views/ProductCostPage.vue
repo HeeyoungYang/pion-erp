@@ -1571,11 +1571,50 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    search(){
+    async search(){
       // const keyword = this.searching_product_name.trim();
       // console.log('keyword :>> ', keyword);
 
-      const searchResult = ProductCostPageConfig.search_result;
+      let searchResult;
+
+      let searchProductName = this.searching_product_name;
+      if (searchProductName)
+      searchProductName = searchProductName.trim();
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: [
+            {
+              "product_cost_table.product_name": searchProductName ? searchProductName : "%"
+            }
+          ],
+          "script_file_name": "rooting_원가_검색_24_05_14_12_05_DC7.json",
+          "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_검색_24_05_14_12_05_01A"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          searchResult = result;
+          // const searchResult = ProductCostPageConfig.search_result;
+          console.log(result);
+        }else{
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+      }
+
+
 
       this.clearClicked();
       this.searchDataCalcProcess(searchResult, true);
@@ -2210,9 +2249,9 @@ export default {
                 return x;
               }
             });
-    
+
             this.searchDataCalcProcess(this.searched_datas);
-    
+
             this.edit_survey_cost_num_disabled = true;
             alert('수정되었습니다.');
           } else {
@@ -2378,9 +2417,9 @@ export default {
                 return x;
               }
             });
-    
+
             this.searchDataCalcProcess(this.searched_datas);
-    
+
             this.edit_survey_cost_num_disabled = true;
             alert('등록되었습니다.');
           } else {
