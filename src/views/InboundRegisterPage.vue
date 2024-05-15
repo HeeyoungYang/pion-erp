@@ -46,19 +46,25 @@
               >
                 <v-btn
                   color="primary"
+                  class="mr-2"
                   elevation="2"
                   @click="searchProduct"
                 >
                   <v-icon>mdi-magnify</v-icon>검색
                 </v-btn>
+                <v-btn
+                  color="default"
+                  elevation="2"
+                  @click="addItems"
+                >추가</v-btn>
               </v-col>
               <v-col cols="12">
                 <DataTableComponent
                   dense
-                  v-model="product_inbound_data"
+                  v-model="selected_product_data"
                   :headers="product_search_headers"
                   :items="product_search_data"
-                  item-key="product_code"
+                  item-key="_code"
                   show-select
                   />
               </v-col>
@@ -199,15 +205,15 @@
                     :items="product_inbound_data"
                     hide-default-footer
                     disable-pagination
-                    item-key="product_code"
+                    item-key="_code"
                     class="elevation-1"
                   >
                     <template v-slot:item="{ item, index }">
                       <tr v-if="!add_self">
-                        <td align="center">{{  item.product_type }}</td>
-                        <td align="center">{{  item.product_classification }}</td>
-                        <td align="center">{{  item.product_code }}</td>
-                        <td align="center">{{  item.product_name }}</td>
+                        <td align="center">{{ item.type }}</td>
+                        <td align="center">{{ item.classification }}</td>
+                        <td align="center">{{ item._code }}</td>
+                        <td align="center">{{ item.name }}</td>
                         <td align="center">
                           <v-text-field
                             dense
@@ -235,11 +241,11 @@
                             hide-details
                             filled
                             style="max-width:200px"
-                            v-model="item.product_spec"
+                            v-model="item.spec"
                           >
                           </v-text-field>
                         </td>
-                        <td align="center">{{  item.product_model }}</td>
+                        <td align="center">{{  item.model }}</td>
                         <td align="center">{{  item.manufacturer }}</td>
                         <td align="center">{{  item.unit_price }}</td>
                         <td align="center">
@@ -249,7 +255,7 @@
                       <tr v-else-if="add_self">
                         <td align="center">
                           <v-autocomplete
-                            v-model="item.product_type"
+                            v-model="item.type"
                             :items="type_list"
                             dense
                             filled
@@ -259,7 +265,7 @@
                         </td>
                         <td align="center">
                           <v-autocomplete
-                            v-model="item.product_classification"
+                            v-model="item.classification"
                             :items="classification_list.slice(1)"
                             dense
                             filled
@@ -272,7 +278,7 @@
                             dense
                             hide-details
                             filled
-                            v-model="item.product_code"
+                            v-model="item._code"
                             style="width:200px"
                           >
                           </v-text-field>
@@ -282,7 +288,7 @@
                             dense
                             hide-details
                             filled
-                            v-model="item.product_name"
+                            v-model="item.name"
                             style="width:150px"
                           >
                           </v-text-field>
@@ -314,7 +320,7 @@
                             dense
                             hide-details
                             filled
-                            v-model="item.product_spec"
+                            v-model="item.spec"
                             style="width:150px"
                           >
                           </v-text-field>
@@ -324,7 +330,7 @@
                             dense
                             hide-details
                             filled
-                            v-model="item.product_model"
+                            v-model="item.model"
                             style="width:150px"
                           >
                           </v-text-field>
@@ -453,7 +459,7 @@
             <!-- <v-data-table
               :headers="ship_search_headers"
               :items="ship_search_data"
-              item-key="product_code"
+              item-key="_code"
               show-select
               dense
             ></v-data-table> -->
@@ -473,7 +479,7 @@
             <!-- <v-data-table
               :headers="ship_search_headers"
               :items="ship_search_data"
-              item-key="product_code"
+              item-key="_code"
               show-select
               dense
             ></v-data-table> -->
@@ -514,6 +520,7 @@ export default {
   data(){
     return{
       login_id:'',
+      stock_more_0: false,
       member_dialog: false,
       loading_dialog: false,
       ship_dialog: false,
@@ -532,6 +539,7 @@ export default {
       something_wrong_reason:'',
       set_spot_selected: '',
       something_wrong_radio: '이상 없음',
+      selected_product_data:[],
       product_inbound_data: [],
       product_inbound_data_added: [],
       member_type_index:0,
@@ -601,10 +609,149 @@ export default {
       }
 
     },
-    searchProduct(){
+    async searchProduct(){
       this.loading_dialog = true;
 
-      this.product_search_data = InboundRegisterPageConfig.test_product_search_data
+      // this.product_search_data = InboundRegisterPageConfig.test_product_search_data
+
+      let searchType = this.searchCardInputs.find(x=>x.label === '종류').value;
+      if (searchType === 'All')
+        searchType = '%';
+      let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
+      if (searchClassification === 'All')
+        searchClassification = '%';
+      let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+      if (searchProductCode)
+      searchProductCode = searchProductCode.trim();
+
+      let searchProductName = this.searchCardInputs.find(x=>x.label === '제품명').value;
+      if (searchProductName)
+      searchProductName = searchProductName.trim();
+
+      let searchModelName = this.searchCardInputs.find(x=>x.label === '모델명').value;
+      if (searchModelName)
+      searchModelName = searchModelName.trim();
+
+      let searchProductSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
+      if (searchProductSpec)
+      searchProductSpec = searchProductSpec.trim();
+
+      let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
+      if (searchManufacturer)
+      searchManufacturer = searchManufacturer.trim();
+
+      let searchStockMoreZero = '';
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: [
+            {
+              "product_table.classification": searchClassification ? searchClassification : "",
+              "product_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "product_table.model": searchModelName ? searchModelName : "",
+              "product_table.name": searchProductName ? searchProductName : "",
+              "product_table._code": searchProductCode ? searchProductCode : "",
+              "product_table.spec": searchProductSpec ? searchProductSpec : "",
+              "product_table.type": searchType ? searchType : "",
+
+              "module_table.classification": searchClassification ? searchClassification : "",
+              "module_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "module_table.model": searchModelName ? searchModelName : "",
+              "module_table.name": searchProductName ? searchProductName : "",
+              "module_table.module_code": searchProductCode ? searchProductCode : "",
+              "module_table.spec": searchProductSpec ? searchProductSpec : "",
+              "module_table.type": searchType ? searchType : "",
+
+              "material_table.classification": searchClassification ? searchClassification : "",
+              "material_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "material_table.model": searchModelName ? searchModelName : "",
+              "material_table.name": searchProductName ? searchProductName : "",
+              "material_table.material_code": searchProductCode ? searchProductCode : "",
+              "material_table.spec": searchProductSpec ? searchProductSpec : "",
+              "material_table.type": searchType ? searchType : "",
+
+              "stock_table.conditions": "",
+              "stock_table.stock_num": searchStockMoreZero
+            }
+          ],
+          "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+
+          result = result['data'].map(a => {
+            if (!a.stock_num){
+              a.stock_price = 0;
+            }else {
+              a.stock_price = Math.round(a.unit_price * a.stock_num)
+            }
+            return a;
+          });
+
+          let product_data_arr = [];
+          result.forEach(data => {
+            let isExist = false;
+            if (!this.stock_more_0 || (data.stock_num && data.stock_num > 0)){
+              for (let i = 0; i < product_data_arr.length; i++) {
+                if (product_data_arr[i]._code === data._code) {
+                  if (data.stock_num){
+                    if (product_data_arr[i].spot_stock !== undefined){
+                      product_data_arr[i].spot_stock.push({_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
+                    }else {
+                      product_data_arr[i].spot_stock = [{_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
+                    }
+                  }
+                  isExist = true;
+                  break;
+                }
+              }
+              if (!isExist) {
+                if (data.stock_num){
+                  data.spot_stock = [{_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
+                }
+                product_data_arr.push(data);
+              }
+            }
+          });
+          this.product_search_data = product_data_arr;
+
+          this.product_search_data.forEach(data =>{
+            let stock_calc = 0;
+            if (data.spot_stock){
+              for(let d=0; d<data.spot_stock.length; d++){
+                if (typeof data.spot_stock[d].stock_num === 'number'){
+                  stock_calc += data.spot_stock[d].stock_num;
+                }
+              }
+            }
+            data.total_stock = stock_calc
+            if (typeof data.unit_price === 'number'){
+              data.item_price = data.unit_price * data.total_stock
+              data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+            }else {
+              data.item_price = 0;
+            }
+            this.total_stock_num += data.total_stock
+            this.total_stock_price += data.item_price
+          })
+        } else {
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+      }
 
 
       this.loading_dialog = false;
@@ -616,6 +763,32 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
+
+    addItems(){
+      let check_duplicate=[];
+      let set_item = this.product_inbound_data
+      let selected_item = this.selected_product_data;
+
+      set_item.forEach(item => {
+        for(let d=0; d<selected_item.length; d++){
+          if(item.item_code === selected_item[d]._code){
+            check_duplicate.push(item.item_code);
+          }
+        }
+      })
+      if(check_duplicate.length > 0){
+        let duplicate = JSON.stringify(check_duplicate).replace( "[",'').replace( "]",'');
+        alert(duplicate + '은(는) 이미 추가된 제품입니다.')
+        return
+      }else{
+        selected_item.forEach(data =>{
+          data.item_code = data._code
+          set_item.push(data);
+        })
+        this.selected_product_data = []
+      }
+    },
+
     addProductInboundData(){
       if(this.add_self == false){
         alert('직접 입력형으로 전환되며 위에서 선택한 자재는 선택 해제됩니다. ');
@@ -626,14 +799,14 @@ export default {
 
       this.add_self = true;
       this.product_inbound_data.push({
-        product_type:'',
-        product_classification:'',
-        product_code: '',
-        product_name: '',
+        type:'',
+        classification:'',
+        _code: '',
+        name: '',
         inbound_num: '',
         spot: '',
-        product_spec: '',
-        product_model: '',
+        spec: '',
+        model: '',
         manufacturer: '',
         unit_price: '',
         registe_type: '직접입력',
@@ -668,8 +841,11 @@ export default {
               if(data.type == 'file'){
                 if(data.value){
                   item[Object.keys(item)[i]] = data.value.name;
-                  const getPdfThumbnail = await mux.Util.getPdfThumbnail(data.value, 1, true);
-                  console.log('getPdfThumbnail :>> ', getPdfThumbnail);
+                    if(data.column_name === 'receiving_inspection' || data.column_name === 'inspection_report'){
+                      const getPdfThumbnail = await mux.Util.getPdfThumbnail(data.value, 1, true, 1000, 1000);
+                      item[data.column_name + "_thumbnail"] = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+                      console.log(data.column_name + "_thumbnail :>> " + item[data.column_name + "_thumbnail"]);
+                    }
                 }else{
                   item[Object.keys(item)[i]] = '';
                 }
@@ -736,7 +912,7 @@ export default {
           }else{
             inbound_product_data.forEach(data => {
               for(let add = 0; add < Object.keys(data).length; add++){
-                if(Object.keys(data)[add] != 'product_model' && Object.values(data)[add] === ''){
+                if(Object.keys(data)[add] != 'model' && Object.values(data)[add] === ''){
                   alert('모델을 제외한 모든 정보가 기입되어야 합니다.');
                   return success = false;
                 }
@@ -747,8 +923,8 @@ export default {
 
         if(success == true){
           this.loading_dialog = true;
-          // console.log('입고 정보 : ' + JSON.stringify(item));
-          // console.log('입고 제품 : ' + JSON.stringify(inbound_product_data));
+          console.log('입고 정보 : ' + JSON.stringify(item));
+          console.log('입고 제품 : ' + JSON.stringify(inbound_product_data));
           this.loading_dialog = false;
           alert('요청이 완료되었습니다.');
         }
