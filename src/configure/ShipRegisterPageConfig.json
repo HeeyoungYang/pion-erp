@@ -31,7 +31,7 @@
   "product_ship_headers": [
     { "text": "종류", "align": "start", "value": "type"},
     { "text": "분류", "align": "start", "value": "classification"},
-    { "text": "관리코드", "align": "start", "value": "product_code"},
+    { "text": "관리코드", "align": "start", "value": "_code"},
     { "text": "제품명", "align": "start", "value": "name"},
     { "text": "출고수량", "align": "start", "value": "ship_num"},
     { "text": "모델명", "align": "start", "value": "model"},

@@ -870,7 +870,7 @@ export default {
         })
         item.inbound_date = (this.inbound_date_set === "" ? mux.Date.format(this.today, 'yyyy-MM-dd') : this.inbound_date_set);
         item.creater = this.login_id;
-        item.code = item.order_code + ":" + mux.Date.format(this.today, 'yyyy-MM-dd-H:mm.fff');
+        item.code = item.order_code + ":" + mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss.fff');
         if(this.add_self){
           item.add_data = "직접기입형"
         }else{
@@ -901,7 +901,7 @@ export default {
               item.checker_id = mem.user_id;
               if(item.checker_id == this.login_id){
                 item.approval_phase = '미승인';
-                item.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd');
+                item.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
               }else{
                 item.approval_phase = '미확인';
                 item.checked_date = "";
@@ -974,8 +974,6 @@ export default {
                 "checked_date" : this.inbound_confirmation_data.checked_date,
                 "approver" : this.inbound_confirmation_data.approver,
                 "approver_id" : this.inbound_confirmation_data.approver_id,
-                "rejecter" : "",
-                "reject_reason" : "",
                 "receiving_inspection_file" : this.inbound_confirmation_data.receiving_inspection,
                 "receiving_inspection_thumbnail" : receiving_inspection_thumbnail,
                 "inspection_report_file" : this.inbound_confirmation_data.inspection_report,

@@ -131,7 +131,7 @@
                       <tr>
                         <td align="center">{{  item.type }}</td>
                         <td align="center">{{  item.classification }}</td>
-                        <td align="center">{{  item.product_code }}</td>
+                        <td align="center">{{  item._code }}</td>
                         <td align="center">{{  item.name }}</td>
                         <td align="center">
                           <v-text-field
@@ -201,6 +201,7 @@ export default {
       menu: false,
       member_dialog: false,
       loading_dialog: false,
+      inspection_report_value:'',
 
       member_type_index:0,
       members_list:[],
@@ -474,7 +475,7 @@ export default {
         this.product_ship_data.splice(idx, 1);
       }
     },
-    shipApprovalRequest(){
+    async shipApprovalRequest(){
       let ship_input = this.shipCardInputs;
       let member_input = this.approve_member_info;
       let item = this.ship_confirmation_data;
@@ -486,7 +487,18 @@ export default {
             if(data.column_name == Object.keys(item)[i]){
               if(data.type == 'file'){
                 if(data.value){
-                  item[Object.keys(item)[i]] = data.value.name;
+                  if(data.column_name === 'files'){
+                    for(let f=0; f<data.value.length; f++){
+                      if(f === 0){
+                        item[Object.keys(item)[i]] = data.value[f].name
+                      }else{
+                        item[Object.keys(item)[i]] = item[Object.keys(item)[i]]+"/"+data.value[f].name
+                      }
+                    }
+                  }else if(data.column_name === 'inspection_report'){
+                    this.inspection_report_value = data.value
+                    item[Object.keys(item)[i]] = data.value.name;
+                  }
                 }else{
                   item[Object.keys(item)[i]] = '';
                 }
@@ -498,6 +510,15 @@ export default {
         })
         item.ship_date = (this.ship_date_set === "" ? mux.Date.format(this.today, 'yyyy-MM-dd') : this.ship_date_set);
         item.creater = this.login_id;
+        item.code = item.project_code + ":" + mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss.fff');
+
+        let inspection_report_thumbnail = 'NULL';
+        if(this.inspection_report_value){
+          const getPdfThumbnail = await mux.Util.getPdfThumbnail(this.inspection_report_value, 1, true, 500, 500);
+          inspection_report_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+        }
+
+        console.log(item);
         let empty_member = [];
         member_input.forEach(mem => {
           if(!mem.user_id){
@@ -508,7 +529,7 @@ export default {
               item.checker_id = mem.user_id;
               if(item.checker_id == this.login_id){
                 item.approval_phase = '미승인';
-                item.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd');
+                item.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
               }else{
                 item.approval_phase = '미확인';
                 item.checked_date = "";
@@ -548,7 +569,89 @@ export default {
           this.loading_dialog = true;
           // console.log('출고 정보 : ' + JSON.stringify(item));
           // console.log('출고 제품 : ' + JSON.stringify(ship_product_data));
-          alert('요청이 완료되었습니다.');
+
+          let sendData = {
+            "ship_confirmation_table-insert": [{
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "code" : this.ship_confirmation_data.code,
+                "ship_date": this.ship_confirmation_data.ship_date,
+                "project_code" : this.ship_confirmation_data.project_code,
+                "ship_place" : this.ship_confirmation_data.ship_place,
+                "purpose" : this.ship_confirmation_data.purpose,
+                "approval_phase": this.ship_confirmation_data.approval_phase,
+                "checker" : this.ship_confirmation_data.checker,
+                "checker_id" : this.ship_confirmation_data.checker_id,
+                "checked_date" : this.ship_confirmation_data.checked_date,
+                "approver" : this.ship_confirmation_data.approver,
+                "approver_id" : this.ship_confirmation_data.approver_id,
+                "inspection_report_file" : this.ship_confirmation_data.inspection_report,
+                "inspection_report_thumbnail" : inspection_report_thumbnail,
+                "files" : this.ship_confirmation_data.files,
+                "note" : this.ship_confirmation_data.note,
+              },
+              "select_where": {"code": this.ship_confirmation_data.code},
+              "rollback": "yes"
+            }]
+          };
+
+          let product_data = [];
+          ship_product_data.forEach(data =>{
+            product_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "code" : this.ship_confirmation_data.code,
+                "type" : data.type,
+                "classification" : data.classification,
+                "product_code" : data._code,
+                "name" : data.name,
+                "ship_num" : data.ship_num.replace(/,/g,''),
+                "spot" : data.spot,
+                "spec" : data.spec,
+                "model" : data.model,
+                "manufacturer" : data.manufacturer,
+                "unit_price" : data.unit_price.replace(/,/g,'').replace(/₩ /g,''),
+              },
+              "select_where": {"code": this.ship_confirmation_data.code},
+              "rollback": "yes"
+            });
+          });
+          sendData["ship_product_table-insert"] = product_data;
+
+
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: sendData
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            if(result['code'] == 0){
+              // console.log('result :>> ', result);
+              alert('출고 승인 요청이 완료되었습니다');
+              this.receiving_inspection_value = '';
+              this.inspection_report_value = '';
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              alert(error.response['data']['failed_info'].msg);
+            else
+              alert(error);
+          }
           this.loading_dialog = false;
         }
       }
