@@ -23,7 +23,7 @@
 
       <v-text-field v-else-if="input.type === 'number_comma'"
         v-model="input.value"
-        :oninput="input.value = input.value.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+        :oninput="input.value = input.value ? typeof input.value === 'number' ? (input.value+'').replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,') : input.value.replaceAll(',', '').replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,') : ''"
         :type="input.text_type"
         :dense="dense"
         :hide-details="hideDetails"

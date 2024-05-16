@@ -228,7 +228,7 @@
                                 >
                                   <!-- <v-col cols="12" sm="6" align-self="center" v-if="this.registMaterialInputs[this.registMaterialInputs.length-1].value" class="offset-sm-6">
                                     <v-img
-                                      alt="Pionelectric Logo"
+                                      alt="thumbnail"
                                       class="shrink mr-2"
                                       contain
                                       src="https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/warehouse.jpg"
@@ -262,7 +262,7 @@
                                           <v-list-item-subtitle>
                                             제품이미지영역
                                             <v-img
-                                              alt="Pionelectric Logo"
+                                              alt="thumbnail"
                                               class="shrink mr-2"
                                               contain
                                               :src="materialImg"
@@ -504,7 +504,7 @@
                                           <v-list-item-subtitle>
                                             제품이미지영역
                                             <v-img
-                                              alt="Pionelectric Logo"
+                                              alt="thumbnail"
                                               class="shrink mr-2"
                                               contain
                                               :src="moduleImg"
@@ -873,7 +873,7 @@
                                     <v-list-item-subtitle>
                                       제품이미지영역
                                       <v-img
-                                        alt="Pionelectric Logo"
+                                        alt="thumbnail"
                                         class="shrink mr-2"
                                         contain
                                         :src="productImg"
@@ -1015,19 +1015,11 @@
           <v-col cols="12" :sm="detailForProduct ? 6 : 4" class="mb-3">
             <p class="text-h6 font-weight-bold primary--text">사진</p>
             <v-card class="pa-7 mt-5" color="grey lighten-3">
-              <!-- <v-img
-                alt="Pionelectric Logo"
-                class="shrink mr-2"
-                contain
-                :src="imageBinary(item.thumbnail)"
-                transition="scale-transition"
-                width="350"
-              /> -->
               <v-img
-                alt="Pionelectric Logo"
+                alt="thumbnail"
                 class="shrink"
                 contain
-                src="../assets/img/pion_logo.png"
+                :src="mux.Util.imageBinary(detailThumbnail)"
                 transition="scale-transition"
                 style="margin:0px auto; width:100%"
               />
@@ -1129,9 +1121,9 @@ export default {
       editedIndex: -1,
       deleteItemList:{},
       excel_photos: [],
-      //manufacturer_list:[],
-      manufacturer_list: ProductBackDataPageConfig.test_manufacturer_list,
+      manufacturer_list: [],
       classification_list:[],
+      spot_list: [],
       detailForProduct: false,
 
       //tabs
@@ -1202,6 +1194,7 @@ export default {
 
 
       // 상세내역 정보
+      detailThumbnail: '',
       stockDetails:[],
       productDetails:[],
       inboundDetails:[],
@@ -1285,8 +1278,6 @@ export default {
     },
     async initialize () {
       this.material_data = []
-      // this.manufacturer_list = ProductBackDataPageConfig.test_manufacturer_list;
-      // this.classification_list = ProductBackDataPageConfig.test_classification_list;
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.getPionBasicInfo();
@@ -1298,7 +1289,7 @@ export default {
 
         this.classification_list = result.classification;
         this.manufacturer_list = result.manufacturer;
-        // this.spot_list = result.spot;
+        this.spot_list = result.spot;
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
@@ -1480,16 +1471,6 @@ export default {
 
 
     },
-    imageBinary(thumbnail){
-      if(thumbnail){
-        try {
-          let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
-          return imgURL
-        } catch{
-          return '';
-        }
-      }
-    },
     async searchMaterial() {
       //검색 시 총 재고, 총 금액 초기화
       this.loading_dialog = true;
@@ -1497,6 +1478,9 @@ export default {
       this.material_total_stock_price = 0;
 
       let searchStockMoreZero = '';
+      if (this.material_stock_more_0){
+        searchStockMoreZero = 0;
+      }
 
       let searchType = '원부자재';
       let searchClassification = this.searchMaterialCardInputs.find(x=>x.label === '분류').value;
@@ -1775,7 +1759,68 @@ export default {
       this.loading_dialog = false;
       this.close();
     },
-    editMaterialItem (item) {
+    async editMaterialItem (item) {
+      const prevURL = window.location.href;
+      try {
+        let params;
+        let script_file_name;
+        let script_file_path;
+        if (item.type === '완제품'){
+          params = [
+            {
+              "product_table.product_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_product_thumbname_검색_24_05_09_12_05_UP0.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\product_thumbname_검색_24_05_09_12_06_FHY";
+        }else if (item.type === '반제품'){
+          params = [
+            {
+              "module_table.module_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_module_thumbnail_검색_24_05_09_12_09_X4X.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\module_thumbnail_검색_24_05_09_12_10_4PG";
+        }else {
+          params = [
+            {
+              "material_table.material_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_material_thumbnail_검색_24_05_09_12_12_AHK.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\material_thumbnail_검색_24_05_09_12_13_SAK";
+        }
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: params,
+          "script_file_name": script_file_name,
+          "script_file_path": script_file_path
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          let thumbnail = '';
+          if (result['data'].length > 0){
+            thumbnail = result['data'][0].thumbnail;
+          }
+          this.materialImg = mux.Util.imageBinary(thumbnail);
+
+        } else {
+          alert(result['failed_info']);
+          return;
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+        return;
+      }
       this.editedIndex = this.material_data.indexOf(item)
       let material_input = this.registMaterialInputs;
       mux.Rules.rulesSet(material_input);
@@ -1783,10 +1828,9 @@ export default {
       let stock_spot_arr = item.spot_stock;
       let spot_input = this.registMaterialSpotInputs;
 
-      this.materialImg = this.imageBinary(item.thumbnail);
       if (stock_spot_arr){
         for(let i=0; i<stock_spot_arr.length; i++){
-          spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
+          spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list: this.spot_list, col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
           spot_input.push( {label:'재고수량'+[i+1], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].stock_num},)
           spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].conditions},)
         }
@@ -2068,6 +2112,9 @@ export default {
 
       let searchManufacturer = this.searchModuleCardInputs.find(x=>x.label === '제조사').value;
       let searchStockMoreZero = '';
+      if (this.module_stock_more_0){
+        searchStockMoreZero = 0;
+      }
 
       const prevURL = window.location.href;
       try {
@@ -2167,10 +2214,10 @@ export default {
       let spot_input = this.registModuleSpotInputs;
       // alert (JSON.stringify(stock_spot_arr));
 
-      this.moduleImg = this.imageBinary(item.thumbnail);
+      this.moduleImg = mux.Util.imageBinary(item.thumbnail);
       if (stock_spot_arr){
         for(let i=0; i<stock_spot_arr.length; i++){
-          spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
+          spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list: this.spot_list, col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
           spot_input.push( {label:'재고수량'+[i+1], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: Number(stock_spot_arr[i].stock_num).toLocaleString()},)
           spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].conditions},)
         }
@@ -2576,10 +2623,10 @@ export default {
         }
       })
 
-      this.productImg = this.imageBinary(item.thumbnail);
+      this.productImg = mux.Util.imageBinary(item.thumbnail);
       if (spot){
         for(let i=0; i<spot.length; i++){
-          spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value: spot[i].spot},)
+          spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list: this.spot_list, col:'12', sm:'4', lg:'4', value: spot[i].spot},)
           spot_input.push( {label:'재고수량'+[i+1], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: Number(spot[i].stock_num).toLocaleString()},)
           spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: spot[i].conditions},)
         }
@@ -2944,21 +2991,80 @@ export default {
       }
     },
 
-    detailInfoItem(item, type){
+    async detailInfoItem(item, type){
+      this.loading_dialog = true;
       this.productDetails= [];
       this.stockDetails= [];
       this.inboundDetails= [];
-      this.detail_dialog = true;
 
       this.productDetails.push({model:item.model, manufacturer:item.manufacturer, unit_price:item.unit_price })
 
-      // this.stockDetails = item.spot_stock
-      for(let i=0; i<item.spot_stock.length; i++){
-        this.stockDetails.push(item.spot_stock[i]);
+      const prevURL = window.location.href;
+      try {
+        let params;
+        let script_file_name;
+        let script_file_path;
+        if (item.type === '완제품'){
+          params = [
+            {
+              "product_table.product_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_product_thumbname_검색_24_05_09_12_05_UP0.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\product_thumbname_검색_24_05_09_12_06_FHY";
+        }else if (item.type === '반제품'){
+          params = [
+            {
+              "module_table.module_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_module_thumbnail_검색_24_05_09_12_09_X4X.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\module_thumbnail_검색_24_05_09_12_10_4PG";
+        }else {
+          params = [
+            {
+              "material_table.material_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_material_thumbnail_검색_24_05_09_12_12_AHK.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\material_thumbnail_검색_24_05_09_12_13_SAK";
+        }
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: params,
+          "script_file_name": script_file_name,
+          "script_file_path": script_file_path
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          let thumbnail = '';
+          if (result['data'].length > 0){
+            thumbnail = result['data'][0].thumbnail;
+          }
+          this.detailThumbnail = thumbnail;
+
+          this.detail_dialog = true;
+          this.stockDetails = JSON.parse(JSON.stringify(item.spot_stock));
+          this.stockDetails.forEach(data => {
+            data.stock_num = Number(data.stock_num).toLocaleString();
+          })
+        } else {
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
       }
-      this.stockDetails.forEach(data => {
-        data.stock_num = typeof data.stock_num === "number" ? Number(data.stock_num).toLocaleString() : data.stock_num ;
-      })
+      this.loading_dialog = false;
+
       if(type === 'product'){
         this.detailForProduct  = true;
       }else{
@@ -2981,7 +3087,7 @@ export default {
       }else {
         length = (spot_input.length/3)+1
       }
-      spot_input.push({label:'위치'+[length], column_name:'spot', type:'auto', list:['공장동 1층', '공장동 2층', '세종 사무실'], col:'12', sm:'4', lg:'4', value:''},)
+      spot_input.push({label:'위치'+[length], column_name:'spot', type:'auto', list: this.spot_list, col:'12', sm:'4', lg:'4', value:''},)
       spot_input.push( {label:'재고수량'+[length], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value:''},)
       spot_input.push( {label:'재고상태'+[length], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value:''},)
 

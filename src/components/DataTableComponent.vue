@@ -414,10 +414,10 @@
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-3">
                               <v-img
-                                alt="Pionelectric Logo"
+                                alt="thumbnail"
                                 class="shrink mr-2"
                                 contain
-                                :src="imageBinary(item.thumbnail)"
+                                :src="mux.Util.imageBinary(item.thumbnail)"
                                 transition="scale-transition"
                                 width="350"
                               />
@@ -606,10 +606,10 @@
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-3">
                               <v-img
-                                alt="Pionelectric Logo"
+                                alt="thumbnail"
                                 class="shrink mr-2"
                                 contain
-                                :src="imageBinary(data.thumbnail)"
+                                :src="mux.Util.imageBinary(data.thumbnail)"
                                 transition="scale-transition"
                                 width="150"
                               />
@@ -761,6 +761,7 @@ export default {
   },
   data() {
     return {
+      mux: mux,
       button_toggle: false,
       selected_data: this.value.slice(),
       addedHeaders: [],
@@ -848,16 +849,7 @@ export default {
         }
       }
     },
-    imageBinary(thumbnail){
-      if(thumbnail){
-        try {
-          let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
-          return imgURL
-        } catch{
-          return '';
-        }
-      }
-    },
+    
     saveUserAuthority(){
       this.$emit("changeAuthority", this.authority_list);
       // this.authority_list : 이 값은 현재 등록되어 있는 모든 그룹 리스트 (array)

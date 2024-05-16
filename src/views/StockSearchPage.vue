@@ -136,7 +136,7 @@
                 alt="thumbnail"
                 class="shrink mr-2"
                 contain
-                :src="imageBinary(detailThumbnail)"
+                :src="mux.Util.imageBinary(detailThumbnail)"
                 transition="scale-transition"
                 width="350"
               />
@@ -194,6 +194,7 @@ export default {
               },
   data(){
     return{
+      mux: mux,
       total_stock_num:0,
       total_stock_price:0,
       manufacturer_list:[],
@@ -258,16 +259,6 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    imageBinary(thumbnail){
-      if(thumbnail){
-        try {
-          let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
-          return imgURL
-        } catch{
-          return '';
-        }
-      }
-    },
     async detailInfoItem(item){
       const prevURL = window.location.href;
       try {
@@ -289,7 +280,7 @@ export default {
             }
           ];
           script_file_name = "rooting_module_thumbnail_검색_24_05_09_12_09_X4X.json";
-          script_file_path = "data_storage_pion\\json_sql\\stock\thumbnail_검색\\module_thumbnail_검색_24_05_09_12_10_4PG";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\module_thumbnail_검색_24_05_09_12_10_4PG";
         }else {
           params = [
             {
@@ -318,7 +309,7 @@ export default {
           this.detailThumbnail = thumbnail;
 
           this.detail_dialog = true;
-          this.stockDetails = item.spot_stock
+          this.stockDetails = JSON.parse(JSON.stringify(item.spot_stock));
           this.stockDetails.forEach(data => {
             data.stock_num = Number(data.stock_num).toLocaleString();
           })

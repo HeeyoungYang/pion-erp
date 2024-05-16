@@ -89,10 +89,10 @@
                             <v-list-item-subtitle>
                               제품이미지영역
                               <v-img
-                                alt="Pionelectric Logo"
+                                alt="thumbnail"
                                 class="shrink mr-2"
                                 contain
-                                :src="imageBinary(data.thumbnail)"
+                                :src="mux.Util.imageBinary(data.thumbnail)"
                                 transition="scale-transition"
                                 width="150"
                               />
@@ -166,19 +166,11 @@
           <v-col cols="12" :sm="detailForProduct ? 6 : 4" class="mb-3">
             <p class="text-h6 font-weight-bold primary--text">사진</p>
             <v-card class="pa-7 mt-5" color="grey lighten-3">
-              <!-- <v-img
-                alt="Pionelectric Logo"
-                class="shrink mr-2"
-                contain
-                :src="imageBinary(item.thumbnail)"
-                transition="scale-transition"
-                width="350"
-              /> -->
               <v-img
-                alt="Pionelectric Logo"
+                alt="thumbnail"
                 class="shrink"
                 contain
-                src="../assets/img/pion_logo.png"
+                :src="mux.Util.imageBinary(detailThumbnail)"
                 transition="scale-transition"
                 style="margin:0px auto; width:100%"
               />
@@ -248,9 +240,12 @@ export default {
   },
   data(){
     return{
+      mux: mux,
       detailForProduct: false,
       menu: false,
       detail_dialog: false,
+      loading_dialog: false,
+      detailThumbnail: '',
       productDetails:[],
       stockDetails:[],
       inboundDetails:[],
@@ -278,21 +273,80 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    detailInfoItem(item, type){
+    async detailInfoItem(item, type){
+      this.loading_dialog = true;
       this.productDetails= [];
       this.stockDetails= [];
       this.inboundDetails= [];
-      this.detail_dialog = true;
 
       this.productDetails.push({model:item.model, manufacturer:item.manufacturer, unit_price:item.unit_price })
 
-      // this.stockDetails = item.spot_stock
-      for(let i=0; i<item.spot_stock.length; i++){
-        this.stockDetails.push(item.spot_stock[i]);
+      const prevURL = window.location.href;
+      try {
+        let params;
+        let script_file_name;
+        let script_file_path;
+        if (item.type === '완제품'){
+          params = [
+            {
+              "product_table.product_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_product_thumbname_검색_24_05_09_12_05_UP0.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\product_thumbname_검색_24_05_09_12_06_FHY";
+        }else if (item.type === '반제품'){
+          params = [
+            {
+              "module_table.module_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_module_thumbnail_검색_24_05_09_12_09_X4X.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\module_thumbnail_검색_24_05_09_12_10_4PG";
+        }else {
+          params = [
+            {
+              "material_table.material_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_material_thumbnail_검색_24_05_09_12_12_AHK.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\material_thumbnail_검색_24_05_09_12_13_SAK";
+        }
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: params,
+          "script_file_name": script_file_name,
+          "script_file_path": script_file_path
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          let thumbnail = '';
+          if (result['data'].length > 0){
+            thumbnail = result['data'][0].thumbnail;
+          }
+          this.detailThumbnail = thumbnail;
+
+          this.detail_dialog = true;
+          this.stockDetails = JSON.parse(JSON.stringify(item.spot_stock));
+          this.stockDetails.forEach(data => {
+            data.stock_num = Number(data.stock_num).toLocaleString();
+          })
+        } else {
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
       }
-      this.stockDetails.forEach(data => {
-        data.stock_num = typeof data.stock_num === "number" ? Number(data.stock_num).toLocaleString() : data.stock_num ;
-      })
+      this.loading_dialog = false;
+
       if(type === 'product'){
         this.detailForProduct  = true;
       }else{
@@ -301,17 +355,6 @@ export default {
     },
     closeDetail () {
       this.detail_dialog = false
-    },
-
-    imageBinary(thumbnail){
-      if(thumbnail){
-        try {
-          let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
-          return imgURL
-        } catch{
-          return '';
-        }
-      }
     },
 
     async searchButton() {

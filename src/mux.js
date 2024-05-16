@@ -789,7 +789,16 @@ mux.Util = {
     return uint8Array;
   },
 
-
+  imageBinary(thumbnail){
+    if(thumbnail){
+      try {
+        let imgURL = mux.Util.binaryToURL(mux.Util.hexToUint8Array(thumbnail));
+        return imgURL
+      } catch{
+        return '';
+      }
+    }
+  },
 
   binaryToURL(binary){
     if (binary){
