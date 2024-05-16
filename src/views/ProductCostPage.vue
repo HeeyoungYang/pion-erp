@@ -5,6 +5,7 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
+      <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
       <v-tabs
         v-model="tab_main"
         background-color="transparent"
@@ -770,6 +771,7 @@ import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import CostTableComponent from "@/components/CostTableComponent";
+import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import mux from "@/mux";
 import ProductCostPageConfig from "@/configure/ProductCostPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
@@ -781,6 +783,7 @@ export default {
                 ModalDialogComponent,
                 DataTableComponent,
                 CostTableComponent,
+                LoadingModalComponent,
               },
   data(){
     return{
@@ -792,6 +795,7 @@ export default {
       tab_main: null,
       tab_search: null,
       tab_calculate: null,
+      loading_dialog: false,
       search_complete_product_code: '',
       search_complete_product_name: '',
       search_product_capacity: '',
@@ -1572,14 +1576,13 @@ export default {
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     async search(){
-      // const keyword = this.searching_product_name.trim();
-      // console.log('keyword :>> ', keyword);
-
+      
+      this.loading_dialog = true;
       let searchResult;
 
       let searchProductName = this.searching_product_name;
       if (searchProductName)
-      searchProductName = searchProductName.trim();
+      searchProductName = searchProductName ? searchProductName.trim() : "";
 
       const prevURL = window.location.href;
       try {
@@ -1613,22 +1616,100 @@ export default {
         else
           alert(error);
       }
-
+      this.loading_dialog = false;
 
 
       this.clearClicked();
       this.searchDataCalcProcess(searchResult, true);
 
     },
-    searchProduct(){
-      // const product_code = this.search_complete_product_code.trim();
-      // const product_name = this.search_complete_product_name.trim();
-      // const product_capacity = this.search_product_capacity.trim();
+    async searchProduct(){
+      this.loading_dialog = true;
+      const product_code = this.search_complete_product_code ? this.search_complete_product_code.trim() : "";
+      const product_name = this.search_complete_product_name ? this.search_complete_product_name.trim() : "";
+      const product_capacity = this.search_product_capacity ? this.search_product_capacity.trim() : "";
       // console.log(`${product_code} / ${product_name} / ${product_capacity}`);
 
-      const searchResult = ProductCostPageConfig.dialog_search_product_data;
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+              {
+                "product_table.product_code": product_code,
+                "product_table.name": product_name,
+                "product_table.spec": product_capacity
+              }
+          ],
+          "script_file_name": "rooting_완제품_검색_24_05_01_12_44_A0W.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_01_12_45_GC6"
+        });
+        if (prevURL !== window.location.href) return;
 
-      this.dialog_search_product_data = searchResult;
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          this.dialog_search_product_data = result['data'];
+          this.dialog_search_product_data.forEach(data =>{
+            data.product_code = data.code;
+            delete data.code;
+            data.complete_product_name = data.name;
+            delete data.name;
+            data.product_model = data.model;
+            delete data.model;
+            data.product_spec = data.spec;
+            delete data.spec;
+            data.unit_price = data.unit_price.toLocaleString();
+
+            if(data.belong_data){
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].cost_list = data.belong_data[b].name;
+                data.belong_data[b].cost_unit = 'SET';
+                data.belong_data[b].cost_num = data.belong_data[b].num;
+                data.belong_data[b].cost_unit_price = data.belong_data[b].unit_price;
+                
+                // data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
+                if(data.belong_data[b].belong_data){
+                  delete data.belong_data[b].belong_data;
+                }
+              }
+            }
+            // let stock_calc = 0;
+            // if (data.spot_stock){
+            //   for(let d=0; d<data.spot_stock.length; d++){
+            //     if (typeof data.spot_stock[d].stock_num === 'number'){
+            //       stock_calc += data.spot_stock[d].stock_num;
+            //     }
+            //   }
+            // }
+            // data.total_stock = stock_calc
+            // if (typeof data.unit_price === 'number'){
+            //   data.item_price = data.unit_price * data.total_stock
+            //   data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+            // }else {
+            //   data.item_price = 0;
+            // }
+            // // this.total_stock_num += data.total_stock
+            // // this.total_stock_price += data.item_price
+          })
+        }else{
+          if (prevURL !== window.location.href) return;
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        // console.error(error);
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+      }
+      this.loading_dialog = false;
+      // const searchResult = ProductCostPageConfig.dialog_search_product_data;
+
+      // this.dialog_search_product_data = searchResult;
     },
     searchDataCalcProcess(searchResult, isFirst){
       const productTotalCost = searchResult.product_cost_calc_detail.reduce((a,b)=>{
@@ -2349,14 +2430,14 @@ export default {
                 product_code: this.dialog_selected_product_data.product_code,
                 product_name: this.dialog_selected_product_data.complete_product_name,
                 product_spec: this.dialog_selected_product_data.product_spec,
-                module_name: data.type === 'module' ? data.cost_list : '',
-                module_num: data.type === 'module' ? data.cost_num : 0,
-                module_unit_price: data.type === 'module' ? data.cost_unit_price : '',
-                material_name: data.type === 'material' ? data.cost_list : '',
-                material_num: data.type === 'material' ? data.cost_num : 0,
-                material_unit_price: data.type === 'material' ? data.cost_unit_price : ''
+                module_name: data.type === '반제품' ? data.cost_list : '',
+                module_num: data.type === '반제품' ? data.cost_num : 0,
+                module_unit_price: data.type === '반제품' ? data.cost_unit_price : '',
+                material_name: data.type === '원부자재' ? data.cost_list : '',
+                material_num: data.type === '원부자재' ? data.cost_num : 0,
+                material_unit_price: data.type === '원부자재' ? data.cost_unit_price : ''
               },
-              "select_where": {"cost_calc_code": new_cost_calc_code, "module_name": data.type === 'module' ? data.cost_list : '', "material_name": data.type === 'material' ? data.cost_list : ''},
+              "select_where": {"cost_calc_code": new_cost_calc_code, "module_name": data.type === '반제품' ? data.cost_list : '', "material_name": data.type === '원부자재' ? data.cost_list : ''},
               "rollback": "yes"
             });
           });
