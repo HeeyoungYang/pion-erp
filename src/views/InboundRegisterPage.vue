@@ -36,6 +36,7 @@
               filled
               hide-details
               :inputs="searchCardInputs"
+              @enter="searchProduct"
               v-if="select_product"
             >
               <v-col
@@ -59,7 +60,8 @@
                 >추가</v-btn>
               </v-col>
               <v-col cols="12">
-                <DataTableComponent
+                <v-data-table
+                  class="elevation-1"
                   dense
                   v-model="selected_product_data"
                   :headers="product_search_headers"
@@ -219,9 +221,9 @@
                             dense
                             hide-details
                             filled
-                            type="number"
                             style="max-width:150px"
                             v-model="item.inbound_num"
+                            :oninput="!item.inbound_num ? '' : item.inbound_num = item.inbound_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                           >
                           </v-text-field>
                         </td>
@@ -543,6 +545,8 @@ export default {
       product_inbound_data: [],
       product_inbound_data_added: [],
       member_type_index:0,
+      receiving_inspection_value:'',
+      inspection_report_value:'',
       type_list:InboundRegisterPageConfig.type_list,
       inbound_member_info:InboundRegisterPageConfig.inbound_member_info,
       inbound_confirmation_data: InboundRegisterPageConfig.inbound_confirmation_data,
@@ -652,7 +656,7 @@ export default {
               "product_table.manufacturer": searchManufacturer ? searchManufacturer : "",
               "product_table.model": searchModelName ? searchModelName : "",
               "product_table.name": searchProductName ? searchProductName : "",
-              "product_table._code": searchProductCode ? searchProductCode : "",
+              "product_table.product_code": searchProductCode ? searchProductCode : "",
               "product_table.spec": searchProductSpec ? searchProductSpec : "",
               "product_table.type": searchType ? searchType : "",
 
@@ -828,24 +832,33 @@ export default {
         data.spot = this.set_spot_selected
       })
     },
-    inboundApprovalRequest(){
+    async inboundApprovalRequest(){
       let inbound_input = this.inboundCardInfoInputs;
       let member_input = this.inbound_member_info;
       let item = this.inbound_confirmation_data;
       let success = true;
       const validate = this.$refs.inboundForm.validate();
       if(validate){
-        inbound_input.forEach(async data => {
+        inbound_input.forEach(data => {
           for(let i=0; i<Object.keys(item).length; i++){
             if(data.column_name == Object.keys(item)[i]){
               if(data.type == 'file'){
                 if(data.value){
-                  item[Object.keys(item)[i]] = data.value.name;
-                    if(data.column_name === 'receiving_inspection' || data.column_name === 'inspection_report'){
-                      const getPdfThumbnail = await mux.Util.getPdfThumbnail(data.value, 1, true, 1000, 1000);
-                      item[data.column_name + "_thumbnail"] = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
-                      console.log(data.column_name + "_thumbnail :>> " + item[data.column_name + "_thumbnail"]);
+                  if(data.column_name === 'files'){
+                    for(let f=0; f<data.value.length; f++){
+                      if(f === 0){
+                        item[Object.keys(item)[i]] = data.value[f].name
+                      }else{
+                        item[Object.keys(item)[i]] = item[Object.keys(item)[i]]+"/"+data.value[f].name
+                      }
                     }
+                  }else if(data.column_name === 'receiving_inspection'){
+                    this.receiving_inspection_value = data.value
+                    item[Object.keys(item)[i]] = data.value.name;
+                  }else if(data.column_name === 'inspection_report'){
+                    this.inspection_report_value = data.value
+                    item[Object.keys(item)[i]] = data.value.name;
+                  }
                 }else{
                   item[Object.keys(item)[i]] = '';
                 }
@@ -857,11 +870,26 @@ export default {
         })
         item.inbound_date = (this.inbound_date_set === "" ? mux.Date.format(this.today, 'yyyy-MM-dd') : this.inbound_date_set);
         item.creater = this.login_id;
+        item.code = item.order_code + ":" + mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss.fff');
         if(this.add_self){
           item.add_data = "직접기입형"
         }else{
           item.add_data = "선택형"
         }
+
+
+        let receiving_inspection_thumbnail = 'NULL';
+        let inspection_report_thumbnail = 'NULL';
+        if(this.receiving_inspection_value){
+          const getPdfThumbnail = await mux.Util.getPdfThumbnail(this.receiving_inspection_value, 1, true, 500, 500);
+          receiving_inspection_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+        }
+        if(this.inspection_report_value){
+          const getPdfThumbnail = await mux.Util.getPdfThumbnail(this.inspection_report_value, 1, true, 500, 500);
+          inspection_report_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+        }
+
+        console.log(item);
 
         let empty_member = [];
         member_input.forEach(mem => {
@@ -873,7 +901,7 @@ export default {
               item.checker_id = mem.user_id;
               if(item.checker_id == this.login_id){
                 item.approval_phase = '미승인';
-                item.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd');
+                item.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
               }else{
                 item.approval_phase = '미확인';
                 item.checked_date = "";
@@ -923,10 +951,98 @@ export default {
 
         if(success == true){
           this.loading_dialog = true;
-          console.log('입고 정보 : ' + JSON.stringify(item));
-          console.log('입고 제품 : ' + JSON.stringify(inbound_product_data));
+          // console.log('입고 정보 : ' + JSON.stringify(item));
+          // console.log('입고 제품 : ' + JSON.stringify(inbound_product_data));
+
+          let sendData = {
+            "inbound_confirmation_table-insert": [{
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "code" : this.inbound_confirmation_data.code,
+                "inbound_date": this.inbound_confirmation_data.inbound_date,
+                "order_code" : this.inbound_confirmation_data.order_code,
+                "project_code" : this.inbound_confirmation_data.project_code,
+                "purchase_manager" : this.inbound_confirmation_data.purchase_manager,
+                "material_manager" : this.inbound_confirmation_data.material_manager,
+                "abnormal_reason" : this.inbound_confirmation_data.abnormal_reason,
+                "approval_phase": this.inbound_confirmation_data.approval_phase,
+                "checker" : this.inbound_confirmation_data.checker,
+                "checker_id" : this.inbound_confirmation_data.checker_id,
+                "checked_date" : this.inbound_confirmation_data.checked_date,
+                "approver" : this.inbound_confirmation_data.approver,
+                "approver_id" : this.inbound_confirmation_data.approver_id,
+                "receiving_inspection_file" : this.inbound_confirmation_data.receiving_inspection,
+                "receiving_inspection_thumbnail" : receiving_inspection_thumbnail,
+                "inspection_report_file" : this.inbound_confirmation_data.inspection_report,
+                "inspection_report_thumbnail" : inspection_report_thumbnail,
+                "files" : this.inbound_confirmation_data.files,
+                "note" : this.inbound_confirmation_data.note,
+                "add_data": this.inbound_confirmation_data.add_data
+              },
+              "select_where": {"code": this.inbound_confirmation_data.code},
+              "rollback": "yes"
+            }]
+          };
+
+          let product_data = [];
+          inbound_product_data.forEach(data =>{
+            product_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "code" : this.inbound_confirmation_data.code,
+                "type" : data.type,
+                "classification" : data.classification,
+                "product_code" : data._code,
+                "name" : data.name,
+                "inbound_num" : data.inbound_num.replace(/,/g,''),
+                "spot" : data.spot,
+                "spec" : data.spec,
+                "model" : data.model,
+                "manufacturer" : data.manufacturer,
+                "unit_price" : data.unit_price.replace(/,/g,'').replace(/₩ /g,''),
+                "ship_code" : data.ship_code,
+              },
+              "select_where": {"code": this.inbound_confirmation_data.code},
+              "rollback": "yes"
+            });
+          });
+          sendData["inbound_product_table-insert"] = product_data;
+
+
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              params: sendData
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            if(result['code'] == 0){
+              // console.log('result :>> ', result);
+              alert('입고 승인 요청이 완료되었습니다');
+              this.receiving_inspection_value = '';
+              this.inspection_report_value = '';
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              alert(error.response['data']['failed_info'].msg);
+            else
+              alert(error);
+          }
           this.loading_dialog = false;
-          alert('요청이 완료되었습니다.');
         }
       }
     },
@@ -982,8 +1098,13 @@ export default {
     },
     applyToInboundData(){
       this.product_inbound_data[this.inbound_index].belong_data = [];
-      this.ship_selected_data.forEach(data => {
+      this.ship_selected_data.forEach((data, index) => {
         this.product_inbound_data[this.inbound_index].belong_data.push(data);
+        if(index === 0){
+          this.product_inbound_data[this.inbound_index].ship_code = data.code
+        }else{
+          this.product_inbound_data[this.inbound_index].ship_code = this.product_inbound_data.ship_code + "/" + data.ship_code
+        }
       })
       this.close();
     }

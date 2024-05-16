@@ -7,8 +7,8 @@ import Vue from 'vue';
 import VueCookies from 'vue-cookies';
 import html2pdf from 'html2pdf.js' // npm install html2pdf.js
 import * as pdfjsLib from 'pdfjs-dist/build/pdf.js'; // npm install pdfjs-dist@3.11.174
-// pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.js`
-pdfjsLib.GlobalWorkerOptions.workerSrc = `@/../node_modules/pdfjs-dist/build/pdf.worker.js`
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.js`
+// pdfjsLib.GlobalWorkerOptions.workerSrc = `@/../node_modules/pdfjs-dist/build/pdf.worker.js`
 
 Vue.use(VueCookies);
 
