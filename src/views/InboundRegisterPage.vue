@@ -36,6 +36,7 @@
               filled
               hide-details
               :inputs="searchCardInputs"
+              @enter="searchProduct"
               v-if="select_product"
             >
               <v-col
@@ -655,7 +656,7 @@ export default {
               "product_table.manufacturer": searchManufacturer ? searchManufacturer : "",
               "product_table.model": searchModelName ? searchModelName : "",
               "product_table.name": searchProductName ? searchProductName : "",
-              "product_table._code": searchProductCode ? searchProductCode : "",
+              "product_table.product_code": searchProductCode ? searchProductCode : "",
               "product_table.spec": searchProductSpec ? searchProductSpec : "",
               "product_table.type": searchType ? searchType : "",
 

@@ -333,7 +333,7 @@ export default {
         else
           alert(error);
       }
-      
+
     },
     closeDetail () {
       this.detail_dialog = false
@@ -354,7 +354,7 @@ export default {
         searchClassification = '%';
       let searchConditions = this.searchCardInputs.find(x=>x.label === '상태').value;
       if (searchConditions === 'All')
-        searchConditions = '';
+        searchConditions = '%';
       let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
       if (searchProductCode)
       searchProductCode = searchProductCode.trim();
