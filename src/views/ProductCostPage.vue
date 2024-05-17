@@ -832,383 +832,21 @@ export default {
 
       ],
 
-      calc_cost_detail_data: [
-        {
-          cost_list: '재료비',
-          cost_list_colspan: 4,
-
-          belong_data: []
-        },
-        {
-          cost_list: '노무비',
-          cost_list_colspan: 4,
-          belong_data: [
-            {
-              cost_list: '가. 직접 노무비',
-              cost_list_colspan: 4,
-              belong_data: []
-            },
-            {
-              cost_list: '나. 간접 노무비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            }
-          ]
-        },
-        {
-          cost_list: '경비',
-          cost_list_colspan: 4,
-          belong_data: [
-            {
-              cost_list: '가. 고용보험료',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '나. 공구손료',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '다. 여비교통 통신비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '라. 산재보험료',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '마. 세금과공과',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '바. 복리후생비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '사. 퇴직공제 부금비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '아. 소모품비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 	0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '자. 산업안전보건관리비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            }
-          ]
-        },
-        {
-          cost_list: '일반관리비',
-          cost_unit: '식',
-          cost_num: 1,
-          cost_unit_price: 0,
-          cost_num_editable: true,
-          allow_edit_decimal_point: true,
-          belong_data: [
-            {
-              cost_list: '',
-              cost_list_colspan: 5
-            }
-          ]
-        },
-        {
-          cost_list: '이윤',
-          cost_unit: '식',
-          cost_num: 1,
-          cost_num_editable: true,
-          allow_edit_decimal_point: true,
-          cost_unit_price: 0,
-          belong_data: [
-            {
-              cost_list: '',
-              cost_list_colspan: 5
-            }
-          ]
-        }
-
-      ],
-
-
-      calc_cost_detail_data2: [
-        {
-          cost_list: '재료비',
-          cost_list_colspan: 4,
-          costListBtn: {
+      calc_cost_detail_data: ProductCostPageConfig.calc_cost_detail_data,
+      calc_cost_detail_data2: JSON.parse(JSON.stringify(ProductCostPageConfig.calc_cost_detail_data)).map(x => {
+        if (x.cost_list === '재료비') {
+          x.costListBtn = {
             text: '제품 불러오기',
             click: ()=>{this.dialog_search_product = true}
-          },
-          belong_data: []
-        },
-        {
-          cost_list: '노무비',
-          cost_list_colspan: 4,
-          belong_data: [
-            {
-              cost_list: '가. 직접 노무비',
-              cost_list_colspan: 4,
-              costListBtn: {
-                text: '산출',
-                click: ()=>{this.dialog_calculate_labor = true}
-              },
-              belong_data: [
-
-              ]
-            },
-            {
-              cost_list: '나. 간접 노무비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            }
-          ]
-        },
-        {
-          cost_list: '경비',
-          cost_list_colspan: 4,
-          belong_data: [
-            {
-              cost_list: '가. 고용보험료',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '나. 공구손료',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '다. 여비교통 통신비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '라. 산재보험료',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '마. 세금과공과',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '바. 복리후생비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '사. 퇴직공제 부금비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '아. 소모품비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 	0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            },
-            {
-              cost_list: '자. 산업안전보건관리비',
-              cost_unit: '식',
-              cost_num: 1,
-              cost_num_editable: true,
-              cost_unit_price: 0,
-              belong_data: [
-                {
-                  cost_list: '',
-                  cost_list_colspan: 5
-                }
-              ]
-            }
-          ]
-        },
-        {
-          cost_list: '일반관리비',
-          cost_unit: '식',
-          cost_num: 1,
-          cost_unit_price: 0,
-          cost_num_editable: true,
-          allow_edit_decimal_point: true,
-          belong_data: [
-            {
-              cost_list: '',
-              cost_list_colspan: 5
-            }
-          ]
-        },
-        {
-          cost_list: '이윤',
-          cost_unit: '식',
-          cost_num: 1,
-          cost_num_editable: true,
-          allow_edit_decimal_point: true,
-          cost_unit_price: 0,
-          belong_data: [
-            {
-              cost_list: '',
-              cost_list_colspan: 5
-            }
-          ]
+          }
+        }else if (x.cost_list === '노무비') {
+          x.belong_data[0].costListBtn = {
+            text: '산출',
+            click: ()=>{this.dialog_calculate_labor = true}
+          }
         }
-
-      ],
+        return x;
+      }),
 
       labor_cost_data: [],
       merged_labor_cost_data: [],
@@ -1276,13 +914,17 @@ export default {
     }
   },
 
+  created () {
+    this.initialize()
+  },
+  
   watch: {
     // 노무비 Dialog show and hide
     dialog_calculate_labor(show) {
       if(this.tab_main === 0){
         if(show){
-          this.labor_data = ProductCostPageConfig.labor_data;
-          this.labor_occupation_data = ProductCostPageConfig.labor_occupation_data;
+          this.labor_data = ProductCostPageConfig.labor_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
+          this.labor_occupation_data = ProductCostPageConfig.labor_occupation_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
 
           this.origin_labor_cost_data = JSON.parse(JSON.stringify(this.labor_cost_data));
         }else {
@@ -1498,73 +1140,6 @@ export default {
 
   async mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
-    // console.log('this.$cookies.keys() :>> ', this.$cookies.keys());
-    // console.log('this.$configJson.cookies.name.key :>> ', this.$configJson.cookies.name.key);
-    // console.log('this.$cookies.get(this.$configJson.cookies.name.key) :>> ', this.$cookies.get(this.$configJson.cookies.name.key));
-    this.username = this.$cookies.get(this.$configJson.cookies.name.key);
-    // console.log('this.username :>> ', this.username);
-    this.todayDate = mux.Date.format(new Date(), 'yyyy-MM-dd');
-    // const prevURL = window.location.href;
-    // try {
-    //   const current_data = await mux.Server.get({path:'/product-cost/'});
-    //   if (prevURL !== window.location.href) return;
-    //   this.new_indirect_labor_ratio = current_data.cost_ratio.find(x=> x.type === '간접 노무비').ratio;
-    //   this.new_indirect_labor_formula = current_data.cost_ratio.find(x=> x.type === '간접 노무비').formula;
-    //   this.new_employment_insurance_ratio = current_data.cost_ratio.find(x=> x.type === '고용보험료').ratio;
-    //   this.new_employment_insurance_formula = current_data.cost_ratio.find(x=> x.type === '고용보험료').formula;
-    //   this.new_tool_rent_fee_ratio = current_data.cost_ratio.find(x=> x.type === '공구손료').ratio;
-    //   this.new_tool_rent_fee_formula = current_data.cost_ratio.find(x=> x.type === '공구손료').formula;
-    //   this.new_transportation_fee_ratio = current_data.cost_ratio.find(x=> x.type === '여비교통 통신비').ratio;
-    //   this.new_transportation_fee_formula = current_data.cost_ratio.find(x=> x.type === '여비교통 통신비').formula;
-    //   this.new_industrial_accident_ratio = current_data.cost_ratio.find(x=> x.type === '산재보험료').ratio;
-    //   this.new_industrial_accident_formula = current_data.cost_ratio.find(x=> x.type === '산재보험료').formula;
-    //   this.new_taxes_dues_ratio = current_data.cost_ratio.find(x=> x.type === '세금과공과').ratio;
-    //   this.new_taxes_dues_formula = current_data.cost_ratio.find(x=> x.type === '세금과공과').formula;
-    //   this.new_welfare_benefits_ratio = current_data.cost_ratio.find(x=> x.type === '복리후생비').ratio;
-    //   this.new_welfare_benefits_formula = current_data.cost_ratio.find(x=> x.type === '복리후생비').formula;
-    //   this.new_retirement_ratio = current_data.cost_ratio.find(x=> x.type === '퇴직공제 부금비').ratio;
-    //   this.new_retirement_formula = current_data.cost_ratio.find(x=> x.type === '퇴직공제 부금비').formula;
-    //   this.new_expendables_ratio = current_data.cost_ratio.find(x=> x.type === '소모품비').ratio;
-    //   this.new_expendables_formula = current_data.cost_ratio.find(x=> x.type === '소모품비').formula;
-    //   this.new_industrial_safety_ratio = current_data.cost_ratio.find(x=> x.type === '산업안전보건관리비').ratio;
-    //   this.new_industrial_safety_formula = current_data.cost_ratio.find(x=> x.type === '산업안전보건관리비').formula;
-    //   this.new_normal_maintenance_fee_ratio = current_data.cost_ratio.find(x=> x.type === '일반관리비').ratio;
-    //   this.new_normal_maintenance_fee_formula = current_data.cost_ratio.find(x=> x.type === '일반관리비').formula;
-    //   this.new_profite_ratio = current_data.cost_ratio.find(x=> x.type === '이윤').ratio;
-    //   this.new_profite_formula = current_data.cost_ratio.find(x=> x.type === '이윤').formula;
-    // } catch (error) {
-    //   if (prevURL !== window.location.href) return;
-    //   alert(error);
-    // }
-
-    this.labor_list = ProductCostPageConfig.labor_list;
-    this.labor_occupation_list = ProductCostPageConfig.labor_occupation_list;
-
-    // set num
-    this.calc_cost_detail_data_employment_insurance2.cost_num = this.new_employment_insurance_num;
-    this.calc_cost_detail_data_tool_rent_fee2.cost_num = this.new_tool_rent_fee_num;
-    this.calc_cost_detail_data_transportation_fee2.cost_num = this.new_transportation_fee_num;
-    this.calc_cost_detail_data_industrial_accident2.cost_num = this.new_industrial_accident_num;
-    this.calc_cost_detail_data_taxes_dues2.cost_num = this.new_taxes_dues_num;
-    this.calc_cost_detail_data_welfare_benefits2.cost_num = this.new_welfare_benefits_num;
-    this.calc_cost_detail_data_retirement2.cost_num = this.new_retirement_num;
-    this.calc_cost_detail_data_expendables2.cost_num = this.new_expendables_num;
-    this.calc_cost_detail_data_industrial_safety2.cost_num = this.new_industrial_safety_num;
-    this.calc_cost_detail_data_normal_maintenance_fee2.cost_num = this.new_normal_maintenance_fee_num;
-    this.calc_cost_detail_data_profite2.cost_num = this.new_profite_num;
-    // set formula
-    this.calc_cost_detail_data_indirect_labor2.belong_data[0].cost_list = ' - ' + this.new_indirect_labor_formula;
-    this.calc_cost_detail_data_employment_insurance2.belong_data[0].cost_list = ' - ' + this.new_employment_insurance_formula;
-    this.calc_cost_detail_data_tool_rent_fee2.belong_data[0].cost_list = ' - ' + this.new_tool_rent_fee_formula;
-    this.calc_cost_detail_data_transportation_fee2.belong_data[0].cost_list = ' - ' + this.new_transportation_fee_formula;
-    this.calc_cost_detail_data_industrial_accident2.belong_data[0].cost_list = ' - ' + this.new_industrial_accident_formula;
-    this.calc_cost_detail_data_taxes_dues2.belong_data[0].cost_list = ' - ' + this.new_taxes_dues_formula;
-    this.calc_cost_detail_data_welfare_benefits2.belong_data[0].cost_list = ' - ' + this.new_welfare_benefits_formula;
-    this.calc_cost_detail_data_retirement2.belong_data[0].cost_list = ' - ' + this.new_retirement_formula;
-    this.calc_cost_detail_data_expendables2.belong_data[0].cost_list = ' - ' + this.new_expendables_formula;
-    this.calc_cost_detail_data_industrial_safety2.belong_data[0].cost_list = ' - ' + this.new_industrial_safety_formula;
-    this.calc_cost_detail_data_normal_maintenance_fee2.belong_data[0].cost_list = ' - ' + this.new_normal_maintenance_fee_formula;
-    this.calc_cost_detail_data_profite2.belong_data[0].cost_list = ' - ' + this.new_profite_formula;
   },
 
   methods: {
@@ -1575,6 +1150,109 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
+
+    async initialize (){
+      this.username = this.$cookies.get(this.$configJson.cookies.name.key);
+      this.todayDate = mux.Date.format(new Date(), 'yyyy-MM-dd');
+
+      this.loading_dialog = true;
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+            {}
+          ],
+          "script_file_name": "rooting_원가_페이지_진입_24_05_16_09_21_B9L.json",
+          "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_페이지_진입_24_05_16_09_21_UAC"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          console.log(result);
+          const searchResult = result.data;
+          // const searchResult = ProductCostPageConfig.search_result;
+          this.new_indirect_labor_ratio = searchResult.cost_ratio.find(x=> x.type === '간접 노무비').ratio;
+          this.new_indirect_labor_formula = searchResult.cost_ratio.find(x=> x.type === '간접 노무비').formula;
+          this.new_employment_insurance_ratio = searchResult.cost_ratio.find(x=> x.type === '고용보험료').ratio;
+          this.new_employment_insurance_formula = searchResult.cost_ratio.find(x=> x.type === '고용보험료').formula;
+          this.new_tool_rent_fee_ratio = searchResult.cost_ratio.find(x=> x.type === '공구손료').ratio;
+          this.new_tool_rent_fee_formula = searchResult.cost_ratio.find(x=> x.type === '공구손료').formula;
+          this.new_transportation_fee_ratio = searchResult.cost_ratio.find(x=> x.type === '여비교통 통신비').ratio;
+          this.new_transportation_fee_formula = searchResult.cost_ratio.find(x=> x.type === '여비교통 통신비').formula;
+          this.new_industrial_accident_ratio = searchResult.cost_ratio.find(x=> x.type === '산재보험료').ratio;
+          this.new_industrial_accident_formula = searchResult.cost_ratio.find(x=> x.type === '산재보험료').formula;
+          this.new_taxes_dues_ratio = searchResult.cost_ratio.find(x=> x.type === '세금과공과').ratio;
+          this.new_taxes_dues_formula = searchResult.cost_ratio.find(x=> x.type === '세금과공과').formula;
+          this.new_welfare_benefits_ratio = searchResult.cost_ratio.find(x=> x.type === '복리후생비').ratio;
+          this.new_welfare_benefits_formula = searchResult.cost_ratio.find(x=> x.type === '복리후생비').formula;
+          this.new_retirement_ratio = searchResult.cost_ratio.find(x=> x.type === '퇴직공제 부금비').ratio;
+          this.new_retirement_formula = searchResult.cost_ratio.find(x=> x.type === '퇴직공제 부금비').formula;
+          this.new_expendables_ratio = searchResult.cost_ratio.find(x=> x.type === '소모품비').ratio;
+          this.new_expendables_formula = searchResult.cost_ratio.find(x=> x.type === '소모품비').formula;
+          this.new_industrial_safety_ratio = searchResult.cost_ratio.find(x=> x.type === '산업안전보건관리비').ratio;
+          this.new_industrial_safety_formula = searchResult.cost_ratio.find(x=> x.type === '산업안전보건관리비').formula;
+          this.new_normal_maintenance_fee_ratio = searchResult.cost_ratio.find(x=> x.type === '일반관리비').ratio;
+          this.new_normal_maintenance_fee_formula = searchResult.cost_ratio.find(x=> x.type === '일반관리비').formula;
+          this.new_profite_ratio = searchResult.cost_ratio.find(x=> x.type === '이윤').ratio;
+          this.new_profite_formula = searchResult.cost_ratio.find(x=> x.type === '이윤').formula;
+
+          this.labor_list = searchResult.labor_cost;
+
+          this.labor_occupation_list = searchResult.labor_current_unit_price.map(x => {
+            x.name = x.occupation;
+            delete x.occupation;
+            return x;
+          });
+        }else{
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+      }
+      this.loading_dialog = false;
+
+      this.labor_list = ProductCostPageConfig.labor_list;
+      this.labor_occupation_list = ProductCostPageConfig.labor_occupation_list;
+
+      // set num
+      this.calc_cost_detail_data_employment_insurance2.cost_num = this.new_employment_insurance_num;
+      this.calc_cost_detail_data_tool_rent_fee2.cost_num = this.new_tool_rent_fee_num;
+      this.calc_cost_detail_data_transportation_fee2.cost_num = this.new_transportation_fee_num;
+      this.calc_cost_detail_data_industrial_accident2.cost_num = this.new_industrial_accident_num;
+      this.calc_cost_detail_data_taxes_dues2.cost_num = this.new_taxes_dues_num;
+      this.calc_cost_detail_data_welfare_benefits2.cost_num = this.new_welfare_benefits_num;
+      this.calc_cost_detail_data_retirement2.cost_num = this.new_retirement_num;
+      this.calc_cost_detail_data_expendables2.cost_num = this.new_expendables_num;
+      this.calc_cost_detail_data_industrial_safety2.cost_num = this.new_industrial_safety_num;
+      this.calc_cost_detail_data_normal_maintenance_fee2.cost_num = this.new_normal_maintenance_fee_num;
+      this.calc_cost_detail_data_profite2.cost_num = this.new_profite_num;
+      // set formula
+      this.calc_cost_detail_data_indirect_labor2.belong_data[0].cost_list = ' - ' + this.new_indirect_labor_formula;
+      this.calc_cost_detail_data_employment_insurance2.belong_data[0].cost_list = ' - ' + this.new_employment_insurance_formula;
+      this.calc_cost_detail_data_tool_rent_fee2.belong_data[0].cost_list = ' - ' + this.new_tool_rent_fee_formula;
+      this.calc_cost_detail_data_transportation_fee2.belong_data[0].cost_list = ' - ' + this.new_transportation_fee_formula;
+      this.calc_cost_detail_data_industrial_accident2.belong_data[0].cost_list = ' - ' + this.new_industrial_accident_formula;
+      this.calc_cost_detail_data_taxes_dues2.belong_data[0].cost_list = ' - ' + this.new_taxes_dues_formula;
+      this.calc_cost_detail_data_welfare_benefits2.belong_data[0].cost_list = ' - ' + this.new_welfare_benefits_formula;
+      this.calc_cost_detail_data_retirement2.belong_data[0].cost_list = ' - ' + this.new_retirement_formula;
+      this.calc_cost_detail_data_expendables2.belong_data[0].cost_list = ' - ' + this.new_expendables_formula;
+      this.calc_cost_detail_data_industrial_safety2.belong_data[0].cost_list = ' - ' + this.new_industrial_safety_formula;
+      this.calc_cost_detail_data_normal_maintenance_fee2.belong_data[0].cost_list = ' - ' + this.new_normal_maintenance_fee_formula;
+      this.calc_cost_detail_data_profite2.belong_data[0].cost_list = ' - ' + this.new_profite_formula;
+
+    },
+
+
     async search(){
       
       this.loading_dialog = true;
