@@ -326,7 +326,7 @@ export default {
         else
           alert(error);
       }
-      
+
     },
     closeDetail () {
       this.detail_dialog = false
@@ -389,8 +389,8 @@ export default {
                     "stock_table.stock_num": searchStockMoreZero
                 }
             ],
-            "script_file_name": "rooting_반제품_검색_24_05_01_12_50_9BS.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\6_반제품_검색\\반제품_검색_24_05_01_12_50_CZR"
+            "script_file_name": "rooting_반제품_검색_24_05_16_13_23_FD4.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\6_반제품_검색\\반제품_검색_24_05_16_13_24_YJO"
         });
         if (prevURL !== window.location.href) return;
 

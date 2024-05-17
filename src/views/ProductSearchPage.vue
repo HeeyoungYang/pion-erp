@@ -382,8 +382,8 @@ export default {
                 "product_table.spec": searchSpec ? searchSpec : ""
               }
           ],
-          "script_file_name": "rooting_완제품_검색_24_05_01_12_44_A0W.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_01_12_45_GC6"
+          "script_file_name": "rooting_완제품_검색_24_05_16_13_52_1IN.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ"
         });
         if (prevURL !== window.location.href) return;
 

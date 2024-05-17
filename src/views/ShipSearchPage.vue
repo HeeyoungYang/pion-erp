@@ -248,8 +248,8 @@ export default {
               "ship_confirmation_table.project_code": searchProjectCode ? searchProjectCode : ""
             }
           ],
-          "script_file_name": "rooting_출하_검색_24_05_14_12_36_FYX.json",
-          "script_file_path": "data_storage_pion\\json_sql\\ship\\출하_검색_24_05_14_12_36_0ZZ"
+          "script_file_name": "rooting_출하_검색_24_05_16_14_36_HLN.json",
+          "script_file_path": "data_storage_pion\\json_sql\\ship\\출하_검색_24_05_16_14_36_JQJ"
         });
         if (prevURL !== window.location.href) return;
 
