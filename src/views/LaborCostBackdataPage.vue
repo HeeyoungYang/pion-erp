@@ -5,6 +5,7 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
+      <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
       <v-row justify="center">
         <v-col cols="12" sm="8">
           <v-tabs
@@ -223,6 +224,7 @@ import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LaborCostBackDataPageConfig from "@/configure/LaborCostBackDataPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import mux from "@/mux";
+import LoadingModalComponent from "@/components/LoadingModalComponent";
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=LaborCostBackdataPage')],
@@ -234,6 +236,7 @@ export default {
     ModalDialogComponent,
     DataTableComponent,
     InputsFormComponent,
+    LoadingModalComponent
   },
   data() {
     return {
@@ -320,6 +323,21 @@ export default {
     // wageDialogDelete (val) {
     //   val || this.closeDelete()
     // },
+    wage_data: {
+      handler(val) {
+        if (!val){
+          this.wage_data = [];
+        }
+        this.occupation_list = [];
+        this.occupation_list.push('All');
+        for(let d=0; d<this.wage_data.length; d++){
+          this.occupation_list.push(this.wage_data[d].occupation)
+        }
+        this.registLaborInputs.find(data => data.column_name === 'occupation').list = this.occupation_list;
+        this.registWageInputs.find(data => data.column_name === 'occupation').list = this.occupation_list;
+      },
+      deep: true
+    },
   },
 
   created () {
@@ -334,26 +352,46 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    initialize () {
-      this.labor_data = LaborCostBackDataPageConfig.test_labor_data
-      this.wage_data = LaborCostBackDataPageConfig.test_wage_data
-      this.ratio_data = LaborCostBackDataPageConfig.test_ratio_data
+    async initialize () {
 
-      this.occupation_list.push('All');
-      for(let d=0; d<this.wage_data.length; d++){
-        this.occupation_list.push(this.wage_data[d].occupation)
+      this.loading_dialog = true;
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          "params": [
+            {}
+          ],
+          "script_file_name": "rooting_원가_페이지_진입_24_05_16_09_21_B9L.json",
+          "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_페이지_진입_24_05_16_09_21_UAC"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          const searchResult = result.data;
+
+          this.labor_data = searchResult.labor_cost;
+          this.wage_data = searchResult.labor_current_unit_price;
+          this.ratio_data = searchResult.cost_ratio;
+
+        }else{
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
       }
-      this.registLaborInputs.forEach(data =>{
-        if(data.column_name == 'occupation'){
-          data.list = this.occupation_list;
-        }
-      })
-      this.registWageInputs.forEach(data =>{
-        if(data.column_name == 'occupation'){
-          data.list = this.occupation_list;
-        }
-      })
+      this.loading_dialog = false;
     },
+
     registLaborItem(item){
       this.editedLaborIndex = this.labor_data.indexOf(item)
       let labor_input = this.registLaborInputs;
@@ -407,6 +445,10 @@ export default {
           }
         })
 
+        if (this.labor_data.find(x => x.name === item.name && x.type === item.type)) {
+          alert('이미 등록된 공종 + 규격입니다.');
+          return;
+        }
         if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
           item.code = item.no + '/' + mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
           const prevURL = window.location.href;
@@ -548,11 +590,11 @@ export default {
           }
         })
 
+        if (this.wage_data.find(x => x.occupation === item.occupation)) {
+          alert('이미 등록된 직종입니다.');
+          return;
+        }
         if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
-          if (this.wage_data.find(x => x.occupation === item.occupation)) {
-            alert('이미 등록된 직종입니다.');
-            return;
-          }
           item.code = item.no + '/' + mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
           const prevURL = window.location.href;
           try {

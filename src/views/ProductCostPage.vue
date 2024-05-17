@@ -946,7 +946,6 @@ export default {
               result = JSON.parse(result);
             }
             if(result['code'] == 0){
-              console.log(result);
               const searchResult = result.data;
 
               this.labor_data = searchResult.labor_cost_history_table;
@@ -1219,7 +1218,6 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
-          console.log(result);
           const searchResult = result.data;
           // const searchResult = ProductCostPageConfig.search_result;
           this.new_indirect_labor_ratio = searchResult.cost_ratio.find(x=> x.type === '간접 노무비').ratio;
@@ -1325,7 +1323,6 @@ export default {
         if(result['code'] == 0){
           searchResult = result.data;
           // const searchResult = ProductCostPageConfig.search_result;
-          console.log(result);
         }else{
           alert(result['failed_info']);
         }

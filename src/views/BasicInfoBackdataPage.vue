@@ -373,11 +373,11 @@ export default {
         product_info.forEach(async data =>{
           if(data.column_name == 'classification'){
             item.classification_update = data.value;
+            if (this.classification_data.some(x => x.classification === item.classification_update)) {
+              alert('이미 등록된 분류입니다.');
+              return;
+            }
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
-              if (this.classification_data.some(x => x.classification === item.classification_update)) {
-                alert('이미 등록된 분류입니다.');
-                return;
-              }
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({
@@ -461,11 +461,11 @@ export default {
             }
           }else if(data.column_name == 'manufacturer'){
             item.manufacturer_update = data.value;
+            if (this.manufacturer_data.some(x => x.manufacturer === item.manufacturer_update)) {
+              alert('이미 등록된 제조사입니다.');
+              return;
+            }
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
-              if (this.manufacturer_data.some(x => x.manufacturer === item.manufacturer_update)) {
-                alert('이미 등록된 제조사입니다.');
-                return;
-              }
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({
@@ -549,11 +549,11 @@ export default {
             }
           }else if(data.column_name == 'spot'){
             item.spot_update = data.value;
+            if (this.spot_data.some(x => x.spot === item.spot_update)) {
+              alert('이미 등록된 위치입니다.');
+              return;
+            }
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
-              if (this.spot_data.some(x => x.spot === item.spot_update)) {
-                alert('이미 등록된 위치입니다.');
-                return;
-              }
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({

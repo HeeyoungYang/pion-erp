@@ -274,7 +274,6 @@ export default {
         }
         if(result['code'] == 0){
           this.inbound_approve_data  = result.data
-          console.log(result);
         }else{
           alert(result['failed_info']);
         }

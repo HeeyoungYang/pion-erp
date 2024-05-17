@@ -258,7 +258,6 @@ export default {
         }
         if(result['code'] == 0){
           this.ship_approve_data  = result.data
-          console.log(result);
         }else{
           alert(result['failed_info']);
         }
