@@ -111,8 +111,15 @@
         <v-row>
           <v-col cols="12" sm="4" v-if="inbound_info_data.receiving_inspection">
             <p class="font-weight-bold primary--text mb-0">▼ 수입검사서</p>
-            <!-- <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+inbound_info_data.receiving_inspection"></iframe> -->
-
+            <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+inbound_info_data.receiving_inspection"></iframe>
+            <!-- <v-img
+              alt="thumbnail"
+              class="shrink mr-2"
+              contain
+              :src="mux.Util.imageBinary(detailThumbnail)"
+              transition="scale-transition"
+              width="350"
+            /> -->
           </v-col>
           <v-col cols="12" sm="4" v-if="inbound_info_data.inspection_report">
             <p class="font-weight-bold primary--text mb-0">▼ 시험성적서</p>
@@ -257,8 +264,8 @@ export default {
             "inbound_confirmation_table.inbound_date_end_date": searchInboundEndDate ? searchInboundEndDate : ""
             }
           ],
-          "script_file_name": "rooting_입고_검색_24_05_14_12_37_MSE.json",
-          "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_검색_24_05_14_12_37_P4D"
+          "script_file_name": "rooting_입고_검색_24_05_16_14_40_VDF.json",
+          "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_검색_24_05_16_14_41_IRT"
         });
         if (prevURL !== window.location.href) return;
 
@@ -266,7 +273,7 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
-          // this.inbound_approve_data  = result
+          this.inbound_approve_data  = result.data
           console.log(result);
         }else{
           alert(result['failed_info']);
@@ -279,6 +286,7 @@ export default {
         else
           alert(error);
       }
+      // this.inbound_approve_data = InboundSearchPageConfig.test_inbound_approve_data
       this.loading_dialog = false;
     },
     closeProductList(){
@@ -313,44 +321,112 @@ export default {
       }
       this.inbound_product_list_dialog = true;
     },
-    setApprovalPhase(item, change, reason){
-      this.change_approve=InboundSearchPageConfig.change_approve;
+    async setApprovalPhase(item, change, reason){
+      let phase;
+      let send_data = {};
+      send_data.code = item.code;
+      // this.change_approve=InboundSearchPageConfig.change_approve;
       if(item.approval_phase === '미확인'){
         if(change === true){
-          this.change_approve.code = item.code;
-          this.change_approve.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd');
-          this.change_approve.approval_phase = '미승인';
+          send_data.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+          send_data.approval_phase = '미승인';
+          phase = '확인';
         }else{
           if(reason === ''){
             alert('반려 사유 필수 기입');
           }else{
-            this.change_approve.code = item.code;
-            this.change_approve.reject_reason = reason;
-            this.change_approve.rejecter = this.login_info.name;
-            this.change_approve.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd');
-            this.change_approve.approval_phase = '반려';
+            send_data.reject_reason = reason;
+            send_data.rejecter = this.login_info.name;
+            send_data.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+            send_data.approval_phase = '반려';
+            phase = '반려';
           }
         }
       }else if(item.approval_phase === '미승인'){
         if(change === true){
-          this.change_approve.code = item.code;
-          this.change_approve.approved_date = mux.Date.format(this.today, 'yyyy-MM-dd');
-          this.change_approve.approval_phase = '승인';
-          this.change_approve.belong_data.push(item.belong_data)
+          send_data.approved_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+          send_data.approval_phase = '승인';
+          send_data.belong_data.push(item.belong_data)
+          phase = '승인';
         }else{
           if(reason === ''){
             alert('반려 사유 필수 기입');
           }else{
-            this.change_approve.code = item.code;
-            this.change_approve.reject_reason = reason;
-            this.change_approve.rejecter = this.login_info.name;
-            this.change_approve.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd');
-          this.change_approve.approval_phase = '반려';
+            send_data.reject_reason = reason;
+            send_data.rejecter = this.login_info.name;
+            send_data.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+            send_data.approval_phase = '반려';
+            phase = '반려';
           }
         }
       }
-      // console.log(JSON.stringify(this.change_approve));
 
+
+      let sendData = {
+        "inbound_confirmation_table-update": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data": send_data,
+          "update_where": {"code": item.code},
+          "rollback": "yes"
+        }]
+      };
+
+
+
+      const prevURL = window.location.href;
+
+
+
+      // let stock_data = [];
+      // if(this.change_approve.belong_data){
+      //   this.change_approve.belong_data.forEach(data =>{
+      //     stock_data.push({
+      //       "user_info": {
+      //         "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+      //         "role": "modifier"
+      //       },
+      //       "data":{
+      //         "conditions": data.conditions,
+      //         "product_code": this.editRegistMaterial.item_code,
+      //         "spot": data.spot,
+      //         "stock_num": data.stock_num,
+      //         "type": this.editRegistMaterial.type
+      //       },
+      //       "select_where": {"product_code": "!JUST_INSERT!"},
+      //       "rollback": "no"
+      //     });
+      //   });
+      // }
+      // sendData["stock_table-insert"] = stock_data;
+
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: sendData
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          // console.log('result :>> ', result);
+          alert('입고 ' + phase + ' 완료');
+        } else {
+          if (prevURL !== window.location.href) return;
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+      }
+      // console.log(JSON.stringify(this.change_approve));
     }
   },
 }
