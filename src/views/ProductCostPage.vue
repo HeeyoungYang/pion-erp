@@ -1576,7 +1576,7 @@ export default {
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     async search(){
-      
+
       this.loading_dialog = true;
       let searchResult;
 
@@ -1593,8 +1593,8 @@ export default {
               "product_cost_table.product_name": searchProductName ? searchProductName : "%"
             }
           ],
-          "script_file_name": "rooting_원가_검색_24_05_14_12_05_DC7.json",
-          "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_검색_24_05_14_12_05_01A"
+            "script_file_name": "rooting_원가_검색_24_05_14_12_05_DC7.json",
+            "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_검색_24_05_14_12_05_01A"
         });
         if (prevURL !== window.location.href) return;
 
@@ -1668,7 +1668,7 @@ export default {
                 data.belong_data[b].cost_unit = 'SET';
                 data.belong_data[b].cost_num = data.belong_data[b].num;
                 data.belong_data[b].cost_unit_price = data.belong_data[b].unit_price;
-                
+
                 // data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 if(data.belong_data[b].belong_data){
                   delete data.belong_data[b].belong_data;
