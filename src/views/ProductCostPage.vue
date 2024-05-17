@@ -1267,9 +1267,6 @@ export default {
       }
       this.loading_dialog = false;
 
-      this.labor_list = ProductCostPageConfig.labor_list;
-      this.labor_occupation_list = ProductCostPageConfig.labor_occupation_list;
-
       // set num
       this.calc_cost_detail_data_employment_insurance2.cost_num = this.new_employment_insurance_num;
       this.calc_cost_detail_data_tool_rent_fee2.cost_num = this.new_tool_rent_fee_num;
