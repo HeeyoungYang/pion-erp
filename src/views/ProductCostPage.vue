@@ -141,9 +141,9 @@
                             <table style=" border-spacing: 0px;" class="mt-1">
                               <tr class="text-body-1">
                                 <td class="cost_search_info info_title" style="border-left:1px solid #b6b6b6">작성자</td>
-                                <td class="cost_search_info">{{ clickedProductCost.cost_creater ? clickedProductCost.cost_creater : '' }}</td>
+                                <td class="cost_search_info">{{ clickedProductCost.creater_name ? clickedProductCost.creater_name : '' }}</td>
                                 <td class="cost_search_info info_title">작성일</td>
-                                <td class="cost_search_info">{{ clickedProductCost.cost_created_time ? clickedProductCost.cost_created_time : '' }}</td>
+                                <td class="cost_search_info">{{ clickedProductCost.created_time ? clickedProductCost.created_time : '' }}</td>
                               </tr>
                             </table>
                         </v-col>
@@ -947,9 +947,11 @@ export default {
             }
             if(result['code'] == 0){
               const searchResult = result.data;
+              
+              this.labor_data = ProductCostPageConfig.labor_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
+              this.labor_occupation_data = ProductCostPageConfig.labor_occupation_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
 
               this.labor_data = searchResult.labor_cost_history_table;
-
               this.labor_occupation_list = searchResult.labor_current_unit_price_history_table.map(x => {
                 x.name = x.occupation;
                 delete x.occupation;
@@ -967,9 +969,6 @@ export default {
               alert(error);
           }
           this.loading_dialog = false;
-
-          this.labor_data = ProductCostPageConfig.labor_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
-          this.labor_occupation_data = ProductCostPageConfig.labor_occupation_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
 
           this.origin_labor_cost_data = JSON.parse(JSON.stringify(this.labor_cost_data));
         }else {
@@ -1219,7 +1218,7 @@ export default {
         }
         if(result['code'] == 0){
           const searchResult = result.data;
-          // const searchResult = ProductCostPageConfig.search_result;
+          
           this.new_indirect_labor_ratio = searchResult.cost_ratio.find(x=> x.type === '간접 노무비').ratio;
           this.new_indirect_labor_formula = searchResult.cost_ratio.find(x=> x.type === '간접 노무비').formula;
           this.new_employment_insurance_ratio = searchResult.cost_ratio.find(x=> x.type === '고용보험료').ratio;
@@ -1297,7 +1296,6 @@ export default {
     async search(){
 
       this.loading_dialog = true;
-      let searchResult;
 
       let searchProductName = this.searching_product_name;
       if (searchProductName)
@@ -1321,8 +1319,10 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
-          searchResult = result.data;
-          // const searchResult = ProductCostPageConfig.search_result;
+          const searchResult = result.data;
+          this.clearClicked();
+          this.searchDataCalcProcess(searchResult, true);
+          
         }else{
           alert(result['failed_info']);
         }
@@ -1335,10 +1335,6 @@ export default {
           alert(error);
       }
       this.loading_dialog = false;
-
-
-      this.clearClicked();
-      this.searchDataCalcProcess(searchResult, true);
 
     },
     async searchProduct(){
@@ -1359,8 +1355,8 @@ export default {
                 "product_table.spec": product_capacity
               }
           ],
-          "script_file_name": "rooting_완제품_검색_24_05_01_12_44_A0W.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_01_12_45_GC6"
+          "script_file_name": "rooting_완제품_검색_24_05_16_13_52_1IN.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ"
         });
         if (prevURL !== window.location.href) return;
 
@@ -1425,9 +1421,6 @@ export default {
           alert(error);
       }
       this.loading_dialog = false;
-      // const searchResult = ProductCostPageConfig.dialog_search_product_data;
-
-      // this.dialog_search_product_data = searchResult;
     },
     searchDataCalcProcess(searchResult, isFirst){
       const productTotalCost = searchResult.product_cost_calc_detail.reduce((a,b)=>{
@@ -1469,6 +1462,9 @@ export default {
         info.cost_total_amount = mux.Number.withComma(allTotalCost);
         if (isFirst){
           info.product_name += '('+info.product_spec+')';
+        }
+        if (info.created_time){
+          info.created_time = mux.Date.format(info.created_time, 'yyyy-MM-dd');
         }
         return info;
       });

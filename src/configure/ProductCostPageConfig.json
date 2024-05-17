@@ -20,7 +20,7 @@
   "search_cost_headers": [
     { "text": "제품명", "align": "start", "value": "product_name"},
     { "text": "작성일", "align": "start", "value": "created_time"},
-    { "text": "작성자", "align": "start", "value": "creater"},
+    { "text": "작성자", "align": "start", "value": "creater_name"},
     { "text": "총액", "align": "start", "value": "cost_total_amount"}
   ],
   "survey_cost_headers": [
