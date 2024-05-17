@@ -920,9 +920,55 @@ export default {
   
   watch: {
     // 노무비 Dialog show and hide
-    dialog_calculate_labor(show) {
+    async dialog_calculate_labor(show) {
       if(this.tab_main === 0){
         if(show){
+          if (!this.clickedProductCost || !this.clickedProductCost.created_time) {
+            alert('산출할 제품을 선택해주세요.');
+            this.dialog_calculate_labor = false;
+            return;
+          }
+          this.loading_dialog = true;
+
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/sample_rest_api/',
+              "params": [
+                { "created_time": this.clickedProductCost.created_time}
+              ],
+              "script_file_name": "rooting_노무비_산출_수정_Modal_진입_bla_bla.json",
+              "script_file_path": "data_storage_pion\\json_sql\\cost\\노무비_산출_수정_Modal_진입_bla_bla"
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            if(result['code'] == 0){
+              console.log(result);
+              const searchResult = result.data;
+
+              this.labor_data = searchResult.labor_cost_history_table;
+
+              this.labor_occupation_list = searchResult.labor_current_unit_price_history_table.map(x => {
+                x.name = x.occupation;
+                delete x.occupation;
+                return x;
+              });
+            }else{
+              alert(result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            this.loading_dialog = false;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              alert(error.response['data']['failed_info'].msg);
+            else
+              alert(error);
+          }
+          this.loading_dialog = false;
+
           this.labor_data = ProductCostPageConfig.labor_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
           this.labor_occupation_data = ProductCostPageConfig.labor_occupation_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
 
