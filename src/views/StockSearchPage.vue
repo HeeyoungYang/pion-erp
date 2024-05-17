@@ -262,6 +262,7 @@ export default {
     async detailInfoItem(item){
       const prevURL = window.location.href;
       try {
+        this.loading_dialog = true;
         let params;
         let script_file_name;
         let script_file_path;
@@ -290,6 +291,7 @@ export default {
           script_file_name = "rooting_material_thumbnail_검색_24_05_09_12_12_AHK.json";
           script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\material_thumbnail_검색_24_05_09_12_13_SAK";
         }
+        // 제품의 썸네일
         let result = await mux.Server.post({
           path: '/api/sample_rest_api/',
           params: params,
@@ -308,12 +310,41 @@ export default {
           }
           this.detailThumbnail = thumbnail;
 
-          this.detail_dialog = true;
-          this.stockDetails = JSON.parse(JSON.stringify(item.spot_stock));
-          this.stockDetails.forEach(data => {
-            data.stock_num = Number(data.stock_num).toLocaleString();
-          })
+          // 제품의 입고 정보
+          let result2 = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: [
+              { 
+                "inbound_product_table.product_code": item._code,
+                "inbound_confirmation_table.approval_phase": "승인"
+              }
+            ],
+            "script_file_name": "rooting_제품_입고_정보_검색_bla_bla.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\제품_입고_정보_검색\\제품_입고_정보_검색_bla_bla"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result2 === 'string'){
+            result2 = JSON.parse(result2);
+          }
+          if(result2['code'] == 0){
+            let inbounds = [];
+            if (result2['data'].length > 0){
+              inbounds = result2['data'];
+            }
+            this.inboundDetails = inbounds;
+
+            this.detail_dialog = true;
+            this.stockDetails = JSON.parse(JSON.stringify(item.spot_stock));
+            this.stockDetails.forEach(data => {
+              data.stock_num = Number(data.stock_num).toLocaleString();
+            })
+          } else {
+            this.loading_dialog = false;
+            alert(result2['failed_info']);
+          }
         } else {
+          this.loading_dialog = false;
           alert(result['failed_info']);
         }
       } catch (error) {
@@ -324,7 +355,6 @@ export default {
         else
           alert(error);
       }
-
     },
     closeDetail () {
       this.detail_dialog = false

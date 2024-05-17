@@ -2205,20 +2205,79 @@ export default {
       this.module_dialog = true
     },
 
-    editModuleItem(item){
+    async editModuleItem(item){
+      const prevURL = window.location.href;
+      try {
+        let params;
+        let script_file_name;
+        let script_file_path;
+        if (item.type === '완제품'){
+          params = [
+            {
+              "product_table.product_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_product_thumbname_검색_24_05_09_12_05_UP0.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\product_thumbname_검색_24_05_09_12_06_FHY";
+        }else if (item.type === '반제품'){
+          params = [
+            {
+              "module_table.module_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_module_thumbnail_검색_24_05_09_12_09_X4X.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\module_thumbnail_검색_24_05_09_12_10_4PG";
+        }else {
+          params = [
+            {
+              "material_table.material_code": item.item_code
+            }
+          ];
+          script_file_name = "rooting_material_thumbnail_검색_24_05_09_12_12_AHK.json";
+          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\material_thumbnail_검색_24_05_09_12_13_SAK";
+        }
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: params,
+          "script_file_name": script_file_name,
+          "script_file_path": script_file_path
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          let thumbnail = '';
+          if (result['data'].length > 0){
+            thumbnail = result['data'][0].thumbnail;
+          }
+          this.moduleImg = mux.Util.imageBinary(thumbnail);
+
+        } else {
+          alert(result['failed_info']);
+          return;
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+        return;
+      }
       this.editedIndex = this.module_data.indexOf(item)
       let module_input = this.registModuleInputs;
       mux.Rules.rulesSet(module_input);
       // let stock_spot_arr = this.module_data.filter(datas => datas.item_code === item.item_code);
       let stock_spot_arr = item.spot_stock;
       let spot_input = this.registModuleSpotInputs;
-      // alert (JSON.stringify(stock_spot_arr));
 
-      this.moduleImg = mux.Util.imageBinary(item.thumbnail);
       if (stock_spot_arr){
         for(let i=0; i<stock_spot_arr.length; i++){
           spot_input.push({label:'위치'+[i+1], column_name:'spot', type:'auto', list: this.spot_list, col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].spot},)
-          spot_input.push( {label:'재고수량'+[i+1], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: Number(stock_spot_arr[i].stock_num).toLocaleString()},)
+          spot_input.push( {label:'재고수량'+[i+1], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].stock_num},)
           spot_input.push( {label:'재고상태'+[i+1], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value: stock_spot_arr[i].conditions},)
         }
       }
@@ -2230,6 +2289,11 @@ export default {
         for(let i=0; i<Object.keys(item).length; i++){
           if(data.column_name == Object.keys(item)[i]){
             data.value = Object.values(item)[i];
+            // if(data.column_name == 'unit_price'){
+            //   data.value = Object.values(item)[i].replace(/,/g,'');
+            // }else{
+            //   data.value = Object.values(item)[i];
+            // }
           }
         }
       })
@@ -2992,7 +3056,6 @@ export default {
     },
 
     async detailInfoItem(item, type){
-      this.loading_dialog = true;
       this.productDetails= [];
       this.stockDetails= [];
       this.inboundDetails= [];
@@ -3001,6 +3064,7 @@ export default {
 
       const prevURL = window.location.href;
       try {
+        this.loading_dialog = true;
         let params;
         let script_file_name;
         let script_file_path;
@@ -3029,6 +3093,7 @@ export default {
           script_file_name = "rooting_material_thumbnail_검색_24_05_09_12_12_AHK.json";
           script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\material_thumbnail_검색_24_05_09_12_13_SAK";
         }
+        // 제품의 썸네일
         let result = await mux.Server.post({
           path: '/api/sample_rest_api/',
           params: params,
@@ -3047,12 +3112,41 @@ export default {
           }
           this.detailThumbnail = thumbnail;
 
-          this.detail_dialog = true;
-          this.stockDetails = JSON.parse(JSON.stringify(item.spot_stock));
-          this.stockDetails.forEach(data => {
-            data.stock_num = Number(data.stock_num).toLocaleString();
-          })
+          // 제품의 입고 정보
+          let result2 = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: [
+              { 
+                "inbound_product_table.product_code": item.item_code,
+                "inbound_confirmation_table.approval_phase": "승인"
+              }
+            ],
+            "script_file_name": "rooting_제품_입고_정보_검색_bla_bla.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\제품_입고_정보_검색\\제품_입고_정보_검색_bla_bla"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result2 === 'string'){
+            result2 = JSON.parse(result2);
+          }
+          if(result2['code'] == 0){
+            let inbounds = [];
+            if (result2['data'].length > 0){
+              inbounds = result2['data'];
+            }
+            this.inboundDetails = inbounds;
+
+            this.detail_dialog = true;
+            this.stockDetails = JSON.parse(JSON.stringify(item.spot_stock));
+            this.stockDetails.forEach(data => {
+              data.stock_num = Number(data.stock_num).toLocaleString();
+            })
+          } else {
+            this.loading_dialog = false;
+            alert(result2['failed_info']);
+          }
         } else {
+          this.loading_dialog = false;
           alert(result['failed_info']);
         }
       } catch (error) {
@@ -3063,7 +3157,6 @@ export default {
         else
           alert(error);
       }
-      this.loading_dialog = false;
 
       if(type === 'product'){
         this.detailForProduct  = true;
