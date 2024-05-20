@@ -198,7 +198,7 @@ mux.Server = {
    * 선택 key: timeout, ...
    */
   async uploadFile(reqObj) {
-    new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
 
         if (!reqObj.files && (!reqObj.folder || !reqObj.file)){
