@@ -1016,19 +1016,19 @@ export default {
           });
           sendData["inbound_product_table-insert"] = product_data;
 
-          sendData.path = '/api/files/';
+          sendData.path = '/api/sample_rest_api2/';
           sendData.prefix = this.inbound_confirmation_data.code + '_';
           sendData.files = [];
           if (this.inbound_confirmation_data.receiving_inspection) {
             sendData.files.push({
-              folder: 'inbound/receiving_inspection', 
-              file: this.receiving_inspection_value, 
+              folder: 'inbound/receiving_inspection',
+              file: this.receiving_inspection_value,
               name: this.inbound_confirmation_data.receiving_inspection
             });
           }
           if (this.inbound_confirmation_data.inspection_report) {
             sendData.files.push({
-              folder: 'inbound/inspection_report', 
+              folder: 'inbound/inspection_report',
               file: this.inspection_report_value,
               name: this.inbound_confirmation_data.inspection_report
             });
@@ -1037,13 +1037,13 @@ export default {
             for (let i = 0; i < this.files_value.length; i++) {
               const file = this.files_value[i];
               sendData.files.push({
-                folder: 'inbound/files', 
+                folder: 'inbound/files',
                 file: file,
                 name: this.inbound_confirmation_data.files[i]
               });
             }
           }
-          
+
 
           const prevURL = window.location.href;
           try {
