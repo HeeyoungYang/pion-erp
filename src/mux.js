@@ -277,7 +277,7 @@ mux.Server = {
    * @param {string} filename
    * @param {string} prefix
    * @example
-   * mux.Server.donwload('folder', 'file', 'prefix_');
+   * mux.Server.downloadFile('folder', 'file', 'prefix_');
    * @memberof mux.Server
    * @inner
    * @private
