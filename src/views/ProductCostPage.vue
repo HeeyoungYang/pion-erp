@@ -1208,8 +1208,8 @@ export default {
           "params": [
             {}
           ],
-          "script_file_name": "rooting_원가_페이지_진입_24_05_16_09_21_B9L.json",
-          "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_페이지_진입_24_05_16_09_21_UAC"
+          "script_file_name": "rooting_원가_페이지_진입_24_05_20_10_42_VOT.json",
+          "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_페이지_진입_24_05_20_10_43_7F2"
         });
         if (prevURL !== window.location.href) return;
 
