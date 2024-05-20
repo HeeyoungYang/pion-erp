@@ -618,7 +618,7 @@ export default {
                 "manufacturer" : data.manufacturer,
                 "unit_price" : data.unit_price.replace(/,/g,'').replace(/₩ /g,''),
               },
-              "select_where": {"code": this.ship_confirmation_data.code},
+              "select_where": {"code": this.ship_confirmation_data.code, "product_code": data._code},
               "rollback": "yes"
             });
           });

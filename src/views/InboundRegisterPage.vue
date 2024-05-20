@@ -1010,7 +1010,7 @@ export default {
                 "unit_price" : data.unit_price.replace(/,/g,'').replace(/₩ /g,''),
                 "ship_code" : data.ship_code,
               },
-              "select_where": {"code": this.inbound_confirmation_data.code},
+              "select_where": {"code": this.inbound_confirmation_data.code, "product_code": data._code},
               "rollback": "yes"
             });
           });
