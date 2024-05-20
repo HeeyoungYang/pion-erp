@@ -849,7 +849,7 @@ export default {
         }
       }
     },
-    
+
     saveUserAuthority(){
       this.$emit("changeAuthority", this.authority_list);
       // this.authority_list : 이 값은 현재 등록되어 있는 모든 그룹 리스트 (array)
@@ -933,7 +933,7 @@ export default {
     },
     confirmationDialogOpen(item){
       let belong_datas = item.belong_data
-      let belong_files = item.files ? item.files.split(',') : '';
+      let belong_files = item.files ? item.files.split('/') : '';
       this.inbound_approve_belong = [];
       this.ship_approve_belong = [];
       this.inbound_approve_files = belong_files;

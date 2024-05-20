@@ -315,7 +315,7 @@ export default {
         })
         }
       })
-      let file_name = item.files.split(',');
+      let file_name = item.files.split('/');
       if(!file_name[0]){
         file_name = ""
       }

@@ -282,7 +282,7 @@ export default {
         data.ship_price = data.unit_price * data.ship_num;
         this.ship_product_list_data.push(data);
       })
-      let file_name = item.files.split(',');
+      let file_name = item.files.split('/');
       if(!file_name[0]){
         file_name = ""
       }
