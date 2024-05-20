@@ -800,7 +800,9 @@ export default {
         this.product_inbound_data = [];
         this.select_product = false;
       }
-      this.product_inbound_headers.splice(this.product_inbound_headers.length-1, 0, { "text": "출하선택", "align": "center", "value": "ship_select"})
+      if(this.product_inbound_headers.length !== 12){
+        this.product_inbound_headers.splice(this.product_inbound_headers.length-1, 0, { "text": "출하선택", "align": "center", "value": "ship_select"})
+      }
 
       this.add_self = true;
       this.product_inbound_data.push({
@@ -903,10 +905,8 @@ export default {
               item.checker_id = mem.user_id;
               if(item.checker_id == this.login_id){
                 item.approval_phase = '미승인';
-                item.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
               }else{
                 item.approval_phase = '미확인';
-                item.checked_date = "";
               }
             }else if(mem.type === '승인'){
               item.approver = mem.name;
@@ -973,7 +973,7 @@ export default {
                 "approval_phase": this.inbound_confirmation_data.approval_phase,
                 "checker" : this.inbound_confirmation_data.checker,
                 "checker_id" : this.inbound_confirmation_data.checker_id,
-                "checked_date" : this.inbound_confirmation_data.checked_date,
+                // "checked_date" : this.inbound_confirmation_data.checked_date,
                 "approver" : this.inbound_confirmation_data.approver,
                 "approver_id" : this.inbound_confirmation_data.approver_id,
                 "receiving_inspection_file" : this.inbound_confirmation_data.receiving_inspection,
@@ -988,6 +988,9 @@ export default {
               "rollback": "yes"
             }]
           };
+          if(sendData["inbound_confirmation_table-insert"][0].data.approval_phase === '미승인'){
+            sendData["inbound_confirmation_table-insert"][0].data.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+          }
 
           let product_data = [];
           inbound_product_data.forEach(data =>{
