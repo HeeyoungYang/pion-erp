@@ -259,23 +259,58 @@ mux.Server = {
 
   /**
    * 파일 다운로드
+   * @param {string} foldername
+   * @param {string} filename
+   * @param {string} prefix
+   * @example
+   * mux.Server.donwload('folder', 'file', 'prefix_');
+   * @memberof mux.Server
+   * @inner
+   * @private
+   * @returns {Promise}
+  */
+  async downloadFile(foldername, filename, prefix) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const showName = filename;
+        const fileName = prefix + showName; // PREFIX 는 code + '_' 로 구성
+        const result = await mux.Server.downloadFilePromise({ path: '/api/file/', folder: foldername, fileName: fileName, showName: showName});
+        if (!result) {
+          reject('파일을 다운로드 할 수 없습니다.');
+          return;
+        }
+        if (result.code == 0) {
+          resolve(result);
+        }else {
+          reject(result.message);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  /**
+   * 파일 다운로드 프로미스
    * @param {Object} reqObj
    * 필수 key: path, folder, fileName
-   * 선택 key: timeout, ...
+   * 선택 key: showName, timeout, ...
    */
-  async downloadFile(reqObj) {
-    new Promise(async (resolve, reject) => {
+  async downloadFilePromise(reqObj) {
+    return new Promise(async (resolve, reject) => {
       try {
         let sendData = {};
         sendData.path = reqObj.path;
         if(reqObj.folder && reqObj.fileName){
-          sendData.path += '/' + reqObj.folder;
-          sendData.path += '/' + reqObj.fileName;
+          sendData.path += '?folder=' + reqObj.folder;
+          sendData.path += '&file_name=' + reqObj.fileName;
         }else {
           reject('download file error: 폴더명, 파일 정보와 함께 요청해야 합니다.');
+          return;
         }
         if (!reqObj.path) {
           reject('upload file error: path 정보와 함께 요청해야 합니다.');
+          return;
         }
 
         this.axiosInstance.defaults.timeout = this.defaultTimeout;
@@ -288,29 +323,38 @@ mux.Server = {
             sendData[key] = reqObj[key];
           }
         });
+        
         const result = await mux.Server.get(sendData);
-        const fileData = result.data.data; // Base64로 인코딩된 파일 데이터
-        const fileName = reqObj.fileName; // 파일명
 
-        // Base64 디코딩하여 Blob 객체 생성
-        const byteCharacters = atob(fileData);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        if (result.code == 0) {
+          const fileData = result.data; // Base64로 인코딩된 파일 데이터
+          const fileName = reqObj.showName ? reqObj.showName : reqObj.fileName; // 파일명
+  
+          // Base64 디코딩하여 Blob 객체 생성
+          const byteCharacters = atob(fileData);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+  
+          // Blob 객체를 다운로드할 수 있는 링크 생성
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', fileName);
+          document.body.appendChild(link);
+          link.click();
+          resolve(result);
+          return;
+        }else {
+          reject(result.message);
+          return;
         }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: 'application/octet-stream' });
-
-        // Blob 객체를 다운로드할 수 있는 링크 생성
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', fileName);
-        document.body.appendChild(link);
-        link.click();
-        resolve(result);
       } catch (error) {
         reject(error);
+        return;
       }
     });
   },

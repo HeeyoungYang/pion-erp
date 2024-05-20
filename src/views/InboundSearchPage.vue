@@ -132,8 +132,7 @@
              class="ma-2"
               v-for="(file, i) in inbound_info_data.files"
               :key="i"
-              :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+file"
-            >
+              @click="donwload('test', file, inbound_info_data.code+'_')">
               {{ file }}
             </v-chip>
           </v-col>
@@ -226,6 +225,15 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
+    async donwload(foldername, filename, prefix) {
+      this.loading_dialog = true;
+      try {
+        await mux.Server.downloadFile(foldername, filename, prefix);
+      } catch (error) {
+        alert(error);
+      }
+      this.loading_dialog = false;
+    },
     async searchButton(){
       this.loading_dialog = true;
 
@@ -310,6 +318,7 @@ export default {
         file_name = ""
       }
       this.inbound_info_data = {
+        code:item.code,
         project_code:item.project_code,
         spot:item.spot,
         abnormal_reason : item.abnormal_reason,
