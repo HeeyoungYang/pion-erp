@@ -195,7 +195,7 @@ mux.Server = {
    * 파일 업로드
    * @param {Object} reqObj
    * 필수 key: path, (folder, file) | {obj}files : {folder,file}
-   * 선택 key: timeout, ...
+   * 선택 key: prefix, files.prefix, timeout, ...
    */
   async uploadFile(reqObj) {
     return new Promise(async (resolve, reject) => {
@@ -203,10 +203,12 @@ mux.Server = {
 
         if (!reqObj.files && (!reqObj.folder || !reqObj.file)){
           reject('upload file error: 폴더명, 파일 정보와 함께 요청해야 합니다.');
+          return;
         }
 
         if (!reqObj.path) {
           reject('upload file error: path 정보와 함께 요청해야 합니다.');
+          return;
         }
 
         this.axiosInstance.defaults.timeout = this.defaultTimeout;
@@ -224,29 +226,41 @@ mux.Server = {
                 formData.append('folder_'+index, reqObj.folder);
               }else {
                 reject('upload file error: 폴더명 정보와 함께 요청해야 합니다.');
+                return;
               }
             }
-            formData.append('fileName_'+index, file.name);
+            formData.append('fileName_'+index, (file.prefix ? file.prefix : (reqObj.prefix ? reqObj.prefix : '')) + file.name);
             formData.append('file', file.file);
           });
         }else if (reqObj.file && reqObj.folder) {
           formData.append('folder_0', reqObj.folder);
-          formData.append('fileName_0', reqObj.file.name);
+          formData.append('fileName_0', (reqObj.prefix ? reqObj.prefix : '') + reqObj.file.name);
           formData.append('file', reqObj.file);
-        }else if (reqObj.file) {
-          reject('upload file error: 폴더명 정보와 함께 요청해야 합니다.')
-        }else {
-          reject('upload file error: 업로드 대상이 없습니다.');
         }
+        else if (reqObj.file) {
+          reject('upload file error: 폴더명 정보와 함께 요청해야 합니다.')
+          return;
+        }
+        // else {
+        //   reject('upload file error: 업로드 대상이 없습니다.');
+        // }
 
         Object.keys(reqObj).forEach(key => {
-          if (key !== 'files' && key !== 'file' && key !== 'folder' && key !== 'path' && key !== 'timeout'){
-            formData.append(key, reqObj[key]);
+          if (key !== 'files' && key !== 'file' && key !== 'folder' && key !== 'path' && key !== 'prefix' && key !== 'timeout'){
+            formData.append(key, JSON.stringify(reqObj[key]));
           }
         });
 
+        // console.log('formData :>> ', formData);
+        // for (let [key, value] of formData.entries()) {
+        //   console.log(`${key}: ${value}`);
+        // }
 
-        const response = await this.axiosInstance.post(reqObj.path, formData);
+        const response = await this.axiosInstance.post(reqObj.path, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
 
         this.axiosInstance.defaults.timeout = this.defaultTimeout;
         resolve(response);

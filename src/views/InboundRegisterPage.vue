@@ -547,6 +547,7 @@ export default {
       member_type_index:0,
       receiving_inspection_value:'',
       inspection_report_value:'',
+      files_value:[],
       type_list:InboundRegisterPageConfig.type_list,
       inbound_member_info:InboundRegisterPageConfig.inbound_member_info,
       inbound_confirmation_data: InboundRegisterPageConfig.inbound_confirmation_data,
@@ -851,6 +852,7 @@ export default {
                       }else{
                         item[Object.keys(item)[i]] = item[Object.keys(item)[i]]+"/"+data.value[f].name
                       }
+                      this.files_value.push(data.value[f])
                     }
                   }else if(data.column_name === 'receiving_inspection'){
                     this.receiving_inspection_value = data.value
@@ -1014,13 +1016,42 @@ export default {
           });
           sendData["inbound_product_table-insert"] = product_data;
 
+          sendData.path = '/api/files/';
+          sendData.prefix = this.inbound_confirmation_data.code + '_';
+          sendData.files = [];
+          if (this.inbound_confirmation_data.receiving_inspection) {
+            sendData.files.push({
+              folder: 'inbound/receiving_inspection', 
+              file: this.receiving_inspection_value, 
+              name: this.inbound_confirmation_data.receiving_inspection
+            });
+          }
+          if (this.inbound_confirmation_data.inspection_report) {
+            sendData.files.push({
+              folder: 'inbound/inspection_report', 
+              file: this.inspection_report_value,
+              name: this.inbound_confirmation_data.inspection_report
+            });
+          }
+          if (this.inbound_confirmation_data.files && this.files_value.length > 0) {
+            for (let i = 0; i < this.files_value.length; i++) {
+              const file = this.files_value[i];
+              sendData.files.push({
+                folder: 'inbound/files', 
+                file: file,
+                name: this.inbound_confirmation_data.files[i]
+              });
+            }
+          }
+          
 
           const prevURL = window.location.href;
           try {
-            let result = await mux.Server.post({
-              path: '/api/sample_rest_api/',
-              params: sendData
-            });
+            // let result = await mux.Server.post({
+            //   path: '/api/sample_rest_api/',
+            //   params: sendData
+            // });
+            let result = await mux.Server.uploadFile(sendData);
             if (prevURL !== window.location.href) return;
 
             if (typeof result === 'string'){
@@ -1031,6 +1062,7 @@ export default {
               alert('입고 승인 요청이 완료되었습니다');
               this.receiving_inspection_value = '';
               this.inspection_report_value = '';
+              this.files_value = [];
             } else {
               if (prevURL !== window.location.href) return;
               alert(result['failed_info']);
