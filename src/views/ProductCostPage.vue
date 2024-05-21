@@ -827,7 +827,7 @@ export default {
       dialog_labor_cost_headers: ProductCostPageConfig.dialog_labor_cost_headers,
 
       dialog_search_product_data:[],
-      dialog_selected_product_data:[],
+      dialog_selected_product_data:{},
       search_cost_data: [
 
       ],
@@ -1105,9 +1105,12 @@ export default {
   },
 
   computed: {
-    total_product_cost(){ return this.calc_cost_detail_data_product_cost.belong_data.reduce((a,b)=>{
+    total_product_cost(){ 
+      if (!this.calc_cost_detail_data_product_cost.belong_data || this.calc_cost_detail_data_product_cost.belong_data.length === 0) return 0;
+      return this.calc_cost_detail_data_product_cost.belong_data.reduce((a,b)=>{
         return a + Math.round(b.cost_unit_price * b.cost_num);
-      }, 0)},
+      }, 0)
+    },
     direct_labor_cost(){ return this.merged_labor_cost_data.reduce((a,b)=>{
         return a + Math.round(b.cost_unit_price * b.cost_num);
       }, 0)},
@@ -1143,9 +1146,12 @@ export default {
     calc_cost_detail_data_normal_maintenance_fee(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='일반관리비')},
     calc_cost_detail_data_profite(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='이윤')},
 
-    total_product_cost2(){ return this.calc_cost_detail_data_product_cost2.belong_data.reduce((a,b)=>{
+    total_product_cost2(){ 
+      if (!this.calc_cost_detail_data_product_cost2.belong_data || this.calc_cost_detail_data_product_cost2.belong_data.length === 0) return 0;
+      return this.calc_cost_detail_data_product_cost2.belong_data.reduce((a,b)=>{
         return a + Math.round(b.cost_unit_price * b.cost_num);
-      }, 0)},
+      }, 0);
+    },
     direct_labor_cost2(){ return this.merged_labor_cost_list.reduce((a,b)=>{
         return a + Math.round(b.cost_unit_price * b.cost_num);
       }, 0)},
@@ -2067,7 +2073,7 @@ export default {
     },
 
     async save() {
-      if (this.calc_cost_detail_data_product_cost2.belong_data.length === 0){
+      if (!this.dialog_selected_product_data.product_code){
         alert('제품을 불러와야 합니다.');
         return;
       }
@@ -2193,29 +2199,6 @@ export default {
             result = JSON.parse(result);
           }
           if(result['code'] == 0){
-            this.origin_calc_cost_detail_data = this.calc_cost_detail_data;
-            this.clickedProductCost.employment_insurance_num = this.calc_cost_detail_data_employment_insurance.cost_num;
-            this.clickedProductCost.tool_rent_fee_num = this.calc_cost_detail_data_tool_rent_fee.cost_num;
-            this.clickedProductCost.transportation_fee_num = this.calc_cost_detail_data_transportation_fee.cost_num;
-            this.clickedProductCost.industrial_accident_num = this.calc_cost_detail_data_industrial_accident.cost_num;
-            this.clickedProductCost.taxes_dues_num = this.calc_cost_detail_data_taxes_dues.cost_num;
-            this.clickedProductCost.welfare_benefits_num = this.calc_cost_detail_data_welfare_benefits.cost_num;
-            this.clickedProductCost.retirement_num = this.calc_cost_detail_data_retirement.cost_num;
-            this.clickedProductCost.expendables_num = this.calc_cost_detail_data_expendables.cost_num;
-            this.clickedProductCost.industrial_safety_num = this.calc_cost_detail_data_industrial_safety.cost_num;
-            this.clickedProductCost.normal_maintenance_fee_num = this.calc_cost_detail_data_normal_maintenance_fee.cost_num;
-            this.clickedProductCost.profite_num = this.calc_cost_detail_data_profite.cost_num;
-            this.searched_datas.product_cost = this.searched_datas.product_cost.map(x=> {
-              if (x.cost_calc_code === this.clickedProductCost.cost_calc_code){
-                return this.clickedProductCost;
-              }else {
-                return x;
-              }
-            });
-
-            this.searchDataCalcProcess(this.searched_datas);
-
-            this.edit_survey_cost_num_disabled = true;
             alert('등록되었습니다.');
           } else {
             if (prevURL !== window.location.href) return;
