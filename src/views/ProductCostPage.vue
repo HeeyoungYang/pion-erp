@@ -832,8 +832,8 @@ export default {
 
       ],
 
-      calc_cost_detail_data: ProductCostPageConfig.calc_cost_detail_data,
-      calc_cost_detail_data2: JSON.parse(JSON.stringify(ProductCostPageConfig.calc_cost_detail_data)).map(x => {
+      calc_cost_detail_data: JSON.parse(JSON.stringify(ProductCostPageConfig.calc_cost_detail_data)),
+      calc_cost_detail_data2: ProductCostPageConfig.calc_cost_detail_data.map(x => {
         if (x.cost_list === '재료비') {
           x.costListBtn = {
             text: '제품 불러오기',
