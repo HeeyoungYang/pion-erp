@@ -1429,20 +1429,33 @@ export default {
       this.loading_dialog = false;
     },
     searchDataCalcProcess(searchResult, isFirst){
-      const productTotalCost = searchResult.product_cost_calc_detail.reduce((a,b)=>{
-        return a + Math.round(b.module_num > 0 ? b.module_num * b.module_unit_price : b.material_num * b.material_unit_price);
-      }, 0);
-      const directLaborCost = searchResult.labor_cost_calc_detail.reduce((a,b)=>{
-        return a + Math.round(b.unit_price * b.quantity * b.man_per_hour);
-      }, 0);
+      const productTotalCost = {};
+      searchResult.product_cost_calc_detail.forEach(a=>{
+        if (!productTotalCost[a.cost_calc_code]){
+          productTotalCost[a.cost_calc_code] = Math.round(a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
+        }else {
+          productTotalCost[a.cost_calc_code] += Math.round(a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
+        }
+      });
+      const directLaborCost = {};
+      searchResult.labor_cost_calc_detail.forEach(a=>{
+        if (!directLaborCost[a.cost_calc_code]){
+          directLaborCost[a.cost_calc_code] = Math.round(a.unit_price * a.quantity * a.man_per_hour);
+        }else {
+          directLaborCost[a.cost_calc_code] += Math.round(a.unit_price * a.quantity * a.man_per_hour);
+        }
+      });
 
       const productCostArr = searchResult.product_cost.map((info)=> {
-        let indirectLaborUnitPrice = Math.round(directLaborCost * info.indirect_labor_ratio);
+        const productTotalCostInfo = productTotalCost[info.cost_calc_code] ? productTotalCost[info.cost_calc_code] : 0;
+        const directLaborCostInfo = directLaborCost[info.cost_calc_code];
+        
+        let indirectLaborUnitPrice = Math.round(directLaborCostInfo * info.indirect_labor_ratio);
         const indirectLaborCost = Math.round(indirectLaborUnitPrice * info.indirect_labor_num);
-        const totalLaborCost = directLaborCost + indirectLaborCost;
+        const totalLaborCost = directLaborCostInfo + indirectLaborCost;
         let employmentInsuranceUnitPrice = Math.round(totalLaborCost * info.employment_insurance_ratio);
         const employmentInsuranceCost = Math.round(employmentInsuranceUnitPrice * info.employment_insurance_num);
-        let toolRentFeeUnitPrice = Math.round(directLaborCost * info.tool_rent_fee_ratio);
+        let toolRentFeeUnitPrice = Math.round(directLaborCostInfo * info.tool_rent_fee_ratio);
         const toolRentFeeCost = Math.round(toolRentFeeUnitPrice * info.tool_rent_fee_num);
         let transportationFeeUnitPrice = Math.round(totalLaborCost * info.transportation_fee_ratio);
         const transportationFeeCost = Math.round(transportationFeeUnitPrice * info.transportation_fee_num);
@@ -1452,19 +1465,19 @@ export default {
         const taxesDuesCost = Math.round(taxesDuesUnitPrice * info.taxes_dues_num);
         let welfareBenefitsUnitPrice = Math.round(totalLaborCost * info.welfare_benefits_ratio);
         const welfareBenefitsCost = Math.round(welfareBenefitsUnitPrice * info.welfare_benefits_num);
-        let retirementUnitPrice = Math.round(directLaborCost * info.retirement_ratio);
+        let retirementUnitPrice = Math.round(directLaborCostInfo * info.retirement_ratio);
         const retirementCost = Math.round(retirementUnitPrice * info.retirement_num);
         let expendablesUnitPrice = Math.round(totalLaborCost * info.expendables_ratio);
         const expendablesCost = Math.round(expendablesUnitPrice * info.expendables_num);
-        let industrialSafetyUnitPrice = Math.round(directLaborCost * info.industrial_safety_ratio);
+        let industrialSafetyUnitPrice = Math.round(directLaborCostInfo * info.industrial_safety_ratio);
         const industrialSafetyCost = Math.round(industrialSafetyUnitPrice * info.industrial_safety_num);
         const totalExpenseFeeCost = employmentInsuranceCost + toolRentFeeCost + transportationFeeCost + industrialAccidentCost + taxesDuesCost + welfareBenefitsCost + retirementCost + expendablesCost + industrialSafetyCost;
-        let normalMaintenanceFeeUnitPrice = Math.round((productTotalCost + totalLaborCost + totalExpenseFeeCost) * info.normal_maintenance_fee_ratio);
+        let normalMaintenanceFeeUnitPrice = Math.round((productTotalCostInfo + totalLaborCost + totalExpenseFeeCost) * info.normal_maintenance_fee_ratio);
         const normalMaintenanceFeeCost = Math.round(normalMaintenanceFeeUnitPrice * info.normal_maintenance_fee_num);
         let profiteUnitPrice = Math.round((totalLaborCost + totalExpenseFeeCost + normalMaintenanceFeeCost) * info.profite_ratio);
         const profiteCost = Math.round(profiteUnitPrice * info.profite_num);
 
-        const allTotalCost = productTotalCost + totalLaborCost + totalExpenseFeeCost + normalMaintenanceFeeCost + profiteCost;
+        const allTotalCost = productTotalCostInfo + totalLaborCost + totalExpenseFeeCost + normalMaintenanceFeeCost + profiteCost;
         info.cost_total_amount = mux.Number.withComma(allTotalCost);
         if (isFirst){
           info.product_name += '('+info.product_spec+')';
@@ -1579,7 +1592,7 @@ export default {
           "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
           "rollback": "yes"
         }],
-        "product_cost_calc_detail-delete": [{
+        "product_cost_calc_detail_table-delete": [{
           "user_info": {
             "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
             "role": "modifier"
