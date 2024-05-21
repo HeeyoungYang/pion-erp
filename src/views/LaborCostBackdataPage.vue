@@ -374,7 +374,10 @@ export default {
         if(result['code'] == 0){
           const searchResult = result.data;
 
-          this.labor_data = searchResult.labor_cost;
+          this.labor_data = searchResult.labor_cost.map(data => {
+            data.surcharge_ratio = (Math.round(data.surcharge_ratio * 100 * 10000000) / 10000000) + '%';
+            return data;
+          });
           this.wage_data = searchResult.labor_current_unit_price;
           this.ratio_data = searchResult.cost_ratio;
 
@@ -437,7 +440,7 @@ export default {
           for(let i=0; i<Object.keys(item).length; i++){
             if(data.column_name == Object.keys(item)[i]){
               if(data.column_name == 'surcharge_ratio'){
-                item[Object.keys(item)[i]] = data.value * 0.01;
+                item[Object.keys(item)[i]] = Math.round(data.value * 0.01 * 1000000000) / 1000000000;
               } else{
                 item[Object.keys(item)[i]] = data.value;
               }
