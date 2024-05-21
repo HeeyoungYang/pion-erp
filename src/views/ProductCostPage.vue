@@ -354,7 +354,7 @@
                             <td align="center">{{ item.type }}</td>
                             <td align="center">{{ item.occupation }}</td>
                             <td align="center">{{ item.man_per_day }}</td>
-                            <td align="center">{{ Math.round(item.surcharge_ratio * 100) }}%</td>
+                            <td align="center">{{ Math.round(item.surcharge_ratio * 100 * 10000000) / 10000000 }}%</td>
                             <td align="center">{{ item.adjustment_ratio }}</td>
                             <td align="center">{{ item.man_per_hour }}</td>
                             <td align="center">{{ mux.Number.withComma(item.unit_price) }}</td>
@@ -483,7 +483,7 @@
                 <td align="center">{{ item.type }}</td>
                 <td align="center">{{ item.occupation }}</td>
                 <td align="center">{{ item.man_per_day }}</td>
-                <td align="center">{{ Math.round(item.surcharge_ratio * 100) }}%</td>
+                <td align="center">{{ Math.round(item.surcharge_ratio * 100 * 10000000) / 10000000 }}%</td>
                 <td align="center">{{ item.adjustment_ratio }}</td>
                 <td align="center">{{ item.man_per_hour }}</td>
                 <td align="center">{{ mux.Number.withComma(item.unit_price) }}</td>
@@ -703,7 +703,7 @@
                     <!-- man_per_day -->
                     <td align="center">{{ tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).man_per_day : '') }}</td>
                     <!-- surcharge_ratio -->
-                    <td align="center">{{ tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio : '') }}</td>
+                    <td align="center">{{ tab_main === 0 ? (labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? Math.round(labor_data.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio * 100 * 10000000) / 10000000 + '%' : '') : (labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')) ? Math.round(labor_list.find(x=> x.name == item.name && x.type == item.type && (x.occupation == item.occupation || x.occupation === 'ALL')).surcharge_ratio * 100 * 10000000) / 10000000 + '%' : '') }}</td>
                     <!-- adjustment_ratio -->
                     <td align="center">{{ tab_main === 0 ? (labor_occupation_data.find(x=> x.name == item.occupation) ? labor_occupation_data.find(x=> x.name == item.occupation).adjustment_ratio : '') : (labor_occupation_list.find(x=> x.name == item.occupation) ? labor_occupation_list.find(x=> x.name == item.occupation).adjustment_ratio : '') }}</td>
                     <!-- man_per_hour -->
