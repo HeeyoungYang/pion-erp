@@ -528,6 +528,9 @@
 
             <template v-if="childrenKey" v-slot:expanded-item = "{ index, item, select, isSelected }">
               <tr v-for="(data,idx) in item[childrenKey]" :key="index+'_'+idx" style="background-color: #efefef;" v-show="expanded.includes(item)">
+
+                <td v-if="addToTable || exceptFromTable" align="center">
+                </td>
                 <td v-if="showSelect && !showSelectChildren"></td>
                 <td v-if="showSelectChildren">
                   <v-checkbox dense hide-details class="mt-0 pt-0"
@@ -810,7 +813,7 @@ export default {
       this.addedHeaders.push({ text: '권한', align: 'center', value: 'authority', sortable: false });
     }
     if (this.addToTable || this.exceptFromTable){
-      this.addedHeaders.push({ text: '', align: 'center', value: 'add', sortable: false });
+      this.addedHeaders.unshift({ text: '', align: 'center', value: 'addToTable', sortable: false });
     }
     if (this.approval){
       this.addedHeaders.unshift({ text: '승인', align: 'center', value: 'approval', sortable: false });
