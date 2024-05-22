@@ -96,6 +96,9 @@
                       <v-list class="pa-0">
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-3">
+                            <p v-for="(belongs, index) in item.belong_data" :key="index" class="mb-2 red--text">
+                              <span v-if="belongs.ship_num > belongs.stock_num ">{{ belongs.product_code }}의 출하수량이 재고수량보다 많아 승인 불가</span>
+                            </p>
                             <v-radio-group
                               v-model="approve_radio"
                               dense
@@ -114,6 +117,7 @@
                               <v-btn
                                 small
                                 :color="approve_radio ? 'primary' : 'error' "
+                                :disabled="checkApproveDisabled(item.belong_data, approve_radio)"
                                 @click="changeApprovalPhase(item, approve_radio, reject_reason)"
                               >
                                 저장
@@ -806,7 +810,7 @@ export default {
       this.addedHeaders.push({ text: '권한', align: 'center', value: 'authority', sortable: false });
     }
     if (this.addToTable || this.exceptFromTable){
-      this.addedHeaders.unshift({ text: '', align: 'center', value: 'add', sortable: false });
+      this.addedHeaders.push({ text: '', align: 'center', value: 'add', sortable: false });
     }
     if (this.approval){
       this.addedHeaders.unshift({ text: '승인', align: 'center', value: 'approval', sortable: false });
@@ -900,6 +904,13 @@ export default {
     },
     changeApprovalPhase(item, change, reason){
       this.$emit("setApprovalPhase", item, change, reason);
+    },
+    checkApproveDisabled(item, radio){
+      for(let d=0; d<item.length; d++){
+        if(item[d].ship_num > item[d].stock_num && radio === true){
+          return true;
+        }
+      }
     },
     closeAll () {
         Object.keys(this.$refs).forEach(k => {

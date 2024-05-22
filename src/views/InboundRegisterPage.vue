@@ -595,6 +595,7 @@ export default {
 
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list, true);
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
+      this.inboundCardInfoInputs = JSON.parse(JSON.stringify(this.inboundCardInfoInputs));
       mux.Rules.rulesSet(this.inboundCardInfoInputs);
 
       try {
@@ -1116,8 +1117,59 @@ export default {
         this.ship_selected_data = item.belong_data
       }
     },
-    searchShipData(){
-      this.ship_search_data = InboundRegisterPageConfig.test_ship_search_data;
+    async searchShipData(){
+
+      this.loading_dialog = true;
+
+      let searchProjectCode = this.searchShipaDataInputs.find(x=>x.label === '프로젝트').value;
+      if (searchProjectCode)
+      searchProjectCode = searchProjectCode.trim();
+
+      let searchPurpose = this.searchShipaDataInputs.find(x=>x.label === '출고목적').value;
+      if (searchPurpose)
+      searchPurpose = searchPurpose.trim();
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: [
+            {
+              "ship_confirmation_table.approval_phase": "승인",
+              "ship_confirmation_table.project_code": searchProjectCode ? searchProjectCode : "",
+              "ship_confirmation_table.purpose": searchPurpose ? searchPurpose : ""
+            }
+          ],
+          "script_file_name": "rooting_출하_검색_24_05_22_10_49_FBE.json",
+          "script_file_path": "data_storage_pion\\json_sql\\ship\\출하_검색_24_05_22_10_49_WDH"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          result.data.forEach(datas =>{
+            for(let d=0; d<datas.belong_data.length; d++){
+              datas.belong_data[d].purpose="";
+              datas.belong_data[d].ship_date="";
+            }
+
+          })
+          this.ship_search_data  = result.data
+        }else{
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+      }
+      this.loading_dialog = false;
+      // this.ship_search_data = InboundRegisterPageConfig.test_ship_search_data;
     },
     addShipData(item){
       for(let i=0; i<this.ship_selected_data.length; i++){

@@ -79,12 +79,24 @@
       <v-container>
         <v-row>
           <v-col cols="12">
-            <DataTableComponent
-              :headers="ship_product_list_headers"
+            <v-data-table
+              :headers="phase_check ? ship_approved_product_list_headers : ship_product_list_headers"
               :items="ship_product_list_data"
               item-key="product_code"
+              class="elevation-1"
               dense
-            />
+            >
+              <template v-slot:[`item.ship_num`] = "{ item }">
+                <span :class="!phase_check && item.ship_num > item.stock_num ? 'red--text font-weight-bold' : ''">
+                  {{ item.ship_num }}
+                </span>
+              </template>
+              <template v-slot:[`item.stock_num`] = "{ item }">
+                <span :class="item.ship_num > item.stock_num ? 'red--text font-weight-bold' : ''">
+                  {{ item.stock_num }}
+                </span>
+              </template>
+            </v-data-table>
           </v-col>
         </v-row>
         <v-row>
@@ -154,16 +166,19 @@ export default {
       dates: [],
       ship_product_list_dialog: false,
       loading_dialog: false,
+      phase_check:false,
 
       ship_info_data:{},
       ship_product_list_data:[],
 
-      change_approve:{},
+      change_approve:true,
+      stock_info:[],
 
       login_info: ShipSearchPageConfig.login_info,
       searchCardInputs:ShipSearchPageConfig.searchCardInputs,
       ship_approve_headers:ShipSearchPageConfig.ship_approve_headers,
       ship_product_list_headers:ShipSearchPageConfig.ship_product_list_headers,
+      ship_approved_product_list_headers:ShipSearchPageConfig.ship_approved_product_list_headers,
       ship_approve_data:[],
     }
   },
@@ -177,6 +192,10 @@ export default {
     ship_product_list_dialog(val){
       val || this.closeProductList()
     },
+    ship_approve_data(newData){
+      console.log(newData)
+      this.ship_approve_data = newData
+    }
   },
   created () {
     this.initialize()
@@ -198,6 +217,7 @@ export default {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
+      this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -245,11 +265,12 @@ export default {
               "ship_confirmation_table.ship_date_end_date": searchShipEndDate ? searchShipEndDate : "",
               "ship_product_table.product_code": searchProductCode ? searchProductCode : "",
               "ship_product_table.name": searchProductName ?  searchProductName : "",
-              "ship_confirmation_table.project_code": searchProjectCode ? searchProjectCode : ""
+              "ship_confirmation_table.project_code": searchProjectCode ? searchProjectCode : "",
+              "ship_confirmation_table.purpose": searchPurpose ? searchPurpose : ""
             }
           ],
-          "script_file_name": "rooting_출하_검색_24_05_16_14_36_HLN.json",
-          "script_file_path": "data_storage_pion\\json_sql\\ship\\출하_검색_24_05_16_14_36_JQJ"
+          "script_file_name": "rooting_출하_검색_24_05_22_10_49_FBE.json",
+          "script_file_path": "data_storage_pion\\json_sql\\ship\\출하_검색_24_05_22_10_49_WDH"
         });
         if (prevURL !== window.location.href) return;
 
@@ -258,6 +279,7 @@ export default {
         }
         if(result['code'] == 0){
           this.ship_approve_data  = result.data
+              this.loading_dialog = false;
         }else{
           alert(result['failed_info']);
         }
@@ -269,13 +291,20 @@ export default {
         else
           alert(error);
       }
-      this.loading_dialog = false;
     },
     closeProductList(){
       this.ship_product_list_dialog = false;
     },
     clickApproveData(item){
+      if(item.approval_phase == '승인'){
+        this.phase_check = true;
+      }else{
+        this.phase_check = false;
+      }
       let belong_datas = item.belong_data
+
+      this.loading_dialog = false;
+      this.ship_product_list_dialog = true;
       this.ship_product_list_data = [];
       this.ship_info_data = {};
       belong_datas.forEach(data =>{
@@ -291,49 +320,203 @@ export default {
         note: item.note,
         files: file_name,
       }
-      this.ship_product_list_dialog = true;
     },
-    setApprovalPhase(item, change, reason){
-      this.change_approve=ShipSearchPageConfig.change_approve;
+    async setApprovalPhase(item, change, reason){
+      const prevURL = window.location.href;
+
+      let phase;
+      let send_data = {};
+      let send_data_belong = {};
+      send_data.code = item.code;
+      // 현 승인 상태에 따른 필요 정보 정리
       if(item.approval_phase === '미확인'){
         if(change === true){
-          this.change_approve.code = item.code;
-          this.change_approve.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd');
-          this.change_approve.approval_phase = '미승인';
+          send_data.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+          send_data.approval_phase = '미승인';
+          phase = '확인';
         }else{
           if(reason === ''){
             alert('반려 사유 필수 기입');
           }else{
-            this.change_approve.code = item.code;
-            this.change_approve.reject_reason = reason;
-            this.change_approve.rejecter = this.login_info.name;
-            this.change_approve.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd');
-            this.change_approve.approval_phase = '반려';
+            send_data.reject_reason = reason;
+            send_data.rejecter = this.login_info.name;
+            send_data.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+            send_data.approval_phase = '반려';
+            phase = '반려';
           }
         }
       }else if(item.approval_phase === '미승인'){
         if(change === true){
-          this.change_approve.code = item.code;
-          this.change_approve.approved_date = mux.Date.format(this.today, 'yyyy-MM-dd');
-          this.change_approve.approval_phase = '승인';
-          this.change_approve.belong_data = item.belong_data;
+          send_data.approved_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+          send_data.approval_phase = '승인';
+          send_data_belong = item.belong_data
+          console.log(send_data_belong);
+          phase = '승인';
         }else{
           if(reason === ''){
             alert('반려 사유 필수 기입');
           }else{
-            this.change_approve.code = item.code;
-            this.change_approve.reject_reason = reason;
-            this.change_approve.rejecter = this.login_info.name;
-            this.change_approve.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd');
-            this.change_approve.approval_phase = '반려';
+            send_data.reject_reason = reason;
+            send_data.rejecter = this.login_info.name;
+            send_data.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+            send_data.approval_phase = '반려';
+            phase = '반려';
           }
         }
       }
-      // console.log(JSON.stringify(this.change_approve));
+      console.log(phase);
+
+      // 미승인에서 승인으로 변경하는 경우
+      if(send_data_belong.length > 0){
+
+        send_data_belong.forEach(async belong => {
+          let stock_check = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: [
+              {
+                "product_table.product_code": belong.product_code,
+                "module_table.module_code": belong.product_code,
+                "material_table.material_code": belong.product_code,
+              }
+            ],
+            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof stock_check === 'string'){
+            stock_check = JSON.parse(stock_check);
+          }
+          if(stock_check['code'] == 0){
+            let update_stock_data = [];
+            let searched_stock_data = [];
+            if(stock_check['data'].length > 0){
+              searched_stock_data = stock_check['data'][0]
+            }
+              let minus_stock = searched_stock_data.stock_num - belong.ship_num;
+                update_stock_data.push({
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "modifier"
+                  },
+                  "data":{
+                    "stock_num": minus_stock
+                  },
+                  "update_where": {"product_code": belong.product_code, "spot": belong.spot},
+                  "rollback": "yes"
+                });
+              let sendItemData = {};
+              sendItemData["stock_table-update"] = update_stock_data;
+
+              console.log("sendItemData ::: " + sendItemData);
+              try {
+                let resultItem = await mux.Server.post({
+                  path: '/api/sample_rest_api/',
+                  params: sendItemData
+                });
+                if (prevURL !== window.location.href) return;
+
+                if (typeof resultItem === 'string'){
+                  resultItem = JSON.parse(resultItem);
+                }
+                if(resultItem['code'] == 0){
+                  console.log('result :>> ', resultItem);
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  alert(resultItem['failed_info']);
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                  alert(error.response['data']['failed_info'].msg);
+                else
+                  alert(error);
+              }
+
+              let sendApproveData = {
+                "ship_confirmation_table-update": [{
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "modifier"
+                  },
+                  "data": send_data,
+                  "update_where": {"code": item.code},
+                  "rollback": "yes"
+                }]
+              };
+              console.log(sendApproveData);
+
+              try {
+                let resultShip = await mux.Server.post({
+                  path: '/api/sample_rest_api/',
+                  params: sendApproveData
+                });
+                if (prevURL !== window.location.href) return;
+
+                if (typeof resultShip === 'string'){
+                  resultShip = JSON.parse(resultShip);
+                }
+                if(resultShip['code'] == 0){
+                  console.log('result :>> ', resultShip);
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  alert(resultShip['failed_info']);
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                  alert(error.response['data']['failed_info'].msg);
+                else
+                  alert(error);
+              }
+          }
+        })
+        alert('출고 승인 완료')
+      }else{
+        let sendData = {
+          "ship_confirmation_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data": send_data,
+            "update_where": {"code": item.code},
+            "rollback": "yes"
+          }]
+        };
+        console.log(sendData);
+
+        try {
+          let resultShip = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: sendData
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof resultShip === 'string'){
+            resultShip = JSON.parse(resultShip);
+          }
+          if(resultShip['code'] == 0){
+            alert('출고 ' + phase + ' 완료');
+          } else {
+            if (prevURL !== window.location.href) return;
+            alert(resultShip['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            alert(error.response['data']['failed_info'].msg);
+          else
+            alert(error);
+        }
+      }
+
+
+
+
     }
   },
 }
 </script>
-<style lang="">
-
+<style>
 </style>

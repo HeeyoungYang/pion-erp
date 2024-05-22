@@ -219,6 +219,7 @@ export default {
         if (prevURL !== window.location.href) return;
         alert(error);
       }
+      this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -283,6 +284,19 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
+
+          result.data.forEach(datas =>{
+            for(let d=0; d<datas.belong_data.length; d++){
+              if(datas.belong_data[d].belong_data){
+                for(let dd=0; dd<datas.belong_data[d].belong_data.length; dd++){
+                  datas.belong_data[d].belong_data[dd].inbound_num="";
+                  datas.belong_data[d].belong_data[dd].inbound_price="";
+                  datas.belong_data[d].ship_date="";
+                }
+              }
+            }
+
+          })
           this.inbound_approve_data  = result.data
         }else{
           alert(result['failed_info']);
@@ -716,7 +730,7 @@ export default {
         else
           alert(error);
       }
-      console.log(JSON.stringify(this.change_approve));
+      // console.log(JSON.stringify(this.change_approve));
     }
   },
 }
