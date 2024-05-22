@@ -141,7 +141,7 @@
                             <table style=" border-spacing: 0px;" class="mt-1">
                               <tr class="text-body-1">
                                 <td class="cost_search_info info_title" style="border-left:1px solid #b6b6b6">작성자</td>
-                                <td class="cost_search_info">{{ clickedProductCost.given_name ? clickedProductCost.given_name : '' }}</td>
+                                <td class="cost_search_info">{{ clickedProductCost.given_name ? clickedProductCost.given_name.trim() : '' }}</td>
                                 <td class="cost_search_info info_title">작성일</td>
                                 <td class="cost_search_info">{{ clickedProductCost.created_time ? clickedProductCost.created_time : '' }}</td>
                               </tr>
