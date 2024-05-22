@@ -10,7 +10,7 @@
 
   "ship_approve_headers": [
     { "text": "작성일", "align": "start", "value": "created_time"},
-    { "text": "신청자", "align": "start", "value": "creater"},
+    { "text": "신청자", "align": "start", "value": "given_name"},
     { "text": "확인", "align": "start", "value": "checker"},
     { "text": "승인", "align": "start", "value": "approver"},
     { "text": "프로젝트", "align": "start", "value": "project_code"},

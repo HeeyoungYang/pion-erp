@@ -275,8 +275,8 @@ export default {
             "inbound_confirmation_table.inbound_date_end_date": searchInboundEndDate ? searchInboundEndDate : ""
             }
           ],
-          "script_file_name": "rooting_입고_검색_24_05_16_14_40_VDF.json",
-          "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_검색_24_05_16_14_41_IRT"
+          "script_file_name": "rooting_입고_검색_24_05_22_12_56_I7K.json",
+          "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_검색_24_05_22_12_56_52V"
         });
         if (prevURL !== window.location.href) return;
 

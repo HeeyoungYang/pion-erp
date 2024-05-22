@@ -269,8 +269,8 @@ export default {
               "ship_confirmation_table.purpose": searchPurpose ? searchPurpose : ""
             }
           ],
-          "script_file_name": "rooting_출하_검색_24_05_22_10_49_FBE.json",
-          "script_file_path": "data_storage_pion\\json_sql\\ship\\출하_검색_24_05_22_10_49_WDH"
+          "script_file_name": "rooting_출하_검색_24_05_22_14_03_V2V.json",
+          "script_file_path": "data_storage_pion\\json_sql\\ship\\출하_검색_24_05_22_14_03_27B"
         });
         if (prevURL !== window.location.href) return;
 
