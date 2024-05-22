@@ -319,8 +319,8 @@ export default {
                 "inbound_confirmation_table.approval_phase": "승인"
               }
             ],
-            "script_file_name": "rooting_제품_입고_정보_검색_bla_bla.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\제품_입고_정보_검색\\제품_입고_정보_검색_bla_bla"
+            "script_file_name": "rooting_입고_상세_검색_24_05_22_10_53_9P7.json",
+            "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_상세_검색_24_05_22_10_54_7AL"
           });
           if (prevURL !== window.location.href) return;
 
@@ -338,7 +338,8 @@ export default {
             this.stockDetails = JSON.parse(JSON.stringify(item.spot_stock));
             this.stockDetails.forEach(data => {
               data.stock_num = Number(data.stock_num).toLocaleString();
-            })
+            });
+            this.loading_dialog = false;
           } else {
             this.loading_dialog = false;
             alert(result2['failed_info']);
