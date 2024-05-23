@@ -19,9 +19,6 @@
 
   "inbound_approve_headers": [
     { "text": "발주번호", "align": "start", "value": "order_code"},
-    { "text": "신청자", "align": "start", "value": "given_name"},
-    { "text": "확인", "align": "start", "value": "checker"},
-    { "text": "승인", "align": "start", "value": "approver"},
     { "text": "구매담당자", "align": "start", "value": "purchase_manager"},
     { "text": "자재담당자", "align": "start", "value": "material_manager"},
     { "text": "입고일자", "align": "start", "value": "inbound_date"},

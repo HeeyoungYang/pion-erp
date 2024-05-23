@@ -57,6 +57,7 @@
                     item-key="product_code"
                     approval="inbound"
                     dense
+                    :loginId="login_info.id"
                     @clickTr="clickApproveData"
                     @setApprovalPhase="setApprovalPhase"
                   />
@@ -226,6 +227,8 @@ export default {
         // this.login_info.email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
         this.login_info.name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.login_info.email = this.$cookies.get(this.$configJson.cookies.email.key);
+        this.login_info.id = this.$cookies.get(this.$configJson.cookies.id.key);
+        console.log(this.login_info)
       } catch (error) {
         if (prevURL !== window.location.href) return;
         alert(error);

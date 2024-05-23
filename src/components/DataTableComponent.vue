@@ -74,8 +74,20 @@
                   <v-btn v-if="exceptFromTable" @click="exceptData(index)" x-small color="grey" class="white--text">제외</v-btn>
                 </td>
                 <td v-if="approval" align="center">
+                  <!-- 확인 또는 승인자가 아닐 경우 노출되는 단순  chip -->
+                  <v-chip
+                    v-if="(item.approval_phase == '미확인' && item.checker_id !== userID)  || (item.approval_phase == '미승인' && item.approver_id !== userID) "
+                    class="ma-2"
+                    small
+                    :color="item.approval_phase == '미확인' ? 'default' : 'amber lighten-4'"
+                  >
+                    {{ item.approval_phase }}
+                  </v-chip>
+
+
+                  <!-- 확인 또는 승인자에 해당될 경우 노출되는 list형 chip -->
                   <v-menu
-                    v-if="item.approval_phase == '미승인' || item.approval_phase == '미확인'"
+                    v-if="(item.approval_phase == '미확인' && item.checker_id == userID)  || (item.approval_phase == '미승인' && item.approver_id == userID) "
                     :close-on-content-click="false"
                     :nudge-width="200"
                     offset-x
@@ -327,6 +339,19 @@
                       </v-list>
                     </v-card>
                   </v-menu>
+                </td>
+                <td v-if="approval && item.given_name">{{ item.given_name }}</td>
+                <td v-if="approval && item.checker">
+                  {{ item.checker }}
+                  <v-icon
+                    :color="item.checked_date ? 'success' : (item.rejected_date && item.rejecter === item.checker ? 'error' : 'grey lighten-1')"
+                  > mdi-circle-medium </v-icon>
+                </td>
+                <td v-if="approval && item.approver">
+                  {{ item.approver }}
+                  <v-icon
+                    :color="item.approved_date ? 'success' : (item.rejected_date && item.rejecter === item.approver ? 'error' : 'grey lighten-1')"
+                  > mdi-circle-medium </v-icon>
                 </td>
                 <td v-if="!showSelect && showSelectChildren"></td>
                 <td v-if="showSelect">
@@ -756,6 +781,7 @@ export default {
     hideDefaultFooter: Boolean,
     disablePagination: Boolean,
     disableSort: Boolean,
+    loginId: String,
     value: {
       type: null,
       default: () => []
@@ -784,6 +810,7 @@ export default {
       approve_radio: true,
       reject_reason: '',
       confirmationDialog: false,
+      userID:'',
     };
   },
   async mounted() {
@@ -817,7 +844,10 @@ export default {
       this.addedHeaders.unshift({ text: '', align: 'center', value: 'addToTable', sortable: false });
     }
     if (this.approval){
-      this.addedHeaders.unshift({ text: '승인', align: 'center', value: 'approval', sortable: false });
+      this.addedHeaders.unshift({ text: '승인', align: 'start', value: 'approver', sortable: false });
+      this.addedHeaders.unshift({ text: '확인', align: 'start', value: 'checker', sortable: false });
+      this.addedHeaders.unshift({ text: '신청자', align: 'start', value: 'given_name', sortable: false });
+      this.addedHeaders.unshift({ text: '단계', align: 'center', value: 'approval', sortable: false });
     }
     if (this.groupBy){
       this.addedHeaders.unshift({ text: this.headers.find(x=>x.value === this.groupBy).text, align: 'center', value: ''});
@@ -839,6 +869,8 @@ export default {
   },
   methods: {
     async initialize () {
+      this.userID = this.loginId
+      console.log(this.userID);
       if (this.showAuthority){
         const prevURL = window.location.href;
         try {

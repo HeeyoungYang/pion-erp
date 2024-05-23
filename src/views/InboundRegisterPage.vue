@@ -237,16 +237,7 @@
                             style="width:150px"
                           ></v-autocomplete>
                         </td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            style="max-width:200px"
-                            v-model="item.spec"
-                          >
-                          </v-text-field>
-                        </td>
+                        <td align="center">{{  item.spec  }}</td>
                         <td align="center">{{  item.model }}</td>
                         <td align="center">{{  item.manufacturer }}</td>
                         <td align="center">{{  item.unit_price }}</td>
@@ -1095,7 +1086,7 @@ export default {
       this.member_dialog = true;
     },
     setMember(item){
-      this.inbound_member_info[this.member_type_index].name = item.name
+      this.inbound_member_info[this.member_type_index].name = item.name.trim()
       this.inbound_member_info[this.member_type_index].user_id = item.user_id
       this.close();
     },
