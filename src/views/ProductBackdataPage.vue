@@ -3182,9 +3182,9 @@ export default {
       }else {
         length = (spot_input.length/3)+1
       }
-      spot_input.push({label:'위치'+[length], column_name:'spot', type:'auto', list: this.spot_list, col:'12', sm:'4', lg:'4', value:''},)
-      spot_input.push( {label:'재고수량'+[length], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value:''},)
-      spot_input.push( {label:'재고상태'+[length], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value:''},)
+      spot_input.push({label:'위치'+[length], column_name:'spot', type:'auto', list: this.spot_list, col:'12', sm:'4', lg:'4', value:'', rule_set:true},)
+      spot_input.push( {label:'재고수량'+[length], type:'number_comma', column_name:'stock_num', col:'12', sm:'4', lg:'4', value:'', rule_set:true},)
+      spot_input.push( {label:'재고상태'+[length], list:['G', 'B'], type:'auto', column_name:'conditions', col:'12', sm:'4', lg:'4', value:'', rule_set:true},)
 
       mux.Rules.rulesSet(spot_input);
     },

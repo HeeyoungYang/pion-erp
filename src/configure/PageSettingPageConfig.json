@@ -16,9 +16,9 @@
     "page_url": ""
   },
   "registPageSettingInputs":[
-    {"label":"ID", "column_name":"page_name",  "col":"12", "sm":"12", "lg":"12", "value": ""},
-    {"label":"페이지 명", "column_name":"page_alias",  "col":"12", "sm":"12", "lg":"12", "value": ""},
-    {"label":"리소스", "column_name":"page_url",  "col":"12", "sm":"12", "lg":"12", "value": ""}
+    {"label":"ID", "column_name":"page_name",  "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true},
+    {"label":"페이지 명", "column_name":"page_alias",  "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true},
+    {"label":"리소스", "column_name":"page_url",  "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true}
   ],
   
   "test_data":[

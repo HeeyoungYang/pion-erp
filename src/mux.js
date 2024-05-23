@@ -337,13 +337,13 @@ mux.Server = {
             sendData[key] = reqObj[key];
           }
         });
-        
+
         const result = await mux.Server.get(sendData);
 
         if (result.code == 0) {
           const fileData = result.data; // Base64로 인코딩된 파일 데이터
           const fileName = reqObj.showName ? reqObj.showName : reqObj.fileName; // 파일명
-  
+
           // Base64 디코딩하여 Blob 객체 생성
           const byteCharacters = atob(fileData);
           const byteNumbers = new Array(byteCharacters.length);
@@ -352,7 +352,7 @@ mux.Server = {
           }
           const byteArray = new Uint8Array(byteNumbers);
           const blob = new Blob([byteArray], { type: 'application/octet-stream' });
-  
+
           // Blob 객체를 다운로드할 수 있는 링크 생성
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
@@ -2475,7 +2475,7 @@ mux.Rules = {
    */
     rulesSet(inputs){
       inputs.forEach(input =>{
-        if(input.column_name != 'model'){
+        if(input.rule_set === true){
           if(input.text_type == 'number'){
             input.rules =  [v => !!v || input.label + " 입력(숫자)"]
           }else if(input.type == 'number_comma'){

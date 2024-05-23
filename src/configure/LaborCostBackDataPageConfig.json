@@ -2,12 +2,12 @@
   "tab_items":["노무비 산출 정보", "시중노임단가 정보", "산출비율 정보"],
 
   "registLaborInputs":[
-    {"label":"품번", "column_name":"no",  "col":"12", "sm":"6", "lg":"6", "value": ""},
-    {"label":"공종", "column_name":"name",  "col":"12", "sm":"6", "lg":"6", "value": ""},
-    {"label":"규격", "column_name":"type",  "col":"12", "sm":"6", "lg":"6", "value": ""},
-    {"label":"직종", "column_name":"occupation", "type":"select", "list":[], "value":"", "col":"12", "sm":"6", "lg":"6"},
-    {"label":"공량(M/D)", "column_name":"man_per_day", "text_type":"number", "col":"12", "sm":"6", "lg":"6", "value": ""},
-    {"label":"할증율", "column_name":"surcharge_ratio", "text_type":"number", "col":"12", "sm":"6", "lg":"6", "value": ""}
+    {"label":"품번", "column_name":"no",  "col":"12", "sm":"6", "lg":"6", "value": "", "rule_set":true},
+    {"label":"공종", "column_name":"name",  "col":"12", "sm":"6", "lg":"6", "value": "", "rule_set":true},
+    {"label":"규격", "column_name":"type",  "col":"12", "sm":"6", "lg":"6", "value": "", "rule_set":true},
+    {"label":"직종", "column_name":"occupation", "type":"select", "list":[], "value":"", "col":"12", "sm":"6", "lg":"6", "rule_set":true},
+    {"label":"공량(M/D)", "column_name":"man_per_day", "text_type":"number", "col":"12", "sm":"6", "lg":"6", "value": "", "rule_set":true},
+    {"label":"할증율", "column_name":"surcharge_ratio", "text_type":"number", "col":"12", "sm":"6", "lg":"6", "value": "", "rule_set":true}
   ],
   "labor_headers": [
     { "text": "품번", "align": "start", "value": "no"},
@@ -166,9 +166,9 @@
 
 
   "registWageInputs":[
-    {"label":"직종", "column_name":"occupation", "value":"", "col":"12", "sm":"6", "lg":"6"},
-    {"label":"단가", "column_name":"unit_price", "text_type":"number",  "col":"12", "sm":"6", "lg":"6", "value": ""},
-    {"label":"설계 조정율", "column_name":"adjustment_ratio", "text_type":"number", "col":"12", "sm":"6", "lg":"6", "value": ""}
+    {"label":"직종", "column_name":"occupation", "value":"", "col":"12", "sm":"6", "lg":"6", "rule_set":true},
+    {"label":"단가", "column_name":"unit_price", "text_type":"number",  "col":"12", "sm":"6", "lg":"6", "value": "", "rule_set":true},
+    {"label":"설계 조정율", "column_name":"adjustment_ratio", "text_type":"number", "col":"12", "sm":"6", "lg":"6", "value": "", "rule_set":true}
   ],
   "wage_headers": [
     { "text": "직종", "align": "start", "value": "occupation"},
@@ -219,9 +219,9 @@
   ],
   
   "registRatioInputs":[
-    {"label":"종류", "column_name":"type", "value":"", "col":"12", "sm":"12", "lg":"12"},
-    {"label":"", "column_name":"formula1", "col":"12", "sm":"6", "lg":"6", "value": "", "suffix": "X"},
-    {"label":"", "column_name":"formula2", "col":"12", "sm":"3", "lg":"3", "value": "", "suffix": ""}
+    {"label":"종류", "column_name":"type", "value":"", "col":"12", "sm":"12", "lg":"12", "rule_set":true},
+    {"label":"", "column_name":"formula1", "col":"12", "sm":"6", "lg":"6", "value": "", "suffix": "X", "rule_set":true},
+    {"label":"", "column_name":"formula2", "col":"12", "sm":"3", "lg":"3", "value": "", "suffix": "", "rule_set":true}
   ],
   "ratio_headers": [
     { "text": "종류", "align": "start", "value": "type"},

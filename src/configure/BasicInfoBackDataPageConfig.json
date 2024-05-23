@@ -2,9 +2,9 @@
   "tab_items":["자재 기본 정보"],
 
   "ProductInfoInputsList":[
-    {"label":"자재 분류", "column_name":"classification",  "col":"12", "sm":"12", "lg":"12", "value": ""},
-    {"label":"제조사", "column_name":"manufacturer",  "col":"12", "sm":"12", "lg":"12", "value": ""},
-    {"label":"위치", "column_name":"spot",  "col":"12", "sm":"12", "lg":"12", "value": ""}
+    {"label":"자재 분류", "column_name":"classification",  "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true},
+    {"label":"제조사", "column_name":"manufacturer",  "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true},
+    {"label":"위치", "column_name":"spot",  "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true}
   ],
 
   "classification_headers": [
