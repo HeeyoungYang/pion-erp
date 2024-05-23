@@ -843,6 +843,7 @@ export default {
       let success = true;
       const validate = this.$refs.inboundForm.validate();
       if(validate){
+        this.files_value = [];
         inbound_input.forEach(data => {
           for(let i=0; i<Object.keys(item).length; i++){
             if(data.column_name == Object.keys(item)[i]){
