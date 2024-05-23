@@ -356,7 +356,7 @@
                     <v-chip
                       color="yellow lighten-4"
                       small
-                    >필요수량 : {{ Number(item.num).toLocaleString() }}</v-chip>
+                    >사용수량 : {{ Number(item.num).toLocaleString() }}</v-chip>
                   </p>
                 </td>
                 <td v-if="stockPriceInfo || itemPriceInfo" align="left">
@@ -565,7 +565,7 @@
                     <v-chip
                       color="white"
                       small
-                    >필요수량 : {{ Number(data.num).toLocaleString() }}</v-chip>
+                    >사용수량 : {{ Number(data.num).toLocaleString() }}</v-chip>
                   </p>
                 </td>
                 <td v-if="stockPriceInfoBelong || itemPriceInfoBelong" align="left">
@@ -777,6 +777,7 @@ export default {
       inbound_approve_belong: [],
       inbound_approve_files: [],
       ship_approve_belong: [],
+      ship_approve_files: [],
       //authority_list:['관리자', '노무비정보관리', '원가계산', '입고승인', '출고승인'],
       authority_list:[],
       authority_list_info:[],
@@ -951,6 +952,7 @@ export default {
       this.inbound_approve_belong = [];
       this.ship_approve_belong = [];
       this.inbound_approve_files = belong_files;
+      this.ship_approve_files = belong_files;
       belong_datas.forEach(data =>{
         this.inbound_approve_belong.push(data);
         this.ship_approve_belong.push(data);

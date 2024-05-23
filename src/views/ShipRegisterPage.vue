@@ -202,6 +202,7 @@ export default {
       member_dialog: false,
       loading_dialog: false,
       inspection_report_value:'',
+      files_value:[],
 
       member_type_index:0,
       members_list:[],
@@ -495,6 +496,7 @@ export default {
                       }else{
                         item[Object.keys(item)[i]] = item[Object.keys(item)[i]]+"/"+data.value[f].name
                       }
+                      this.files_value.push(data.value[f])
                     }
                   }else if(data.column_name === 'inspection_report'){
                     this.inspection_report_value = data.value
@@ -625,13 +627,36 @@ export default {
           });
           sendData["ship_product_table-insert"] = product_data;
 
+          sendData.path = '/api/sample_rest_api2/';
+          sendData.prefix = this.ship_confirmation_data.code + '_';
+          sendData.files = [];
+          if (this.ship_confirmation_data.inspection_report) {
+            sendData.files.push({
+              folder: 'ship/inspection_report',
+              file: this.inspection_report_value,
+              name: this.ship_confirmation_data.inspection_report
+            });
+          }
+          if (this.ship_confirmation_data.files && this.files_value.length > 0) {
+            for (let i = 0; i < this.files_value.length; i++) {
+              const file = this.files_value[i];
+              sendData.files.push({
+                folder: 'ship/files',
+                file: file,
+                name: this.ship_confirmation_data.files[i]
+              });
+            }
+          }
+
 
           const prevURL = window.location.href;
           try {
-            let result = await mux.Server.post({
-              path: '/api/sample_rest_api/',
-              params: sendData
-            });
+            // let result = await mux.Server.post({
+            //   path: '/api/sample_rest_api/',
+            //   params: sendData
+            // });
+
+            let result = await mux.Server.uploadFile(sendData);
             if (prevURL !== window.location.href) return;
 
             if (typeof result === 'string'){

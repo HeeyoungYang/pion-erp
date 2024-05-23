@@ -109,21 +109,29 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" sm="4" v-if="inbound_info_data.receiving_inspection">
+          <v-col cols="12" sm="4" v-if="inbound_info_data.receiving_inspection_file">
             <p class="font-weight-bold primary--text mb-0">▼ 수입검사서</p>
-            <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+inbound_info_data.receiving_inspection"></iframe>
-            <!-- <v-img
+            <!-- <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+inbound_info_data.receiving_inspection"></iframe> -->
+            <v-img
               alt="thumbnail"
               class="shrink mr-2"
               contain
-              :src="mux.Util.imageBinary(detailThumbnail)"
+              :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
               transition="scale-transition"
               width="350"
-            /> -->
+            />
           </v-col>
-          <v-col cols="12" sm="4" v-if="inbound_info_data.inspection_report">
+          <v-col cols="12" sm="4" v-if="inbound_info_data.inspection_report_file">
             <p class="font-weight-bold primary--text mb-0">▼ 시험성적서</p>
-            <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+inbound_info_data.inspection_report"></iframe>
+            <v-img
+              alt="thumbnail"
+              class="shrink mr-2"
+              contain
+              :src="mux.Util.imageBinary(inspectionReportThumbnail)"
+              transition="scale-transition"
+              width="350"
+            />
+            <!-- <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+inbound_info_data.inspection_report"></iframe> -->
           </v-col>
           <v-col cols="12" sm="4" v-if="inbound_info_data.files">
             <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
@@ -167,10 +175,13 @@ export default {
               },
   data(){
     return{
+      mux: mux,
       today:'',
       dates: [],
       inbound_product_list_dialog: false,
       loading_dialog: false,
+      receivingInspectionThumbnail: '',
+      inspectionReportThumbnail: '',
 
       inbound_info_data:{},
       inbound_product_list_data:[],
@@ -317,7 +328,8 @@ export default {
     closeProductList(){
       this.inbound_product_list_dialog = false;
     },
-    clickApproveData(item){
+    async clickApproveData(item){
+
       let belong_datas = item.belong_data
       this.inbound_product_list_data = [];
       this.inbound_info_data = {};
@@ -340,10 +352,52 @@ export default {
         project_code:item.project_code,
         spot:item.spot,
         abnormal_reason : item.abnormal_reason,
-        receiving_inspection : item.receiving_inspection,
-        inspection_report : item.inspection_report,
+        receiving_inspection_file : item.receiving_inspection_file,
+        inspection_report_file : item.inspection_report_file,
         note: item.note,
         files: file_name,
+      }
+
+      const prevURL = window.location.href;
+      try {
+        this.loading_dialog = true;
+        // 제품의 썸네일
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: [
+            {
+              "inbound_confirmation_table.code": item.code
+            }
+          ],
+          "script_file_name": "rooting_입고_thumbnail_검색_24_05_16_15_32_Z97.json",
+          "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_thumbnail_검색_24_05_16_15_32_7VD"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          let receiving_inspection_thumbnail = '';
+          let inspection_report_thumbnail = '';
+          if (result['data'].length > 0){
+            receiving_inspection_thumbnail = result['data'][0].receiving_inspection_thumbnail;
+            inspection_report_thumbnail = result['data'][0].inspection_report_thumbnail;
+          }
+          this.receivingInspectionThumbnail = receiving_inspection_thumbnail;
+          this.inspectionReportThumbnail = inspection_report_thumbnail;
+          this.loading_dialog = false;
+        } else {
+          this.loading_dialog = false;
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
       }
       this.inbound_product_list_dialog = true;
     },
