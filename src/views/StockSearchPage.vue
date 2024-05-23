@@ -131,7 +131,7 @@
         <v-row>
           <v-col cols="12" sm="4">
             <p class="text-h6 font-weight-bold primary--text">사진</p>
-            <v-card class="pa-0 mt-5" color="grey lighten-3">
+            <v-card class="pa-1 mt-5" color="grey lighten-3">
               <v-img
                 alt="thumbnail"
                 class="shrink mr-2"
@@ -314,7 +314,7 @@ export default {
           let result2 = await mux.Server.post({
             path: '/api/sample_rest_api/',
             params: [
-              { 
+              {
                 "inbound_product_table.product_code": item._code,
                 "inbound_confirmation_table.approval_phase": "승인"
               }

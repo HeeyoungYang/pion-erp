@@ -356,7 +356,7 @@
                     <v-chip
                       color="yellow lighten-4"
                       small
-                    >사용수량 : {{ Number(item.num).toLocaleString() }}</v-chip>
+                    >사용수량 : {{ Number(item.used_num).toLocaleString() }}</v-chip>
                   </p>
                 </td>
                 <td v-if="stockPriceInfo || itemPriceInfo" align="left">
@@ -565,7 +565,7 @@
                     <v-chip
                       color="white"
                       small
-                    >사용수량 : {{ Number(data.num).toLocaleString() }}</v-chip>
+                    >사용수량 : {{ Number(data.used_num).toLocaleString() }}</v-chip>
                   </p>
                 </td>
                 <td v-if="stockPriceInfoBelong || itemPriceInfoBelong" align="left">
@@ -579,7 +579,7 @@
                     <v-chip
                     color="white"
                       small
-                    >금액 : ₩ {{ Number(data.num * data.unit_price.replace(/\,/g,'').replace(/₩ /g,'')).toLocaleString() }}</v-chip>
+                    >금액 : ₩ {{ Number(data.used_num * data.unit_price.replace(/\,/g,'').replace(/₩ /g,'')).toLocaleString() }}</v-chip>
                   </p>
                 </td>
                 <td v-if="showItemDetails" align="center">

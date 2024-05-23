@@ -137,7 +137,7 @@
         <v-row>
           <v-col cols="12" sm="4">
             <p class="text-h6 font-weight-bold primary--text">사진</p>
-            <v-card class="pa-0 mt-5" color="grey lighten-3">
+            <v-card class="pa-1 mt-5" color="grey lighten-3">
               <v-img
                 alt="thumbnail"
                 class="shrink mr-2"
@@ -316,7 +316,7 @@ export default {
           let result2 = await mux.Server.post({
             path: '/api/sample_rest_api/',
             params: [
-              { 
+              {
                 "inbound_product_table.product_code": item.item_code,
                 "inbound_confirmation_table.approval_phase": "승인"
               }
@@ -434,14 +434,6 @@ export default {
           this.product_data.forEach(data =>{
             data.item_code = data.code;
             delete data.code;
-
-            if(data.belong_data){
-              for(let b=0; b<data.belong_data.length; b++){
-                data.belong_data[b].item_code = data.belong_data[b].code;
-                delete data.belong_data[b].code;
-                data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
-              }
-            }
             let stock_calc = 0;
             if (data.spot_stock){
               for(let d=0; d<data.spot_stock.length; d++){
@@ -456,6 +448,15 @@ export default {
               data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
             }else {
               data.item_price = 0;
+            }
+
+            if(data.belong_data){
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].item_code = data.belong_data[b].code;
+                data.belong_data[b].used_num = data.total_stock * data.belong_data[b].num
+                delete data.belong_data[b].code;
+                data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
+              }
             }
             this.total_stock_num += data.total_stock
             this.total_stock_price += data.item_price

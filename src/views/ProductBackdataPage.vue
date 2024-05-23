@@ -737,22 +737,20 @@
                             sm="6"
                             align-self="center"
                           >
+                            <v-chip
+                              class="mr-2"
+                              color="indigo"
+                              text-color="white"
+                              small
+                            >
+                              {{ data.name }} 총 재고 : {{ data.total_stock }}개
+                            </v-chip>
                             <v-btn
                               small
                               color="default"
                               class="mr-2"
                               @click="detailInfoItem(data, 'product')"
-                            >완제품 상세</v-btn>
-                            <!-- <v-chip
-                              class="mr-2"
-                              color="indigo"
-                              text-color="white"
-                              small
-                              v-for="(stock, idx) in data.spot_stock"
-                              :key="idx"
-                            >
-                              {{ stock.spot }} : {{ stock.stock_num }}개
-                            </v-chip> -->
+                            >상세 보기</v-btn>
                           </v-col>
                           <v-col
                             cols="12"
@@ -1014,7 +1012,7 @@
         <v-row>
           <v-col cols="12" :sm="detailForProduct ? 6 : 4" class="mb-3">
             <p class="text-h6 font-weight-bold primary--text">사진</p>
-            <v-card class="pa-7 mt-5" color="grey lighten-3">
+            <v-card class="pa-1 mt-5" color="grey lighten-3">
               <v-img
                 alt="thumbnail"
                 class="shrink"
@@ -2152,14 +2150,6 @@ export default {
           this.module_data.forEach(data =>{
             data.item_code = data.code;
             delete data.code;
-
-            if(data.belong_data){
-              for(let b=0; b<data.belong_data.length; b++){
-                data.belong_data[b].item_code = data.belong_data[b].code;
-                delete data.belong_data[b].code;
-                data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
-              }
-            }
             let stock_calc = 0;
             if (data.spot_stock){
               for(let d=0; d<data.spot_stock.length; d++){
@@ -2174,6 +2164,15 @@ export default {
               data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
             }else {
               data.item_price = 0;
+            }
+
+            if(data.belong_data){
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].item_code = data.belong_data[b].code;
+                data.belong_data[b].used_num = data.total_stock * data.belong_data[b].num
+                delete data.belong_data[b].code;
+                data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
+              }
             }
             this.module_total_stock_num += data.total_stock
             this.module_total_stock_price += data.item_price
@@ -2609,21 +2608,6 @@ export default {
           this.product_data.forEach(data =>{
             data.item_code = data.code;
             delete data.code;
-
-            if(data.belong_data){
-              for(let b=0; b<data.belong_data.length; b++){
-                data.belong_data[b].item_code = data.belong_data[b].code;
-                delete data.belong_data[b].code;
-                data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
-                if(data.belong_data[b].belong_data){
-                  for(let c=0; c<data.belong_data[b].belong_data.length; c++){
-                    data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
-                    delete data.belong_data[b].belong_data[c].code;
-                    data.belong_data[b].belong_data[c].unit_price = '₩ '+ Number(data.belong_data[b].belong_data[c].unit_price).toLocaleString()
-                  }
-                }
-              }
-            }
             let stock_calc = 0;
             if (data.spot_stock){
               for(let d=0; d<data.spot_stock.length; d++){
@@ -2638,6 +2622,23 @@ export default {
               data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
             }else {
               data.item_price = 0;
+            }
+
+            if(data.belong_data){
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].item_code = data.belong_data[b].code;
+                data.belong_data[b].used_num = data.total_stock * data.belong_data[b].num
+                delete data.belong_data[b].code;
+                data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
+                if(data.belong_data[b].belong_data){
+                  for(let c=0; c<data.belong_data[b].belong_data.length; c++){
+                    data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
+                    data.belong_data[b].belong_data[c].used_num = data.total_stock * data.belong_data[b].used_num * data.belong_data[c].num
+                    delete data.belong_data[b].belong_data[c].code;
+                    data.belong_data[b].belong_data[c].unit_price = '₩ '+ Number(data.belong_data[b].belong_data[c].unit_price).toLocaleString()
+                  }
+                }
+              }
             }
             // this.total_stock_num += data.total_stock
             // this.total_stock_price += data.item_price
@@ -3116,7 +3117,7 @@ export default {
           let result2 = await mux.Server.post({
             path: '/api/sample_rest_api/',
             params: [
-              { 
+              {
                 "inbound_product_table.product_code": item.item_code,
                 "inbound_confirmation_table.approval_phase": "승인"
               }

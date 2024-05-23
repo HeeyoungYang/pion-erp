@@ -203,6 +203,7 @@ export default {
       loading_dialog: false,
       inspection_report_value:'',
       files_value:[],
+      selected_product_data:[],
 
       member_type_index:0,
       members_list:[],
