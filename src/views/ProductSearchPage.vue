@@ -65,7 +65,7 @@
                   >
                     : {{ data.item_code }}
                   </span>
-                  <v-menu
+                  <!-- <v-menu
                     v-if="data.thumbnail"
                     open-on-hover
                     :close-on-content-click="false"
@@ -101,7 +101,7 @@
                         </v-list-item>
                       </v-list>
                     </v-card>
-                  </v-menu>
+                  </v-menu> -->
                 </p>
 
               </template>

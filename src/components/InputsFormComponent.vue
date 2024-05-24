@@ -76,6 +76,7 @@
         :rows="input.rows ? input.rows : '1'"
       ></v-textarea>
       <v-file-input v-else-if="input.type === 'file'"
+        :ref="input.ref ? input.ref : 'file' + input.accept + index"
         v-model="input.value"
         :small-chips="smallChips"
         :multiple="input.multiple === undefined ? (multiple ? multiple : false) : input.multiple"
@@ -89,6 +90,11 @@
         :label="input.label"
         :disabled="input.disabled"
         :accept="input.accept"
+        @change="input.accept ? 
+        input.accept.includes('jpg') ? mux.Util.checkTypeImage($event, $refs[input.ref ? input.ref : 'file' + input.accept + index][0]) :  
+        input.accept.includes('pdf') ? mux.Util.checkTypePdf($event, $refs[input.ref ? input.ref : 'file' + input.accept + index][0]) :  
+        input.accept.includes('xlsx') ? mux.Util.checkTypeExcel($event, $refs[input.ref ? input.ref : 'file' + input.accept + index][0]) :  ''
+        : ''"
       ></v-file-input>
 
       <v-menu v-else-if="input.type === 'dateSingle'"
@@ -171,6 +177,8 @@
 </template>
 
 <script>
+import mux from '@/mux';
+
 
 /**
  * @file InputsFormComponent.vue
@@ -214,6 +222,7 @@ export default {
   },
   data() {
     return {
+      mux: mux,
       dateSet: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
       dates:[]
     };

@@ -982,6 +982,120 @@ mux.Util = {
     });
   },
 
+  checkTypeImage(files, self) {
+    return new Promise((resolve) => {
+      // Get the selected file
+      if (!files) {
+        resolve(false);
+        return;
+      }
+
+      if (Array.isArray(files)) {
+        // files is an array of file objects
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          // Check the file type
+          if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/jpg') {
+            // Invalid file type, show an error message
+            alert('허용되지 않는 파일 형식입니다. jpeg, jpg, png 확장자의 이미지 파일만 첨부 가능합니다.');
+            files.length = 0;
+            resolve(false);
+            return;
+          }
+        }
+      } else {
+        // files is a single file object
+        const file = files;
+        // Check the file type
+        if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/jpg') {
+          // Invalid file type, show an error message
+          alert('허용되지 않는 파일 형식입니다. jpeg, jpg, png 확장자의 이미지 파일만 첨부 가능합니다.');
+          self.reset();
+          self.$el.querySelector('input[type="file"]').value = '';
+          resolve(false);
+          return;
+        }
+      }
+      resolve(true);
+    });
+  },
+
+  checkTypePdf(files, self) {
+    return new Promise((resolve) => {
+      // Get the selected file
+      if (!files) {
+        resolve(false);
+        return;
+      }
+
+      if (Array.isArray(files)) {
+        // files is an array of file objects
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          // Check the file type
+          if (file.type !== 'application/pdf') {
+            // Invalid file type, show an error message
+            alert('허용되지 않는 파일 형식입니다. pdf 파일만 첨부 가능합니다.');
+            files.length = 0;
+            resolve(false);
+            return;
+          }
+        }
+      } else {
+        // files is a single file object
+        const file = files;
+        // Check the file type
+        if (file.type !== 'application/pdf') {
+          // Invalid file type, show an error message
+          alert('허용되지 않는 파일 형식입니다. pdf 파일만 첨부 가능합니다.');
+          self.reset();
+          self.$el.querySelector('input[type="file"]').value = '';
+          resolve(false);
+          return;
+        }
+      }
+      resolve(true);
+    });
+  },
+
+  checkTypeExcel(files, self) {
+    return new Promise((resolve) => {
+      // Get the selected file
+      if (!files) {
+        resolve(false);
+        return;
+      }
+
+      if (Array.isArray(files)) {
+        // files is an array of file objects
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          // Check the file type
+          if (file.name.split('.').pop() !== 'xlsx' && file.name.split('.').pop() !== 'xls') {
+            // Invalid file type, show an error message
+            alert('허용되지 않는 파일 형식입니다. xlsx, xls 확장자의 엑셀 파일만 첨부 가능합니다.');
+            files.length = 0;
+            resolve(false);
+            return;
+          }
+        }
+      } else {
+        // files is a single file object
+        const file = files;
+        // Check the file type
+        if (file.name.split('.').pop() !== 'xlsx' && file.name.split('.').pop() !== 'xls') {
+          // Invalid file type, show an error message
+          alert('허용되지 않는 파일 형식입니다. xlsx, xls 확장자의 엑셀 파일만 첨부 가능합니다.');
+          self.reset();
+          self.$el.querySelector('input[type="file"]').value = '';
+          resolve(false);
+          return;
+        }
+      }
+      resolve(true);
+    });
+  },
+
   copyStyleToNewWindow() {
     var styles = '';
     var styleElements = document.querySelectorAll('style, link[rel="stylesheet"]');

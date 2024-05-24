@@ -130,6 +130,7 @@
                                 sm="4"
                               >
                                 <v-file-input
+                                  ref="excelFileInput"
                                   small-chips
                                   filled
                                   dense
@@ -138,7 +139,7 @@
                                   prepend-icon=""
                                   append-icon="mdi-paperclip"
                                   accept=".xlsx, .xls"
-                                  @change="loadExcelFile"
+                                  @change="loadExcelFile($event, $refs.excelFileInput)"
                                 ></v-file-input>
                               </v-col>
                               <v-col
@@ -146,6 +147,7 @@
                                 sm="4"
                               >
                                 <v-file-input
+                                  ref="excelPhotoInput"
                                   filled
                                   dense
                                   hide-details
@@ -155,6 +157,7 @@
                                   append-icon="mdi-image-edit"
                                   accept=".png, .jpg, .jpeg"
                                   v-model="excel_photos"
+                                  @change="mux.Util.checkTypeImage($event, $refs.excelPhotoInput)"
                                 ></v-file-input>
                               </v-col>
                               <v-col
@@ -851,8 +854,8 @@
                             :close-on-content-click="false"
                             :nudge-width="100"
                             offset-x
+                            v-if="this.registProductInputs[this.registProductInputs.length-1].value"
                           >
-                            <!-- v-if="this.registProductInputs[this.registProductInputs.length-1].value" -->
                             <template v-slot:activator="{ on, attrs }">
                               <v-col cols="12" sm="1">
                                 <v-icon
@@ -3580,9 +3583,12 @@ export default {
       }
     },
 
-    loadExcelFile(event) {
-      if(event){
-        const file = event;
+    async loadExcelFile(file, self) {
+      if(file){
+        const result = await mux.Util.checkTypeExcel(file, self);
+        if (result === false) {
+          return;
+        }
         const headers = this.material_excel_headers; // 헤더 정보
         const items = this.material_excel_upload_data; // 테이블 내용 정보
         mux.Excel.open(file, headers, items);
