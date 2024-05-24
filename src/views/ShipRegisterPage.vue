@@ -313,7 +313,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "product_table.classification": searchClassification ? searchClassification : "",
@@ -652,7 +652,7 @@ export default {
           const prevURL = window.location.href;
           try {
             // let result = await mux.Server.post({
-            //   path: '/api/sample_rest_api/',
+            //   path: '/api/common_rest_api/',
             //   params: sendData
             // });
 

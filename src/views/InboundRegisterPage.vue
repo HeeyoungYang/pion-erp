@@ -640,7 +640,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "product_table.classification": searchClassification ? searchClassification : "",
@@ -1043,7 +1043,7 @@ export default {
           const prevURL = window.location.href;
           try {
             // let result = await mux.Server.post({
-            //   path: '/api/sample_rest_api/',
+            //   path: '/api/common_rest_api/',
             //   params: sendData
             // });
             let result = await mux.Server.uploadFile(sendData);
@@ -1123,7 +1123,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "ship_confirmation_table.approval_phase": "승인",

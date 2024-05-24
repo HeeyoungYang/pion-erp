@@ -96,6 +96,6 @@ sendData["테이블명-cancel"] = [
 
 ## 최종 요청 예시
 let result = await mux.Server.post({
-  path: '/api/sample_rest_api/',
+  path: '/api/common_rest_api/',
   params: sendData
 });

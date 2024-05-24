@@ -1347,7 +1347,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "product_table.classification": searchClassification ? searchClassification : "",
@@ -1510,7 +1510,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "product_table.classification": searchClassification ? searchClassification : "",
@@ -1732,7 +1732,7 @@ export default {
 
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: sendData
         });
         if (prevURL !== window.location.href) return;
@@ -1789,7 +1789,7 @@ export default {
           script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\material_thumbnail_검색_24_05_09_12_13_SAK";
         }
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: params,
           "script_file_name": script_file_name,
           "script_file_path": script_file_path
@@ -1953,7 +1953,7 @@ export default {
           const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
-              path: '/api/sample_rest_api/',
+              path: '/api/common_rest_api/',
               params: sendData
             });
             if (prevURL !== window.location.href) return;
@@ -2032,7 +2032,7 @@ export default {
           const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
-              path: '/api/sample_rest_api/',
+              path: '/api/common_rest_api/',
               params: sendData
             });
             if (prevURL !== window.location.href) return;
@@ -2117,7 +2117,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           "params": [
                 {
                     "module_table.classification": searchClassification ? searchClassification : "",
@@ -2236,7 +2236,7 @@ export default {
           script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\material_thumbnail_검색_24_05_09_12_13_SAK";
         }
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: params,
           "script_file_name": script_file_name,
           "script_file_path": script_file_path
@@ -2431,7 +2431,7 @@ export default {
           const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
-              path: '/api/sample_rest_api/',
+              path: '/api/common_rest_api/',
               params: sendData
             });
             if (prevURL !== window.location.href) return;
@@ -2538,7 +2538,7 @@ export default {
           const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
-              path: '/api/sample_rest_api/',
+              path: '/api/common_rest_api/',
               params: sendData
             });
             if (prevURL !== window.location.href) return;
@@ -2586,7 +2586,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           "params": [
               {
                 "product_table.name": searchName ? searchName : "",
@@ -2857,7 +2857,7 @@ export default {
           const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
-              path: '/api/sample_rest_api/',
+              path: '/api/common_rest_api/',
               params: sendData
             });
             if (prevURL !== window.location.href) return;
@@ -2996,7 +2996,7 @@ export default {
           const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
-              path: '/api/sample_rest_api/',
+              path: '/api/common_rest_api/',
               params: sendData
             });
             if (prevURL !== window.location.href) return;
@@ -3096,7 +3096,7 @@ export default {
         }
         // 제품의 썸네일
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: params,
           "script_file_name": script_file_name,
           "script_file_path": script_file_path
@@ -3115,7 +3115,7 @@ export default {
 
           // 제품의 입고 정보
           let result2 = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: [
               {
                 "inbound_product_table.product_code": item.item_code,
@@ -3236,7 +3236,7 @@ export default {
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: {
               "product_material_table-cancel": [{
                 "data": {},
@@ -3293,7 +3293,7 @@ export default {
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: {
               "product_module_table-cancel": [{
                 "data": {},
@@ -3355,7 +3355,7 @@ export default {
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: {
               "product_table-delete": [{
                 "user_info": {

@@ -381,7 +381,7 @@ export default {
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({
-                  path: '/api/sample_rest_api/',
+                  path: '/api/common_rest_api/',
                   params: {
                     "classification_table-insert": [{
                       "user_info": {
@@ -422,7 +422,7 @@ export default {
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({
-                  path: '/api/sample_rest_api/',
+                  path: '/api/common_rest_api/',
                   params: {
                     "classification_table-update": [{
                       "user_info": {
@@ -469,7 +469,7 @@ export default {
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({
-                  path: '/api/sample_rest_api/',
+                  path: '/api/common_rest_api/',
                   params: {
                     "manufacturer_table-insert": [{
                       "user_info": {
@@ -510,7 +510,7 @@ export default {
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({
-                  path: '/api/sample_rest_api/',
+                  path: '/api/common_rest_api/',
                   params: {
                     "manufacturer_table-update": [{
                       "user_info": {
@@ -557,7 +557,7 @@ export default {
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({
-                  path: '/api/sample_rest_api/',
+                  path: '/api/common_rest_api/',
                   params: {
                     "spot_table-insert": [{
                       "user_info": {
@@ -598,7 +598,7 @@ export default {
               const prevURL = window.location.href;
               try {
                 let result = await mux.Server.post({
-                  path: '/api/sample_rest_api/',
+                  path: '/api/common_rest_api/',
                   params: {
                     "spot_table-update": [{
                       "user_info": {
@@ -666,7 +666,7 @@ export default {
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: {
               "classification_table-delete": [{
                 "user_info": {
@@ -705,7 +705,7 @@ export default {
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: {
               "manufacturer_table-delete": [{
                 "user_info": {
@@ -744,7 +744,7 @@ export default {
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: {
               "spot_table-delete": [{
                 "user_info": {

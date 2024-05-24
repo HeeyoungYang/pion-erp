@@ -293,7 +293,7 @@ export default {
         }
         // 제품의 썸네일
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: params,
           "script_file_name": script_file_name,
           "script_file_path": script_file_path
@@ -312,7 +312,7 @@ export default {
 
           // 제품의 입고 정보
           let result2 = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: [
               {
                 "inbound_product_table.product_code": item._code,
@@ -402,7 +402,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "product_table.classification": searchClassification ? searchClassification : "",

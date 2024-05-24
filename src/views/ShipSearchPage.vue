@@ -284,7 +284,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "ship_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
@@ -352,7 +352,7 @@ export default {
         this.loading_dialog = true;
         // 제품의 썸네일
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "ship_confirmation_table.code": item.code
@@ -438,7 +438,7 @@ export default {
 
         send_data_belong.forEach(async belong => {
           let stock_check = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: [
               {
                 "product_table.product_code": belong.product_code,
@@ -478,7 +478,7 @@ export default {
               console.log("sendItemData ::: " + sendItemData);
               try {
                 let resultItem = await mux.Server.post({
-                  path: '/api/sample_rest_api/',
+                  path: '/api/common_rest_api/',
                   params: sendItemData
                 });
                 if (prevURL !== window.location.href) return;
@@ -515,7 +515,7 @@ export default {
 
               try {
                 let resultShip = await mux.Server.post({
-                  path: '/api/sample_rest_api/',
+                  path: '/api/common_rest_api/',
                   params: sendApproveData
                 });
                 if (prevURL !== window.location.href) return;
@@ -555,7 +555,7 @@ export default {
 
         try {
           let resultShip = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: sendData
           });
           if (prevURL !== window.location.href) return;
