@@ -58,6 +58,7 @@
                     dense
                     @clickTr="clickApproveData"
                     @setApprovalPhase="setApprovalPhase"
+                    @cancleApprove="cancleApprove"
                   />
                 </v-card-text>
               </v-card>
@@ -179,7 +180,6 @@ export default {
   data(){
     return{
       mux: mux,
-      today:'',
       menu: false,
       dates: [],
       ship_product_list_dialog: false,
@@ -221,7 +221,6 @@ export default {
   },
   methods:{
     async initialize () {
-      this.today = new Date();
       const prevURL = window.location.href;
       try {
         // console.log('사용자 계정 정보 가졍오기');
@@ -285,7 +284,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "ship_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
@@ -353,7 +352,7 @@ export default {
         this.loading_dialog = true;
         // 제품의 썸네일
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "ship_confirmation_table.code": item.code
@@ -390,6 +389,7 @@ export default {
     },
     async setApprovalPhase(item, change, reason){
       const prevURL = window.location.href;
+      const currDate = new Date();
 
       let phase;
       let send_data = {};
@@ -398,7 +398,7 @@ export default {
       // 현 승인 상태에 따른 필요 정보 정리
       if(item.approval_phase === '미확인'){
         if(change === true){
-          send_data.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+          send_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
           send_data.approval_phase = '미승인';
           phase = '확인';
         }else{
@@ -407,14 +407,14 @@ export default {
           }else{
             send_data.reject_reason = reason;
             send_data.rejecter = this.login_info.name;
-            send_data.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+            send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
             send_data.approval_phase = '반려';
             phase = '반려';
           }
         }
       }else if(item.approval_phase === '미승인'){
         if(change === true){
-          send_data.approved_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+          send_data.approved_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
           send_data.approval_phase = '승인';
           send_data_belong = item.belong_data
           console.log(send_data_belong);
@@ -425,7 +425,7 @@ export default {
           }else{
             send_data.reject_reason = reason;
             send_data.rejecter = this.login_info.name;
-            send_data.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+            send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
             send_data.approval_phase = '반려';
             phase = '반려';
           }
@@ -438,7 +438,7 @@ export default {
 
         send_data_belong.forEach(async belong => {
           let stock_check = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: [
               {
                 "product_table.product_code": belong.product_code,
@@ -478,7 +478,7 @@ export default {
               console.log("sendItemData ::: " + sendItemData);
               try {
                 let resultItem = await mux.Server.post({
-                  path: '/api/sample_rest_api/',
+                  path: '/api/common_rest_api/',
                   params: sendItemData
                 });
                 if (prevURL !== window.location.href) return;
@@ -515,7 +515,7 @@ export default {
 
               try {
                 let resultShip = await mux.Server.post({
-                  path: '/api/sample_rest_api/',
+                  path: '/api/common_rest_api/',
                   params: sendApproveData
                 });
                 if (prevURL !== window.location.href) return;
@@ -555,7 +555,7 @@ export default {
 
         try {
           let resultShip = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: sendData
           });
           if (prevURL !== window.location.href) return;

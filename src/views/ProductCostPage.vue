@@ -917,7 +917,7 @@ export default {
   created () {
     this.initialize()
   },
-  
+
   watch: {
     // 노무비 Dialog show and hide
     async dialog_calculate_labor(show) {
@@ -933,9 +933,9 @@ export default {
           const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
-              path: '/api/sample_rest_api/',
+              path: '/api/common_rest_api/',
               "params": [
-                { 
+                {
                   "labor_current_unit_price_history_table.modified_time": this.clickedProductCost.full_created_time,
                   "labor_cost_history_table.modified_time": this.clickedProductCost.full_created_time
                 }
@@ -950,7 +950,7 @@ export default {
             }
             if(result['code'] == 0){
               const searchResult = result.data;
-              
+
               this.labor_data = ProductCostPageConfig.labor_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
               this.labor_occupation_data = ProductCostPageConfig.labor_occupation_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
 
@@ -1108,7 +1108,7 @@ export default {
   },
 
   computed: {
-    total_product_cost(){ 
+    total_product_cost(){
       if (!this.calc_cost_detail_data_product_cost.belong_data || this.calc_cost_detail_data_product_cost.belong_data.length === 0) return 0;
       return this.calc_cost_detail_data_product_cost.belong_data.reduce((a,b)=>{
         return a + Math.round(b.cost_unit_price * b.cost_num);
@@ -1149,7 +1149,7 @@ export default {
     calc_cost_detail_data_normal_maintenance_fee(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='일반관리비')},
     calc_cost_detail_data_profite(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='이윤')},
 
-    total_product_cost2(){ 
+    total_product_cost2(){
       if (!this.calc_cost_detail_data_product_cost2.belong_data || this.calc_cost_detail_data_product_cost2.belong_data.length === 0) return 0;
       return this.calc_cost_detail_data_product_cost2.belong_data.reduce((a,b)=>{
         return a + Math.round(b.cost_unit_price * b.cost_num);
@@ -1213,7 +1213,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           "params": [
             {}
           ],
@@ -1227,7 +1227,7 @@ export default {
         }
         if(result['code'] == 0){
           const searchResult = result.data;
-          
+
           this.new_indirect_labor_ratio = searchResult.cost_ratio.find(x=> x.type === '간접 노무비').ratio;
           this.new_indirect_labor_formula = searchResult.cost_ratio.find(x=> x.type === '간접 노무비').formula;
           this.new_employment_insurance_ratio = searchResult.cost_ratio.find(x=> x.type === '고용보험료').ratio;
@@ -1313,7 +1313,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "product_cost_table.product_name": searchProductName ? searchProductName : "%"
@@ -1331,7 +1331,7 @@ export default {
           const searchResult = result.data;
           this.clearClicked();
           this.searchDataCalcProcess(searchResult, true);
-          
+
         }else{
           alert(result['failed_info']);
         }
@@ -1356,7 +1356,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           "params": [
               {
                 "product_table.product_code": product_code,
@@ -1452,7 +1452,7 @@ export default {
       const productCostArr = searchResult.product_cost.map((info)=> {
         const productTotalCostInfo = productTotalCost[info.cost_calc_code] ? productTotalCost[info.cost_calc_code] : 0;
         const directLaborCostInfo = directLaborCost[info.cost_calc_code];
-        
+
         let indirectLaborUnitPrice = Math.round(directLaborCostInfo * info.indirect_labor_ratio);
         const indirectLaborCost = Math.round(indirectLaborUnitPrice * info.indirect_labor_num);
         const totalLaborCost = directLaborCostInfo + indirectLaborCost;
@@ -1619,7 +1619,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: sendData
         });
         if (prevURL !== window.location.href) return;
@@ -1903,7 +1903,7 @@ export default {
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: sendData
           });
           if (prevURL !== window.location.href) return;
@@ -2039,7 +2039,7 @@ export default {
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: sendData
           });
           if (prevURL !== window.location.href) return;
@@ -2207,7 +2207,7 @@ export default {
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
-            path: '/api/sample_rest_api/',
+            path: '/api/common_rest_api/',
             params: sendData
           });
           if (prevURL !== window.location.href) return;

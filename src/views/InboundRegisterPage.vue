@@ -520,7 +520,6 @@ export default {
       add_self: false,
       select_product: true,
       inbound_index:-1,
-      today:'',
       inbound_date_set:'',
       dates: [],
       members_list:[],
@@ -641,7 +640,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "product_table.classification": searchClassification ? searchClassification : "",
@@ -1012,7 +1011,7 @@ export default {
           });
           sendData["inbound_product_table-insert"] = product_data;
 
-          sendData.path = '/api/sample_rest_api2/';
+          sendData.path = '/api/multipart_rest_api/';
           sendData.prefix = this.inbound_confirmation_data.code + '_';
           sendData.files = [];
           if (this.inbound_confirmation_data.receiving_inspection) {
@@ -1044,7 +1043,7 @@ export default {
           const prevURL = window.location.href;
           try {
             // let result = await mux.Server.post({
-            //   path: '/api/sample_rest_api/',
+            //   path: '/api/common_rest_api/',
             //   params: sendData
             // });
             let result = await mux.Server.uploadFile(sendData);
@@ -1124,7 +1123,7 @@ export default {
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
-          path: '/api/sample_rest_api/',
+          path: '/api/common_rest_api/',
           params: [
             {
               "ship_confirmation_table.approval_phase": "승인",
