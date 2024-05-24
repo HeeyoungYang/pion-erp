@@ -211,6 +211,14 @@ export default {
   },
   created () {
     this.initialize()
+    const order_code = this.$route.query.order_code;
+    const product_code = this.$route.query.product_code;
+    const product_name = this.$route.query.product_name;
+    const inbound_date = this.$route.query.inbound_date;
+    if (order_code && product_code && product_name && inbound_date){
+      this.setSearchCardInputs(order_code, product_code, product_name, inbound_date);
+      this.searchButton();
+    }
   },
   methods:{
     async initialize () {
@@ -241,6 +249,16 @@ export default {
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+    },
+    setSearchCardInputs(order_code, product_code, product_name, inbound_date){
+      this.searchCardInputs.find(x=>x.label === '발주번호').value = order_code;
+      this.searchCardInputs.find(x=>x.label === '관리코드').value = product_code;
+      this.searchCardInputs.find(x=>x.label === '제품명').value = product_name;
+      if (inbound_date.includes(' ~ ')){
+        this.searchCardInputs.find(x=>x.label === '입고일자').value = inbound_date.split(' ~ ');
+      } else {
+        this.searchCardInputs.find(x=>x.label === '입고일자').value = [inbound_date, inbound_date];
+      }
     },
     async download(foldername, filename, prefix) {
       this.loading_dialog = true;
