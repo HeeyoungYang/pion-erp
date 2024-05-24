@@ -136,7 +136,7 @@ const routes = [
     name: 'ProductBackdataPage',
     component: ProductBackdataPage,
     meta: {
-      permission: ['manager', 'admin', 'master']
+      permission: ['매니저', 'admin', 'master']
     }
   },
   {
@@ -144,7 +144,7 @@ const routes = [
     name: 'LaborCostBackdataPage',
     component: LaborCostBackdataPage,
     meta: {
-      permission: ['manager', 'admin', 'master']
+      permission: ['매니저', 'admin', 'master']
     }
   },
   {
@@ -152,7 +152,7 @@ const routes = [
     name: 'BasicInfoBackdataPage',
     component: BasicInfoBackdataPage,
     meta: {
-      permission: ['manager', 'admin', 'master']
+      permission: ['매니저', 'admin', 'master']
     }
   },
   {
@@ -160,7 +160,7 @@ const routes = [
     name: 'MembersPage',
     component: MembersPage,
     meta: {
-      permission: ['admin', 'master']
+      permission: ['매니저', 'admin', 'master']
     }
   },
   {
@@ -202,56 +202,56 @@ const router = new VueRouter({
   routes
 });
 
-// // 페이지 이동 권한 처리
-// import mux from '@/mux'
-// router.beforeEach(async (to, from, next) => {
-//   const permissions = to.meta.permission;
-//   // 로컬스토리지에 AccessToken 이 없거나 RefreshToken 쿠키가 없을 때,
-//   if ((!localStorage.getItem('AccessToken') || !Vue.$cookies.get(Vue.prototype.$configJson.cookies.RefreshToken.key))){
-//     // meta.permission 에 guest 가 있으면 페이지 이동
-//     if (permissions.includes('guest')) {
-//       return next();
-//     // meta.permission 에 guest 가 없으면 로그아웃
-//     }else {
-//       mux.Server.logOut();
-//       return;
-//     }
-//   }
+// 페이지 이동 권한 처리
+import mux from '@/mux'
+router.beforeEach(async (to, from, next) => {
+  const permissions = to.meta.permission;
+  // 로컬스토리지에 AccessToken 이 없거나 RefreshToken 쿠키가 없을 때,
+  if ((!localStorage.getItem('AccessToken') || !Vue.$cookies.get(Vue.prototype.$configJson.cookies.RefreshToken.key))){
+    // meta.permission 에 guest 가 있으면 페이지 이동
+    if (permissions.includes('guest')) {
+      return next();
+    // meta.permission 에 guest 가 없으면 로그아웃
+    }else {
+      alert('로그인이 필요합니다.');
+      mux.Server.logOut();
+      return;
+    }
+  }
 
-//   // 유저 권한 목록 가져오기
-//   let checkResult;
-//   try {
-//     checkResult = mux.Server.get({path:'/checkPermission/'});
-//   } catch (error) {
-//     // 에러 발생 시 로그아웃
-//     mux.Server.logOut();
-//     return;
-//   }
-//   // 결과 없으면 로그아웃
-//   if (!checkResult || !checkResult.permissions){
-//     mux.Server.logOut();
-//     return;
-//   }
+  // 유저 권한 목록 가져오기
+  let checkResult = {};
+  // try {
+  //   checkResult = mux.Server.get({path:'/checkPermission/'});
+  // } catch (error) {
+  //   // 에러 발생 시 로그아웃
+  //   mux.Server.logOut();
+  //   return;
+  // }
+  // // 결과 없으면 로그아웃
+  // if (!checkResult || !checkResult.permissions){
+  //   mux.Server.logOut();
+  //   return;
+  // }
+  checkResult.permissions = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+  checkResult.permissions.push(Vue.$cookies.get(Vue.prototype.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+  checkResult.permissions.push(Vue.$cookies.get(Vue.prototype.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
 
-//   // meta.permission 에 guest 가 있으면 홈 화면으로 보냄
-//   if (permissions.includes('guest')) {
-//     return next({ name: 'MainPage' });
-//   }
-//   // meta.permission 에 member 가 있으면 페이지 이동
-//   if (permissions.includes('member')) {
-//     return next();
-//   }
-//   // meta.permission 중 하나라도 권한자라면 페이지 이동
-//   const userPermissionArr = checkResult.permissions;
-//   for (let i = 0; i < userPermissionArr.length; i++) {
-//     if (permissions.includes(userPermissionArr[i])){
-//       return next();
-//     }
-//   }
+  // meta.permission 에 guest 혹은 member 가 있으면 페이지 이동
+  if (permissions.includes('guest') || permissions.includes('member')) {
+    return next();
+  }
+  // meta.permission 중 하나라도 권한자라면 페이지 이동
+  const userPermissionArr = checkResult.permissions;
+  for (let i = 0; i < userPermissionArr.length; i++) {
+    if (permissions.includes(userPermissionArr[i])){
+      return next();
+    }
+  }
 
-//   // 권한 없을 경우 홈 화면으로 보냄
-//   alert('페이지 권한이 없습니다.');
-//   return next({ name: 'MainPage' });
-// });
+  // 권한 없을 경우 홈 화면으로 보냄
+  alert('페이지 접근 권한이 없습니다.');
+  return next({ name: 'MainPage' });
+});
 
 export default router

@@ -311,17 +311,17 @@ import mux from '@/mux';
         ['원부자재', '', '/material-search', []],
         ['반제품', '', '/module-search', []],
         ['완제품', '', '/product-search', []],
-        ['원가', '', '/product-cost', ['master']],
+        ['원가', '', '/product-cost', []],
       ],
 
       inboundPages: [
-        ['입고 현황', '', '/inbound-search', ['master']],
-        ['입고 신청', '', '/inbound-register', ['master']],
+        ['입고 현황', '', '/inbound-search', []],
+        ['입고 신청', '', '/inbound-register', []],
       ],
 
       shipPages: [
-        ['출고 현황', '', '/ship-search', ['master']],
-        ['출고 신청', '', '/ship-register', ['master']],
+        ['출고 현황', '', '/ship-search', []],
+        ['출고 신청', '', '/ship-register', []],
       ],
 
       estimatePages: [
@@ -338,9 +338,9 @@ import mux from '@/mux';
       // ],
 
       backDataPages: [
-        ['재고 정보', '', '/product-backdata', []],
-        ['노무비 정보', '', '/labor-cost-backdata', ['master']],
-        ['기본 정보', '', '/basic-info-backdata', []],
+        ['재고 정보', '', '/product-backdata', ['master', '매니저']],
+        ['노무비 정보', '', '/labor-cost-backdata', ['master', '매니저']],
+        ['기본 정보', '', '/basic-info-backdata', ['master', '매니저']],
       ],
 
       adminPages: [
