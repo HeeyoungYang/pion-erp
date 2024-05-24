@@ -561,7 +561,6 @@ export default {
   },
   methods: {
     async initialize () {
-      this.today = new Date();
 
       // this.manufacturer_list = InboundRegisterPageConfig.test_manufacturer_list;
       // this.classification_list = InboundRegisterPageConfig.test_classification_list;
@@ -865,9 +864,10 @@ export default {
             }
           }
         })
-        item.inbound_date = (this.inbound_date_set === "" ? mux.Date.format(this.today, 'yyyy-MM-dd') : this.inbound_date_set);
+        const currDate = new Date();
+        item.inbound_date = (this.inbound_date_set === "" ? mux.Date.format(currDate, 'yyyy-MM-dd') : this.inbound_date_set);
         item.creater = this.login_id;
-        item.code = item.order_code + ":" + mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss.fff');
+        item.code = item.order_code + ":" + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
         if(this.add_self){
           item.add_data = "직접기입형"
         }else{
@@ -982,7 +982,7 @@ export default {
             }]
           };
           if(sendData["inbound_confirmation_table-insert"][0].data.approval_phase === '미승인'){
-            sendData["inbound_confirmation_table-insert"][0].data.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+            sendData["inbound_confirmation_table-insert"][0].data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
           }
 
           let product_data = [];
