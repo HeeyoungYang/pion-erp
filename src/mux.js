@@ -553,7 +553,9 @@ mux.Server = {
       if (key !== configJson.cookies.savedID.key)
       Vue.$cookies.remove(key);
     });
-    router.push('/');
+    if (window.location.pathname !== '/') {
+      router.push('/');
+    }
   },
 
   setObjFromPathOrObject(defaultObj, pathOrObject) {
