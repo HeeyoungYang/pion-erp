@@ -627,7 +627,7 @@ export default {
           });
           sendData["ship_product_table-insert"] = product_data;
 
-          sendData.path = '/api/sample_rest_api2/';
+          sendData.path = '/api/multipart_rest_api/';
           sendData.prefix = this.ship_confirmation_data.code + '_';
           sendData.files = [];
           if (this.ship_confirmation_data.inspection_report) {
