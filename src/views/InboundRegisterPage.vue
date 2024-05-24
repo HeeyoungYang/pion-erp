@@ -1035,7 +1035,7 @@ export default {
               sendData.files.push({
                 folder: 'inbound/files',
                 file: file,
-                name: this.inbound_confirmation_data.files[i]
+                name: this.inbound_confirmation_data.files.split('/')[i]
               });
             }
           }
