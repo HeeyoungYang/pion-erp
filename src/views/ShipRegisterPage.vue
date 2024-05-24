@@ -644,7 +644,7 @@ export default {
               sendData.files.push({
                 folder: 'ship/files',
                 file: file,
-                name: this.ship_confirmation_data.files[i]
+                name: this.ship_confirmation_data.files.split('/')[i]
               });
             }
           }
