@@ -194,7 +194,6 @@ export default {
   },
   data(){
     return{
-      today:'',
       ship_date_set:'',
       select_product: true,
       dates: [],
@@ -231,7 +230,6 @@ export default {
   },
   methods: {
     async initialize () {
-      this.today = new Date();
 
       // this.manufacturer_list = ShipRegisterPageConfig.test_manufacturer_list;
       // this.classification_list = ShipRegisterPageConfig.test_classification_list;
@@ -512,9 +510,10 @@ export default {
             }
           }
         })
-        item.ship_date = (this.ship_date_set === "" ? mux.Date.format(this.today, 'yyyy-MM-dd') : this.ship_date_set);
+        const currDate = new Date();
+        item.ship_date = (this.ship_date_set === "" ? mux.Date.format(currDate, 'yyyy-MM-dd') : this.ship_date_set);
         item.creater = this.login_id;
-        item.code = item.project_code + ":" + mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss.fff');
+        item.code = item.project_code + ":" + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
 
         let inspection_report_thumbnail = 'NULL';
         if(this.inspection_report_value){
@@ -533,7 +532,7 @@ export default {
               item.checker_id = mem.user_id;
               if(item.checker_id == this.login_id){
                 item.approval_phase = '미승인';
-                item.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+                item.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
               }else{
                 item.approval_phase = '미확인';
                 item.checked_date = "";

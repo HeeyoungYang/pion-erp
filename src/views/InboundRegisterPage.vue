@@ -520,7 +520,6 @@ export default {
       add_self: false,
       select_product: true,
       inbound_index:-1,
-      today:'',
       inbound_date_set:'',
       dates: [],
       members_list:[],

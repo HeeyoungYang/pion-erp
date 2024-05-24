@@ -60,6 +60,8 @@
                     :loginId="login_info.id"
                     @clickTr="clickApproveData"
                     @setApprovalPhase="setApprovalPhase"
+                    @cancleApprove="cancleApprove"
+                    @setCanclePhase="setCanclePhase"
                   />
                 </v-card-text>
               </v-card>
@@ -177,7 +179,6 @@ export default {
   data(){
     return{
       mux: mux,
-      today:'',
       dates: [],
       inbound_product_list_dialog: false,
       loading_dialog: false,
@@ -222,7 +223,6 @@ export default {
   },
   methods:{
     async initialize () {
-      this.today = new Date();
       const prevURL = window.location.href;
       try {
         // console.log('사용자 계정 정보 가졍오기');
@@ -269,9 +269,10 @@ export default {
       }
       this.loading_dialog = false;
     },
+
+
     async searchButton(){
       this.loading_dialog = true;
-
 
       let searchApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
       if (searchApprovalPhase === 'All')
@@ -476,6 +477,7 @@ export default {
       }
     },
     async setApprovalPhase(item, change, reason){
+      const currDate = new Date();
       const prevURL = window.location.href;
       let phase;
       let send_data = {};
@@ -484,7 +486,7 @@ export default {
       // 현 승인 상태에 따른 필요 정보 정리
       if(item.approval_phase === '미확인'){
         if(change === true){
-          send_data.checked_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+          send_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
           send_data.approval_phase = '미승인';
           phase = '확인';
         }else{
@@ -493,14 +495,14 @@ export default {
           }else{
             send_data.reject_reason = reason;
             send_data.rejecter = this.login_info.name;
-            send_data.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+            send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
             send_data.approval_phase = '반려';
             phase = '반려';
           }
         }
       }else if(item.approval_phase === '미승인'){
         if(change === true){
-          send_data.approved_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+          send_data.approved_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
           send_data.approval_phase = '승인';
           send_data_belong = item.belong_data
           console.log(send_data_belong);
@@ -511,7 +513,7 @@ export default {
           }else{
             send_data.reject_reason = reason;
             send_data.rejecter = this.login_info.name;
-            send_data.rejected_date = mux.Date.format(this.today, 'yyyy-MM-dd HH:mm:ss');
+            send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
             send_data.approval_phase = '반려';
             phase = '반려';
           }
@@ -808,6 +810,347 @@ export default {
           alert(error);
       }
       // console.log(JSON.stringify(this.change_approve));
+    },
+    async setCanclePhase(item, change, reason){
+      const currDate = new Date();
+      const prevURL = window.location.href;
+      let phase;
+      let send_data = {};
+      let send_data_belong = {};
+      send_data.code = item.code;
+      // 현 승인 상태에 따른 필요 정보 정리
+      if(item.approval_phase === '취소 미확인'){
+        if(change === true){
+          send_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+          send_data.approval_phase = '취소 미승인';
+          phase = '취소 확인';
+        }else{
+          if(reason === ''){
+            alert('취소 반려 사유 필수 기입');
+          }else{
+            send_data.reject_reason = reason;
+            send_data.rejecter = this.login_info.name;
+            send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+            send_data.approval_phase = '취소 반려';
+            phase = '취소 반려';
+          }
+        }
+      }else if(item.approval_phase === '취소 미승인'){
+        if(change === true){
+          send_data.approved_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+          send_data.approval_phase = '취소';
+          send_data_belong = item.belong_data
+          console.log(send_data_belong);
+          phase = '취소 승인';
+        }else{
+          if(reason === ''){
+            alert('취소 반려 사유 필수 기입');
+          }else{
+            send_data.reject_reason = reason;
+            send_data.rejecter = this.login_info.name;
+            send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+            send_data.approval_phase = '취소 반려';
+            phase = '취소 반려';
+          }
+        }
+      }
+
+      console.log(phase);
+
+
+      //취소 미승인에서 취소로 변경하는 경우
+      if(send_data_belong.length > 0){
+        send_data_belong.forEach(async belong => {
+          let insert_product_data = [];
+          let update_stock_data = [];
+          // product_code기준 재고(자재)검색
+          let stock_check = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: [
+              {
+                "product_table.product_code": belong.product_code,
+                "module_table.module_code": belong.product_code,
+                "material_table.material_code": belong.product_code,
+                "stock_table.spot": belong.spot
+              }
+            ],
+            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof stock_check === 'string'){
+            stock_check = JSON.parse(stock_check);
+          }
+          if(stock_check['code'] == 0){
+            let searched_stock_data = [];
+            if(stock_check['data'].length > 0){
+              searched_stock_data = stock_check['data'][0]
+            }
+            if(belong.product_code === searched_stock_data._code && belong.spot === searched_stock_data.spot){
+              let minus_stock = searched_stock_data.stock_num - belong.inbound_num;
+              update_stock_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {
+                  "stock_num" : minus_stock
+                },
+                "update_where": {"product_code": belong.product_code, "spot": belong.spot},
+                "rollback": "yes"
+              })
+            }
+            insert_product_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                  "code" : item.code,
+                  "type" : belong.type,
+                  "classification" : belong.classification,
+                  "product_code" : belong.product_code,
+                  "name" : belong.name,
+                  "inbound_num" : '-' + belong.inbound_num.replace(/,/g,''),
+                  "spot" : belong.spot,
+                  "spec" : belong.spec,
+                  "model" : belong.model,
+                  "manufacturer" : belong.manufacturer,
+                  "unit_price" : belong.unit_price.replace(/,/g,'').replace(/₩ /g,''),
+                  "ship_code" : belong.ship_code,
+              },
+              "select_where": {"product_code": "!JUST_INSERT!"},
+              "rollback": "no"
+            })
+            let sendItemData = {};
+            sendItemData["inbound_product_table-insert"] = insert_product_data;
+            sendItemData["stock_table-update"] = update_stock_data;
+            console.log("sendItemData ::: " + JSON.stringify(sendItemData));
+            try {
+              let resultItem = await mux.Server.post({
+                path: '/api/sample_rest_api/',
+                params: sendItemData
+              });
+              if (prevURL !== window.location.href) return;
+
+              if (typeof resultItem === 'string'){
+                resultItem = JSON.parse(resultItem);
+              }
+              if(resultItem['code'] == 0){
+                console.log('result :>> ', resultItem);
+              } else {
+                if (prevURL !== window.location.href) return;
+                alert(resultItem['failed_info']);
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                alert(error.response['data']['failed_info'].msg);
+              else
+                alert(error);
+            }
+          }
+        })
+
+      }
+
+
+      let sendData = {
+        "inbound_confirmation_table-update": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data": send_data,
+          "update_where": {"code": item.code},
+          "rollback": "yes"
+        }]
+      };
+      console.log(sendData);
+
+      try {
+        let resultInbound = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: sendData
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof resultInbound === 'string'){
+          resultInbound = JSON.parse(resultInbound);
+        }
+        if(resultInbound['code'] == 0){
+          // console.log('result :>> ', result);
+          alert('입고 ' + phase + ' 완료');
+        } else {
+          if (prevURL !== window.location.href) return;
+          alert(resultInbound['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+      }
+      // console.log(JSON.stringify(this.change_approve));
+    },
+    async cancleApprove(item){
+      // console.log(item)
+      const currDate = new Date();
+
+      const prevURL = window.location.href;
+      let send_confirmation_data = {}
+      let send_product_data = {}
+
+      if(this.login_info.id === item.approver_id){
+        send_confirmation_data.approval_phase = '취소';
+        send_confirmation_data.approved_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+        send_product_data = item.belong_data;
+      }else if(this.login_info.id === item.checker_id){
+        send_confirmation_data.approval_phase = "취소 미승인";
+        send_confirmation_data.approved_date = null;
+      }else{
+        send_confirmation_data.approval_phase = "취소 미확인";
+        send_confirmation_data.checked_date = null;
+        send_confirmation_data.approved_date = null;
+      }
+
+      if(send_product_data.length > 0){
+        send_product_data.forEach( async product =>{
+
+          let insert_product_data = [];
+          let update_stock_data = [];
+          // product_code기준 재고(자재)검색
+          let stock_check = await mux.Server.post({
+            path: '/api/sample_rest_api/',
+            params: [
+              {
+                "product_table.product_code": product.product_code,
+                "module_table.module_code": product.product_code,
+                "material_table.material_code": product.product_code,
+                "stock_table.spot": product.spot
+              }
+            ],
+            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof stock_check === 'string'){
+            stock_check = JSON.parse(stock_check);
+          }
+          if(stock_check['code'] == 0){
+            let searched_stock_data = [];
+            if(stock_check['data'].length > 0){
+              searched_stock_data = stock_check['data'][0]
+            }
+            if(product.product_code === searched_stock_data._code && product.spot === searched_stock_data.spot){
+              let minus_stock = searched_stock_data.stock_num - product.inbound_num;
+              update_stock_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {
+                  "stock_num" : minus_stock
+                },
+                "update_where": {"product_code": product.product_code, "spot": product.spot},
+                "rollback": "yes"
+              })
+            }
+            insert_product_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                  "code" : item.code,
+                  "type" : product.type,
+                  "classification" : product.classification,
+                  "product_code" : product.product_code,
+                  "name" : product.name,
+                  "inbound_num" : '-' + product.inbound_num.replace(/,/g,''),
+                  "spot" : product.spot,
+                  "spec" : product.spec,
+                  "model" : product.model,
+                  "manufacturer" : product.manufacturer,
+                  "unit_price" : product.unit_price.replace(/,/g,'').replace(/₩ /g,''),
+                  "ship_code" : product.ship_code,
+              },
+              "select_where": {"product_code": "!JUST_INSERT!"},
+              "rollback": "no"
+            })
+            let sendItemData = {};
+            sendItemData["inbound_product_table-insert"] = insert_product_data;
+            sendItemData["stock_table-update"] = update_stock_data;
+            console.log("sendItemData ::: " + JSON.stringify(sendItemData));
+            try {
+              let resultItem = await mux.Server.post({
+                path: '/api/sample_rest_api/',
+                params: sendItemData
+              });
+              if (prevURL !== window.location.href) return;
+
+              if (typeof resultItem === 'string'){
+                resultItem = JSON.parse(resultItem);
+              }
+              if(resultItem['code'] == 0){
+                console.log('result :>> ', resultItem);
+              } else {
+                if (prevURL !== window.location.href) return;
+                alert(resultItem['failed_info']);
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                alert(error.response['data']['failed_info'].msg);
+              else
+                alert(error);
+            }
+          }
+        })
+
+
+      }
+
+      let sendData = {
+        "inbound_confirmation_table-update": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data": send_confirmation_data,
+          "update_where": {"code": item.code},
+          "rollback": "yes"
+        }]
+      };
+
+      try {
+        let result = await mux.Server.post({
+          path: '/api/sample_rest_api/',
+          params: sendData
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          // console.log('result :>> ', result);
+          alert(send_confirmation_data.approval_phase === '취소' ? '취소 완료' : '취소 요청 완료');
+        } else {
+          if (prevURL !== window.location.href) return;
+          alert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          alert(error.response['data']['failed_info'].msg);
+        else
+          alert(error);
+      }
+      console.log('sendData :: ' + JSON.stringify(sendData))
     }
   },
 }

@@ -83,6 +83,15 @@
                   >
                     {{ item.approval_phase }}
                   </v-chip>
+                  <v-chip
+                    v-if="(item.approval_phase == '취소 미확인' && item.checker_id !== userID)  || (item.approval_phase == '취소 미승인' && item.approver_id !== userID) "
+                    class="ma-2"
+                    outlined
+                    small
+                    :color="item.approval_phase == '취소 미확인' ? 'grey darken-1' : 'purple'"
+                  >
+                    {{ item.approval_phase }}
+                  </v-chip>
 
 
                   <!-- 확인 또는 승인자에 해당될 경우 노출되는 list형 chip -->
@@ -143,15 +152,6 @@
                               filled
                               label="사유"
                             ></v-text-field>
-                            <!-- <v-list-item-title class="mt-4 font-weight-bold ">
-                              {{ approve_radio ? (item.approval_phase == '미승인'? '승인' : '확인') : '반려' }} 하시겠습니까?
-                              <v-btn
-                                small
-                                :color="approve_radio ? 'primary' : 'error' "
-                              >
-                                {{ approve_radio ? (item.approval_phase == '미승인'? '승인' : '확인') : '반려' }}
-                              </v-btn>
-                            </v-list-item-title> -->
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
@@ -160,7 +160,7 @@
                   <v-menu
                     v-else-if="item.approval_phase == '승인'"
                     :close-on-content-click="false"
-                    :max-width="160"
+                    :max-width="190"
                     offset-x
                   >
                     <template v-slot:activator="{ on, attrs }">
@@ -179,13 +179,27 @@
                       <v-list class="pa-0">
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-3">
-                            <v-list-item-subtitle>승인일 : {{ item.approved_date }}</v-list-item-subtitle>
-                            <v-btn
-                              small
-                              color="success"
-                              @click="confirmationDialogOpen(item)"
+                            <v-list-item-subtitle>승인일 : {{ mux.Date.format(item.approved_date, 'Y년 M월 D일') }}</v-list-item-subtitle>
+                            <v-row class="mt-1">
+                              <v-col cols="12" sm="6">
+                                <v-btn
+                                  style="width: 100%;"
+                                  small
+                                  color="success"
+                                  @click="confirmationDialogOpen(item)"
 
-                            >{{ approval == 'inbound' ? '확인서' : '요청서' }}</v-btn>
+                                >{{ approval == 'inbound' ? '확인서' : '요청서' }}</v-btn>
+                              </v-col>
+                              <v-col cols="12" sm="6">
+                                <v-btn
+                                  small
+                                  style="width: 100%;"
+                                  color="error"
+                                  @click="cancle(item)"
+
+                                >{{ item.approver_id == userID ? '취소' : '취소 요청' }}</v-btn>
+                              </v-col>
+                            </v-row>
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
@@ -334,6 +348,101 @@
                           <v-list-item-content class="pa-3">
                             <v-list-item-subtitle class="error--text font-weight-black">[ 반려사유 ]</v-list-item-subtitle>
                             <v-list-item-title>{{ item.rejecter }} : {{ item.reject_reason }}</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+
+                  <v-menu
+                    v-else-if="(item.approval_phase == '취소 미확인' && item.checker_id == userID)  || (item.approval_phase == '취소 미승인' && item.approver_id == userID) "
+                    :close-on-content-click="false"
+                    :nudge-width="200"
+                    offset-x
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-chip
+                        class="ma-2"
+                        small
+                        outlined
+                        :color="item.approval_phase == '취소 미확인' ? 'grey darken-1' : 'purple'"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        {{ item.approval_phase }}
+                      </v-chip>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-0">
+                        <v-list-item class="pa-0">
+                          <v-list-item-content class="pa-3">
+                            <p v-for="(belongs, index) in item.belong_data" :key="index" class="mb-2 red--text">
+                              <span v-if="belongs.ship_num > belongs.stock_num ">{{ belongs.product_code }}의 출하수량이 재고수량보다 많아 승인 불가</span>
+                            </p>
+                            <v-radio-group
+                              v-model="approve_radio"
+                              dense
+                              hide-details
+                              row
+                              class="mt-0"
+                            >
+                              <v-radio
+                                :label="item.approval_phase == '취소 미승인'? '승인' : '확인'"
+                                :value=true
+                              ></v-radio>
+                              <v-radio
+                                label="반려"
+                                :value=false
+                              ></v-radio>
+                              <v-btn
+                                small
+                                :color="approve_radio ? 'primary' : 'error' "
+                                :disabled="checkApproveDisabled(item.belong_data, approve_radio)"
+                                @click="changeCanclePhase(item, approve_radio, reject_reason)"
+                              >
+                                저장
+                              </v-btn>
+                            </v-radio-group>
+                            <v-text-field
+                              v-if="!approve_radio"
+                              v-model="reject_reason"
+                              dense
+                              hide-details
+                              filled
+                              label="사유"
+                            ></v-text-field>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                  <v-menu
+                    v-else-if="item.approval_phase == '취소'"
+                    open-on-hover
+                    :close-on-content-click="false"
+                    :nudge-width="150"
+                    offset-x
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+
+                      <v-chip
+                        class="ma-2 white--text"
+                        small
+                        color="purple"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        {{ item.approval_phase }}
+                      </v-chip>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-0">
+                        <v-list-item class="pa-0">
+                          <v-list-item-content class="pa-3">
+                            <v-list-item-subtitle class="error--text font-weight-black">[ 취소 승인일 ]</v-list-item-subtitle>
+                            <v-list-item-title>{{ item.approved_date }}</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
@@ -940,6 +1049,12 @@ export default {
     },
     changeApprovalPhase(item, change, reason){
       this.$emit("setApprovalPhase", item, change, reason);
+    },
+    changeCanclePhase(item, change, reason){
+      this.$emit("setCanclePhase", item, change, reason);
+    },
+    cancle(item){
+      this.$emit("cancleApprove", item)
     },
     checkApproveDisabled(item, radio){
       for(let d=0; d<item.length; d++){
