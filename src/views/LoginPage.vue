@@ -289,7 +289,7 @@ export default {
           encrypted_pw = aes256Crypto.encrypt(pw, hashed_key)
           const validate = this.$refs.loginForm.validate();
           if(validate){
-            mux.Server.logIn(encrypted_id, encrypted_pw, salt, this.checkbox);
+            mux.Server.logIn(id, encrypted_id, encrypted_pw, salt, this.checkbox);
           }
         }else{
           alert("확인코드를 확인해주세요.");
