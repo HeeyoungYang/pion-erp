@@ -491,9 +491,9 @@ mux.Server = {
    * @example
    * mux.Server.logIn('userId', 'userPw12#', true);
    */
-  logIn(id, pw, saveIdCheck) {
+  logIn(id, pw, salt, saveIdCheck) {
     this.post({
-      path:'/api/user/login/', user_name:id, password:pw
+      path:'/api/user/login/', user_name:id, password:pw, salt:salt
     }).then(result => {
       if (result.code == 0 || result.code == 5031 || result.data.temporary_password){
         if (saveIdCheck){

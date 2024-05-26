@@ -143,7 +143,7 @@
              class="ma-2"
               v-for="(file, i) in inbound_info_data.files"
               :key="i"
-              @click="download('test', file, inbound_info_data.code+'_')">
+              @click="download('inbound/files', file, inbound_info_data.code+'_')">
               {{ file }}
             </v-chip>
           </v-col>
