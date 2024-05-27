@@ -1390,6 +1390,9 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
+          if(result['data'].length === 0){
+            alert('검색 결과가 없습니다.');
+          }
           result = result['data'].map(a => {
             if (!a.stock_num){
               a.stock_price = 0;
@@ -1553,6 +1556,9 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
+          if(result['data'].length === 0){
+            alert('검색 결과가 없습니다.');
+          }
           result = result['data'].map(a => {
             if (!a.stock_num){
               a.stock_price = 0;
@@ -2148,6 +2154,9 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
+          if(result['data'].length === 0){
+            alert('검색 결과가 없습니다.');
+          }
           this.module_data = result['data'].filter(data=>(!this.module_stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
 
           this.module_data.forEach(data =>{
@@ -2606,6 +2615,9 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
+          if(result['data'].length === 0){
+            alert('검색 결과가 없습니다.');
+          }
           this.product_data = result['data'];
 
           this.product_data.forEach(data =>{

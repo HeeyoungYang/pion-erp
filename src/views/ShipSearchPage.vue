@@ -308,6 +308,9 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
+          if(result['data'].length === 0){
+            alert('검색 결과가 없습니다.');
+          }
 
           result.data.forEach(datas =>{
             for(let d=0; d<datas.belong_data.length; d++){

@@ -420,6 +420,9 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
+          if(result['data'].length === 0){
+            alert('검색 결과가 없습니다.');
+          }
           this.product_data = result['data'];
           this.product_data.forEach(data =>{
             data.item_code = data.code;

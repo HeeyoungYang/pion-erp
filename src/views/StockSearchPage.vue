@@ -452,6 +452,10 @@ export default {
             return a;
           });
 
+          if(result.length === 0){
+            alert('검색 결과가 없습니다.');
+          }
+
           let product_data_arr = [];
           result.forEach(data => {
             let isExist = false;

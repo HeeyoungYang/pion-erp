@@ -354,6 +354,9 @@ export default {
         }
         if(result['code'] == 0){
 
+          if(result['data'].length === 0){
+            alert('검색 결과가 없습니다.');
+          }
           result = result['data'].map(a => {
             if (!a.stock_num){
               a.stock_price = 0;
@@ -453,6 +456,7 @@ export default {
       let success = true;
       const validate = this.$refs.shipForm.validate();
       if(validate){
+        this.files_value = [];
         ship_input.forEach(data => {
           for(let i=0; i<Object.keys(item).length; i++){
             if(data.column_name == Object.keys(item)[i]){
@@ -505,7 +509,7 @@ export default {
                 item.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
               }else{
                 item.approval_phase = '미확인';
-                item.checked_date = "";
+                item.checked_date = null;
               }
             }else if(mem.type === '승인'){
               item.approver = mem.name;
@@ -637,6 +641,7 @@ export default {
               alert('출고 승인 요청이 완료되었습니다');
               this.receiving_inspection_value = '';
               this.inspection_report_value = '';
+              this.files_value = [];
             } else {
               if (prevURL !== window.location.href) return;
               alert(result['failed_info']);

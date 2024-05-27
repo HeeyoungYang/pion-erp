@@ -681,6 +681,9 @@ export default {
         }
         if(result['code'] == 0){
 
+          if(result['data'].length === 0){
+            alert('검색 결과가 없습니다.');
+          }
           result = result['data'].map(a => {
             if (!a.stock_num){
               a.stock_price = 0;
