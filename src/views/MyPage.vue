@@ -262,7 +262,7 @@ export default {
     // ▼ 수정버튼 onclick 함수
     editPrivacyInfoFunc(){
       this.userInputs.forEach(data =>{
-        if(data.column_name == 'department' || data.column_name == 'position' || data.column_name == 'email'){
+        if(data.column_name == 'department' || data.column_name == 'position' || data.column_name == 'email_address'){
           data.disabled = true
         } else{
           data.disabled = false
