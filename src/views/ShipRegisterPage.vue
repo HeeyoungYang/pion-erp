@@ -636,7 +636,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result.data['code'] == 0){
               // console.log('result :>> ', result);
               alert('출고 승인 요청이 완료되었습니다');
               this.receiving_inspection_value = '';
