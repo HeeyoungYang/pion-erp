@@ -138,9 +138,9 @@
                             dense
                             filled
                             hide-details
-                            type="number"
                             style="max-width:150px"
                             v-model="item.ship_num"
+                            :oninput="!item.ship_num ? '' : item.ship_num = item.ship_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                             @click="check_stock_num = item.stock_num"
                             :rules="shipNumRules"
                           >

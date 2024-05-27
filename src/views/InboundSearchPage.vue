@@ -321,11 +321,11 @@ export default {
           result.data.forEach(datas =>{
             for(let d=0; d<datas.belong_data.length; d++){
               datas.belong_data[d].inbound_num = Number(datas.belong_data[d].inbound_num).toLocaleString();
-              datas.belong_data[d].unit_price = Number(datas.belong_data[d].unit_price).toLocaleString();
+              datas.belong_data[d].unit_price = '₩ ' + Number(datas.belong_data[d].unit_price).toLocaleString();
               if(datas.belong_data[d].belong_data){
                 for(let dd=0; dd<datas.belong_data[d].belong_data.length; dd++){
                   datas.belong_data[d].belong_data[dd].inbound_num="";
-                  datas.belong_data[d].belong_data[dd].unit_price = Number(datas.belong_data[d].belong_data[dd].unit_price).toLocaleString();
+                  datas.belong_data[d].belong_data[dd].unit_price = '₩ ' + Number(datas.belong_data[d].belong_data[dd].unit_price).toLocaleString();
                   datas.belong_data[d].ship_date="";
                 }
               }
@@ -356,7 +356,7 @@ export default {
       this.inbound_product_list_data = [];
       this.inbound_info_data = {};
       belong_datas.forEach(data =>{
-        data.inbound_price = Number(data.unit_price.replace(/,/g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
+        data.inbound_price = Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
         this.inbound_product_list_data.push(data);
 
         if(data.belong_data){
@@ -612,7 +612,7 @@ export default {
                   "name": belong.name,
                   "spec": belong.spec,
                   "type": belong.type,
-                  "unit_price": belong.unit_price
+                  "unit_price": belong.unit_price.replace(/,/g,'').replace(/₩ /g,''),
                 },
                 "select_where": {"material_code": belong.product_code},
                 "rollback": "yes"
@@ -632,7 +632,7 @@ export default {
                     "name": belong.name,
                     "spec": belong.spec,
                     "type": belong.type,
-                    "unit_price": belong.unit_price
+                    "unit_price": belong.unit_price.replace(/,/g,'').replace(/₩ /g,''),
                   },
                   "select_where": {"module_code": belong.product_code},
                   "rollback": "yes"

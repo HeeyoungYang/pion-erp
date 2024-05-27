@@ -308,8 +308,26 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
+
+          result.data.forEach(datas =>{
+            for(let d=0; d<datas.belong_data.length; d++){
+              datas.belong_data[d].ship_num = Number(datas.belong_data[d].ship_num).toLocaleString();
+              datas.belong_data[d].stock_num = Number(datas.belong_data[d].stock_num).toLocaleString();
+              datas.belong_data[d].unit_price = '₩ ' + Number(datas.belong_data[d].unit_price).toLocaleString();
+              if(datas.belong_data[d].belong_data){
+                for(let dd=0; dd<datas.belong_data[d].belong_data.length; dd++){
+                  datas.belong_data[d].belong_data[dd].ship_num="";
+                  datas.belong_data[d].belong_data[dd].unit_price = '₩ ' + Number(datas.belong_data[d].belong_data[dd].unit_price).toLocaleString();
+                  datas.belong_data[d].ship_date="";
+                }
+              }
+            }
+
+          })
+
+
           this.ship_approve_data  = result.data
-              this.loading_dialog = false;
+          this.loading_dialog = false;
         }else{
           alert(result['failed_info']);
         }
@@ -337,7 +355,7 @@ export default {
       this.ship_product_list_data = [];
       this.ship_info_data = {};
       belong_datas.forEach(data =>{
-        data.ship_price = data.unit_price * data.ship_num;
+        data.ship_price = Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.ship_num.replace(/,/g,'')).toLocaleString();
         this.ship_product_list_data.push(data);
       })
       let file_name = item.files.split('/');
@@ -686,12 +704,12 @@ export default {
                   "classification" : belong.classification,
                   "product_code" : belong.product_code,
                   "name" : belong.name,
-                  "ship_num" : '-' + belong.ship_num,
+                  "ship_num" : '-' + belong.ship_num.replace(/,/g,''),
                   "spot" : belong.spot,
                   "spec" : belong.spec,
                   "model" : belong.model,
                   "manufacturer" : belong.manufacturer,
-                  "unit_price" : belong.unit_price
+                  "unit_price" : belong.unit_price.replace(/,/g,'').replace(/₩ /g,'')
               },
               "select_where": {"product_code": "!JUST_INSERT!"},
               "rollback": "no"
@@ -842,12 +860,12 @@ export default {
                   "classification" : product.classification,
                   "product_code" : product.product_code,
                   "name" : product.name,
-                  "ship_num" : '-' + product.ship_num,
+                  "ship_num" : '-' + product.ship_num.replace(/,/g,''),
                   "spot" : product.spot,
                   "spec" : product.spec,
                   "model" : product.model,
                   "manufacturer" : product.manufacturer,
-                  "unit_price" : product.unit_price
+                  "unit_price" : product.unit_price.replace(/,/g,'').replace(/₩ /g,'')
               },
               "select_where": {"product_code": "!JUST_INSERT!"},
               "rollback": "no"
