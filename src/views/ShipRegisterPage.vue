@@ -400,14 +400,13 @@ export default {
               }
             }
             data.total_stock = stock_calc
+            data.total_stock = Number(data.total_stock).toLocaleString()
             if (typeof data.unit_price === 'number'){
               data.item_price = data.unit_price * data.total_stock
               data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
             }else {
               data.item_price = 0;
             }
-            this.total_stock_num += data.total_stock
-            this.total_stock_price += data.item_price
           })
         } else {
           alert(result['failed_info']);

@@ -355,7 +355,7 @@ export default {
       this.ship_product_list_data = [];
       this.ship_info_data = {};
       belong_datas.forEach(data =>{
-        data.ship_price = Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.ship_num.replace(/,/g,'')).toLocaleString();
+        data.ship_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.ship_num.replace(/,/g,'')).toLocaleString();
         this.ship_product_list_data.push(data);
       })
       let file_name = item.files.split('/');
@@ -482,7 +482,7 @@ export default {
               searched_stock_data = stock_check['data'][0]
             }
             if(belong.product_code === searched_stock_data._code && belong.spot === searched_stock_data.spot){
-              let minus_stock = searched_stock_data.stock_num - belong.ship_num;
+              let minus_stock = Number(searched_stock_data.stock_num) - Number(belong.ship_num);
               update_stock_data.push({
                 "user_info": {
                     "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -680,7 +680,7 @@ export default {
               searched_stock_data = stock_check['data'][0]
             }
             if(belong.product_code === searched_stock_data._code && belong.spot === searched_stock_data.spot){
-              let add_stock = searched_stock_data.stock_num + belong.ship_num;
+              let add_stock = Number(searched_stock_data.stock_num) + Number(belong.ship_num);
               update_stock_data.push({
                 "user_info": {
                   "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -836,7 +836,7 @@ export default {
               searched_stock_data = stock_check['data'][0]
             }
             if(product.product_code === searched_stock_data._code && product.spot === searched_stock_data.spot){
-              let add_stock = searched_stock_data.stock_num + product.ship_num;
+              let add_stock = Number(searched_stock_data.stock_num) + Number(product.ship_num);
               update_stock_data.push({
                 "user_info": {
                   "user_id": this.$cookies.get(this.$configJson.cookies.id.key),

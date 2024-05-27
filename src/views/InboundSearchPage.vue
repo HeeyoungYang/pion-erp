@@ -356,7 +356,7 @@ export default {
       this.inbound_product_list_data = [];
       this.inbound_info_data = {};
       belong_datas.forEach(data =>{
-        data.inbound_price = Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
+        data.inbound_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
         this.inbound_product_list_data.push(data);
 
         if(data.belong_data){
@@ -564,7 +564,7 @@ export default {
             if(belong.product_code === searched_stock_data._code){
               // 두 데이터의 spot이 동일할 경우 재고 테이블 stock_num update
               if(belong.spot === searched_stock_data.spot){
-                let add_stock = belong.inbound_num + searched_stock_data.stock_num
+                let add_stock = Number(belong.inbound_num.replace(/,/g,'')) + Number(searched_stock_data.stock_num)
                 update_stock_data.push({
                   "user_info": {
                     "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -587,7 +587,7 @@ export default {
                     "conditions": "G",
                     "product_code": belong.product_code,
                     "spot": belong.spot,
-                    "stock_num": belong.inbound_num,
+                    "stock_num": belong.inbound_num.replace(/,/g,''),
                     "type": belong.type
                   },
                   "select_where": {"product_code": belong.product_code, "spot": belong.spot},
@@ -648,7 +648,7 @@ export default {
                       "data":{
                         "module_code": belong.product_code,
                         "material_code": belong.belong_data[bd].product_code,
-                        "material_num": belong.belong_data[bd].ship_num / belong.inbound_num
+                        "material_num": belong.belong_data[bd].ship_num / belong.inbound_num.replace(/,/g,'')
                       },
                       "select_where": {"module_code": belong.product_code},
                       "rollback": "yes"
@@ -688,7 +688,7 @@ export default {
                         "data":{
                           "product_code": belong.product_code,
                           "material_code": belong.belong_data[bp].product_code,
-                          "material_num": belong.belong_data[bp].ship_num / belong.inbound_num
+                          "material_num": belong.belong_data[bp].ship_num / belong.inbound_num.replace(/,/g,'')
                         },
                         "select_where": {"product_code": belong.product_code},
                         "rollback": "yes"
@@ -703,7 +703,7 @@ export default {
                         "data":{
                           "product_code": belong.product_code,
                           "module_code": belong.belong_data[bp].product_code,
-                          "module_num": belong.belong_data[bp].ship_num / belong.inbound_num
+                          "module_num": belong.belong_data[bp].ship_num / belong.inbound_num.replace(/,/g,'')
                         },
                         "select_where": {"product_code": belong.product_code},
                         "rollback": "yes"
@@ -724,7 +724,7 @@ export default {
                   "conditions": "G",
                   "product_code": belong.product_code,
                   "spot": belong.spot,
-                  "stock_num": belong.inbound_num,
+                  "stock_num": belong.inbound_num.replace(/,/g,''),
                   "type": belong.type
                 },
                 "select_where": {"product_code": belong.product_code, "spot": belong.spot},
@@ -888,7 +888,7 @@ export default {
               searched_stock_data = stock_check['data'][0]
             }
             if(belong.product_code === searched_stock_data._code && belong.spot === searched_stock_data.spot){
-              let minus_stock = searched_stock_data.stock_num - belong.inbound_num;
+              let minus_stock = Number(searched_stock_data.stock_num) - Number(belong.inbound_num.replace(/,/g,''));
               update_stock_data.push({
                 "user_info": {
                   "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -1046,7 +1046,7 @@ export default {
               searched_stock_data = stock_check['data'][0]
             }
             if(product.product_code === searched_stock_data._code && product.spot === searched_stock_data.spot){
-              let minus_stock = searched_stock_data.stock_num - product.inbound_num;
+              let minus_stock = searched_stock_data.stock_num - product.inbound_num.replace(/,/g,'');
               update_stock_data.push({
                 "user_info": {
                   "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
