@@ -122,6 +122,8 @@
               :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
               transition="scale-transition"
               width="350"
+              @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+              style="cursor: pointer;"
             />
           </v-col>
           <v-col cols="12" sm="4" v-if="inbound_info_data.inspection_report_file">
@@ -133,6 +135,8 @@
               :src="mux.Util.imageBinary(inspectionReportThumbnail)"
               transition="scale-transition"
               width="350"
+              @click="download('inbound/inspection_report', inbound_info_data.inspection_report_file, inbound_info_data.code+'_')"
+              style="cursor: pointer;"
             />
             <!-- <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+inbound_info_data.inspection_report"></iframe> -->
           </v-col>

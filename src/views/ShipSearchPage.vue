@@ -125,6 +125,8 @@
               :src="mux.Util.imageBinary(inspectionReportThumbnail)"
               transition="scale-transition"
               width="350"
+              @click="download('ship/inspection_report', ship_info_data.inspection_report_file, ship_info_data.code+'_')"
+              style="cursor: pointer;"
             />
             <!-- <iframe width="100%" style="height:450px" :src="'https://mkorbucket-public.s3.ap-northeast-2.amazonaws.com/'+ship_info_data.inspection_report"></iframe> -->
           </v-col>
@@ -135,7 +137,7 @@
              class="ma-2"
               v-for="(file, i) in ship_info_data.files"
               :key="i"
-              @click="download('test', file, ship_info_data.code+'_')"
+              @click="download('ship/files', file, ship_info_data.code+'_')"
             >
               {{ file }}
             </v-chip>
@@ -366,6 +368,8 @@ export default {
         file_name = ""
       }
       this.ship_info_data = {
+        code:item.code,
+        project_code:item.project_code,
         inspection_report_file : item.inspection_report_file,
         note: item.note,
         files: file_name,
