@@ -57,7 +57,7 @@
                   v-model="selected_product_data"
                   :headers="product_search_headers"
                   :items="product_search_data"
-                  item-key="_code"
+                  item-key="stock_code"
                   show-select
                   />
               </v-col>
@@ -365,42 +365,13 @@ export default {
 
           let product_data_arr = [];
           result.forEach(data => {
-            let isExist = false;
-            if (!this.stock_more_0 || (data.stock_num && data.stock_num > 0)){
-              for (let i = 0; i < product_data_arr.length; i++) {
-                if (product_data_arr[i]._code === data._code) {
-                  if (data.stock_num){
-                    if (product_data_arr[i].spot_stock !== undefined){
-                      product_data_arr[i].spot_stock.push({_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
-                    }else {
-                      product_data_arr[i].spot_stock = [{_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
-                    }
-                  }
-                  isExist = true;
-                  break;
-                }
-              }
-              if (!isExist) {
-                if (data.stock_num){
-                  data.spot_stock = [{_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
-                }
-                product_data_arr.push(data);
-              }
-            }
+            product_data_arr.push(data);
           });
           this.product_search_data = product_data_arr;
 
           this.product_search_data.forEach(data =>{
-            let stock_calc = 0;
-            if (data.spot_stock){
-              for(let d=0; d<data.spot_stock.length; d++){
-                if (typeof data.spot_stock[d].stock_num === 'number'){
-                  stock_calc += data.spot_stock[d].stock_num;
-                }
-              }
-            }
-            data.total_stock = stock_calc
-            data.total_stock = Number(data.total_stock).toLocaleString()
+            data.stock_num = Number(data.stock_num).toLocaleString()
+            data.stock_code = data._code + ':'+data.spot
             if (typeof data.unit_price === 'number'){
               data.item_price = data.unit_price * data.total_stock
               data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
