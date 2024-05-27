@@ -965,14 +965,26 @@ mux.Util = {
           canvas.width = viewport.width;
           await page.render({ canvasContext: context, viewport }).promise;
 
-          // Canvas를 이미지로 변환합니다.
-          const imageDataUrl = canvas.toDataURL();
           if (getURL){
+            // Canvas를 이미지로 변환합니다.
+            const imageDataUrl = canvas.toDataURL();
             resolve(imageDataUrl);
           }else {
-            // 이미지 데이터를 바이너리로 변환합니다.
-            const binaryData = atob(imageDataUrl.split(',')[1]);
-            resolve(binaryData);
+            // 캔버스의 이미지 데이터를 JPEG 형식의 바이너리로 반환
+            canvas.toBlob((blob) => {
+              const reader = new FileReader();
+              reader.readAsArrayBuffer(blob);
+              reader.onload = function() {
+                const binaryData = new Uint8Array(reader.result);
+                resolve(binaryData);
+              };
+              reader.onerror = function(error) {
+                reject(error);
+              };
+            }, 'image/jpeg');
+            // // 이미지 데이터를 바이너리로 변환합니다.
+            // const binaryData = atob(imageDataUrl.split(',')[1]);
+            // resolve(binaryData);
           }
         };
         fileReader.readAsArrayBuffer(file);

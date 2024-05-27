@@ -877,11 +877,11 @@ export default {
         let receiving_inspection_thumbnail = 'NULL';
         let inspection_report_thumbnail = 'NULL';
         if(this.receiving_inspection_value){
-          const getPdfThumbnail = await mux.Util.getPdfThumbnail(this.receiving_inspection_value, 1, true, 500, 500);
+          const getPdfThumbnail = await mux.Util.getPdfThumbnail(this.receiving_inspection_value, 1, false, 1000, 1000);
           receiving_inspection_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
         }
         if(this.inspection_report_value){
-          const getPdfThumbnail = await mux.Util.getPdfThumbnail(this.inspection_report_value, 1, true, 500, 500);
+          const getPdfThumbnail = await mux.Util.getPdfThumbnail(this.inspection_report_value, 1, false, 1000, 1000);
           inspection_report_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
         }
 
