@@ -448,8 +448,8 @@ export default {
           }
         })
 
-        if (this.labor_data.find(x => x.name === item.name && x.type === item.type)) {
-          alert('이미 등록된 공종 + 규격입니다.');
+        if (this.labor_data.find(x => x.name === item.name && x.type === item.type && x.occupation === item.occupation)) {
+          alert('이미 등록된 공종 + 규격 + 직종입니다.');
           return;
         }
         if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
@@ -471,7 +471,7 @@ export default {
                   "man_per_day": item.man_per_day,
                   "surcharge_ratio": item.surcharge_ratio
                 },
-                "select_where": {"code": item.code},
+                "select_where": {"name": item.name, "type": item.type, "occupation": item.occupation},
                 "rollback": "yes"
               }
             ]};

@@ -222,6 +222,13 @@ export default {
   },
   created () {
     this.initialize()
+    const project_code = this.$route.query.project_code;
+    const purpose = this.$route.query.purpose;
+    const ship_date = this.$route.query.ship_date;
+    if (project_code && purpose && ship_date){
+      this.setSearchCardInputs(project_code, purpose, ship_date);
+      this.searchButton();
+    }
   },
   methods:{
     async initialize () {
@@ -437,7 +444,7 @@ export default {
             send_data.rejecter = this.login_info.name;
             send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
             send_data.approval_phase = '반려';
-            phase = '반려';
+            phase = '확인 반려';
           }
         }
       }else if(item.approval_phase === '미승인'){
@@ -455,7 +462,7 @@ export default {
             send_data.rejecter = this.login_info.name;
             send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
             send_data.approval_phase = '반려';
-            phase = '반려';
+            phase = '승인 반려';
           }
         }
       }
@@ -557,7 +564,56 @@ export default {
               resultShip = JSON.parse(resultShip);
             }
             if(resultShip['code'] == 0){
-              console.log('result :>> ', resultShip);
+              //메일 알림 관련
+              let mailTo = [];
+              let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+              mailTo.push(creater);
+              if(creater !== item.checker_id){
+                mailTo.push(item.checker_id);
+              }
+
+              // 메일 본문 내용
+              let content=`
+                <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                  <h2 style="text-align: center; color:#13428a">출고 승인 처리 알림</h2>
+                  <table style="width: 100%;border-spacing: 10px 10px;">
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.project_code}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">출고 요청일</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.ship_date}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                    </tr>
+                  </table>
+                  <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&ship_date=${item.ship_date}">
+                    <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                      ${phase}하기
+                    </p>
+                  </a>
+                </div>
+              `;
+
+              // 메일 알림 요청 정보
+              let mailData = {
+                "mailTo": mailTo,
+                "content": content
+              };
+
+              console.log(mailData);
+              alert('출고 승인 완료')
             } else {
               if (prevURL !== window.location.href) return;
               alert(resultShip['failed_info']);
@@ -570,7 +626,6 @@ export default {
               alert(error);
           }
         })
-        alert('출고 승인 완료')
       }else{
         let sendData = {
           "ship_confirmation_table-update": [{
@@ -596,7 +651,85 @@ export default {
             resultShip = JSON.parse(resultShip);
           }
           if(resultShip['code'] == 0){
+
             alert('출고 ' + phase + ' 완료');
+
+            //메일 알림 관련
+            let mailTo = [];
+            let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+            let reject_info;
+            if(phase === '확인'){
+              mailTo.push(creater);
+              mailTo.push(item.approver_id);
+            }else if(phase === '확인 반려'){
+              mailTo.push(creater);
+              reject_info=`
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejecter}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejected_date}</td>
+                </tr>
+              `
+            }else if(phase === '승인 반려'){
+              mailTo.push(creater);
+              mailTo.push(item.checker_id);
+              reject_info=`
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejecter}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejected_date}</td>
+                </tr>
+              `
+            }
+
+            // 메일 본문 내용
+            let content=`
+              <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                <h2 style="text-align: center; color:#13428a">출고 ${phase} 처리 알림</h2>
+                <table style="width: 100%;border-spacing: 10px 10px;">
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.project_code}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">출고 요청일</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.ship_date}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                  </tr>
+                  ${reject_info ? reject_info : ''}
+                </table>
+                <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&ship_date=${item.ship_date}">
+                  <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                    ${phase}하기
+                  </p>
+                </a>
+              </div>
+            `;
+
+            // 메일 알림 요청 정보
+            let mailData = {
+              "mailTo": mailTo,
+              "content": content
+            };
+
+            console.log(mailData);
           } else {
             if (prevURL !== window.location.href) return;
             alert(resultShip['failed_info']);
@@ -632,7 +765,7 @@ export default {
             send_data.rejecter = this.login_info.name;
             send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
             send_data.approval_phase = '취소 반려';
-            phase = '취소 반려';
+            phase = '취소 확인 반려';
           }
         }
       }else if(item.approval_phase === '취소 미승인'){
@@ -650,7 +783,7 @@ export default {
             send_data.rejecter = this.login_info.name;
             send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
             send_data.approval_phase = '취소 반려';
-            phase = '취소 반려';
+            phase = '취소 승인 반려';
           }
         }
       }
@@ -780,6 +913,88 @@ export default {
         if(result['code'] == 0){
           // console.log('result :>> ', result);
           alert('출고 ' + phase + ' 완료');
+
+          //메일 알림 관련
+          let mailTo = [];
+          let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+          let reject_info;
+          if(phase === '취소 확인'){
+            mailTo.push(creater);
+            mailTo.push(item.approver_id);
+          }else if(phase === '취소 승인'){
+            mailTo.push(creater);
+            if(creater !== item.checker_id){
+              mailTo.push(item.checker_id);
+            }
+          }else if(phase === '취소 확인 반려'){
+            mailTo.push(creater);
+            reject_info=`
+              <tr>
+                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
+                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejecter}</td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
+                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejected_date}</td>
+              </tr>
+            `
+          }else if(phase === '취소 승인 반려'){
+            mailTo.push(creater);
+            mailTo.push(item.checker_id);
+            reject_info=`
+              <tr>
+                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
+                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejecter}</td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
+                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejected_date}</td>
+              </tr>
+            `
+          }
+
+          // 메일 본문 내용
+          let content=`
+            <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+              <h2 style="text-align: center; color:#13428a">출고 ${phase} 처리 알림</h2>
+              <table style="width: 100%;border-spacing: 10px 10px;">
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.project_code}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">출고 요청일</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.ship_date}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                </tr>
+                ${reject_info ? reject_info : ''}
+              </table>
+              <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&ship_date=${item.ship_date}">
+                <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                  취소 현황 확인
+                </p>
+              </a>
+            </div>
+          `;
+
+          // 메일 알림 요청 정보
+          let mailData = {
+            "mailTo": mailTo,
+            "content": content
+          };
+
+          console.log(mailData);
         } else {
           if (prevURL !== window.location.href) return;
           alert(result['failed_info']);
@@ -793,6 +1008,7 @@ export default {
       }
       // console.log(JSON.stringify(this.change_approve));
     },
+
     async cancleApprove(item){
       // console.log(item)
       const currDate = new Date();
@@ -935,6 +1151,67 @@ export default {
         if(result['code'] == 0){
           // console.log('result :>> ', result);
           alert(send_confirmation_data.approval_phase === '취소' ? '취소 완료' : '취소 요청 완료');
+
+
+          //메일 알림 관련
+          let mailTo = [];
+          let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+          let phase;
+          if(send_confirmation_data.approval_phase === '취소'){
+            mailTo.push(creater);
+            if(creater !== item.checker_id){
+              mailTo.push(item.checker_id);
+            }
+            phase = '취소 처리'
+          }else if(send_confirmation_data.approval_phase === '취소 미승인'){
+            mailTo.push(item.approver_id);
+            phase ='취소 승인 요청'
+          }else if(send_confirmation_data.approval_phase === '취소 미확인'){
+            mailTo.push(item.checker_id);
+            phase ='취소 확인 요청'
+          }
+
+          // 메일 본문 내용
+          let content=`
+            <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+              <h2 style="text-align: center; color:#13428a">출고 ${phase} 알림</h2>
+              <table style="width: 100%;border-spacing: 10px 10px;">
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.project_code}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">출고 요청일</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.ship_date}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                </tr>
+              </table>
+              <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&ship_date=${item.ship_date}">
+                <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                  ${phase} 확인
+                </p>
+              </a>
+            </div>
+          `;
+
+          // 메일 알림 요청 정보
+          let mailData = {
+            "mailTo": mailTo,
+            "content": content
+          };
+
+          console.log(mailData);
         } else {
           if (prevURL !== window.location.href) return;
           alert(result['failed_info']);

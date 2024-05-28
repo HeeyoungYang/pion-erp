@@ -2169,10 +2169,10 @@ export default {
                 product_spec: this.dialog_selected_product_data.product_spec,
                 module_name: data.type === '반제품' ? data.cost_list : '',
                 module_num: data.type === '반제품' ? data.cost_num : 0,
-                module_unit_price: data.type === '반제품' ? data.cost_unit_price : '',
+                module_unit_price: data.type === '반제품' ? data.cost_unit_price : 0,
                 material_name: data.type === '원부자재' ? data.cost_list : '',
                 material_num: data.type === '원부자재' ? data.cost_num : 0,
-                material_unit_price: data.type === '원부자재' ? data.cost_unit_price : ''
+                material_unit_price: data.type === '원부자재' ? data.cost_unit_price : 0
               },
               "select_where": {"cost_calc_code": new_cost_calc_code, "module_name": data.type === '반제품' ? data.cost_list : '', "material_name": data.type === '원부자재' ? data.cost_list : ''},
               "rollback": "yes"
