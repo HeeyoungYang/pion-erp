@@ -846,42 +846,47 @@ export default {
 
           // 메일 본문 내용
           let content=`
-            <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-              <h2 style="text-align: center; color:#13428a">입고 ${phase} 처리 알림</h2>
-              <table style="width: 100%;border-spacing: 10px 10px;">
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 번호</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.order_code}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">입고 일자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inbound_date}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
-                </tr>
-                ${reject_info ? reject_info : ''}
-              </table>
-              <a style="color: white; text-decoration:none"href="${prevURL}?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
-                <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                  현황 확인
-                </p>
-              </a>
-            </div>
+          <html>
+            <body>
+              <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                <h2 style="text-align: center; color:#13428a">입고 ${phase} 처리 알림</h2>
+                <table style="width: 100%;border-spacing: 10px 10px;">
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 번호</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.order_code}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">입고 일자</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inbound_date}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                  </tr>
+                  ${reject_info ? reject_info : ''}
+                </table>
+                <a style="color: white; text-decoration:none"href="${prevURL}?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
+                  <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                    현황 확인
+                  </p>
+                </a>
+              </div>
+            </body>
+          </html>
           `;
 
           // 메일 알림 요청 정보
           let mailData = {
             "mailTo": mailTo,
+            "subject": "입고 " + phase + " 처리 알림",
             "content": content
           };
 
@@ -1112,42 +1117,47 @@ export default {
 
           // 메일 본문 내용
           let content=`
-            <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-              <h2 style="text-align: center; color:#13428a">입고 ${phase} 처리 알림</h2>
-              <table style="width: 100%;border-spacing: 10px 10px;">
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 번호</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.order_code}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">입고 일자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inbound_date}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
-                </tr>
-                ${reject_info ? reject_info : ''}
-              </table>
-              <a style="color: white; text-decoration:none"href="${prevURL}?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
-                <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                  취소 현황 확인
-                </p>
-              </a>
-            </div>
+            <html>
+              <body>
+                <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                  <h2 style="text-align: center; color:#13428a">입고 ${phase} 처리 알림</h2>
+                  <table style="width: 100%;border-spacing: 10px 10px;">
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 번호</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.order_code}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">입고 일자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inbound_date}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                    </tr>
+                    ${reject_info ? reject_info : ''}
+                  </table>
+                  <a style="color: white; text-decoration:none"href="${prevURL}?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
+                    <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                      취소 현황 확인
+                    </p>
+                  </a>
+                </div>
+              </body>
+            </html>
           `;
 
           // 메일 알림 요청 정보
           let mailData = {
             "mailTo": mailTo,
+            "subject": "입고 " + phase + " 처리 알림",
             "content": content
           };
 
@@ -1330,41 +1340,46 @@ export default {
 
           // 메일 본문 내용
           let content=`
-            <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-              <h2 style="text-align: center; color:#13428a">입고 ${phase} 알림</h2>
-              <table style="width: 100%;border-spacing: 10px 10px;">
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 번호</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.order_code}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">입고 일자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inbound_date}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
-                </tr>
-                <tr>
-                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
-                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
-                </tr>
-              </table>
-              <a style="color: white; text-decoration:none"href="${prevURL}?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
-                <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                  ${phase} 확인
-                </p>
-              </a>
-            </div>
+            <html>
+              <body>
+                <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                  <h2 style="text-align: center; color:#13428a">입고 ${phase} 알림</h2>
+                  <table style="width: 100%;border-spacing: 10px 10px;">
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 번호</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.order_code}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">입고 일자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inbound_date}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                    </tr>
+                  </table>
+                  <a style="color: white; text-decoration:none"href="${prevURL}?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
+                    <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                      ${phase} 확인
+                    </p>
+                  </a>
+                </div>
+              </body>
+            </html>
           `;
 
           // 메일 알림 요청 정보
           let mailData = {
             "mailTo": mailTo,
+            "subject": "입고 " + phase + " 알림",
             "content": content
           };
 
