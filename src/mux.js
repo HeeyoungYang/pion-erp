@@ -592,6 +592,21 @@ mux.Server = {
           basicInfo.spot = result.data.spot.map(data => {
             return data.spot;
           });
+          basicInfo.classification = basicInfo.classification.sort((a, b) => {
+            if (a === '그 외') return 1;
+            if (b === '그 외' || a === '기타') return -1;
+            return a.localeCompare(b);
+          });
+          basicInfo.manufacturer = basicInfo.manufacturer.sort((a, b) => {
+            if (a === '미확인') return 1;
+            if (b === '미확인' || a === '기타') return -1;
+            return a.localeCompare(b);
+          });
+          basicInfo.spot = basicInfo.spot.sort((a, b) => {
+            if (a === '미확인') return 1;
+            if (b === '미확인' || a === '기타') return -1;
+            return a.localeCompare(b);
+          });
           resolve(basicInfo);
         } else {
           reject(result.message);

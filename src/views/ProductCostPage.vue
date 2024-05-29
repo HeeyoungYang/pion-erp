@@ -1325,6 +1325,7 @@ export default {
         }
         if(result['code'] == 0){
           const searchResult = result.data;
+          searchResult.product_cost.reverse(); // 최신순으로 정렬
           this.clearClicked();
           this.searchDataCalcProcess(searchResult, true);
 

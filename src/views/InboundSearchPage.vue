@@ -334,7 +334,7 @@ export default {
             }
 
           })
-          this.inbound_approve_data  = result.data.reverse();
+          this.inbound_approve_data  = result.data.reverse(); // 최신순으로 정렬
         }else{
           alert(result['failed_info']);
         }

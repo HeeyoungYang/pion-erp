@@ -149,7 +149,7 @@ export default {
         this.members = this.members.filter(data => data.position !== 'master');
       }
 
-      this.members = this.members.sort((a, b) => b.name.localeCompare(a.name));
+      this.members = this.members.sort((a, b) => a.name.localeCompare(b.name));
 
       this.$emit("members",this.members)
     },

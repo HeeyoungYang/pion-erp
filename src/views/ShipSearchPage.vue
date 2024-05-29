@@ -347,7 +347,7 @@ export default {
           })
 
 
-          this.ship_approve_data  = result.data.reverse();
+          this.ship_approve_data  = result.data.reverse(); // 최신순으로 정렬
           this.loading_dialog = false;
         }else{
           alert(result['failed_info']);

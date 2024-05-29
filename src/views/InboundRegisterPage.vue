@@ -1219,7 +1219,7 @@ export default {
             }
 
           })
-          this.ship_search_data  = result.data
+          this.ship_search_data  = result.data.reverse(); // 최신순으로 정렬
         }else{
           alert(result['failed_info']);
         }
