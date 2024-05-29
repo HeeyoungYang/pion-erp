@@ -125,6 +125,12 @@ export default {
         alert(error);
         return;
       }
+
+      const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);
+      if (userPosition !== 'master'){
+        memberList = memberList.filter(data => data.position !== 'master');
+      }
+
       this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
       this.loading_dialog = false;
     },
@@ -187,6 +193,11 @@ export default {
         alert(error);
         return;
       }
+      const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);
+      if (userPosition !== 'master'){
+        memberList = memberList.filter(data => data.position !== 'master');
+      }
+
       this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
       this.loading_dialog = false;
     }, */

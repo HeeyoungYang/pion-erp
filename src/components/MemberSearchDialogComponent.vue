@@ -143,6 +143,14 @@ export default {
         alert(error);
         return;
       }
+
+      const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);
+      if (userPosition !== 'master'){
+        this.members = this.members.filter(data => data.position !== 'master');
+      }
+
+      this.members = this.members.sort((a, b) => b.name.localeCompare(a.name));
+
       this.$emit("members",this.members)
     },
     close() {
