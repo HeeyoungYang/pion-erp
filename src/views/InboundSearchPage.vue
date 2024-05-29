@@ -498,6 +498,7 @@ export default {
         }else{
           if(reason === ''){
             alert('반려 사유 필수 기입');
+            return;
           }else{
             send_data.reject_reason = reason;
             send_data.rejecter = this.login_info.name;
@@ -516,6 +517,7 @@ export default {
         }else{
           if(reason === ''){
             alert('반려 사유 필수 기입');
+            return;
           }else{
             send_data.reject_reason = reason;
             send_data.rejecter = this.login_info.name;
@@ -528,11 +530,13 @@ export default {
 
       console.log(phase);
 
+      let sendData = {};
 
       // 미승인에서 승인으로 변경하는 경우
       if(send_data_belong.length > 0){
-        send_data_belong.forEach(async belong => {
-
+        for (let i = 0; i < send_data_belong.length; i++) {
+          const belong = send_data_belong[i];
+          
           let update_stock_data = [];
           let insert_stock_data = [];
           let insert_material_data = [];
@@ -738,58 +742,30 @@ export default {
               });
 
             }
-            let sendItemData = {};
-            sendItemData["stock_table-update"] = update_stock_data;
-            sendItemData["stock_table-insert"] = insert_stock_data;
-            sendItemData["material_table-insert"] = insert_material_data;
-            sendItemData["module_table-insert"] = insert_module_data;
-            sendItemData["module_material_table-insert"] = belong_module_data;
-            sendItemData["product_table-insert"] = insert_product_data;
-            sendItemData["product_material_table-insert"] = belong_product_material_data;
-            sendItemData["product_module_table-insert"] = belong_product_module_data;
-
-            console.log("sendItemData ::: " + sendItemData);
-            try {
-              let resultItem = await mux.Server.post({
-                path: '/api/common_rest_api/',
-                params: sendItemData
-              });
-              if (prevURL !== window.location.href) return;
-
-              if (typeof resultItem === 'string'){
-                resultItem = JSON.parse(resultItem);
-              }
-              if(resultItem['code'] == 0){
-                console.log('result :>> ', resultItem);
-              } else {
-                if (prevURL !== window.location.href) return;
-                alert(resultItem['failed_info']);
-              }
-            } catch (error) {
-              if (prevURL !== window.location.href) return;
-              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                alert(error.response['data']['failed_info'].msg);
-              else
-                alert(error);
-            }
+            
+            sendData["stock_table-update"] = update_stock_data;
+            sendData["stock_table-insert"] = insert_stock_data;
+            sendData["material_table-insert"] = insert_material_data;
+            sendData["module_table-insert"] = insert_module_data;
+            sendData["module_material_table-insert"] = belong_module_data;
+            sendData["product_table-insert"] = insert_product_data;
+            sendData["product_material_table-insert"] = belong_product_material_data;
+            sendData["product_module_table-insert"] = belong_product_module_data;
           }
-        })
+        }
 
       }
 
-
-      let sendData = {
-        "inbound_confirmation_table-update": [{
-          "user_info": {
-            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-            "role": "modifier"
-          },
-          "data": send_data,
-          "update_where": {"code": item.code},
-          "rollback": "yes"
-        }]
-      };
-      console.log(sendData);
+      sendData["inbound_confirmation_table-update"] = [{
+        "user_info": {
+          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+          "role": "modifier"
+        },
+        "data": send_data,
+        "update_where": {"code": item.code},
+        "rollback": "yes"
+      }];
+      console.log("sendData ::: ", sendData);
 
       try {
         let resultInbound = await mux.Server.post({
@@ -802,7 +778,23 @@ export default {
           resultInbound = JSON.parse(resultInbound);
         }
         if(resultInbound['code'] == 0){
-          // console.log('result :>> ', result);
+          item.approval_phase = send_data.approval_phase;
+          switch (item.approval_phase) {
+            case '미승인':
+              item.checked_date = send_data.checked_date;
+              break;
+            case '반려':
+              item.reject_reason = send_data.reject_reason;
+              item.rejecter = send_data.rejecter;
+              item.rejected_date = send_data.rejected_date;
+              break;
+            case '승인':
+              item.approved_date = send_data.approved_date;
+              break;
+          
+            default:
+              break;
+          }
           alert('입고 ' + phase + ' 완료');
 
           //메일 알림 관련
@@ -920,6 +912,7 @@ export default {
         }else{
           if(reason === ''){
             alert('취소 반려 사유 필수 기입');
+            return;
           }else{
             send_data.reject_reason = reason;
             send_data.rejecter = this.login_info.name;
@@ -938,6 +931,7 @@ export default {
         }else{
           if(reason === ''){
             alert('취소 반려 사유 필수 기입');
+            return;
           }else{
             send_data.reject_reason = reason;
             send_data.rejecter = this.login_info.name;
@@ -950,10 +944,13 @@ export default {
 
       console.log(phase);
 
+      let sendData = {};
 
       //취소 미승인에서 취소로 변경하는 경우
       if(send_data_belong.length > 0){
-        send_data_belong.forEach(async belong => {
+        for (let i = 0; i < send_data_belong.length; i++) {
+          const belong = send_data_belong[i];
+          
           let insert_product_data = [];
           let update_stock_data = [];
           // product_code기준 재고(자재)검색
@@ -1016,50 +1013,24 @@ export default {
               "select_where": {"product_code": "!JUST_INSERT!"},
               "rollback": "no"
             })
-            let sendItemData = {};
-            sendItemData["inbound_product_table-insert"] = insert_product_data;
-            sendItemData["stock_table-update"] = update_stock_data;
-            console.log("sendItemData ::: " + JSON.stringify(sendItemData));
-            try {
-              let resultItem = await mux.Server.post({
-                path: '/api/common_rest_api/',
-                params: sendItemData
-              });
-              if (prevURL !== window.location.href) return;
-
-              if (typeof resultItem === 'string'){
-                resultItem = JSON.parse(resultItem);
-              }
-              if(resultItem['code'] == 0){
-                console.log('result :>> ', resultItem);
-              } else {
-                if (prevURL !== window.location.href) return;
-                alert(resultItem['failed_info']);
-              }
-            } catch (error) {
-              if (prevURL !== window.location.href) return;
-              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                alert(error.response['data']['failed_info'].msg);
-              else
-                alert(error);
-            }
+            
+            sendData["inbound_product_table-insert"] = insert_product_data;
+            sendData["stock_table-update"] = update_stock_data;
           }
-        })
+        }
 
       }
 
 
-      let sendData = {
-        "inbound_confirmation_table-update": [{
-          "user_info": {
-            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-            "role": "modifier"
-          },
-          "data": send_data,
-          "update_where": {"code": item.code},
-          "rollback": "yes"
-        }]
-      };
+      sendData["inbound_confirmation_table-update"] = [{
+        "user_info": {
+          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+          "role": "modifier"
+        },
+        "data": send_data,
+        "update_where": {"code": item.code},
+        "rollback": "yes"
+      }];
       console.log(sendData);
 
       try {
@@ -1073,7 +1044,31 @@ export default {
           resultInbound = JSON.parse(resultInbound);
         }
         if(resultInbound['code'] == 0){
-          // console.log('result :>> ', result);
+          let minus_send_product_data = [];
+          item.approval_phase = send_data.approval_phase;
+          switch (item.approval_phase) {
+            case '취소 미승인':
+              item.checked_date = send_data.checked_date;
+              break;
+            case '취소 반려':
+              item.reject_reason = send_data.reject_reason;
+              item.rejecter = send_data.rejecter;
+              item.rejected_date = send_data.rejected_date;
+              break;
+            case '취소 승인':
+              item.approved_date = send_data.approved_date;
+              minus_send_product_data = JSON.parse(JSON.stringify(item.belong_data));
+              minus_send_product_data.forEach(data => {
+                data.inbound_num = '-' + data.inbound_num;
+                data.inbound_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
+                item.belong_data.push(data);
+              });
+              break;
+          
+            default:
+              break;
+          }
+
           alert('입고 ' + phase + ' 완료');
 
           //메일 알림 관련
@@ -1196,9 +1191,12 @@ export default {
         send_confirmation_data.approved_date = null;
       }
 
-      if(send_product_data.length > 0){
-        send_product_data.forEach( async product =>{
+      let sendData = {};
 
+      if(send_product_data.length > 0){
+        for (let i = 0; i < send_product_data.length; i++) {
+          const product = send_product_data[i];
+          
           let insert_product_data = [];
           let update_stock_data = [];
           // product_code기준 재고(자재)검색
@@ -1261,50 +1259,23 @@ export default {
               "select_where": {"product_code": "!JUST_INSERT!"},
               "rollback": "no"
             })
-            let sendItemData = {};
-            sendItemData["inbound_product_table-insert"] = insert_product_data;
-            sendItemData["stock_table-update"] = update_stock_data;
-            console.log("sendItemData ::: " + JSON.stringify(sendItemData));
-            try {
-              let resultItem = await mux.Server.post({
-                path: '/api/common_rest_api/',
-                params: sendItemData
-              });
-              if (prevURL !== window.location.href) return;
-
-              if (typeof resultItem === 'string'){
-                resultItem = JSON.parse(resultItem);
-              }
-              if(resultItem['code'] == 0){
-                console.log('result :>> ', resultItem);
-              } else {
-                if (prevURL !== window.location.href) return;
-                alert(resultItem['failed_info']);
-              }
-            } catch (error) {
-              if (prevURL !== window.location.href) return;
-              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                alert(error.response['data']['failed_info'].msg);
-              else
-                alert(error);
-            }
+            
+            sendData["inbound_product_table-insert"] = insert_product_data;
+            sendData["stock_table-update"] = update_stock_data;
           }
-        })
-
+        }
 
       }
 
-      let sendData = {
-        "inbound_confirmation_table-update": [{
-          "user_info": {
-            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-            "role": "modifier"
-          },
-          "data": send_confirmation_data,
-          "update_where": {"code": item.code},
-          "rollback": "yes"
-        }]
-      };
+      sendData["inbound_confirmation_table-update"] = [{
+        "user_info": {
+          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+          "role": "modifier"
+        },
+        "data": send_confirmation_data,
+        "update_where": {"code": item.code},
+        "rollback": "yes"
+      }];
 
       try {
         let result = await mux.Server.post({
@@ -1317,7 +1288,30 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
-          // console.log('result :>> ', result);
+          let minus_send_product_data = [];
+          item.approval_phase = send_confirmation_data.approval_phase;
+          switch (send_confirmation_data.approval_phase) {
+            case '취소':
+              item.approved_date = send_confirmation_data.approved_date;
+              minus_send_product_data = JSON.parse(JSON.stringify(item.belong_data));
+              minus_send_product_data.forEach(data => {
+                data.inbound_num = '-' + data.inbound_num;
+                data.inbound_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
+                item.belong_data.push(data);
+              });
+              break;
+            case '취소 미승인':
+              item.approved_date = null;
+              break;
+            case '취소 미확인':
+              item.checked_date = null;
+              item.approved_date = null;
+              break;
+          
+            default:
+              break;
+          }
+          
           alert(send_confirmation_data.approval_phase === '취소' ? '취소 완료' : '취소 요청 완료');
 
           //메일 알림 관련
