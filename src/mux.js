@@ -592,6 +592,21 @@ mux.Server = {
           basicInfo.spot = result.data.spot.map(data => {
             return data.spot;
           });
+          basicInfo.classification = basicInfo.classification.sort((a, b) => {
+            if (a === '그 외') return 1;
+            if (b === '그 외' || a === '기타') return -1;
+            return a.localeCompare(b);
+          });
+          basicInfo.manufacturer = basicInfo.manufacturer.sort((a, b) => {
+            if (a === '미확인') return 1;
+            if (b === '미확인' || a === '기타') return -1;
+            return a.localeCompare(b);
+          });
+          basicInfo.spot = basicInfo.spot.sort((a, b) => {
+            if (a === '미확인') return 1;
+            if (b === '미확인' || a === '기타') return -1;
+            return a.localeCompare(b);
+          });
           resolve(basicInfo);
         } else {
           reject(result.message);
@@ -627,7 +642,7 @@ mux.Server.axiosInstance.interceptors.response.use(
   },
   async error => {
     const originalRequest = error.config;
-    if ((error.response.data && error.response.data.code === 5193)
+    if ((error.response.data && (error.response.data.code === 5193 || error.response.data.code === 1000 || error.response.data.data.Code === "NotAuthorizedException"))
     && !originalRequest._retry) {
       originalRequest._retry = true;
       const userName = Vue.$cookies.get(configJson.cookies.id.key);
@@ -673,7 +688,9 @@ mux.Server.axiosInstance.interceptors.response.use(
             if (key !== configJson.cookies.savedID.key)
             Vue.$cookies.remove(key);
           });
-          router.push('/');
+          if (window.location.pathname !== '/') {
+            router.push('/');
+          }
         }
       }
     }

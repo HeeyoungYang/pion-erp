@@ -262,7 +262,7 @@ export default {
         this.registMemberInputs.find(x=>x.column_name === 'position').list.push('master');
       }
 
-      this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
+      this.members = memberList.sort((a, b) => a.name.localeCompare(b.name));
       this.loading_dialog = false;
     },
     registItem(item){
@@ -425,6 +425,7 @@ export default {
     },
 
     close () {
+      this.loading_dialog = false;
       this.dialog = false
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)

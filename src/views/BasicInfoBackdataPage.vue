@@ -62,8 +62,7 @@
                             dense
                             @edit="editProductInfo"
                             @delete="deleteProductInfo"
-                            hide-default-footer
-                            disable-pagination
+                            
                           >
                           </DataTableComponent>
                         </v-col>
@@ -110,8 +109,7 @@
                             dense
                             @edit="editProductInfo"
                             @delete="deleteProductInfo"
-                            hide-default-footer
-                            disable-pagination
+                            
                           >
                           </DataTableComponent>
                         </v-col>
@@ -158,8 +156,7 @@
                             dense
                             @edit="editProductInfo"
                             @delete="deleteProductInfo"
-                            hide-default-footer
-                            disable-pagination
+                            
                           >
                           </DataTableComponent>
                         </v-col>
@@ -785,6 +782,7 @@ export default {
     },
 
     close () {
+      this.loading_dialog = false
       this.productInfoDialog = false
       this.$nextTick(() => {
         this.editedBasicInfo = Object.assign({}, this.defaultBasicInfo)

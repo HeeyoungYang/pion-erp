@@ -124,6 +124,8 @@
                     dense
                     :headers="product_ship_headers"
                     :items="product_ship_data"
+                    hide-default-footer
+                    disable-pagination
                     item-key="product_info"
                     class="elevation-1"
                   >

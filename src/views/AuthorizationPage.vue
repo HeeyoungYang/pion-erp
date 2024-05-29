@@ -131,7 +131,7 @@ export default {
         memberList = memberList.filter(data => data.position !== 'master');
       }
 
-      this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
+      this.members = memberList.sort((a, b) => a.name.localeCompare(b.name));
       this.loading_dialog = false;
     },
 
@@ -198,7 +198,7 @@ export default {
         memberList = memberList.filter(data => data.position !== 'master');
       }
 
-      this.members = memberList.sort((a, b) => b.name.localeCompare(a.name));
+      this.members = memberList.sort((a, b) => a.name.localeCompare(b.name));
       this.loading_dialog = false;
     }, */
   },

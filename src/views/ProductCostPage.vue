@@ -1208,8 +1208,6 @@ export default {
       this.username = this.$cookies.get(this.$configJson.cookies.name.key);
       this.todayDate = mux.Date.format(new Date(), 'yyyy-MM-dd');
 
-      this.loading_dialog = true;
-
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
@@ -1265,13 +1263,11 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           alert(error.response['data']['failed_info'].msg);
         else
           alert(error);
       }
-      this.loading_dialog = false;
 
       // set num
       this.calc_cost_detail_data_employment_insurance2.cost_num = this.new_employment_insurance_num;
@@ -1329,6 +1325,7 @@ export default {
         }
         if(result['code'] == 0){
           const searchResult = result.data;
+          searchResult.product_cost.reverse(); // 최신순으로 정렬
           this.clearClicked();
           this.searchDataCalcProcess(searchResult, true);
 

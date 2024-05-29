@@ -642,8 +642,7 @@
                             :headers="module_headers"
                             :items="module_data"
                             :item-key="module_data.item_code"
-                            hide-default-footer
-                            disable-pagination
+                            
                             children-key="belong_data"
                             table-style=""
                             editable
@@ -1031,8 +1030,6 @@
             <DataTableComponent
               :headers="product_detail_header"
               :items="productDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
@@ -1041,8 +1038,6 @@
             <DataTableComponent
               :headers="stock_detail_header"
               :items="stockDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
@@ -1051,8 +1046,6 @@
             <DataTableComponent
               :headers="inbound_detail_header"
               :items="inboundDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
@@ -1063,8 +1056,6 @@
             <DataTableComponent
               :headers="stock_detail_header"
               :items="stockDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
@@ -1073,8 +1064,6 @@
             <DataTableComponent
               :headers="inbound_detail_header"
               :items="inboundDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
@@ -1316,6 +1305,8 @@ export default {
     },
 
     async searchItem() {
+      this.loading_dialog = true;
+
       let searchType;
       let searchClassification;
       let searchProductCode;
@@ -1466,6 +1457,7 @@ export default {
         else
           alert(error);
       }
+      this.loading_dialog = false;
 
       // if(this.tab_main == 1){
       //   this.search_material_for_module_data = ProductBackDataPageConfig.test_search_material_for_module_data;
@@ -1763,10 +1755,11 @@ export default {
         else
           alert(error);
       }
-      this.loading_dialog = false;
       this.close();
     },
     async editMaterialItem (item) {
+      this.loading_dialog = true;
+
       const prevURL = window.location.href;
       try {
         let params;
@@ -1817,6 +1810,7 @@ export default {
 
         } else {
           alert(result['failed_info']);
+          this.loading_dialog = false;
           return;
         }
       } catch (error) {
@@ -1826,6 +1820,7 @@ export default {
           alert(error.response['data']['failed_info'].msg);
         else
           alert(error);
+        this.loading_dialog = false;
         return;
       }
       this.editedIndex = this.material_data.indexOf(item)
@@ -1858,6 +1853,7 @@ export default {
           }
         }
       })
+      this.loading_dialog = false;
       this.material_dialog = true
     },
 
@@ -1890,6 +1886,7 @@ export default {
           return;
         }
 
+        this.loading_dialog = true;
         stock_item = [];
         for(let x=0; x<stock_spot_arr.length; x++){
           if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
@@ -2217,6 +2214,8 @@ export default {
     },
 
     async editModuleItem(item){
+      this.loading_dialog = true;
+
       const prevURL = window.location.href;
       try {
         let params;
@@ -2267,6 +2266,7 @@ export default {
 
         } else {
           alert(result['failed_info']);
+          this.loading_dialog = false;
           return;
         }
       } catch (error) {
@@ -2276,6 +2276,7 @@ export default {
           alert(error.response['data']['failed_info'].msg);
         else
           alert(error);
+        this.loading_dialog = false;
         return;
       }
       this.editedIndex = this.module_data.indexOf(item)
@@ -2315,6 +2316,7 @@ export default {
         }
       }
       // this.module_set_material_data= item.belong_data
+      this.loading_dialog = false;
       this.module_dialog = true;
     },
     async uploadModule(){
@@ -2346,6 +2348,7 @@ export default {
           return;
         }
 
+        this.loading_dialog = true;
         stock_item = [];
         for(let x=0; x<stock_spot_arr.length; x++){
           if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
@@ -2749,6 +2752,7 @@ export default {
           return;
         }
 
+        this.loading_dialog = true;
         stock_item = [];
         for(let x=0; x<stock_spot_arr.length; x++){
           if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
@@ -3153,7 +3157,7 @@ export default {
             this.inboundDetails = inbounds;
 
             this.detail_dialog = true;
-            this.stockDetails = JSON.parse(JSON.stringify(item.spot_stock));
+            this.stockDetails = item.spot_stock ? JSON.parse(JSON.stringify(item.spot_stock)) : [];
             this.stockDetails.forEach(data => {
               data.stock_num = Number(data.stock_num).toLocaleString();
             });
@@ -3242,6 +3246,8 @@ export default {
     },
 
     async deleteItemConfirm () {
+      this.loading_dialog = true;
+
       this.deleteItemList = {};
       this.deleteItemList.modifier = this.$cookies.get(this.$configJson.cookies.id.key);
       if(this.tab_main == 0){
@@ -3432,6 +3438,7 @@ export default {
         }
       }
 
+      this.loading_dialog = false;
       // 삭제 요청 = this.deleteItemList
       this.closeDelete()
     },
@@ -3544,6 +3551,7 @@ export default {
     },
 
     close () {
+      this.loading_dialog = false
       this.material_dialog = false
       this.module_dialog = false
       this.product_dialog = false

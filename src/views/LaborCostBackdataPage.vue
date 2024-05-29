@@ -71,8 +71,7 @@
                   dense
                   @edit="editLaborItem"
                   @delete="deleteItem"
-                  hide-default-footer
-                  disable-pagination
+                  
                 >
                 </DataTableComponent>
                 <ModalDialogComponent
@@ -146,8 +145,7 @@
                   editable
                   deletable
                   dense
-                  hide-default-footer
-                  disable-pagination
+                  
                   @edit="editWageItem"
                   @delete="deleteItem"
                 >
@@ -202,8 +200,7 @@
                   :search="search_ratio"
                   editable
                   dense
-                  hide-default-footer
-                  disable-pagination
+                  
                   @edit="editRatioItem"
                 >
                 </DataTableComponent>
@@ -902,6 +899,7 @@ export default {
     },
 
     close () {
+      this.loading_dialog = false;
       this.laborDialog = false
       this.wageDialog = false
       this.ratioDialog = false
