@@ -347,7 +347,7 @@ export default {
           })
 
 
-          this.ship_approve_data  = result.data
+          this.ship_approve_data  = result.data.reverse();
           this.loading_dialog = false;
         }else{
           alert(result['failed_info']);

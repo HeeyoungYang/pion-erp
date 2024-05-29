@@ -334,7 +334,7 @@ export default {
             }
 
           })
-          this.inbound_approve_data  = result.data
+          this.inbound_approve_data  = result.data.reverse();
         }else{
           alert(result['failed_info']);
         }
