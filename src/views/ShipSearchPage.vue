@@ -256,6 +256,15 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
+    setSearchCardInputs(project_code, purpose, ship_date){
+      this.searchCardInputs.find(x=>x.label === '프로젝트').value = project_code;
+      this.searchCardInputs.find(x=>x.label === '출고목적').value = purpose;
+      if (ship_date.includes(' ~ ')){
+        this.searchCardInputs.find(x=>x.label === '출고 요청일').value = ship_date.split(' ~ ');
+      } else {
+        this.searchCardInputs.find(x=>x.label === '출고 요청일').value = [ship_date, ship_date];
+      }
+    },
     async download(foldername, filename, prefix) {
       this.loading_dialog = true;
       try {
@@ -600,7 +609,7 @@ export default {
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
                         </tr>
                       </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&ship_date=${item.ship_date}">
+                      <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                         <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                           ${phase}하기
                         </p>
@@ -722,7 +731,7 @@ export default {
                       </tr>
                       ${reject_info ? reject_info : ''}
                     </table>
-                    <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&ship_date=${item.ship_date}">
+                    <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                       <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                         ${phase}하기
                       </p>
@@ -992,7 +1001,7 @@ export default {
                     </tr>
                     ${reject_info ? reject_info : ''}
                   </table>
-                  <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&ship_date=${item.ship_date}">
+                  <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                     <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                       취소 현황 확인
                     </p>
@@ -1214,7 +1223,7 @@ export default {
                       <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
                     </tr>
                   </table>
-                  <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&ship_date=${item.ship_date}">
+                  <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                     <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                       ${phase} 확인
                     </p>
