@@ -16,6 +16,8 @@ import ShipSearchPage from '@/views/ShipSearchPage'
 import ShipRegisterPage from '@/views/ShipRegisterPage'
 import EstimatePage from '@/views/EstimatePage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
+import ObtainOrderPage from '@/views/ObtainOrderPage'
+import ObtainOrderSearchPage from '@/views/ObtainOrderSearchPage'
 import ProductBackdataPage from '@/views/ProductBackdataPage'
 import LaborCostBackdataPage from '@/views/LaborCostBackdataPage'
 import BasicInfoBackdataPage from '@/views/BasicInfoBackdataPage'
@@ -127,6 +129,22 @@ const routes = [
     path: '/estimate-search',
     name: 'EstimateSearchPage',
     component: EstimateSearchPage,
+    meta: {
+      permission: ['member']
+    }
+  },
+  {
+    path: '/obtain-order',
+    name: 'ObtainOrderPage',
+    component: ObtainOrderPage,
+    meta: {
+      permission: ['member']
+    }
+  },
+  {
+    path: '/obtain-order-search',
+    name: 'ObtainOrderSearchPage',
+    component: ObtainOrderSearchPage,
     meta: {
       permission: ['member']
     }

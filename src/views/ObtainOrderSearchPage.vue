@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :salesMenu="true" :estimateMenu="true"></NavComponent>
+    <NavComponent :salesMenu="true" :obtainOrderPages="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -363,7 +363,7 @@ import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import CostTableComponent from "@/components/CostTableComponent.vue";
 import MailFormComponent from "@/components/MailFormComponent.vue";
-import EstimateSearchPageConfig from "@/configure/EstimateSearchPageConfig.json";
+import ObtainOrderSearchPageConfig from "@/configure/ObtainOrderSearchPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import mux from "@/mux";
 
@@ -400,16 +400,16 @@ export default {
 
       searched_products:[],
 
-      login_info: EstimateSearchPageConfig.login_info,
-      searchCardInputs:EstimateSearchPageConfig.searchCardInputs,
-      inbound_approve_headers:EstimateSearchPageConfig.inbound_approve_headers,
-      inbound_product_list_headers:EstimateSearchPageConfig.inbound_product_list_headers,
+      login_info: ObtainOrderSearchPageConfig.login_info,
+      searchCardInputs:ObtainOrderSearchPageConfig.searchCardInputs,
+      inbound_approve_headers:ObtainOrderSearchPageConfig.inbound_approve_headers,
+      inbound_product_list_headers:ObtainOrderSearchPageConfig.inbound_product_list_headers,
       // inbound_approve_data:[],
-      survey_cost_headers: EstimateSearchPageConfig.survey_cost_headers,
-      search_tab_items: EstimateSearchPageConfig.search_tab_items,
-      labor_cost_headers: EstimateSearchPageConfig.labor_cost_headers,
-      calc_cost_detail_data: JSON.parse(JSON.stringify(EstimateSearchPageConfig.calc_cost_detail_data)),
-      inbound_approve_data:EstimateSearchPageConfig.test_inbound_approve_data
+      survey_cost_headers: ObtainOrderSearchPageConfig.survey_cost_headers,
+      search_tab_items: ObtainOrderSearchPageConfig.search_tab_items,
+      labor_cost_headers: ObtainOrderSearchPageConfig.labor_cost_headers,
+      calc_cost_detail_data: JSON.parse(JSON.stringify(ObtainOrderSearchPageConfig.calc_cost_detail_data)),
+      inbound_approve_data:ObtainOrderSearchPageConfig.test_inbound_approve_data
     }
   },
 
@@ -555,7 +555,7 @@ export default {
         else
           alert(error);
       }
-      // this.inbound_approve_data = EstimateSearchPageConfig.test_inbound_approve_data
+      // this.inbound_approve_data = ObtainOrderSearchPageConfig.test_inbound_approve_data
       this.loading_dialog = false;
     },
     closeProductList(){

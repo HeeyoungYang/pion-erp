@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :salesMenu="true" :estimateMenu="true"></NavComponent>
+    <NavComponent :salesMenu="true" :obtainOrderPages="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -641,7 +641,7 @@
                       elevation="1"
                       @click="save()"
                     >
-                      원가 불러오기
+                      견적서 불러오기
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -1145,7 +1145,7 @@ import NavComponent from "@/components/NavComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import DataTableComponent from "@/components/DataTableComponent.vue";
-import EstimatePageConfig from "@/configure/EstimatePageConfig.json";
+import ObtainOrderPageConfig from "@/configure/ObtainOrderPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import CostTableComponent from "@/components/CostTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
@@ -1178,11 +1178,11 @@ export default {
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     initialize(){
-      // this.search_estimate_data = EstimatePageConfig.test_estimate_data
+      // this.search_estimate_data = ObtainOrderPageConfig.test_estimate_data
     },
     async searchButton(){
       this.loading_dialog = true;
-      this.search_estimate_data = EstimatePageConfig.test_estimate_data
+      this.search_estimate_data = ObtainOrderPageConfig.test_estimate_data
       this.loading_dialog = false;
     },
     test(){
@@ -1199,25 +1199,25 @@ export default {
       tab_main: null,
       tab_search: null,
       tab_dialog_search_product: null,
-      tab_main_items: EstimatePageConfig.tab_main_items,
-      dialog_search_product_items: EstimatePageConfig.dialog_search_product_items,
+      tab_main_items: ObtainOrderPageConfig.tab_main_items,
+      dialog_search_product_items: ObtainOrderPageConfig.dialog_search_product_items,
       dialog_search_product: false,
       dialog_calculate_labor: false,
 
-      save_costs: EstimatePageConfig.save_costs,
-      search_estimate_headers: EstimatePageConfig.search_estimate_headers,
-      survey_cost_headers: EstimatePageConfig.survey_cost_headers,
-      labor_cost_headers: EstimatePageConfig.labor_cost_headers,
-      labor_list_headers: EstimatePageConfig.labor_list_headers,
-      dialog_search_product_headers: EstimatePageConfig.dialog_search_product_headers,
-      construction_materials_headers: EstimatePageConfig.construction_materials_headers,
+      save_costs: ObtainOrderPageConfig.save_costs,
+      search_estimate_headers: ObtainOrderPageConfig.search_estimate_headers,
+      survey_cost_headers: ObtainOrderPageConfig.survey_cost_headers,
+      labor_cost_headers: ObtainOrderPageConfig.labor_cost_headers,
+      labor_list_headers: ObtainOrderPageConfig.labor_list_headers,
+      dialog_search_product_headers: ObtainOrderPageConfig.dialog_search_product_headers,
+      construction_materials_headers: ObtainOrderPageConfig.construction_materials_headers,
 
 
 
 
-      construction_materials_data: JSON.parse(JSON.stringify(EstimatePageConfig.construction_materials_data)),
-      calc_cost_detail_data: JSON.parse(JSON.stringify(EstimatePageConfig.calc_cost_detail_data)),
-      calc_cost_detail_data2: EstimatePageConfig.calc_cost_detail_data.map(x => {
+      construction_materials_data: JSON.parse(JSON.stringify(ObtainOrderPageConfig.construction_materials_data)),
+      calc_cost_detail_data: JSON.parse(JSON.stringify(ObtainOrderPageConfig.calc_cost_detail_data)),
+      calc_cost_detail_data2: ObtainOrderPageConfig.calc_cost_detail_data.map(x => {
         if (x.cost_list === '재료비') {
           x.costListBtn = {
             text: '작성',
@@ -1252,12 +1252,12 @@ export default {
         }
       ],
 
-      search_tab_items: EstimatePageConfig.search_tab_items,
-      write_tab_items: EstimatePageConfig.write_tab_items,
-      searchCardInputs: EstimatePageConfig.searchCardInputs,
-      estimateDefaultInfoInputs: EstimatePageConfig.estimateDefaultInfoInputs,
-      estimateCompanyInfoInputs: EstimatePageConfig.estimateCompanyInfoInputs,
-      estimateFilesInputs: EstimatePageConfig.estimateFilesInputs,
+      search_tab_items: ObtainOrderPageConfig.search_tab_items,
+      write_tab_items: ObtainOrderPageConfig.write_tab_items,
+      searchCardInputs: ObtainOrderPageConfig.searchCardInputs,
+      estimateDefaultInfoInputs: ObtainOrderPageConfig.estimateDefaultInfoInputs,
+      estimateCompanyInfoInputs: ObtainOrderPageConfig.estimateCompanyInfoInputs,
+      estimateFilesInputs: ObtainOrderPageConfig.estimateFilesInputs,
       search_estimate_data: [],
     }
   },
