@@ -782,6 +782,7 @@ export default {
     },
 
     close () {
+      this.loading_dialog = false
       this.productInfoDialog = false
       this.$nextTick(() => {
         this.editedBasicInfo = Object.assign({}, this.defaultBasicInfo)

@@ -899,6 +899,7 @@ export default {
     },
 
     close () {
+      this.loading_dialog = false;
       this.laborDialog = false
       this.wageDialog = false
       this.ratioDialog = false

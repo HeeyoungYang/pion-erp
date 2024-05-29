@@ -284,6 +284,7 @@ export default {
       this.closeDelete()
     },
     close () {
+      this.loading_dialog = false;
       this.dialog = false
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)
