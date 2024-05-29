@@ -539,6 +539,7 @@ export default {
           console.log(sendData);
 
           try {
+            this.loading_dialog = true;
             let resultShip = await mux.Server.post({
               path: '/api/common_rest_api/',
               params: sendData
@@ -551,6 +552,9 @@ export default {
             if(resultShip['code'] == 0){
               item.approval_phase = send_data.approval_phase;
               item.approved_date = send_data.approved_date;
+
+              this.loading_dialog = false;
+              alert('출고 승인 완료')
 
               //메일 알림 관련
               let mailTo = [];
@@ -590,28 +594,40 @@ export default {
                       </table>
                       <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                         <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                          ${phase}하기
+                          확인하기
                         </p>
                       </a>
                     </div>
                   </body>
                 </html>
               `;
-
-              // 메일 알림 요청 정보
-              let mailData = {
-                "mailTo": mailTo,
-                "subject": "출고 승인 처리 알림",
-                "content": content
-              };
-
-              console.log(mailData);
-              alert('출고 승인 완료')
+              try {
+                let sendEmailAlam = await mux.Server.post({
+                  path: '/api/send_email/',
+                  mailTo: mailTo,
+                  subject: "출고 승인 처리 알림",
+                  content: content
+                });
+                if (prevURL !== window.location.href) return;
+                if(sendEmailAlam['code'] == 0){
+                  console.log(sendEmailAlam['message']);
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  alert(sendEmailAlam['failed_info']);
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                  alert(error.response['data']['failed_info'].msg);
+                else
+                  alert(error);
+              }
             } else {
               if (prevURL !== window.location.href) return;
               alert(resultShip['failed_info']);
             }
           } catch (error) {
+            this.loading_dialog = false;
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
               alert(error.response['data']['failed_info'].msg);
@@ -634,6 +650,8 @@ export default {
         console.log(sendData);
 
         try {
+
+          this.loading_dialog = true;
           let resultShip = await mux.Server.post({
             path: '/api/common_rest_api/',
             params: sendData
@@ -649,6 +667,7 @@ export default {
             item.approved_date = send_data.approved_date;
 
             alert('출고 ' + phase + ' 완료');
+            this.loading_dialog = false;
 
             //메일 알림 관련
             let mailTo = [];
@@ -715,7 +734,7 @@ export default {
                     </table>
                     <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                       <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                        ${phase}하기
+                        확인하기
                       </p>
                     </a>
                   </div>
@@ -723,19 +742,33 @@ export default {
               </html>
             `;
 
-            // 메일 알림 요청 정보
-            let mailData = {
-              "mailTo": mailTo,
-              "subject": "출고 " + phase + " 알림",
-              "content": content
-            };
-
-            console.log(mailData);
+            try {
+              let sendEmailAlam = await mux.Server.post({
+                path: '/api/send_email/',
+                mailTo: mailTo,
+                subject: "출고 " + phase + " 처리 알림",
+                content: content
+              });
+              if (prevURL !== window.location.href) return;
+              if(sendEmailAlam['code'] == 0){
+                console.log(sendEmailAlam['message']);
+              } else {
+                if (prevURL !== window.location.href) return;
+                alert(sendEmailAlam['failed_info']);
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                alert(error.response['data']['failed_info'].msg);
+              else
+                alert(error);
+            }
           } else {
             if (prevURL !== window.location.href) return;
             alert(resultShip['failed_info']);
           }
         } catch (error) {
+          this.loading_dialog = false;
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
             alert(error.response['data']['failed_info'].msg);
@@ -799,7 +832,7 @@ export default {
       if(send_data_belong.length > 0){
         for (let i = 0; i < send_data_belong.length; i++) {
           const belong = send_data_belong[i];
-          
+
           let insert_product_data = [];
           let update_stock_data = [];
           // product_code기준 재고(자재)검색
@@ -860,10 +893,10 @@ export default {
               "select_where": {"product_code": "!JUST_INSERT!"},
               "rollback": "no"
             })
-            
+
             sendData["ship_product_table-insert"] = insert_product_data;
             sendData["stock_table-update"] = update_stock_data;
-            
+
           }
         }
 
@@ -882,6 +915,7 @@ export default {
       console.log(sendData);
 
       try {
+        this.loading_dialog = true;
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -912,12 +946,13 @@ export default {
                 item.belong_data.push(data);
               });
               break;
-          
+
             default:
               break;
           }
           // console.log('result :>> ', result);
           alert('출고 ' + phase + ' 완료');
+          this.loading_dialog = false;
 
           //메일 알림 관련
           let mailTo = [];
@@ -989,7 +1024,7 @@ export default {
                   </table>
                   <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                     <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                      취소 현황 확인
+                      확인하기
                     </p>
                   </a>
                 </div>
@@ -997,19 +1032,33 @@ export default {
             </html>
           `;
 
-          // 메일 알림 요청 정보
-          let mailData = {
-            "mailTo": mailTo,
-            "subject": "출고 " + phase + " 처리 알림",
-            "content": content
-          };
-
-          console.log(mailData);
+          try {
+            let sendEmailAlam = await mux.Server.post({
+              path: '/api/send_email/',
+              mailTo: mailTo,
+              subject: "출고 " + phase + " 처리 알림",
+              content: content
+            });
+            if (prevURL !== window.location.href) return;
+            if(sendEmailAlam['code'] == 0){
+              console.log(sendEmailAlam['message']);
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(sendEmailAlam['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              alert(error.response['data']['failed_info'].msg);
+            else
+              alert(error);
+          }
         } else {
           if (prevURL !== window.location.href) return;
           alert(result['failed_info']);
         }
       } catch (error) {
+        this.loading_dialog = false;
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           alert(error.response['data']['failed_info'].msg);
@@ -1045,7 +1094,7 @@ export default {
       if(send_product_data.length > 0){
         for (let i = 0; i < send_product_data.length; i++) {
           const product = send_product_data[i];
-          
+
           let insert_product_data = [];
           let update_stock_data = [];
           // product_code기준 재고(자재)검색
@@ -1106,7 +1155,7 @@ export default {
               "select_where": {"product_code": "!JUST_INSERT!"},
               "rollback": "no"
             })
-            
+
             sendData["ship_product_table-insert"] = insert_product_data;
             sendData["stock_table-update"] = update_stock_data;
           }
@@ -1125,6 +1174,7 @@ export default {
       }];
 
       try {
+        this.loading_dialog = true;
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1154,12 +1204,13 @@ export default {
               item.checked_date = null;
               item.approved_date = null;
               break;
-          
+
             default:
               break;
           }
           // console.log('result :>> ', result);
           alert(send_confirmation_data.approval_phase === '취소' ? '취소 완료' : '취소 요청 완료');
+          this.loading_dialog = false;
 
 
           //메일 알림 관련
@@ -1210,7 +1261,7 @@ export default {
                   </table>
                   <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                     <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                      ${phase} 확인
+                      확인하기
                     </p>
                   </a>
                 </div>
@@ -1218,19 +1269,33 @@ export default {
             </html>
           `;
 
-          // 메일 알림 요청 정보
-          let mailData = {
-            "mailTo": mailTo,
-            "subject": "출고 " + phase + " 알림",
-            "content": content
-          };
-
-          console.log(mailData);
+          try {
+            let sendEmailAlam = await mux.Server.post({
+              path: '/api/send_email/',
+              mailTo: mailTo,
+              subject: "출고 " + phase + " 알림",
+              content: content
+            });
+            if (prevURL !== window.location.href) return;
+            if(sendEmailAlam['code'] == 0){
+              console.log(sendEmailAlam['message']);
+            } else {
+              if (prevURL !== window.location.href) return;
+              alert(sendEmailAlam['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              alert(error.response['data']['failed_info'].msg);
+            else
+              alert(error);
+          }
         } else {
           if (prevURL !== window.location.href) return;
           alert(result['failed_info']);
         }
       } catch (error) {
+        this.loading_dialog = false;
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           alert(error.response['data']['failed_info'].msg);

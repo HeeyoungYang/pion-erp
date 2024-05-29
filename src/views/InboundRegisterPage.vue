@@ -1100,7 +1100,7 @@ export default {
                       </table>
                       <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/inbound-search?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
                         <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                          ${phase}하기
+                          확인하기
                         </p>
                       </a>
                     </div>

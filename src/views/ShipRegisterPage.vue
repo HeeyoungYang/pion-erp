@@ -682,7 +682,7 @@ export default {
                       </table>
                       <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/ship-search?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                         <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                          ${phase}하기
+                          확인하기
                         </p>
                       </a>
                     </div>
@@ -693,7 +693,7 @@ export default {
               try {
                 let sendEmailAlam = await mux.Server.post({
                   path: '/api/send_email/',
-                  mailTo: "heeyoung",
+                  mailTo: mailTo,
                   subject: "출고 " + phase + " 요청 알림",
                   content: content
                 });
