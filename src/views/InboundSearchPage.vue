@@ -1071,7 +1071,7 @@ export default {
               break;
             case '취소 승인':
               item.approved_date = send_data.approved_date;
-              minus_send_product_data = JSON.parse(JSON.stringify(item.belong_data));
+              minus_send_product_data = item.belong_data ? JSON.parse(JSON.stringify(item.belong_data)) : [];
               minus_send_product_data.forEach(data => {
                 data.inbound_num = '-' + data.inbound_num;
                 data.inbound_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
@@ -1324,7 +1324,7 @@ export default {
           switch (send_confirmation_data.approval_phase) {
             case '취소':
               item.approved_date = send_confirmation_data.approved_date;
-              minus_send_product_data = JSON.parse(JSON.stringify(item.belong_data));
+              minus_send_product_data = item.belong_data ? JSON.parse(JSON.stringify(item.belong_data)) : [];
               minus_send_product_data.forEach(data => {
                 data.inbound_num = '-' + data.inbound_num;
                 data.inbound_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
