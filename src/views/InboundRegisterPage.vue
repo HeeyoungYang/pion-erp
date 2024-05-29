@@ -1098,7 +1098,7 @@ export default {
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
                         </tr>
                       </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL}?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
+                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/inbound-search?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
                         <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                           ${phase}하기
                         </p>
@@ -1107,15 +1107,27 @@ export default {
                   </body>
                 </html>
               `;
-
-              // 메일 알림 요청 정보
-              let mailData = {
-                "mailTo": mailTo,
-                "subject": "입고 " + phase + " 요청 알림",
-                "content": content
-              };
-
-              console.log(mailData);
+              try {
+                let sendEmailAlam = await mux.Server.post({
+                  path: '/api/send_email/',
+                  mailTo: mailTo,
+                  subject: "입고 " + phase + " 요청 알림",
+                  content: content
+                });
+                if (prevURL !== window.location.href) return;
+                if(sendEmailAlam['code'] == 0){
+                  console.log(sendEmailAlam['message']);
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  alert(sendEmailAlam['failed_info']);
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                  alert(error.response['data']['failed_info'].msg);
+                else
+                  alert(error);
+              }
 
               this.receiving_inspection_value = '';
               this.inspection_report_value = '';

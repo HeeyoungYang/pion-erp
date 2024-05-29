@@ -639,6 +639,7 @@ export default {
             if(result.data['code'] == 0){
               // console.log('result :>> ', result);
               alert('출고 승인 요청이 완료되었습니다');
+              this.loading_dialog = false;
 
               //메일 알림 관련
               let mailTo = [];
@@ -679,7 +680,7 @@ export default {
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
                         </tr>
                       </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&ship_date=${item.ship_date}">
+                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/ship-search?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                         <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                           ${phase}하기
                         </p>
@@ -689,14 +690,28 @@ export default {
                 </html>
               `;
 
-              // 메일 알림 요청 정보
-              let mailData = {
-                "mailTo": mailTo,
-                "subject": "출고 " + phase + " 요청 알림",
-                "content": content
-              };
+              try {
+                let sendEmailAlam = await mux.Server.post({
+                  path: '/api/send_email/',
+                  mailTo: "heeyoung",
+                  subject: "출고 " + phase + " 요청 알림",
+                  content: content
+                });
+                if (prevURL !== window.location.href) return;
+                if(sendEmailAlam['code'] == 0){
+                  console.log(sendEmailAlam['message']);
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  alert(sendEmailAlam['failed_info']);
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                  alert(error.response['data']['failed_info'].msg);
+                else
+                  alert(error);
+              }
 
-              console.log(mailData);
 
               this.receiving_inspection_value = '';
               this.inspection_report_value = '';
@@ -712,7 +727,6 @@ export default {
             else
               alert(error);
           }
-          this.loading_dialog = false;
         }
       }
     },
