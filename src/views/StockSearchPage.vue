@@ -147,8 +147,6 @@
             <DataTableComponent
               :headers="stock_detail_header"
               :items="stockDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
@@ -157,8 +155,6 @@
             <DataTableComponent
               :headers="inbound_detail_header"
               :items="inboundDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>

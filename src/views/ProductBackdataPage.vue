@@ -642,8 +642,7 @@
                             :headers="module_headers"
                             :items="module_data"
                             :item-key="module_data.item_code"
-                            hide-default-footer
-                            disable-pagination
+                            
                             children-key="belong_data"
                             table-style=""
                             editable
@@ -1031,8 +1030,6 @@
             <DataTableComponent
               :headers="product_detail_header"
               :items="productDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
@@ -1041,8 +1038,6 @@
             <DataTableComponent
               :headers="stock_detail_header"
               :items="stockDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
@@ -1051,8 +1046,6 @@
             <DataTableComponent
               :headers="inbound_detail_header"
               :items="inboundDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
@@ -1063,8 +1056,6 @@
             <DataTableComponent
               :headers="stock_detail_header"
               :items="stockDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
@@ -1073,8 +1064,6 @@
             <DataTableComponent
               :headers="inbound_detail_header"
               :items="inboundDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>

@@ -442,8 +442,6 @@
                 :headers="ship_search_headers"
                 :items="ship_search_data"
                 :item-key="ship_search_data.code"
-                hide-default-footer
-                disable-pagination
                 children-key="belong_data"
                 dense
                 addToTable

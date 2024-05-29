@@ -107,8 +107,7 @@
                     :headers="headers"
                     :items="product_data"
                     :item-key="product_data.item_code"
-                    hide-default-footer
-                    disable-pagination
+                    
                     children-key="belong_data"
                     table-style=""
                     stockNumInfo
@@ -153,8 +152,6 @@
             <DataTableComponent
               :headers="stock_detail_header"
               :items="stockDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
@@ -163,8 +160,6 @@
             <DataTableComponent
               :headers="inbound_detail_header"
               :items="inboundDetails"
-              hide-default-footer
-              disable-pagination
               dense
             />
           </v-col>
