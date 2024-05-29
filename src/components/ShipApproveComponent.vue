@@ -23,7 +23,7 @@
               <td class="approve_list_title approve_list_title_border">승인</td>
             </tr>
             <tr>
-              <td class="approve_list_name">{{  shipData.creater }}</td>
+              <td class="approve_list_name">{{  shipData.given_name }}</td>
               <td  class="approve_list_name">{{  shipData.checker }}</td>
               <td  class="approve_list_name">{{  shipData.approver }}</td>
             </tr>
@@ -42,7 +42,7 @@
               <td class="approve_title">작성일</td>
               <td class="approve_text">{{ shipData.created_time}}</td>
               <td class="approve_title">작성자</td>
-              <td class="approve_text">{{ shipData.creater}}</td>
+              <td class="approve_text">{{ shipData.given_name}}</td>
             </tr>
             <tr>
               <td class="approve_title">프로젝트</td>

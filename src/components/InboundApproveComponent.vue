@@ -23,7 +23,7 @@
               <td class="approve_list_title approve_list_title_border">승인</td>
             </tr>
             <tr>
-              <td class="approve_list_name">{{  inboundData.creater }}</td>
+              <td class="approve_list_name">{{  inboundData.given_name }}</td>
               <td class="approve_list_name">{{  inboundData.checker }}</td>
               <td class="approve_list_name">{{  inboundData.approver }}</td>
             </tr>
