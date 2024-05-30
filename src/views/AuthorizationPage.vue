@@ -107,7 +107,7 @@ export default {
           memberList = result.data.map(data => {
             let user = {};
             user.user_id = data.user_name;
-            user.name = data.family_name + data.given_name;
+            user.name = data.given_name;
             user.department = data.department;
             user.position = data.position;
             user.authority = data.groups;
@@ -176,7 +176,7 @@ export default {
           memberList = result.data.Users.map(data => {
             let user = {};
             user.user_id = data.Username;
-            user.name = (data.Attributes.find(x=>x.Name === 'family_name') ? data.Attributes.find(x=>x.Name === 'family_name').Value : '') + (data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '');
+            user.name = (data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '');
             user.department = data.Attributes.find(attr => attr.Name === 'custom:department').Value;
             user.position = data.Attributes.find(attr => attr.Name === 'custom:position').Value;
             user.authority = this.groups.filter(group => group.users.includes(user.user_id)).map(group => group.name);
