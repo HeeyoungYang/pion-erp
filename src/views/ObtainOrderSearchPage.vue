@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :salesMenu="true" :obtainOrderPages="true"></NavComponent>
+    <NavComponent :salesMenu="true" :obtainOrderMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>

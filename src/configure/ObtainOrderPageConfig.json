@@ -32,7 +32,7 @@
     {"label":"용역명", "col":"12", "sm":"4", "lg":"3", "value": "", "disabled":true},
     {"label":"용역기간", "col":"12", "sm":"4", "lg":"3", "value": "", "disabled":true},
     {"label":"유효기간", "col":"12", "sm":"4", "lg":"3", "value": "", "disabled":true},
-    {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": "", "disabled":true}
+    {"label":"특이사항", "col":"12", "sm":"4", "lg":"9", "value": "", "disabled":true}
   ],
   "estimateCompanyInfoInputs":[
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "disabled":true},

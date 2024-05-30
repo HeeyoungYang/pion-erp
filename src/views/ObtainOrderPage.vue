@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :salesMenu="true" :obtainOrderPages="true"></NavComponent>
+    <NavComponent :salesMenu="true" :obtainOrderMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -286,7 +286,7 @@
                       </v-row>
                     </v-card-title>
                     <v-card-text>
-                      <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >견적서 정보</p>
+                      <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >수주 정보</p>
                       <InputsFormComponent
                         dense
                         clearable
@@ -639,7 +639,7 @@
                       small
                       class="mr-4 float-right"
                       elevation="1"
-                      @click="save()"
+                      @click="estimate_dialog = true"
                     >
                       견적서 불러오기
                     </v-btn>
@@ -1138,6 +1138,12 @@
           </v-row>
         </v-container>
       </ModalDialogComponent>
+      <EstimateSearchDialogComponent
+        :dialog-value="estimate_dialog"
+        :persistent="true"
+        @close="closEstimateSearch"
+      >
+      </EstimateSearchDialogComponent>
   </div>
 </template>
 <script>
@@ -1149,6 +1155,7 @@ import ObtainOrderPageConfig from "@/configure/ObtainOrderPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import CostTableComponent from "@/components/CostTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
+import EstimateSearchDialogComponent from "@/components/EstimateSearchDialogComponent";
 import mux from "@/mux";
 
 export default {
@@ -1163,6 +1170,7 @@ export default {
                 DataTableComponent,
                 CostTableComponent,
                 ModalDialogComponent,
+                EstimateSearchDialogComponent,
               },
 
   created () {
@@ -1189,10 +1197,14 @@ export default {
       // console.log('test');
       // mux.Server.uploadFile({path: '/', folder:'somefolder', file: this.files[0]});
       mux.Server.uploadFile({path: '/', folder:'somefolder', files: this.files});
-    }
+    },
+    closEstimateSearch(){
+      this.estimate_dialog = false;
+    },
   },
   data(){
     return{
+      estimate_dialog: false,
       edit_survey_cost_num_disabled: true,
       edit_buttons_show: true,
 

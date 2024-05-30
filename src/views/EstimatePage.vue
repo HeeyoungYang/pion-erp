@@ -639,7 +639,7 @@
                       small
                       class="mr-4 float-right"
                       elevation="1"
-                      @click="save()"
+                      @click="product_cost_dialog = true"
                     >
                       원가 불러오기
                     </v-btn>
@@ -1138,6 +1138,12 @@
           </v-row>
         </v-container>
       </ModalDialogComponent>
+      <ProductCostSearchDialogComponent
+        :dialog-value="product_cost_dialog"
+        :persistent="true"
+        @close="closeProductCostSearch"
+      >
+      </ProductCostSearchDialogComponent>
   </div>
 </template>
 <script>
@@ -1149,6 +1155,8 @@ import EstimatePageConfig from "@/configure/EstimatePageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import CostTableComponent from "@/components/CostTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
+import ProductCostSearchDialogComponent from "@/components/ProductCostSearchDialogComponent.vue";
+
 import mux from "@/mux";
 
 export default {
@@ -1163,6 +1171,7 @@ export default {
                 DataTableComponent,
                 CostTableComponent,
                 ModalDialogComponent,
+                ProductCostSearchDialogComponent,
               },
 
   created () {
@@ -1189,10 +1198,14 @@ export default {
       // console.log('test');
       // mux.Server.uploadFile({path: '/', folder:'somefolder', file: this.files[0]});
       mux.Server.uploadFile({path: '/', folder:'somefolder', files: this.files});
-    }
+    },
+    closeProductCostSearch(){
+      this.product_cost_dialog = false;
+    },
   },
   data(){
     return{
+      product_cost_dialog: false,
       edit_survey_cost_num_disabled: true,
       edit_buttons_show: true,
 

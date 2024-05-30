@@ -1,0 +1,23 @@
+{  
+  "table_header": [
+    {"text": "제품명", "align": "center", "value": "product_name"},
+    {"text": "작성일", "align": "center", "value": "created_time"},
+    {"text": "작성자", "align": "center", "value": "given_name"},    
+    {"text": "총액", "align": "center", "value": "cost_total_amount"},    
+    {"text": "", "align": "center", "value": "set", "sortable":false}
+  ],
+  "searchCardInputs":[
+    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"발행일", "type": "dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"8"}
+  ],
+  "test_members": [
+    {
+      "product_name": "완제품A",
+      "created_time": "2024-05-20",
+      "given_name": "양희영",
+      "cost_total_amount": "11,000,000"
+    }
+  ]
+}
