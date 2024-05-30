@@ -642,7 +642,7 @@ mux.Server.axiosInstance.interceptors.response.use(
   },
   async error => {
     const originalRequest = error.config;
-    if ((error.response.data && (error.response.data.code === 5193 || error.response.data.code === 1000 || error.response.data.data.Code === "NotAuthorizedException"))
+    if ((error.response.data && (error.response.data.code === 5193 || error.response.data.code === 1000 || (error.response.data.data && error.response.data.data.Code === "NotAuthorizedException")))
     && !originalRequest._retry) {
       originalRequest._retry = true;
       const userName = Vue.$cookies.get(configJson.cookies.id.key);
