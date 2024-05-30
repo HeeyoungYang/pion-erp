@@ -11,7 +11,7 @@
   ],
 
 
-  "inbound_approve_headers": [
+  "estimate_approve_headers": [
     { "text": "발행일", "align": "start", "value": "created_time"},
     { "text": "업체명", "align": "start", "value": "company_name"},
     { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
@@ -20,7 +20,7 @@
     { "text": "진행 상태", "align": "start", "value": "progress"}
   ],
 
-  "inbound_product_list_headers": [
+  "estimate_product_list_headers": [
     { "text": "종류", "align": "start", "value": "type"},
     { "text": "분류", "align": "start", "value": "classification"},
     { "text": "관리코드", "align": "start", "value": "product_code"},
@@ -263,7 +263,7 @@
     "approved_date":"",
     "belong_data":[]
   },
-  "test_inbound_approve_data":[
+  "test_estimate_approve_data":[
     {
       "id": 59,
       "created_time": "2024-05-17 08:32:44",

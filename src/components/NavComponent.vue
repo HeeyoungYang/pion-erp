@@ -325,12 +325,12 @@ import mux from '@/mux';
       ],
 
       estimatePages: [
-        ['견적서', '', '/estimate', ['master']],
-        ['견적서 현황', '', '/estimate-search', ['master']],
+        ['견적서', '', '/estimate', ['master', '매니저']],
+        ['견적서 현황', '', '/estimate-search', ['master', '매니저']],
       ],
       obtainOrderPages: [
-        ['수주서', '', '/obtain-order', ['master']],
-        ['수주서 현황', '', '/obtain-order-search', ['master']],
+        ['수주서', '', '/obtain-order', ['master', '매니저']],
+        ['수주서 현황', '', '/obtain-order-search', ['master', '매니저']],
       ],
       // estimatePages: [
       //   ['견적 작성', '', '/home'],

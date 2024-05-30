@@ -122,7 +122,7 @@ const routes = [
     name: 'EstimatePage',
     component: EstimatePage,
     meta: {
-      permission: ['member']
+      permission: ['매니저', 'admin', 'master']
     }
   },
   {
@@ -130,7 +130,7 @@ const routes = [
     name: 'EstimateSearchPage',
     component: EstimateSearchPage,
     meta: {
-      permission: ['member']
+      permission: ['매니저', 'admin', 'master']
     }
   },
   {
@@ -138,7 +138,7 @@ const routes = [
     name: 'ObtainOrderPage',
     component: ObtainOrderPage,
     meta: {
-      permission: ['member']
+      permission: ['매니저', 'admin', 'master']
     }
   },
   {
@@ -146,7 +146,7 @@ const routes = [
     name: 'ObtainOrderSearchPage',
     component: ObtainOrderSearchPage,
     meta: {
-      permission: ['member']
+      permission: ['매니저', 'admin', 'master']
     }
   },
   {
