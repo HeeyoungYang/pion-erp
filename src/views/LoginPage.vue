@@ -189,7 +189,6 @@
 </template>
 <script>
 import mux from '@/mux';
-const Aes256Crypto = require('../common_js/Aes256Crypto');
 
 export default {
   mounted(){
@@ -272,33 +271,10 @@ export default {
     login(){
       const id = document.getElementById('idField').value;
       const pw = document.getElementById('pwField').value;
-      var encrypted_id = "";
-      var encrypted_pw = "";
-      var salt = "";
-      var hashed_key = "";
-      const prevURL = window.location.href;
-      mux.Server.get({
-        path:'/api/security/'
-      }).then(result => {
-        if (prevURL !== window.location.href) return;
-        if(result.code == 0){
-          salt = result.data['salt']
-          hashed_key = result.data['hashed_key']
-          const aes256Crypto = new Aes256Crypto()
-          encrypted_id = aes256Crypto.encrypt(id, hashed_key)
-          encrypted_pw = aes256Crypto.encrypt(pw, hashed_key)
-          const validate = this.$refs.loginForm.validate();
-          if(validate){
-            mux.Server.logIn(id, encrypted_id, encrypted_pw, salt, this.checkbox);
-          }
-        }else{
-          alert("확인코드를 확인해주세요.");
-        }
-      }).catch(() => {
-        if (prevURL !== window.location.href) return;
-        // console.error('err :>> ', err);
-        alert('확인코드를 확인해주세요.');
-      });
+      const validate = this.$refs.loginForm.validate();
+      if(validate){
+        mux.Server.logIn(id, pw, this.checkbox);
+      }
     }
   },
 

@@ -10,6 +10,8 @@ import * as pdfjsLib from 'pdfjs-dist/build/pdf.js'; // npm install pdfjs-dist@3
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.js`
 // pdfjsLib.GlobalWorkerOptions.workerSrc = `@/../node_modules/pdfjs-dist/build/pdf.worker.js`
 
+const Aes256Crypto = require('./common_js/Aes256Crypto');
+
 Vue.use(VueCookies);
 
 // @ts-check
@@ -491,49 +493,67 @@ mux.Server = {
    * @example
    * mux.Server.logIn('userId', 'userPw12#', true);
    */
-  logIn(id, encrypted_id, encrypted_pw, salt, saveIdCheck) {
-    this.post({
-      path:'/api/user/login/', user_name:encrypted_id, password:encrypted_pw, salt:salt
-    }).then(result => {
-      if (result.code == 0 || result.code == 5031 || result.data.temporary_password){
-        if (saveIdCheck){
-          Vue.$cookies.set(configJson.cookies.savedID.key, id, configJson.cookies.savedID.expiration);
-        }else {
-          Vue.$cookies.remove(configJson.cookies.savedID.key);
-        }
-        Vue.$cookies.set(configJson.cookies.id.key, id, configJson.cookies.id.expiration);
-        // 최초 로그인 시 쿠키는 추후에 저장
-        if (result.code == 0){
-          this.setUserCookies().then(() => {
-            result.data.path = '/home';
-            this.move(result.data);
-          }).catch((error) => {
-            // console.log('사용자 정보 쿠키 저장 실패:', error);
-            alert('로그인 실패:', error);
-            mux.Server.logOut();
-          });
-        }else {
-          result.data.path = '/home';
-          this.move(result.data);
-        }
-      }else {
-        // console.error('로그인 실패:', result.message);
-        alert(result.message);
+  logIn(id, pw, saveIdCheck) {
+    this.get({
+      path:'/api/security/'
+    }).then(security => {
+      if(security.code == 0){
+        const salt = security.data['salt']
+        const hashed_key = security.data['hashed_key']
+        const aes256Crypto = new Aes256Crypto()
+        const encrypted_id = aes256Crypto.encrypt(id, hashed_key)
+        const encrypted_pw = aes256Crypto.encrypt(pw, hashed_key)
+        
+        this.post({
+          path:'/api/user/login/', user_name:encrypted_id, password:encrypted_pw, salt:salt
+        }).then(result => {
+          if (result.code == 0 || result.code == 5031 || result.data.temporary_password){
+            if (saveIdCheck){
+              Vue.$cookies.set(configJson.cookies.savedID.key, id, configJson.cookies.savedID.expiration);
+            }else {
+              Vue.$cookies.remove(configJson.cookies.savedID.key);
+            }
+            Vue.$cookies.set(configJson.cookies.id.key, id, configJson.cookies.id.expiration);
+            // 최초 로그인 시 쿠키는 추후에 저장
+            if (result.code == 0){
+              this.setUserCookies().then(() => {
+                result.data.path = '/home';
+                this.move(result.data);
+              }).catch((error) => {
+                // console.log('사용자 정보 쿠키 저장 실패:', error);
+                alert('로그인 실패:', error);
+                mux.Server.logOut();
+              });
+            }else {
+              result.data.path = '/home';
+              this.move(result.data);
+            }
+          }else {
+            // console.error('로그인 실패:', result.message);
+            alert(result.message);
+          }
+        }).catch(err => {
+          // console.error('err :>>>>> ', err);
+          switch (err.message) {
+            // case 'password':
+            //   alert('비밀번호 오류');
+            //   break;
+            // case 'id':
+            //   alert('존재하지 않는 아이디');
+            //   break;
+    
+            default:
+              alert('아이디 또는 비밀번호를 확인해주세요.');
+              break;
+          }
+        });
+        
+      }else{
+        alert("확인코드를 확인해주세요.");
       }
-    }).catch(err => {
-      // console.error('err :>>>>> ', err);
-      switch (err.message) {
-        // case 'password':
-        //   alert('비밀번호 오류');
-        //   break;
-        // case 'id':
-        //   alert('존재하지 않는 아이디');
-        //   break;
-
-        default:
-          alert('아이디 또는 비밀번호를 확인해주세요.');
-          break;
-      }
+    }).catch(() => {
+      // console.error('err :>> ', err);
+      alert('확인코드를 확인해주세요.');
     });
   },
 

@@ -34,7 +34,7 @@ const routes = [
     name: 'MainPage',
     component: MainPage,
     meta: {
-      permission: ['member']
+      permission: ['guest']
     }
   },
   {
