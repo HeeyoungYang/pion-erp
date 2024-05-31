@@ -2651,7 +2651,7 @@ export default {
                 if(data.belong_data[b].belong_data){
                   for(let c=0; c<data.belong_data[b].belong_data.length; c++){
                     data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
-                    data.belong_data[b].belong_data[c].used_num = data.total_stock * data.belong_data[b].used_num * data.belong_data[c].num
+                    data.belong_data[b].belong_data[c].used_num = data.total_stock * data.belong_data[b].used_num * data.belong_data[b].belong_data[c].num
                     delete data.belong_data[b].belong_data[c].code;
                     data.belong_data[b].belong_data[c].unit_price = '₩ '+ Number(data.belong_data[b].belong_data[c].unit_price).toLocaleString()
                   }
