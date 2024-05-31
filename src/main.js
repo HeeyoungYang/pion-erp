@@ -9,7 +9,12 @@ Vue.config.productionTip = false;
 Vue.prototype.$configJson = configJson;
 
 if (process.env.NODE_ENV === 'production') {
+  // 배포 모드에서 콘솔 로그 제거
   Vue.config.silent = true;
+  console.log = function() {};
+  console.info = function() {};
+  console.warn = function() {};
+  console.error = function() {};
 }
 
 new Vue({
