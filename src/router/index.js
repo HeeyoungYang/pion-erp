@@ -14,6 +14,7 @@ import InboundSearchPage from '@/views/InboundSearchPage'
 import InboundRegisterPage from '@/views/InboundRegisterPage'
 import ShipSearchPage from '@/views/ShipSearchPage'
 import ShipRegisterPage from '@/views/ShipRegisterPage'
+import DashboardPage from '@/views/DashboardPage'
 import EstimatePage from '@/views/EstimatePage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
 import ObtainOrderPage from '@/views/ObtainOrderPage'
@@ -115,6 +116,14 @@ const routes = [
     component: ShipRegisterPage,
     meta: {
       permission: ['member']
+    }
+  },
+  {
+    path: '/dashboard',
+    name: 'DashboardPage',
+    component: DashboardPage,
+    meta: {
+      permission: ['master']
     }
   },
   {

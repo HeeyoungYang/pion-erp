@@ -22,6 +22,20 @@
         <v-list-item-title>일정관리</v-list-item-title>
       </v-list-item> -->
 
+
+      <v-list-item
+        v-for="([title, icon, to], i) in dashboardPagesInfo"
+        :key="i"
+        link
+        :to="to"
+      >
+        <v-list-item-icon>
+          <v-icon v-text="icon"></v-icon>
+        </v-list-item-icon>
+
+        <v-list-item-title v-text="title"></v-list-item-title>
+      </v-list-item>
+
         <v-list-group
           v-if="productPagesInfo.length > 0 || inboundPagesInfo.length > 0 || shipPagesInfo.length > 0"
           :value="productMenu"
@@ -306,6 +320,10 @@ import mux from '@/mux';
       ],
         right: null,
 
+      dashboardPages: [
+        ['DashBoard', 'mdi-chart-areaspline', '/dashboard', ['master']],
+      ],
+
       productPages: [
         ['재고 현황', '', '/stock-search', []],
         ['원부자재', '', '/material-search', []],
@@ -350,6 +368,24 @@ import mux from '@/mux';
       ],
     }),
     computed: {
+      dashboardPagesInfo() {
+        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
+        let dashboardPagesInfo = [];
+        this.dashboardPages.forEach(data => {
+          if (data[data.length-1].length === 0){
+            dashboardPagesInfo.push(data);
+          } else {
+            data[data.length-1].forEach(permission => {
+              if (permissionArr.includes(permission)){
+                dashboardPagesInfo.push(data);
+              }
+            });
+          }
+        });
+        return dashboardPagesInfo;
+      },
       productPagesInfo() {
         const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
         permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
