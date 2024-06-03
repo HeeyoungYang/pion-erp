@@ -1655,16 +1655,59 @@ export default {
         thumbnail_dict[file.name] = mux.Util.uint8ArrayToHexString(await mux.Util.resizeImageToBinary(file, 500, 500));
       }
 
-      let noPhoto = false;
-      let duplicateSpot = false;
       let material_info_arr = [];
       let stock_data = [];
       for (let i = 0; i < this.material_excel_upload_data.length; i++) {
         const row = this.material_excel_upload_data[i];
         if (row.photo && !thumbnail_dict[row.photo]) {
-          noPhoto = true;
-          break;
+          alert(`${i+1}번째 행에 등록된 사진이 첨부되지 않았습니다.`);
+          this.loading_dialog = false;
+          return;
         }
+        if (!row.classification){
+          alert(`${i+1}번째 행의 분류가 입력되지 않았습니다.`);
+          this.loading_dialog = false;
+          return;
+        }
+        if (!row.item_code){
+          alert(`${i+1}번째 행의 관리코드가 입력되지 않았습니다.`);
+          this.loading_dialog = false;
+          return;
+        }
+        if (!row.name){
+          alert(`${i+1}번째 행의 제품명이 입력되지 않았습니다.`);
+          this.loading_dialog = false;
+          return;
+        }
+        if (!row.manufacturer){
+          row.manufacturer = '미확인';
+        }
+        if (!row.unit_price){
+          row.unit_price = 0;
+        }
+        if (!row.stock_num){
+          row.stock_num = 0;
+        }
+        if (!row.conditions){
+          if (!row.stock_num){
+            row.conditions = 'E';
+          }else {
+            alert(`${i+1}번째 행의 상태가 입력되지 않았습니다.`);
+            this.loading_dialog = false;
+            return;
+          }
+        }
+        if (!row.spot){
+          if (!row.stock_num){
+            row.spot = 'EMPTY';
+          }else {
+            alert(`${i+1}번째 행의 위치가 입력되지 않았습니다.`);
+            this.loading_dialog = false;
+            return;
+          }
+        }
+
+
         if (material_info_arr.find(x => x.data.material_code === row.item_code)) {
           if (material_info_arr.find(x => x.data.material_code === row.item_code).data.photo == "") {
             material_info_arr.find(x => x.data.material_code === row.item_code).data.photo = row.item_code + ".png";
@@ -1692,9 +1735,11 @@ export default {
             "rollback": "ignore"
           });
         }
-        if (stock_data.find(x => x.data.product_code === row.item_code && x.data.spot === row.spot)) {
-          duplicateSpot = true;
-          break;
+        let duplicateIndex = stock_data.findIndex(x => x.data.product_code === row.item_code && x.data.spot === row.spot);
+        if (duplicateIndex !== -1) {
+          alert(`${duplicateIndex+1}번째 행과 ${i+1}번째 행의 위치가 중복됩니다.`);
+          this.loading_dialog = false;
+          return;
         }else {
           stock_data.push({
             "user_info": {
@@ -1712,16 +1757,6 @@ export default {
             "rollback": "yes"
           });
         }
-      }
-      if (noPhoto){
-        alert('엑셀에 등록된 사진이 첨부되지 않았습니다.');
-        this.loading_dialog = false;
-        return;
-      }
-      if (duplicateSpot){
-        alert('엑셀에 중복된 위치가 존재합니다.');
-        this.loading_dialog = false;
-        return;
       }
 
       let sendData = {
@@ -1937,6 +1972,9 @@ export default {
           };
 
           let stock_data = [];
+          if (stock_item.length === 0){
+            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+          }
           stock_item.forEach(data =>{
             stock_data.push({
               "user_info": {
@@ -2016,6 +2054,9 @@ export default {
           }];
 
           let stock_data = [];
+          if (stock_item.length === 0){
+            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+          }
           stock_item.forEach(data =>{
             stock_data.push({
               "user_info": {
@@ -2406,6 +2447,9 @@ export default {
           };
 
           let stock_data = [];
+          if (stock_item.length === 0){
+            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+          }
           stock_item.forEach(data =>{
             stock_data.push({
               "user_info": {
@@ -2503,6 +2547,9 @@ export default {
           }];
 
           let stock_data = [];
+          if (stock_item.length === 0){
+            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+          }
           stock_item.forEach(data =>{
             stock_data.push({
               "user_info": {
@@ -2814,6 +2861,9 @@ export default {
           };
 
           let stock_data = [];
+          if (stock_item.length === 0){
+            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+          }
           stock_item.forEach(data =>{
             stock_data.push({
               "user_info": {
@@ -2933,6 +2983,9 @@ export default {
           }];
 
           let stock_data = [];
+          if (stock_item.length === 0){
+            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+          }
           stock_item.forEach(data =>{
             stock_data.push({
               "user_info": {

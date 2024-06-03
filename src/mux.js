@@ -609,7 +609,7 @@ mux.Server = {
           basicInfo.manufacturer = result.data.manufacturer.map(data => {
             return data.manufacturer;
           });
-          basicInfo.spot = result.data.spot.map(data => {
+          basicInfo.spot = result.data.spot.filter(data => data.spot !== 'EMPTY').map(data => {
             return data.spot;
           });
           basicInfo.classification = basicInfo.classification.sort((a, b) => {
@@ -1937,7 +1937,28 @@ mux.Excel = {
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-        self.updateTableData(headers, items, jsonData);
+
+        let shrinkedJsonData = [];
+        for (let i = 0; i < jsonData.length; i++) {
+          const data = jsonData[i];
+          if (i === 0){
+            headers.forEach((header, index) => {
+              if (header.text !== data[index]){
+                alert('헤더 정보와 엑셀 파일의 헤더 정보가 일치하지 않습니다.');
+                return;
+              }
+            });
+          }
+          for (let j = 0; j < data.length; j++) {
+            if (data[j] !== ''){
+              shrinkedJsonData.push(data);
+              break;
+            }
+          }
+        }
+
+        self.updateTableData(headers, items, shrinkedJsonData);
+
       };
 
       reader.readAsArrayBuffer(file);
