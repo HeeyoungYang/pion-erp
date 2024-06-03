@@ -546,6 +546,10 @@ export default {
             }
           }else if(data.column_name == 'spot'){
             item.spot_update = data.value;
+            if (item.spot_update === 'EMPTY') {
+              alert('불가능한 단어입니다.');
+              return;
+            }
             if (this.spot_data.some(x => x.spot === item.spot_update)) {
               alert('이미 등록된 위치입니다.');
               return;
