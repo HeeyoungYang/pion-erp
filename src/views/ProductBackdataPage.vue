@@ -748,6 +748,14 @@
                             >
                               {{ data.name }} 총 재고 : {{ data.total_stock }}개
                             </v-chip>
+                            <v-chip
+                              class="mr-2"
+                              color="indigo"
+                              text-color="white"
+                              small
+                            >
+                              {{ data.name }} 총 재료비 : {{ data.unit_price }}
+                            </v-chip>
                             <v-btn
                               small
                               color="default"
@@ -2215,8 +2223,19 @@ export default {
             }
             data.total_stock = stock_calc
             if (typeof data.unit_price === 'number'){
-              data.item_price = data.unit_price * data.total_stock
-              data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+              // data.item_price = data.unit_price * data.total_stock
+              // data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+              let total_unit_price = 0;
+              if(data.belong_data){
+                for(let b=0; b<data.belong_data.length; b++){
+                  total_unit_price += data.belong_data[b].unit_price * data.belong_data[b].num;
+                }
+                data.item_price = total_unit_price * data.total_stock
+                data.unit_price = '₩ '+ Number(total_unit_price).toLocaleString()
+              }else{
+                data.item_price = data.unit_price * data.total_stock
+                data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+              }
             }else {
               data.item_price = 0;
             }
@@ -2688,29 +2707,69 @@ export default {
               }
             }
             data.total_stock = stock_calc
-            if (typeof data.unit_price === 'number'){
-              data.item_price = data.unit_price * data.total_stock
-              data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
-            }else {
-              data.item_price = 0;
-            }
 
             if(data.belong_data){
               for(let b=0; b<data.belong_data.length; b++){
                 data.belong_data[b].item_code = data.belong_data[b].code;
                 data.belong_data[b].used_num = data.total_stock * data.belong_data[b].num
                 delete data.belong_data[b].code;
-                data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
+
+
+                let total_item_unit_price = 0;
+                // data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 if(data.belong_data[b].belong_data){
                   for(let c=0; c<data.belong_data[b].belong_data.length; c++){
                     data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
                     data.belong_data[b].belong_data[c].used_num = data.total_stock * data.belong_data[b].used_num * data.belong_data[b].belong_data[c].num
                     delete data.belong_data[b].belong_data[c].code;
+                    total_item_unit_price += data.belong_data[b].belong_data[c].unit_price * data.belong_data[b].belong_data[c].num;
                     data.belong_data[b].belong_data[c].unit_price = '₩ '+ Number(data.belong_data[b].belong_data[c].unit_price).toLocaleString()
                   }
+                  data.belong_data[b].unit_price = '₩ '+ Number(total_item_unit_price).toLocaleString()
+                }else{
+                  data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 }
               }
             }
+
+
+            if (typeof data.unit_price === 'number'){
+              data.item_price = data.unit_price * data.total_stock
+              let total_unit_price = 0;
+              if(data.belong_data){
+                for(let b=0; b<data.belong_data.length; b++){
+                  total_unit_price += (data.belong_data[b].unit_price).replace(/,/g,'').replace(/₩ /g,'') * data.belong_data[b].num;
+                }
+                data.unit_price = '₩ '+ Number(total_unit_price).toLocaleString()
+              }else{
+                data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+              }
+            }else {
+              data.item_price = 0;
+            }
+            // if (typeof data.unit_price === 'number'){
+            //   data.item_price = data.unit_price * data.total_stock
+            //   data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+            // }else {
+            //   data.item_price = 0;
+            // }
+
+            // if(data.belong_data){
+            //   for(let b=0; b<data.belong_data.length; b++){
+            //     data.belong_data[b].item_code = data.belong_data[b].code;
+            //     data.belong_data[b].used_num = data.total_stock * data.belong_data[b].num
+            //     delete data.belong_data[b].code;
+            //     data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
+            //     if(data.belong_data[b].belong_data){
+            //       for(let c=0; c<data.belong_data[b].belong_data.length; c++){
+            //         data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
+            //         data.belong_data[b].belong_data[c].used_num = data.total_stock * data.belong_data[b].used_num * data.belong_data[b].belong_data[c].num
+            //         delete data.belong_data[b].belong_data[c].code;
+            //         data.belong_data[b].belong_data[c].unit_price = '₩ '+ Number(data.belong_data[b].belong_data[c].unit_price).toLocaleString()
+            //       }
+            //     }
+            //   }
+            // }
             // this.total_stock_num += data.total_stock
             // this.total_stock_price += data.item_price
           })
