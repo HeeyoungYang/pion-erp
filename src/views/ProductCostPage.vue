@@ -1846,9 +1846,8 @@ export default {
               return;
             }
             if (!isConfirm){
-              if (confirm('수량이 없는 행이 존재합니다.\n수량이 없는 행을 삭제하시겠습니까?')){
-                isConfirm = true;
-              }else {
+              isConfirm = await mux.Util.showConfirm('수량이 없는 행이 존재합니다.\n수량이 없는 행을 삭제하시겠습니까?');
+              if (!isConfirm){
                 return;
               }
             }

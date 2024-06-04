@@ -1,7 +1,8 @@
 <template>
-  <v-overlay :value="visible" absolute :opacity="0.7">
+  <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000;">
+    <v-overlay :value="visible" :opacity="0.7"></v-overlay>
     <v-dialog v-model="visible" max-width="400" persistent>
-      <v-card :elevation="'2'">
+      <v-card>
         <v-card-title class="headline">{{ title }}</v-card-title>
         <v-card-text>
           {{ message }}
@@ -16,7 +17,8 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-overlay>
+  </div>
+
 </template>
 
 <script>

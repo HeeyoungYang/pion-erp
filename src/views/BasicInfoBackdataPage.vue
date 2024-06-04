@@ -320,7 +320,7 @@ export default {
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
-        alert(error);
+        mux.Util.showAlert(error);
       }
       this.loading_dialog = false;
     },
@@ -371,7 +371,7 @@ export default {
           if(data.column_name == 'classification'){
             item.classification_update = data.value;
             if (this.classification_data.some(x => x.classification === item.classification_update)) {
-              alert('이미 등록된 분류입니다.');
+              mux.Util.showAlert('이미 등록된 분류입니다.');
               return;
             }
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
@@ -400,19 +400,19 @@ export default {
                 }
                 if(result['code'] == 0){
                   // console.log('result :>> ', result);
-                  alert('분류 등록이 완료되었습니다.');
+                  mux.Util.showAlert('분류 등록이 완료되었습니다.', '등록 완료', 1000);
                   this.classification_data.push({classification: item.classification_update})
                   data.value = '';
                 } else {
                   if (prevURL !== window.location.href) return;
-                  alert(result['failed_info']);
+                  mux.Util.showAlert(result['failed_info']);
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  alert(error.response['data']['failed_info'].msg);
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
                 else
-                  alert(error);
+                  mux.Util.showAlert(error);
               }
             }else{// 아니라면 수정
               item.classification = this.classification_data[this.editedBasicInfoIndex].classification;
@@ -441,25 +441,25 @@ export default {
                 }
                 if(result['code'] == 0){
                   // console.log('result :>> ', result);
-                  alert('분류 수정이 완료되었습니다.');
+                  mux.Util.showAlert('분류 수정이 완료되었습니다.', '수정 완료', 1000);
                   this.classification_data[this.editedBasicInfoIndex].classification = item.classification_update+'';
                   this.productInfoDialog = false;
                 } else {
                   if (prevURL !== window.location.href) return;
-                  alert(result['failed_info']);
+                  mux.Util.showAlert(result['failed_info']);
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  alert(error.response['data']['failed_info'].msg);
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
                 else
-                  alert(error);
+                  mux.Util.showAlert(error);
               }
             }
           }else if(data.column_name == 'manufacturer'){
             item.manufacturer_update = data.value;
             if (this.manufacturer_data.some(x => x.manufacturer === item.manufacturer_update)) {
-              alert('이미 등록된 제조사입니다.');
+              mux.Util.showAlert('이미 등록된 제조사입니다.');
               return;
             }
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
@@ -488,19 +488,19 @@ export default {
                 }
                 if(result['code'] == 0){
                   // console.log('result :>> ', result);
-                  alert('제조사 등록이 완료되었습니다.');
+                  mux.Util.showAlert('제조사 등록이 완료되었습니다.', '등록 완료', 1000);
                   this.manufacturer_data.push({manufacturer: item.manufacturer_update})
                   data.value = '';
                 } else {
                   if (prevURL !== window.location.href) return;
-                  alert(result['failed_info']);
+                  mux.Util.showAlert(result['failed_info']);
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  alert(error.response['data']['failed_info'].msg);
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
                 else
-                  alert(error);
+                  mux.Util.showAlert(error);
               }
             }else{// 아니라면 수정
               item.manufacturer = this.manufacturer_data[this.editedBasicInfoIndex].manufacturer;
@@ -529,29 +529,29 @@ export default {
                 }
                 if(result['code'] == 0){
                   // console.log('result :>> ', result);
-                  alert('제조사 수정이 완료되었습니다.');
+                  mux.Util.showAlert('제조사 수정이 완료되었습니다.', '수정 완료', 1000);
                   this.manufacturer_data[this.editedBasicInfoIndex].manufacturer = item.manufacturer_update+'';
                   this.productInfoDialog = false;
                 } else {
                   if (prevURL !== window.location.href) return;
-                  alert(result['failed_info']);
+                  mux.Util.showAlert(result['failed_info']);
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  alert(error.response['data']['failed_info'].msg);
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
                 else
-                  alert(error);
+                  mux.Util.showAlert(error);
               }
             }
           }else if(data.column_name == 'spot'){
             item.spot_update = data.value;
             if (item.spot_update === 'EMPTY') {
-              alert('불가능한 단어입니다.');
+              mux.Util.showAlert('불가능한 단어입니다.');
               return;
             }
             if (this.spot_data.some(x => x.spot === item.spot_update)) {
-              alert('이미 등록된 위치입니다.');
+              mux.Util.showAlert('이미 등록된 위치입니다.');
               return;
             }
             if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
@@ -580,19 +580,19 @@ export default {
                 }
                 if(result['code'] == 0){
                   // console.log('result :>> ', result);
-                  alert('위치 등록이 완료되었습니다.');
+                  mux.Util.showAlert('위치 등록이 완료되었습니다.', '등록 완료', 1000);
                   this.spot_data.push({spot: item.spot_update})
                   data.value = '';
                 } else {
                   if (prevURL !== window.location.href) return;
-                  alert(result['failed_info']);
+                  mux.Util.showAlert(result['failed_info']);
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  alert(error.response['data']['failed_info'].msg);
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
                 else
-                  alert(error);
+                  mux.Util.showAlert(error);
               }
             }else{// 아니라면 수정
               item.spot = this.spot_data[this.editedBasicInfoIndex].spot;
@@ -621,19 +621,19 @@ export default {
                 }
                 if(result['code'] == 0){
                   // console.log('result :>> ', result);
-                  alert('위치 수정이 완료되었습니다.');
+                  mux.Util.showAlert('위치 수정이 완료되었습니다.', '수정 완료', 1000);
                   this.spot_data[this.editedBasicInfoIndex].spot = item.spot_update+'';
                   this.productInfoDialog = false;
                 } else {
                   if (prevURL !== window.location.href) return;
-                  alert(result['failed_info']);
+                  mux.Util.showAlert(result['failed_info']);
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  alert(error.response['data']['failed_info'].msg);
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
                 else
-                  alert(error);
+                  mux.Util.showAlert(error);
               }
             }
           }
@@ -687,18 +687,18 @@ export default {
           }
           if(result['code'] == 0){
             // console.log('result :>> ', result);
-            alert('분류 삭제가 완료되었습니다.');
+            mux.Util.showAlert('분류 삭제가 완료되었습니다.', '삭제 완료', 1000);
             this.classification_data.splice(this.editedBasicInfoIndex, 1)
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
       }else if(Object.keys(this.editedBasicInfo) == 'manufacturer'){
         this.deleteBasicInfo.manufacturer = this.editedBasicInfo.manufacturer;
@@ -726,18 +726,18 @@ export default {
           }
           if(result['code'] == 0){
             // console.log('result :>> ', result);
-            alert('제조사 삭제가 완료되었습니다.');
+            mux.Util.showAlert('제조사 삭제가 완료되었습니다.', '삭제 완료', 1000);
             this.manufacturer_data.splice(this.editedBasicInfoIndex, 1)
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
       }else if(Object.keys(this.editedBasicInfo) == 'spot'){
         this.deleteBasicInfo.spot = this.editedBasicInfo.spot;
@@ -765,18 +765,18 @@ export default {
           }
           if(result['code'] == 0){
             // console.log('result :>> ', result);
-            alert('위치 삭제가 완료되었습니다.');
+            mux.Util.showAlert('위치 삭제가 완료되었습니다.', '삭제 완료', 1000);
             this.spot_data.splice(this.editedBasicInfoIndex, 1)
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
       }
 

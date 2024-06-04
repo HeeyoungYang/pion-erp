@@ -548,7 +548,7 @@ mux.Server = {
             //   break;
     
             default:
-              mux.Util.showAlert('아이디 또는 비밀번호를 확인해주세요.');
+              mux.Util.showAlert('아이디 또는 비밀번호를 확인해주세요.', '로그인 오류', 3000);
               break;
           }
         });
@@ -1190,6 +1190,11 @@ mux.Util = {
     modalInstance.$mount();
     document.body.appendChild(modalInstance.$el);
     modalInstance.show();
+
+    modalInstance.$on('close', () => {
+      document.body.removeChild(modalInstance.$el);
+      modalInstance.$destroy();
+    });
   
     return modalInstance;
   },
