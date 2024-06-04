@@ -250,7 +250,7 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        mux.Util.showAlert(error);
       }
 
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list, true);
@@ -271,7 +271,7 @@ export default {
         this.login_id = this.$cookies.get(this.$configJson.cookies.email.key);
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        mux.Util.showAlert(error);
       }
 
     },
@@ -357,7 +357,7 @@ export default {
         if(result['code'] == 0){
 
           if(result['data'].length === 0){
-            alert('검색 결과가 없습니다.');
+            mux.Util.showAlert('검색 결과가 없습니다.');
           }
           result = result['data'].map(a => {
             if (!a.stock_num){
@@ -385,15 +385,15 @@ export default {
             }
           })
         } else {
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
 
 
@@ -422,7 +422,7 @@ export default {
       })
       if(check_duplicate.length > 0){
         let duplicate = JSON.stringify(check_duplicate).replace( "[",'').replace( "]",'');
-        alert(duplicate + '은(는) 이미 추가된 제품입니다.')
+        mux.Util.showAlert(duplicate + '은(는) 이미 추가된 제품입니다.')
         return
       }else{
         selected_item.forEach(data =>{
@@ -446,7 +446,7 @@ export default {
     },
     deleteShipDataRow(idx){
       if(this.product_ship_data.length === 1){
-        alert('행이 한 개 이상 존재해야 합니다.')
+        mux.Util.showAlert('행이 한 개 이상 존재해야 합니다.')
       }else{
         this.product_ship_data.splice(idx, 1);
       }
@@ -521,24 +521,24 @@ export default {
         })
 
         if(empty_member.length > 0){
-          alert(empty_member+"을(를) 선택해주세요.");
+          mux.Util.showAlert(empty_member+"을(를) 선택해주세요.");
           return success = false;
         }
 
         let ship_product_data = this.product_ship_data
         if(ship_product_data.length === 0){
-          alert('자재를 선택해주세요.');
+          mux.Util.showAlert('자재를 선택해주세요.');
           return success = false;
         }else{
           for(let d = 0; d < ship_product_data.length; d++){
             if(ship_product_data[d].ship_num == '' || ship_product_data[d].ship_num == undefined){
-              alert('출고 수량 필수 입력');
+              mux.Util.showAlert('출고 수량 필수 입력');
               return success = false;
             }else if(ship_product_data[d].ship_num == 0){
-                alert('출고수량은 0보다 커야합니다.');
+                mux.Util.showAlert('출고수량은 0보다 커야합니다.');
                 return success = false;
             }else if(ship_product_data[d].ship_num > ship_product_data[d].stock_num){
-              alert('재고보다 출고 수량이 많습니다.');
+              mux.Util.showAlert('재고보다 출고 수량이 많습니다.');
               return success = false;
             }
           }
@@ -640,7 +640,7 @@ export default {
             }
             if(result.data['code'] == 0){
               // console.log('result :>> ', result);
-              alert('출고 승인 요청이 완료되었습니다');
+              mux.Util.showAlert('출고 승인 요청이 완료되었습니다', '승인 완료', 3000);
               this.loading_dialog = false;
 
               //메일 알림 관련
@@ -704,14 +704,14 @@ export default {
                   console.log(sendEmailAlam['message']);
                 } else {
                   if (prevURL !== window.location.href) return;
-                  alert(sendEmailAlam['failed_info']);
+                  mux.Util.showAlert(sendEmailAlam['failed_info']);
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  alert(error.response['data']['failed_info'].msg);
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
                 else
-                  alert(error);
+                  mux.Util.showAlert(error);
               }
 
 
@@ -720,14 +720,14 @@ export default {
               this.files_value = [];
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         }
       }

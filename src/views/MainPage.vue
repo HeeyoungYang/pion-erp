@@ -96,13 +96,13 @@ export default {
             mux.Server.logOut();
           }
         }else {
-          alert('비밀번호 변경 실패');
+          mux.Util.showAlert('비밀번호 변경 실패');
           // console.log('비밀번호 변경 실패:', response);
         }
       // }).catch((error) => {
       }).catch(() => {
         if (prevURL !== window.location.href) return;
-        alert('비밀번호 변경 에러');
+        mux.Util.showAlert('비밀번호 변경 에러');
         // console.log('비밀번호 변경 에러:', error);
       });
     }

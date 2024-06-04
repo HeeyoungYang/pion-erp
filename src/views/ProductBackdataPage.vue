@@ -1293,7 +1293,7 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        mux.Util.showAlert(error);
       }
       mux.List.addProductBasicInfoLists(this.searchMaterialCardInputs, this.classification_list, this.manufacturer_list, true);
       this.searchMaterialCardInputs = JSON.parse(JSON.stringify(this.searchMaterialCardInputs));
@@ -1392,7 +1392,7 @@ export default {
         }
         if(result['code'] == 0){
           if(result['data'].length === 0){
-            alert('검색 결과가 없습니다.');
+            mux.Util.showAlert('검색 결과가 없습니다.');
           }
           result = result['data'].map(a => {
             if (!a.stock_num){
@@ -1457,15 +1457,15 @@ export default {
           // })
         }else{
           if (prevURL !== window.location.href) return;
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       this.loading_dialog = false;
 
@@ -1559,7 +1559,7 @@ export default {
         }
         if(result['code'] == 0){
           if(result['data'].length === 0){
-            alert('검색 결과가 없습니다.');
+            mux.Util.showAlert('검색 결과가 없습니다.');
           }
           result = result['data'].map(a => {
             if (!a.stock_num){
@@ -1622,16 +1622,16 @@ export default {
           // console.log(this.material_data)
         }else{
           if (prevURL !== window.location.href) return;
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
         this.loading_dialog = false;
     },
@@ -1650,7 +1650,7 @@ export default {
     },
     async registMaterialExcel(){
       if(this.material_excel_upload_data.length == 0){
-        alert("업로드할 엑셀을 선택해주세요")
+        mux.Util.showAlert("업로드할 엑셀을 선택해주세요")
         return;
       }
 
@@ -1670,12 +1670,12 @@ export default {
       for (let i = 0; i < this.material_excel_upload_data.length; i++) {
         const row = this.material_excel_upload_data[i];
         if (row.photo && !thumbnail_dict[row.photo]) {
-          alert(`${i+1}번째 행에 등록된 사진이 첨부되지 않았습니다.`);
+          mux.Util.showAlert(`${i+1}번째 행에 등록된 사진이 첨부되지 않았습니다.`);
           this.loading_dialog = false;
           return;
         }
         // if (!row.classification){
-        //   alert(`${i+1}번째 행의 분류가 입력되지 않았습니다.`);
+        //   mux.Util.showAlert(`${i+1}번째 행의 분류가 입력되지 않았습니다.`);
         //   this.loading_dialog = false;
         //   return;
         // }
@@ -1683,12 +1683,12 @@ export default {
           row.classification = '그 외';
         }
         if (!row.item_code){
-          alert(`${i+1}번째 행의 관리코드가 입력되지 않았습니다.`);
+          mux.Util.showAlert(`${i+1}번째 행의 관리코드가 입력되지 않았습니다.`);
           this.loading_dialog = false;
           return;
         }
         if (!row.name){
-          alert(`${i+1}번째 행의 제품명이 입력되지 않았습니다.`);
+          mux.Util.showAlert(`${i+1}번째 행의 제품명이 입력되지 않았습니다.`);
           this.loading_dialog = false;
           return;
         }
@@ -1705,7 +1705,7 @@ export default {
           if (!row.stock_num){
             row.conditions = 'E';
           }else {
-            alert(`${i+1}번째 행의 상태가 입력되지 않았습니다.`);
+            mux.Util.showAlert(`${i+1}번째 행의 상태가 입력되지 않았습니다.`);
             this.loading_dialog = false;
             return;
           }
@@ -1714,7 +1714,7 @@ export default {
           if (!row.stock_num){
             row.spot = 'EMPTY';
           }else {
-            alert(`${i+1}번째 행의 위치가 입력되지 않았습니다.`);
+            mux.Util.showAlert(`${i+1}번째 행의 위치가 입력되지 않았습니다.`);
             this.loading_dialog = false;
             return;
           }
@@ -1750,7 +1750,7 @@ export default {
         }
         let duplicateIndex = stock_data.findIndex(x => x.data.product_code === row.item_code && x.data.spot === row.spot);
         if (duplicateIndex !== -1) {
-          alert(`${duplicateIndex+1}번째 행과 ${i+1}번째 행의 위치가 중복됩니다.`);
+          mux.Util.showAlert(`${duplicateIndex+1}번째 행과 ${i+1}번째 행의 위치가 중복됩니다.`);
           this.loading_dialog = false;
           return;
         }else {
@@ -1791,17 +1791,17 @@ export default {
         }
         if(result['code'] == 0){
           // console.log('result :>> ', result);
-          alert('원부자재 등록이 완료되었습니다');
+          mux.Util.showAlert('원부자재 등록이 완료되었습니다', '등록 완료', 3000);
         } else {
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       this.close();
     },
@@ -1857,7 +1857,7 @@ export default {
           this.materialImg = mux.Util.imageBinary(thumbnail);
 
         } else {
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
           this.loading_dialog = false;
           return;
         }
@@ -1865,9 +1865,9 @@ export default {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
         this.loading_dialog = false;
         return;
       }
@@ -1930,7 +1930,7 @@ export default {
 
         let set_stock_spot_arr = new Set(stock_spot_arr);
         if(stock_spot_arr.length !== set_stock_spot_arr.size){
-          alert('중복된 위치가 존재합니다.');
+          mux.Util.showAlert('중복된 위치가 존재합니다.');
           return;
         }
 
@@ -2020,17 +2020,17 @@ export default {
             }
             if(result['code'] == 0){
               // console.log('result :>> ', result);
-              alert('원부자재 등록이 완료되었습니다');
+              mux.Util.showAlert('원부자재 등록이 완료되었습니다', '등록 완료', 3000);
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         }else{// 아니라면 수정
           let sendData = {
@@ -2102,17 +2102,17 @@ export default {
             }
             if(result['code'] == 0){
               // console.log('result :>> ', result);
-              alert('원부자재 수정이 완료되었습니다');
+              mux.Util.showAlert('원부자재 수정이 완료되었습니다', '수정 완료', 3000);
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         }
         this.close();
@@ -2206,7 +2206,7 @@ export default {
         }
         if(result['code'] == 0){
           if(result['data'].length === 0){
-            alert('검색 결과가 없습니다.');
+            mux.Util.showAlert('검색 결과가 없습니다.');
           }
           this.module_data = result['data'].filter(data=>(!this.module_stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
 
@@ -2253,15 +2253,15 @@ export default {
           })
         }else{
           if (prevURL !== window.location.href) return;
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       this.loading_dialog = false;
     },
@@ -2330,7 +2330,7 @@ export default {
           this.moduleImg = mux.Util.imageBinary(thumbnail);
 
         } else {
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
           this.loading_dialog = false;
           return;
         }
@@ -2338,9 +2338,9 @@ export default {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
         this.loading_dialog = false;
         return;
       }
@@ -2409,7 +2409,7 @@ export default {
 
         let set_stock_spot_arr = new Set(stock_spot_arr);
         if(stock_spot_arr.length !== set_stock_spot_arr.size){
-          alert('중복된 위치가 존재합니다.');
+          mux.Util.showAlert('중복된 위치가 존재합니다.');
           return;
         }
 
@@ -2525,17 +2525,17 @@ export default {
             }
             if(result['code'] == 0){
               // console.log('result :>> ', result);
-              alert('반제품 등록이 완료되었습니다');
+              mux.Util.showAlert('반제품 등록이 완료되었습니다', '등록 완료', 3000);
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         }else{// 아니라면 수정
           let sendData = {
@@ -2635,17 +2635,17 @@ export default {
             }
             if(result['code'] == 0){
               // console.log('result :>> ', result);
-              alert('반제품 수정이 완료되었습니다');
+              mux.Util.showAlert('반제품 수정이 완료되었습니다', '수정 완료', 3000);
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         }
         this.close();
@@ -2691,7 +2691,7 @@ export default {
         }
         if(result['code'] == 0){
           if(result['data'].length === 0){
-            alert('검색 결과가 없습니다.');
+            mux.Util.showAlert('검색 결과가 없습니다.');
           }
           this.product_data = result['data'];
 
@@ -2775,15 +2775,15 @@ export default {
           })
         }else{
           if (prevURL !== window.location.href) return;
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       this.loading_dialog = false;
     },
@@ -2860,7 +2860,7 @@ export default {
 
         let set_stock_spot_arr = new Set(stock_spot_arr);
         if(stock_spot_arr.length !== set_stock_spot_arr.size){
-          alert('중복된 위치가 존재합니다.');
+          mux.Util.showAlert('중복된 위치가 존재합니다.');
           return;
         }
 
@@ -3002,17 +3002,17 @@ export default {
             }
             if(result['code'] == 0){
               // console.log('result :>> ', result);
-              alert('완제품 등록이 완료되었습니다');
+              mux.Util.showAlert('완제품 등록이 완료되었습니다', '등록 완료', 3000);
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         }else{// 아니라면 수정
           let sendData = {
@@ -3144,17 +3144,17 @@ export default {
             }
             if(result['code'] == 0){
               // console.log('result :>> ', result);
-              alert('완제품 수정이 완료되었습니다');
+              mux.Util.showAlert('완제품 수정이 완료되었습니다', '수정 완료', 3000);
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         }
         this.close();
@@ -3182,7 +3182,7 @@ export default {
       })
       if(check_duplicate.length > 0){
         let duplicate = JSON.stringify(check_duplicate).replace( "[",'').replace( "]",'');
-        alert(duplicate + '은(는) 이미 추가된 제품입니다.')
+        mux.Util.showAlert(duplicate + '은(는) 이미 추가된 제품입니다.')
         return
       }else{
         selected_item.forEach(data =>{
@@ -3283,19 +3283,19 @@ export default {
             this.loading_dialog = false;
           } else {
             this.loading_dialog = false;
-            alert(result2['failed_info']);
+            mux.Util.showAlert(result2['failed_info']);
           }
         } else {
           this.loading_dialog = false;
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
 
       if(type === 'product'){
@@ -3339,7 +3339,7 @@ export default {
 
       spot_input.splice(spot_input.length-3,3)
       if(spot_input.length == 0){
-        alert('완제품 위치 및 재고 설정란이 모두 삭제되었습니다.')
+        mux.Util.showAlert('완제품 위치 및 재고 설정란이 모두 삭제되었습니다.', '삭제 완료', 3000)
       }
     },
 
@@ -3413,18 +3413,18 @@ export default {
           }
           if(result['code'] == 0){
             // console.log('result :>> ', result);
-            alert('삭제가 완료되었습니다');
+            mux.Util.showAlert('삭제가 완료되었습니다', '삭제 완료', 3000);
             this.material_data.splice(this.editedIndex, 1)
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
       }else if(this.tab_main == 1){
         this.deleteItemList.module_code = this.editRegistModule.item_code;
@@ -3475,18 +3475,18 @@ export default {
           }
           if(result['code'] == 0){
             // console.log('result :>> ', result);
-            alert('삭제가 완료되었습니다');
+            mux.Util.showAlert('삭제가 완료되었습니다', '삭제 완료', 3000);
             this.module_data.splice(this.editedIndex, 1)
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
       }else if(this.tab_main == 2){
         this.deleteItemList.product_code = this.editRegistProduct.item_code;
@@ -3542,18 +3542,18 @@ export default {
           }
           if(result['code'] == 0){
             // console.log('result :>> ', result);
-            alert('삭제가 완료되었습니다');
+            mux.Util.showAlert('삭제가 완료되었습니다', '삭제 완료', 3000);
             this.product_data.splice(this.editedIndex, 1)
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
       }
 
@@ -3566,7 +3566,7 @@ export default {
       let items = [];
       if(type === 'material'){
         if( this.material_data.length === 0){
-          alert('다운로드할 데이터가 검색 결과에 없습니다.')
+          mux.Util.showAlert('다운로드할 데이터가 검색 결과에 없습니다.')
           return;
         }
         this.material_headers.forEach(data => {
@@ -3618,7 +3618,7 @@ export default {
         mux.Excel.downloadTable(excelHeaders, items, '반제품_엑셀다운로드');
       }else if(type === 'product'){
         if( this.product_data.length === 0){
-          alert('다운로드할 데이터가 검색 결과에 없습니다.')
+          mux.Util.showAlert('다운로드할 데이터가 검색 결과에 없습니다.')
           return;
         }
         this.product_headers.forEach(data => {

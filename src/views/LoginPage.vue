@@ -227,15 +227,15 @@ export default {
       }).then(result => {
         if (prevURL !== window.location.href) return;
         if(result.code == 0){
-          alert("사용자 메일로 확인코드가 발송되었습니다!");
+          mux.Util.showAlert("사용자 메일로 확인코드가 발송되었습니다!", '발송 완료', 3000);
           this.setPassword = true;
         }else{
-          alert("아이디를 확인해주세요.");
+          mux.Util.showAlert("아이디를 확인해주세요.");
         }
       }).catch(() => {
         if (prevURL !== window.location.href) return;
         // console.error('err :>> ', err);
-        alert('아이디를 확인해주세요.');
+        mux.Util.showAlert('아이디를 확인해주세요.');
       });
     },
     setNewPasswordFunc(){
@@ -248,7 +248,7 @@ export default {
       }).then(result => {
         if (prevURL !== window.location.href) return;
         if(result.code == 0){
-          alert("비밀번호 변경이 완료되었습니다!");
+          mux.Util.showAlert("비밀번호 변경이 완료되었습니다!", '변경 완료', 3000);
           this.newPasswordDialog = false;
           this.setPassword = false;
           this.idValue = this.userID + '';
@@ -256,12 +256,12 @@ export default {
           this.verificationCode = '';
           this.setNewPassword = '';
         }else{
-          alert("확인코드를 확인해주세요.");
+          mux.Util.showAlert("확인코드를 확인해주세요.");
         }
       }).catch(() => {
         if (prevURL !== window.location.href) return;
         // console.error('err :>> ', err);
-        alert('확인코드를 확인해주세요.');
+        mux.Util.showAlert('확인코드를 확인해주세요.');
       });
     },
     closeSetPassword(){

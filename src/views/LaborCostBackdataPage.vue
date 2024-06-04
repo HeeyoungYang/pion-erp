@@ -379,15 +379,15 @@ export default {
           this.ratio_data = searchResult.cost_ratio;
 
         }else{
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       this.loading_dialog = false;
     },
@@ -446,7 +446,7 @@ export default {
         })
 
         if (this.labor_data.find(x => x.name === item.name && x.type === item.type && x.occupation === item.occupation)) {
-          alert('이미 등록된 공종 + 규격 + 직종입니다.');
+          mux.Util.showAlert('이미 등록된 공종 + 규격 + 직종입니다.');
           return;
         }
         if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
@@ -484,18 +484,18 @@ export default {
             if(result['code'] == 0){
               // console.log('result :>> ', result);
               this.labor_data.push(item);
-              alert('등록이 완료되었습니다.');
+              mux.Util.showAlert('등록이 완료되었습니다.', '등록 완료', 3000);
               this.laborDialog = false;
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         }else{// 아니라면 수정
           const prevURL = window.location.href;
@@ -530,18 +530,18 @@ export default {
             if(result['code'] == 0){
               // console.log('result :>> ', result);
               this.labor_data[this.editedLaborIndex] = JSON.parse(JSON.stringify(item));
-              alert('수정이 완료되었습니다.');
+              mux.Util.showAlert('수정이 완료되었습니다.', '수정 완료', 3000);
               this.laborDialog = false;
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         }
       }
@@ -591,7 +591,7 @@ export default {
         })
 
         if (this.wage_data.find(x => x.occupation === item.occupation)) {
-          alert('이미 등록된 직종입니다.');
+          mux.Util.showAlert('이미 등록된 직종입니다.');
           return;
         }
         if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
@@ -625,18 +625,18 @@ export default {
             if(result['code'] == 0){
               // console.log('result :>> ', result);
               this.wage_data.push(item);
-              alert('등록이 완료되었습니다.');
+              mux.Util.showAlert('등록이 완료되었습니다.', '등록 완료', 3000);
               this.wageDialog = false;
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         }else{// 아니라면 수정
           const prevURL = window.location.href;
@@ -667,18 +667,18 @@ export default {
             if(result['code'] == 0){
               // console.log('result :>> ', result);
               this.wage_data[this.editedWageIndex] = JSON.parse(JSON.stringify(item));
-              alert('수정이 완료되었습니다.');
+              mux.Util.showAlert('수정이 완료되었습니다.', '수정 완료', 3000);
               this.wageDialog = false;
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         }
       }
@@ -783,18 +783,18 @@ export default {
             // console.log('result :>> ', result);
             this.ratio_data[this.editedRatioIndex] = {type: item.type, formula: item.formula};
             this.ratio_data = JSON.parse(JSON.stringify(this.ratio_data));
-            alert('수정이 완료되었습니다.');
+            mux.Util.showAlert('수정이 완료되었습니다.', '수정 완료', 3000);
             this.ratioDialog = false;
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
       }
     },
@@ -841,17 +841,17 @@ export default {
           if(result['code'] == 0){
             // console.log('result :>> ', result);
             this.labor_data.splice(this.editedLaborIndex, 1);
-            alert('삭제가 완료되었습니다.');
+            mux.Util.showAlert('삭제가 완료되었습니다.', '삭제 완료', 3000);
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
       }else if(this.tab_main == 1){
         this.deleteDataList.occupation = this.editedWageItem.occupation;
@@ -881,17 +881,17 @@ export default {
           if(result['code'] == 0){
             // console.log('result :>> ', result);
             this.wage_data.splice(this.editedWageIndex, 1);
-            alert('삭제가 완료되었습니다.');
+            mux.Util.showAlert('삭제가 완료되었습니다.', '삭제 완료', 3000);
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
       }
 

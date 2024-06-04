@@ -450,7 +450,7 @@ export default {
         console.log(this.login_info)
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        mux.Util.showAlert(error);
       }
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
@@ -474,7 +474,7 @@ export default {
       try {
         await mux.Server.downloadFile(foldername, filename, prefix);
       } catch (error) {
-        alert(error);
+        mux.Util.showAlert(error);
       }
       this.loading_dialog = false;
     },
@@ -527,7 +527,7 @@ export default {
         }
         if(result['code'] == 0){
           if(result['data'].length === 0){
-            alert('검색 결과가 없습니다.');
+            mux.Util.showAlert('검색 결과가 없습니다.');
           }
           result.data.forEach(datas =>{
             for(let d=0; d<datas.belong_data.length; d++){
@@ -545,15 +545,15 @@ export default {
           })
           this.inbound_approve_data  = result.data.reverse();
         }else{
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       // this.inbound_approve_data = ObtainOrderSearchPageConfig.test_inbound_approve_data
       this.loading_dialog = false;
@@ -622,15 +622,15 @@ export default {
       //     this.loading_dialog = false;
       //   } else {
       //     this.loading_dialog = false;
-      //     alert(result['failed_info']);
+      //     mux.Util.showAlert(result['failed_info']);
       //   }
       // } catch (error) {
       //   if (prevURL !== window.location.href) return;
       //   this.loading_dialog = false;
       //   if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-      //     alert(error.response['data']['failed_info'].msg);
+      //     mux.Util.showAlert(error.response['data']['failed_info'].msg);
       //   else
-      //     alert(error);
+      //     mux.Util.showAlert(error);
       // }
       this.inbound_product_list_dialog = true;
     },
@@ -682,9 +682,9 @@ export default {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
     },
     async setApprovalPhase(item, change, reason){
@@ -702,7 +702,7 @@ export default {
           phase = '확인';
         }else{
           if(reason === ''){
-            alert('반려 사유 필수 기입');
+            mux.Util.showAlert('반려 사유 필수 기입');
             return;
           }else{
             send_data.reject_reason = reason;
@@ -721,7 +721,7 @@ export default {
           phase = '승인';
         }else{
           if(reason === ''){
-            alert('반려 사유 필수 기입');
+            mux.Util.showAlert('반려 사유 필수 기입');
             return;
           }else{
             send_data.reject_reason = reason;
@@ -1002,7 +1002,7 @@ export default {
               break;
           }
           this.loading_dialog = false;
-          alert('입고 ' + phase + ' 완료');
+          mux.Util.showAlert('입고 ' + phase + ' 완료', '완료', 3000);
 
           //메일 알림 관련
           let mailTo = [];
@@ -1095,26 +1095,26 @@ export default {
               console.log(sendEmailAlam['message']);
             } else {
               if (prevURL !== window.location.href) return;
-              alert(sendEmailAlam['failed_info']);
+              mux.Util.showAlert(sendEmailAlam['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         } else {
           if (prevURL !== window.location.href) return;
-          alert(resultInbound['failed_info']);
+          mux.Util.showAlert(resultInbound['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       // console.log(JSON.stringify(this.change_approve));
     },
@@ -1133,7 +1133,7 @@ export default {
           phase = '취소 확인';
         }else{
           if(reason === ''){
-            alert('취소 반려 사유 필수 기입');
+            mux.Util.showAlert('취소 반려 사유 필수 기입');
             return;
           }else{
             send_data.reject_reason = reason;
@@ -1152,7 +1152,7 @@ export default {
           phase = '취소 승인';
         }else{
           if(reason === ''){
-            alert('취소 반려 사유 필수 기입');
+            mux.Util.showAlert('취소 반려 사유 필수 기입');
             return;
           }else{
             send_data.reject_reason = reason;
@@ -1293,7 +1293,7 @@ export default {
           }
 
           this.loading_dialog = false;
-          alert('입고 ' + phase + ' 완료');
+          mux.Util.showAlert('입고 ' + phase + ' 완료', '완료', 3000);
 
           //메일 알림 관련
           let mailTo = [];
@@ -1386,26 +1386,26 @@ export default {
               console.log(sendEmailAlam['message']);
             } else {
               if (prevURL !== window.location.href) return;
-              alert(sendEmailAlam['failed_info']);
+              mux.Util.showAlert(sendEmailAlam['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         } else {
           if (prevURL !== window.location.href) return;
-          alert(resultInbound['failed_info']);
+          mux.Util.showAlert(resultInbound['failed_info']);
         }
       } catch (error) {
         this.loading_dialog = false;
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       // console.log(JSON.stringify(this.change_approve));
     },
@@ -1552,7 +1552,7 @@ export default {
               break;
           }
 
-          alert(send_confirmation_data.approval_phase === '취소' ? '취소 완료' : '취소 요청 완료');
+          mux.Util.showAlert(send_confirmation_data.approval_phase === '취소' ? '취소 완료' : '취소 요청 완료', '완료', 3000);
           this.loading_dialog = false;
 
           //메일 알림 관련
@@ -1625,26 +1625,26 @@ export default {
               console.log(sendEmailAlam['message']);
             } else {
               if (prevURL !== window.location.href) return;
-              alert(sendEmailAlam['failed_info']);
+              mux.Util.showAlert(sendEmailAlam['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
         } else {
           if (prevURL !== window.location.href) return;
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         this.loading_dialog = false;
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       console.log('sendData :: ' + JSON.stringify(sendData))
     },

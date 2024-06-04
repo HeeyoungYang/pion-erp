@@ -245,13 +245,13 @@ export default {
           
         }else {
           this.loading_dialog = false;
-          alert(result.message);
+          mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
-        alert(error);
+        mux.Util.showAlert(error);
         return;
       }
 
@@ -310,7 +310,7 @@ export default {
         })
 
         // if(no_data.length > 0){
-        //   alert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
+        //   mux.Util.showAlert(no_data+' 항목이 공란입니다. 정보를 기입해주세요.');
         //   return;
         // }
 
@@ -332,14 +332,14 @@ export default {
             });
             if (prevURL !== window.location.href) return;
             // console.log('result :>> ', result);
-            alert(result.message);
+            mux.Util.showAlert(result.message);
             // 성공시 다이얼로그 닫기
             if (result.code == 0){
               this.dialog = false;
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
-            alert(error);
+            mux.Util.showAlert(error);
           }
         }else{// 아니라면 수정
           // this.editedItem.modifier = 'user_id';
@@ -360,8 +360,7 @@ export default {
             });
             if (prevURL !== window.location.href) return;
             // console.log('result :>> ', result);
-            // alert('수정이 완료되었습니다');
-            alert(result.message);
+            mux.Util.showAlert(result.message);
             // 성공시 다이얼로그 닫기
             if (result.code == 0){
               this.members = this.members.map(a => {
@@ -385,7 +384,7 @@ export default {
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
-            alert(error);
+            mux.Util.showAlert(error);
           }
         }
       }
@@ -411,7 +410,7 @@ export default {
         });
         if (prevURL !== window.location.href) return;
         // console.log('result :>> ', result);
-        alert(result.message);
+        mux.Util.showAlert(result.message);
         // 성공시 다이얼로그 닫기
         if (result.code == 0){
           this.members.splice(this.editedIndex, 1)
@@ -419,7 +418,7 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        mux.Util.showAlert(error);
         // console.log('error :>> ', error);
       }
     },

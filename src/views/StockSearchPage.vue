@@ -242,7 +242,7 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        mux.Util.showAlert(error);
       }
 
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list, true);
@@ -338,19 +338,19 @@ export default {
             this.loading_dialog = false;
           } else {
             this.loading_dialog = false;
-            alert(result2['failed_info']);
+            mux.Util.showAlert(result2['failed_info']);
           }
         } else {
           this.loading_dialog = false;
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
     },
     closeDetail () {
@@ -362,7 +362,6 @@ export default {
 
       this.total_stock_num = 0;
       this.total_stock_price = 0;
-      // alert(this.searchCardInputs.find(x=>x.label === '일자').value.sort());
 
       let searchType = this.searchCardInputs.find(x=>x.label === '종류').value;
       if (searchType === 'All')
@@ -449,7 +448,7 @@ export default {
           });
 
           if(result.length === 0){
-            alert('검색 결과가 없습니다.');
+            mux.Util.showAlert('검색 결과가 없습니다.');
           }
 
           let product_data_arr = [];
@@ -500,21 +499,21 @@ export default {
             this.total_stock_price += data.item_price
           })
         } else {
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       this.loading_dialog = false;
     },
     downloadToExcel(){
       if( this.product_data.length === 0){
-        alert('다운로드할 데이터가 검색 결과에 없습니다.')
+        mux.Util.showAlert('다운로드할 데이터가 검색 결과에 없습니다.')
         return;
       }
       let excelHeaders = [];

@@ -84,13 +84,13 @@ export default {
         }
       }).then(result => {
         if (result.code == 0) {
-          alert('사용자 권한 변경이 완료되었습니다.');
+          mux.Util.showAlert('사용자 권한 변경이 완료되었습니다.', '변경 완료', 3000);
           data.authority = data.authCheck;
         } else {
-          alert(result.message);
+          mux.Util.showAlert(result.message);
         }
       }).catch(error => {
-        alert(error);
+        mux.Util.showAlert(error);
       });
     },
     async initialize () {
@@ -116,13 +116,13 @@ export default {
           });
         }else {
           this.loading_dialog = false;
-          alert(result.message);
+          mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
-        alert(error);
+        mux.Util.showAlert(error);
         return;
       }
 
@@ -151,7 +151,7 @@ export default {
           });
         }else {
           this.loading_dialog = false;
-          alert(result.message);
+          mux.Util.showAlert(result.message);
           return;
         }
 
@@ -165,7 +165,7 @@ export default {
             });
           }else {
             this.loading_dialog = false;
-            alert(result.message);
+            mux.Util.showAlert(result.message);
             return;
           }
         }
@@ -184,13 +184,13 @@ export default {
           });
         }else {
           this.loading_dialog = false;
-          alert(result.message);
+          mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
-        alert(error);
+        mux.Util.showAlert(error);
         return;
       }
       const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);

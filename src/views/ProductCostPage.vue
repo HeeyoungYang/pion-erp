@@ -924,7 +924,7 @@ export default {
       if(this.tab_main === 0){
         if(show){
           if (!this.clickedProductCost || !this.clickedProductCost.created_time) {
-            alert('산출할 제품을 선택해주세요.');
+            mux.Util.showAlert('산출할 제품을 선택해주세요.');
             this.dialog_calculate_labor = false;
             return;
           }
@@ -961,15 +961,15 @@ export default {
                 return x;
               });
             }else{
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             this.loading_dialog = false;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
           this.loading_dialog = false;
 
@@ -1259,14 +1259,14 @@ export default {
             return x;
           });
         }else{
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
 
       // set num
@@ -1330,15 +1330,15 @@ export default {
           this.searchDataCalcProcess(searchResult, true);
 
         }else{
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       this.loading_dialog = false;
 
@@ -1415,16 +1415,16 @@ export default {
           })
         }else{
           if (prevURL !== window.location.href) return;
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         // console.error(error);
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       this.loading_dialog = false;
     },
@@ -1529,7 +1529,7 @@ export default {
       }
 
       if (target_labor_cost.length === 1){
-        alert('모든 행을 삭제할 수 없습니다.');
+        mux.Util.showAlert('모든 행을 삭제할 수 없습니다.');
         return;
       }
 
@@ -1639,19 +1639,19 @@ export default {
               }
             }
           });
-          alert('삭제되었습니다.');
+          mux.Util.showAlert('삭제되었습니다.', '삭제 완료', 3000);
           this.clearClicked();
           this.closeDelete();
         } else {
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
         return;
       }
     },
@@ -1833,7 +1833,7 @@ export default {
           return item;
         });
         if (!isValid){
-          alert('양식이 잘못되었습니다.');
+          mux.Util.showAlert('양식이 잘못되었습니다.');
           return;
         }
 
@@ -1842,7 +1842,7 @@ export default {
         for (let i = this.labor_cost_data.length - 1; i >= 0; i--) {
           if (!this.labor_cost_data[i].quantity || this.labor_cost_data[i].quantity == 0){
             if (i === 0 && this.labor_cost_data.length === 1){
-              alert('최소 한 개의 행은 수량이 입력되어야 합니다.');
+              mux.Util.showAlert('최소 한 개의 행은 수량이 입력되어야 합니다.');
               return;
             }
             if (!isConfirm){
@@ -1863,7 +1863,7 @@ export default {
             if (laborDataI.name === laborDataJ.name
                 && laborDataI.type === laborDataJ.type
                 && laborDataI.occupation === laborDataJ.occupation){
-                  alert(`중복 데이터가 존재합니다.\n${laborDataI.no}\n${laborDataI.name} / ${laborDataI.type} / ${laborDataI.occupation}`);
+                  mux.Util.showAlert(`중복 데이터가 존재합니다.\n${laborDataI.no}\n${laborDataI.name} / ${laborDataI.type} / ${laborDataI.occupation}`);
                   return;
                 }
           }
@@ -1915,18 +1915,18 @@ export default {
               this.searched_datas.labor_cost_calc_detail.push(data);
             });
             this.searchDataCalcProcess(this.searched_datas);
-            alert('저장되었습니다.');
+            mux.Util.showAlert('저장되었습니다.', '저장 완료', 3000);
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
             return;
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
           return;
         }
 
@@ -1957,7 +1957,7 @@ export default {
           return item;
         });
         if (!isValid){
-          alert('양식이 잘못되었습니다.');
+          mux.Util.showAlert('양식이 잘못되었습니다.');
           return;
         }
 
@@ -1966,7 +1966,7 @@ export default {
         for (let i = this.labor_cost_list.length - 1; i >= 0; i--) {
           if (!this.labor_cost_list[i].quantity || this.labor_cost_list[i].quantity == 0){
             if (i === 0 && this.labor_cost_list.length === 1){
-              alert('최소 한 개의 행은 수량이 입력되어야 합니다.');
+              mux.Util.showAlert('최소 한 개의 행은 수량이 입력되어야 합니다.');
               return;
             }
             if (!isConfirm){
@@ -1988,7 +1988,7 @@ export default {
             if (laborDataI.name === laborDataJ.name
                 && laborDataI.type === laborDataJ.type
                 && laborDataI.occupation === laborDataJ.occupation){
-                  alert(`중복 데이터가 존재합니다.\n${laborDataI.no}\n${laborDataI.name} / ${laborDataI.type} / ${laborDataI.occupation}`);
+                  mux.Util.showAlert(`중복 데이터가 존재합니다.\n${laborDataI.no}\n${laborDataI.name} / ${laborDataI.type} / ${laborDataI.occupation}`);
                   return;
                 }
           }
@@ -2067,17 +2067,17 @@ export default {
             this.searchDataCalcProcess(this.searched_datas);
 
             this.edit_survey_cost_num_disabled = true;
-            alert('수정되었습니다.');
+            mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
 
 
@@ -2087,11 +2087,11 @@ export default {
 
     async save() {
       if (!this.dialog_selected_product_data.product_code){
-        alert('제품을 불러와야 합니다.');
+        mux.Util.showAlert('제품을 불러와야 합니다.');
         return;
       }
       if (this.calc_cost_detail_data_direct_labor2.belong_data.length === 0 || this.calc_cost_detail_data_direct_labor2.belong_data[0].cost_list === ''){
-        alert('직접 노무비를 산출해야 합니다.');
+        mux.Util.showAlert('직접 노무비를 산출해야 합니다.');
         return;
       }
       const validate = this.$refs.surveyCostForm2.validate();
@@ -2212,17 +2212,17 @@ export default {
             result = JSON.parse(result);
           }
           if(result['code'] == 0){
-            alert('등록되었습니다.');
+            mux.Util.showAlert('등록되었습니다.', '등록 완료', 3000);
           } else {
             if (prevURL !== window.location.href) return;
-            alert(result['failed_info']);
+            mux.Util.showAlert(result['failed_info']);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
       }
     },

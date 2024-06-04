@@ -577,7 +577,7 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        mux.Util.showAlert(error);
       }
 
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list, true);
@@ -598,7 +598,7 @@ export default {
         this.login_id =  this.$cookies.get(this.$configJson.cookies.id.key);
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        mux.Util.showAlert(error);
       }
 
     },
@@ -680,7 +680,7 @@ export default {
         if(result['code'] == 0){
 
           if(result['data'].length === 0){
-            alert('검색 결과가 없습니다.');
+            mux.Util.showAlert('검색 결과가 없습니다.');
           }
           result = result['data'].map(a => {
             if (!a.stock_num){
@@ -738,15 +738,15 @@ export default {
             this.total_stock_price += data.item_price
           })
         } else {
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
 
 
@@ -774,7 +774,7 @@ export default {
       })
       if(check_duplicate.length > 0){
         let duplicate = JSON.stringify(check_duplicate).replace( "[",'').replace( "]",'');
-        alert(duplicate + '은(는) 이미 추가된 제품입니다.')
+        mux.Util.showAlert(duplicate + '은(는) 이미 추가된 제품입니다.')
         return
       }else{
         selected_item.forEach(data =>{
@@ -785,9 +785,12 @@ export default {
       }
     },
 
-    addProductInboundData(){
+    async addProductInboundData(){
       if(this.add_self == false){
-        alert('직접 입력형으로 전환되며 위에서 선택한 자재는 선택 해제됩니다. ');
+        const confirm = await mux.Util.showConfirm('직접 입력형으로 전환되며, \n위에서 선택한 자재는 선택 해제됩니다. ', '전환 확인');
+        if (!confirm){
+          return;
+        }
         this.product_inbound_data = [];
         this.select_product = false;
       }
@@ -810,9 +813,12 @@ export default {
         registe_type: '직접입력',
       });
     },
-    addProductInboundDataCancle(){
+    async addProductInboundDataCancle(){
       if(this.add_self == true){
-        alert('자재 선택형으로 전환되며 아래 작성된 내용은 초기화됩니다.');
+        const confirm = await mux.Util.showConfirm('자재 선택형으로 전환되며, \n아래 작성된 내용은 초기화됩니다.', '전환 확인');
+        if (!confirm){
+          return;
+        }
         this.product_inbound_data = [];
         this.select_product = true;
       }
@@ -913,22 +919,22 @@ export default {
         })
 
         if(empty_member.length > 0){
-          alert(empty_member+"를 선택해주세요.");
+          mux.Util.showAlert(empty_member+"를 선택해주세요.");
           return success = false;
         }
 
         let inbound_product_data = this.product_inbound_data
         if(inbound_product_data.length === 0){
-          alert('자재를 선택해주세요.');
+          mux.Util.showAlert('자재를 선택해주세요.');
           return success = false;
         }else{
           if(!this.add_self){
             for(let d = 0; d < inbound_product_data.length; d++){
               if(inbound_product_data[d].inbound_num == '' || inbound_product_data[d].spec == '' || inbound_product_data[d].spot == ''){
-                alert('입고수량, 입고장소, 규격 필수 입력');
+                mux.Util.showAlert('입고수량, 입고장소, 규격 필수 입력');
                 return success = false;
               }else if(inbound_product_data[d].inbound_num == 0){
-                alert('입고수량은 0보다 커야합니다.');
+                mux.Util.showAlert('입고수량은 0보다 커야합니다.');
                 return success = false;
               }
             }
@@ -936,7 +942,7 @@ export default {
             inbound_product_data.forEach(data => {
               for(let add = 0; add < Object.keys(data).length; add++){
                 if(Object.keys(data)[add] != 'model' && Object.values(data)[add] === ''){
-                  alert('모델을 제외한 모든 정보가 기입되어야 합니다.');
+                  mux.Util.showAlert('모델을 제외한 모든 정보가 기입되어야 합니다.');
                   return success = false;
                 }
               }
@@ -1055,7 +1061,7 @@ export default {
             }
             if(result.data['code'] == 0){
               // console.log('result :>> ', result);
-              alert('입고 승인 요청이 완료되었습니다');
+              mux.Util.showAlert('입고 승인 요청이 완료되었습니다', '요청 완료', 3000);
 
               //메일 알림 관련
               let mailTo = [];
@@ -1117,14 +1123,14 @@ export default {
                   console.log(sendEmailAlam['message']);
                 } else {
                   if (prevURL !== window.location.href) return;
-                  alert(sendEmailAlam['failed_info']);
+                  mux.Util.showAlert(sendEmailAlam['failed_info']);
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
                 if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  alert(error.response['data']['failed_info'].msg);
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
                 else
-                  alert(error);
+                  mux.Util.showAlert(error);
               }
 
               this.receiving_inspection_value = '';
@@ -1132,14 +1138,14 @@ export default {
               this.files_value = [];
             } else {
               if (prevURL !== window.location.href) return;
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              alert(error.response['data']['failed_info'].msg);
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
-              alert(error);
+              mux.Util.showAlert(error);
           }
           this.loading_dialog = false;
         }
@@ -1147,7 +1153,7 @@ export default {
     },
     deleteInboundDataRow(idx){
       if(this.product_inbound_data.length === 1){
-        alert('행이 한 개 이상 존재해야 합니다.')
+        mux.Util.showAlert('행이 한 개 이상 존재해야 합니다.')
       }else{
         this.product_inbound_data.splice(idx, 1);
       }
@@ -1221,15 +1227,15 @@ export default {
           })
           this.ship_search_data  = result.data.reverse(); // 최신순으로 정렬
         }else{
-          alert(result['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          alert(error.response['data']['failed_info'].msg);
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
-          alert(error);
+          mux.Util.showAlert(error);
       }
       this.loading_dialog = false;
       // this.ship_search_data = InboundRegisterPageConfig.test_ship_search_data;
@@ -1237,7 +1243,7 @@ export default {
     addShipData(item){
       for(let i=0; i<this.ship_selected_data.length; i++){
         if(this.ship_selected_data[i].code === item.code){
-          alert("이미 추가한 데이터입니다.");
+          mux.Util.showAlert("이미 추가한 데이터입니다.");
           return;
         }
       }

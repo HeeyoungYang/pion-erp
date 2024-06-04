@@ -256,7 +256,7 @@ export default {
         //alert(result.message);
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        mux.Util.showAlert(error);
       }
     },
     // ▼ 수정버튼 onclick 함수
@@ -290,8 +290,7 @@ export default {
             department: this.userInputs.find(x=>x.column_name === 'department').value
           });
           if (prevURL !== window.location.href) return;
-          // alert('저장이 완료되었습니다.')
-          alert(result.message);
+          mux.Util.showAlert(result.message);
           // 성공시
           if (result.code == 0){
             this.user_info.phone_number = this.userInputs.find(x=>x.column_name === 'phone_number').value;
@@ -317,7 +316,7 @@ export default {
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          alert(error);
+          mux.Util.showAlert(error);
         }
 
       }
@@ -333,15 +332,14 @@ export default {
             new_password: this.passwords.newPassword
           });
           if (prevURL !== window.location.href) return;
-          // alert('비밀번호 변경이 완료되었습니다.');
-          alert(result.message);
+          mux.Util.showAlert(result.message);
           // 성공시 다이얼로그 닫기
           if (result.code == 0){
             this.dialog = false;
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          alert(error);
+          mux.Util.showAlert(error);
         }
         this.dialog = false;
       }

@@ -452,7 +452,7 @@ export default {
         console.log(this.login_info)
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        alert(error);
+        mux.Util.showAlert(error);
       }
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
@@ -478,7 +478,7 @@ export default {
       try {
         await mux.Server.downloadFile(foldername, filename, prefix);
       } catch (error) {
-        alert(error);
+        mux.Util.showAlert(error);
       }
       this.loading_dialog = false;
     },

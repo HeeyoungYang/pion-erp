@@ -526,7 +526,7 @@ mux.Server = {
                 this.move(result.data);
               }).catch((error) => {
                 // console.log('사용자 정보 쿠키 저장 실패:', error);
-                alert('로그인 실패:', error);
+                mux.Util.showAlert('로그인 실패:', error);
                 mux.Server.logOut();
               });
             }else {
@@ -535,16 +535,16 @@ mux.Server = {
             }
           }else {
             // console.error('로그인 실패:', result.message);
-            alert(result.message);
+            mux.Util.showAlert(result.message);
           }
         }).catch(err => {
           // console.error('err :>>>>> ', err);
           switch (err.message) {
             // case 'password':
-            //   alert('비밀번호 오류');
+            //   mux.Util.showAlert('비밀번호 오류');
             //   break;
             // case 'id':
-            //   alert('존재하지 않는 아이디');
+            //   mux.Util.showAlert('존재하지 않는 아이디');
             //   break;
     
             default:
@@ -554,11 +554,11 @@ mux.Server = {
         });
         
       }else{
-        alert("확인코드를 확인해주세요.");
+        mux.Util.showAlert("확인코드를 확인해주세요.");
       }
     }).catch(() => {
       // console.error('err :>> ', err);
-      alert('확인코드를 확인해주세요.');
+      mux.Util.showAlert('확인코드를 확인해주세요.');
     });
   },
 
@@ -1051,7 +1051,7 @@ mux.Util = {
           // Check the file type
           if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/jpg') {
             // Invalid file type, show an error message
-            alert('허용되지 않는 파일 형식입니다. jpeg, jpg, png 확장자의 이미지 파일만 첨부 가능합니다.');
+            mux.Util.showAlert('허용되지 않는 파일 형식입니다. jpeg, jpg, png 확장자의 이미지 파일만 첨부 가능합니다.');
             files.length = 0;
             resolve(false);
             return;
@@ -1063,7 +1063,7 @@ mux.Util = {
         // Check the file type
         if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/jpg') {
           // Invalid file type, show an error message
-          alert('허용되지 않는 파일 형식입니다. jpeg, jpg, png 확장자의 이미지 파일만 첨부 가능합니다.');
+          mux.Util.showAlert('허용되지 않는 파일 형식입니다. jpeg, jpg, png 확장자의 이미지 파일만 첨부 가능합니다.');
           self.reset();
           self.$el.querySelector('input[type="file"]').value = '';
           resolve(false);
@@ -1089,7 +1089,7 @@ mux.Util = {
           // Check the file type
           if (file.type !== 'application/pdf') {
             // Invalid file type, show an error message
-            alert('허용되지 않는 파일 형식입니다. pdf 파일만 첨부 가능합니다.');
+            mux.Util.showAlert('허용되지 않는 파일 형식입니다. pdf 파일만 첨부 가능합니다.');
             files.length = 0;
             resolve(false);
             return;
@@ -1101,7 +1101,7 @@ mux.Util = {
         // Check the file type
         if (file.type !== 'application/pdf') {
           // Invalid file type, show an error message
-          alert('허용되지 않는 파일 형식입니다. pdf 파일만 첨부 가능합니다.');
+          mux.Util.showAlert('허용되지 않는 파일 형식입니다. pdf 파일만 첨부 가능합니다.');
           self.reset();
           self.$el.querySelector('input[type="file"]').value = '';
           resolve(false);
@@ -1127,7 +1127,7 @@ mux.Util = {
           // Check the file type
           if (file.name.split('.').pop() !== 'xlsx' && file.name.split('.').pop() !== 'xls') {
             // Invalid file type, show an error message
-            alert('허용되지 않는 파일 형식입니다. xlsx, xls 확장자의 엑셀 파일만 첨부 가능합니다.');
+            mux.Util.showAlert('허용되지 않는 파일 형식입니다. xlsx, xls 확장자의 엑셀 파일만 첨부 가능합니다.');
             files.length = 0;
             resolve(false);
             return;
@@ -1139,7 +1139,7 @@ mux.Util = {
         // Check the file type
         if (file.name.split('.').pop() !== 'xlsx' && file.name.split('.').pop() !== 'xls') {
           // Invalid file type, show an error message
-          alert('허용되지 않는 파일 형식입니다. xlsx, xls 확장자의 엑셀 파일만 첨부 가능합니다.');
+          mux.Util.showAlert('허용되지 않는 파일 형식입니다. xlsx, xls 확장자의 엑셀 파일만 첨부 가능합니다.');
           self.reset();
           self.$el.querySelector('input[type="file"]').value = '';
           resolve(false);
@@ -1985,7 +1985,7 @@ mux.Excel = {
           if (i === 0){
             headers.forEach((header, index) => {
               if (header.text !== data[index]){
-                alert('헤더 정보와 엑셀 파일의 헤더 정보가 일치하지 않습니다.');
+                mux.Util.showAlert('헤더 정보와 엑셀 파일의 헤더 정보가 일치하지 않습니다.');
                 return;
               }
             });

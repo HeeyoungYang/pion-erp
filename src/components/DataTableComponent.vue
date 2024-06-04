@@ -1004,7 +1004,7 @@ export default {
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          alert(error);
+          mux.Util.showAlert(error);
         }
       }
     },

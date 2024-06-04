@@ -156,13 +156,13 @@ export default {
           }
         }else {
           this.loading_dialog = false;
-          alert(result.message);
+          mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
-        alert(error);
+        mux.Util.showAlert(error);
         return;
       }
       this.page_resources = page_resourceList.sort(
@@ -239,13 +239,13 @@ export default {
             this.initialize ();
           }else {
             this.loading_dialog = false;
-            alert(result.message);
+            mux.Util.showAlert(result.message);
             return;
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           this.loading_dialog = false;
-          alert(error);
+          mux.Util.showAlert(error);
           return;
         }
       }
@@ -271,13 +271,13 @@ export default {
           this.initialize ();
         }else {
           this.loading_dialog = false;
-          alert(result.message);
+          mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
-        alert(error);
+        mux.Util.showAlert(error);
         return;
       }
 
