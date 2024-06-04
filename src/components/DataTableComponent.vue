@@ -489,8 +489,13 @@
                   <p v-if="itemNumInfo" class="my-2">
                     <v-chip
                       color="yellow lighten-4"
+                      class="mr-2"
                       small
                     >사용수량 : {{ Number(item.used_num).toLocaleString() }}</v-chip>
+                    <v-chip
+                      color="yellow lighten-4"
+                      small
+                    >각 필요수량 : {{ Number(item.num).toLocaleString() }}</v-chip>
                   </p>
                 </td>
                 <td v-if="stockPriceInfo || itemPriceInfo" align="left">
@@ -698,8 +703,13 @@
                   <p v-if="itemNumInfoBelong" class="my-2">
                     <v-chip
                       color="white"
+                      class="mr-2"
                       small
                     >사용수량 : {{ Number(data.used_num).toLocaleString() }}</v-chip>
+                    <v-chip
+                      color="white"
+                      small
+                    >각 필요수량 : {{ Number(data.num).toLocaleString() }}</v-chip>
                   </p>
                 </td>
                 <td v-if="stockPriceInfoBelong || itemPriceInfoBelong" align="left">
