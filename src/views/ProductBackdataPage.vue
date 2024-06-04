@@ -1666,10 +1666,13 @@ export default {
           this.loading_dialog = false;
           return;
         }
+        // if (!row.classification){
+        //   alert(`${i+1}번째 행의 분류가 입력되지 않았습니다.`);
+        //   this.loading_dialog = false;
+        //   return;
+        // }
         if (!row.classification){
-          alert(`${i+1}번째 행의 분류가 입력되지 않았습니다.`);
-          this.loading_dialog = false;
-          return;
+          row.classification = '그 외';
         }
         if (!row.item_code){
           alert(`${i+1}번째 행의 관리코드가 입력되지 않았습니다.`);
