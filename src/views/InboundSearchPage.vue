@@ -530,17 +530,17 @@ export default {
 
       // 미승인에서 승인으로 변경하는 경우
       if(send_data_belong.length > 0){
+        let update_stock_data = [];
+        let insert_stock_data = [];
+        let insert_material_data = [];
+        let insert_module_data = [];
+        let belong_module_data = [];
+        let insert_product_data = [];
+        let belong_product_module_data = [];
+        let belong_product_material_data = [];
+        
         for (let i = 0; i < send_data_belong.length; i++) {
           const belong = send_data_belong[i];
-
-          let update_stock_data = [];
-          let insert_stock_data = [];
-          let insert_material_data = [];
-          let insert_module_data = [];
-          let belong_module_data = [];
-          let insert_product_data = [];
-          let belong_product_module_data = [];
-          let belong_product_material_data = [];
 
           // product_code기준 재고(자재)검색
           let stock_check = await mux.Server.post({
@@ -961,11 +961,11 @@ export default {
 
       //취소 미승인에서 취소로 변경하는 경우
       if(send_data_belong.length > 0){
+        let insert_product_data = [];
+        let update_stock_data = [];
+        
         for (let i = 0; i < send_data_belong.length; i++) {
           const belong = send_data_belong[i];
-
-          let insert_product_data = [];
-          let update_stock_data = [];
           // product_code기준 재고(자재)검색
           let stock_check = await mux.Server.post({
             path: '/api/common_rest_api/',
@@ -1224,11 +1224,11 @@ export default {
       let sendData = {};
 
       if(send_product_data.length > 0){
+        let insert_product_data = [];
+        let update_stock_data = [];
+
         for (let i = 0; i < send_product_data.length; i++) {
           const product = send_product_data[i];
-
-          let insert_product_data = [];
-          let update_stock_data = [];
           // product_code기준 재고(자재)검색
           let stock_check = await mux.Server.post({
             path: '/api/common_rest_api/',
