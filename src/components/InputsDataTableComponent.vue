@@ -23,11 +23,12 @@
             v-model="item.num"
             style="width:100px;font-size: 0.775rem !important;"
             filled
+            @keyup="addUnitPrice"
             :oninput="!item.num ? '' : item.num = item.num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
           ></v-text-field>
         </template>
         <template v-slot:[`item.item_price`] = "{ item }">
-          {{  Number(item.num ? item.unit_price.replace(/,/g,'').replace(/₩ /g,'') * item.num.replace(/,/g,'') :  0).toLocaleString() }}
+          {{  calcTotal(item) }}
         </template>
         <template v-slot:[`item.edit_item`]="{ item, index }">
           <v-icon
@@ -133,6 +134,13 @@ export default {
     deleteItem(index) {
       this.$emit("delete", index);
     },
+    calcTotal(item){
+      let total = Number(item.num ? item.unit_price.replace(/,/g,'').replace(/₩ /g,'') * item.num.replace(/,/g,'') :  0).toLocaleString();
+      return total;
+    },
+    addUnitPrice(){
+      this.$emit("calcUnitPrice");
+    }
   },
 };
 </script>

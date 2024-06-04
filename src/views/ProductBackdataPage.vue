@@ -627,6 +627,7 @@
                                   dense
                                   deletable
                                   @delete="deleteBelongItem"
+                                  @calcUnitPrice="calcUnitPrice"
                                 ></InputsDataTableComponent>
                               </v-col>
                             </v-row>
@@ -642,7 +643,7 @@
                             :headers="module_headers"
                             :items="module_data"
                             :item-key="module_data.item_code"
-                            
+
                             children-key="belong_data"
                             table-style=""
                             editable
@@ -991,6 +992,7 @@
                             dense
                             deletable
                             @delete="deleteBelongItem"
+                            @calcUnitPrice="calcUnitPrice"
                           ></InputsDataTableComponent>
                         </v-col>
                       </v-row>
@@ -2403,7 +2405,8 @@ export default {
           for(let i=0; i<Object.keys(item).length; i++){
             if(data.column_name == Object.keys(item)[i]){
               if(data.column_name == 'unit_price'){
-                item[Object.keys(item)[i]] = data.value.replace(/,/g,'');
+                if(data.value === '') item[Object.keys(item)[i]] = 0;
+                else item[Object.keys(item)[i]] = data.value.replace(/,/g,'');
               }else{
                 item[Object.keys(item)[i]] = data.value;
               }
@@ -2813,7 +2816,8 @@ export default {
           for(let i=0; i<Object.keys(item).length; i++){
             if(data.column_name == Object.keys(item)[i]){
               if(data.column_name == 'unit_price'){
-                item[Object.keys(item)[i]] = data.value.replace(/,/g,'');
+                if(data.value === '') item[Object.keys(item)[i]] = 0;
+                else item[Object.keys(item)[i]] = data.value.replace(/,/g,'');
               }else{
                 item[Object.keys(item)[i]] = data.value;
               }
@@ -3667,6 +3671,26 @@ export default {
         mux.Excel.open(file, headers, items);
       }
     },
+    calcUnitPrice(){
+      let data;
+      let add_price = 0;
+      let inputs;
+      if(this.tab_main == 1){
+        inputs = this.registModuleInputs;
+        data = this.module_set_material_data;
+      }else if(this.tab_main == 2){
+        inputs = this.registProductInputs;
+        data = this.product_set_items_data;
+      }
+      for(let i=0; i<data.length; i++){
+        add_price += data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'') * data[i].num.replace(/,/g,'');
+      }
+      inputs.forEach(input =>{
+        if(input.column_name == 'unit_price'){
+          input.value = add_price;
+        }
+      })
+    }
   },
 }
 </script>
