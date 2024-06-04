@@ -5,7 +5,7 @@
       <v-card>
         <v-card-title class="headline">{{ title }}</v-card-title>
         <v-card-text>
-          {{ message }}
+          <div v-html="message.replace(/\n/g, '<br>')"></div>
           <div v-if="useInput && typeof useInput === 'boolean'" class="mt-4">
             <v-text-field v-model="userInput" label="입력"></v-text-field>
           </div>

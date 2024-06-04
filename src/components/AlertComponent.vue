@@ -4,7 +4,9 @@
     <v-dialog v-model="visible" max-width="400" persistent>
       <v-card>
         <v-card-title class="headline">{{ title }}</v-card-title>
-        <v-card-text>{{ message }}</v-card-text>
+        <v-card-text>
+          <div v-html="message.replace(/\n/g, '<br>')"></div>
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <span v-if="timeout" style="color: grey; font-size: small;" class="ml-2">{{ countdown }}초 후 자동으로 닫힙니다.</span>
