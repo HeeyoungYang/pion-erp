@@ -9,6 +9,11 @@ import html2pdf from 'html2pdf.js' // npm install html2pdf.js
 import * as pdfjsLib from 'pdfjs-dist/build/pdf.js'; // npm install pdfjs-dist@3.11.174
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.js`
 // pdfjsLib.GlobalWorkerOptions.workerSrc = `@/../node_modules/pdfjs-dist/build/pdf.worker.js`
+import AlertComponent from '@/components/AlertComponent.vue';
+const AlertConstructor = Vue.extend(AlertComponent);
+import ConfirmComponent from '@/components/ConfirmComponent.vue';
+const ConfirmConstructor = Vue.extend(ConfirmComponent);
+
 
 const Aes256Crypto = require('./common_js/Aes256Crypto');
 
@@ -543,7 +548,7 @@ mux.Server = {
             //   break;
     
             default:
-              alert('아이디 또는 비밀번호를 확인해주세요.');
+              mux.Util.showAlert('아이디 또는 비밀번호를 확인해주세요.');
               break;
           }
         });
@@ -1176,6 +1181,37 @@ mux.Util = {
 
     return styles;
   },
+
+  showAlert(message, title = '알림', timeout = 0) {
+    const modalInstance = new AlertConstructor({
+      propsData: { message, title, timeout }
+    });
+  
+    modalInstance.$mount();
+    document.body.appendChild(modalInstance.$el);
+    modalInstance.show();
+  
+    return modalInstance;
+  },
+
+  showConfirm(message, title = '확인', useInput = false) {
+    return new Promise((resolve) => {
+      const confirmInstance = new ConfirmConstructor({
+        propsData: { message, title, useInput }
+      });
+  
+      confirmInstance.$mount();
+      document.body.appendChild(confirmInstance.$el);
+      confirmInstance.show();
+  
+      confirmInstance.$on('close', (result) => {
+        resolve(result);
+        document.body.removeChild(confirmInstance.$el);
+        confirmInstance.$destroy();
+      });
+    });
+  }
+
 }
 
 /**
