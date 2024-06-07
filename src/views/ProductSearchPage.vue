@@ -55,55 +55,17 @@
 
               <template v-slot:header="{ data }">
                 <p
-                  class="text-h6 font-weight-black mb-0"
+                  class=" mb-0"
                   item-align-center
                 >
-                  {{ data.name }} ({{ data.spec }})
+                  <span class="text-h6 font-weight-black">{{ data.name }} ({{ data.spec }})</span>
                   <span
                     class="text-body-1 font-weight-bold black--text ml-2"
                     item-align-center
                   >
                     : {{ data.item_code }}
                   </span>
-                  <!-- <v-menu
-                    v-if="data.thumbnail"
-                    open-on-hover
-                    :close-on-content-click="false"
-                    :nudge-width="100"
-                    offset-x
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon
-                        small
-                        v-bind="attrs"
-                        v-on="on"
-                      >
-                        mdi-image
-                      </v-icon>
-                    </template>
-
-                    <v-card class="pa-0">
-                      <v-list class="pa-0">
-                        <v-list-item class="pa-0">
-                          <v-list-item-content class="pa-3">
-                            <v-list-item-subtitle>
-                              제품이미지영역
-                              <v-img
-                                alt="thumbnail"
-                                class="shrink mr-2"
-                                contain
-                                :src="mux.Util.imageBinary(data.thumbnail)"
-                                transition="scale-transition"
-                                width="150"
-                              />
-                            </v-list-item-subtitle>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list>
-                    </v-card>
-                  </v-menu> -->
                 </p>
-
               </template>
               <template v-slot:content="{ data }">
                 <v-divider class="mb-4"></v-divider>
@@ -111,21 +73,27 @@
                   <v-col
                     cols="12"
                   >
-                    <v-chip
+                    <!-- <v-chip
                       class="mr-2"
-                      color="indigo"
-                      text-color="white"
+                      color="success"
                       small
                     >
-                      {{ data.name }} 총 재고 : {{ data.total_stock }}개
+                      총 재료비 : {{ data.unit_price }}
+                    </v-chip> -->
+
+                    <v-chip
+                      class="mr-2 font-weight-bold white--text"
+                      color="indigo"
+                      small
+                    >
+                      총 재고 : {{ data.total_stock }}개
                     </v-chip>
                     <v-chip
-                      class="mr-2"
+                      class="mr-2 font-weight-bold white--text"
                       color="indigo"
-                      text-color="white"
                       small
                     >
-                      {{ data.name }} 총 재료비 : {{ data.unit_price }}
+                      총 재고 금액 : {{ data.total_stock_price }}
                     </v-chip>
                     <v-btn
                       small
@@ -150,6 +118,8 @@
                       dense
                       itemNumInfo
                       itemNumInfoBelong
+                      itemPriceInfo
+                      itemPriceInfoBelong
                       show-item-details
                       @itemDetials="detailInfoItem"
                     />
@@ -473,6 +443,7 @@ export default {
                 for(let b=0; b<data.belong_data.length; b++){
                   total_unit_price += (data.belong_data[b].unit_price).replace(/,/g,'').replace(/₩ /g,'') * data.belong_data[b].num;
                 }
+                data.total_stock_price = '₩ '+ Number(data.total_stock * total_unit_price).toLocaleString();
                 data.unit_price = '₩ '+ Number(total_unit_price).toLocaleString()
               }else{
                 data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
@@ -480,6 +451,15 @@ export default {
             }else {
               data.item_price = 0;
             }
+
+
+            data.belong_data.push({
+              item_code: '총 재료비',
+              unit_price: '',
+              total_stock: 0,
+              stock_price: '',
+              num_price: data.unit_price
+            })
             // this.total_stock_num += data.total_stock
             // this.total_stock_price += data.item_price
           })

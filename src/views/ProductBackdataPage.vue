@@ -549,6 +549,7 @@
                                 <p class="text-h6 font-weight-black mb-0">선택 원부자재
                                   <v-btn color="primary" x-small @click="set_material_search = true" v-if="!set_material_search">원부자재 선택</v-btn>
                                   <v-btn color="primary" x-small @click="set_material_search = false" v-if="set_material_search">선택 닫기</v-btn>
+                                  <v-btn color="primary" class="ml-4" x-small @click="add_material_search = true" v-if="!add_material_search">원부자재 직접 기입</v-btn>
                                   <v-btn x-small color="error" class="ml-4" @click="resetData('module')">비우기</v-btn>
                                 </p>
                               </v-col>
@@ -654,7 +655,7 @@
                             @delete="deleteItem"
                             stockNumInfo
                             itemNumInfoBelong
-                            stockPriceInfo
+                            moduleStockPriceInfo
                             itemPriceInfoBelong
                             show-item-details
                             @itemDetials="detailInfoItem"
@@ -746,7 +747,7 @@
                               text-color="white"
                               small
                             >
-                              {{ data.name }} 총 재고 : {{ data.total_stock }}개
+                              총 재고 : {{ data.total_stock }}개
                             </v-chip>
                             <v-chip
                               class="mr-2"
@@ -754,7 +755,7 @@
                               text-color="white"
                               small
                             >
-                              {{ data.name }} 총 재료비 : {{ data.unit_price }}
+                              총 재료비 : {{ data.total_stock_price }}
                             </v-chip>
                             <v-btn
                               small
@@ -804,6 +805,8 @@
                               dense
                               itemNumInfo
                               itemNumInfoBelong
+                              itemPriceInfo
+                              itemPriceInfoBelong
                               show-item-details
                               @itemDetials="detailInfoItem"
                             />
@@ -1178,6 +1181,7 @@ export default {
       //완제품 정보
       registProductSpotInputs:[],
       set_material_search: false,
+      add_material_search: false,
       product_set_items_data:[],
       selected_items_for_product_data: [],
       searchProductCardInputs:ProductBackDataPageConfig.searchProductCardInputs,
@@ -2230,11 +2234,13 @@ export default {
                 for(let b=0; b<data.belong_data.length; b++){
                   total_unit_price += data.belong_data[b].unit_price * data.belong_data[b].num;
                 }
-                data.item_price = total_unit_price * data.total_stock
-                data.unit_price = '₩ '+ Number(total_unit_price).toLocaleString()
-              }else{
-                data.item_price = data.unit_price * data.total_stock
+                data.item_stock_price = data.unit_price * data.total_stock;
+                data.item_price = total_unit_price;
                 data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+              }else{
+                data.item_stock_price = data.unit_price * data.total_stock
+                data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+                data.item_price = 0;
               }
             }else {
               data.item_price = 0;
@@ -2249,7 +2255,7 @@ export default {
               }
             }
             this.module_total_stock_num += data.total_stock
-            this.module_total_stock_price += data.item_price
+            this.module_total_stock_price += data.item_stock_price
           })
         }else{
           if (prevURL !== window.location.href) return;
@@ -2740,6 +2746,7 @@ export default {
                 for(let b=0; b<data.belong_data.length; b++){
                   total_unit_price += (data.belong_data[b].unit_price).replace(/,/g,'').replace(/₩ /g,'') * data.belong_data[b].num;
                 }
+                data.total_stock_price = '₩ '+ Number(data.total_stock * total_unit_price).toLocaleString();
                 data.unit_price = '₩ '+ Number(total_unit_price).toLocaleString()
               }else{
                 data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
@@ -2747,6 +2754,14 @@ export default {
             }else {
               data.item_price = 0;
             }
+
+            data.belong_data.push({
+              item_code: '총 재료비',
+              unit_price: '',
+              total_stock: 0,
+              stock_price: '',
+              num_price: data.unit_price
+            })
             // if (typeof data.unit_price === 'number'){
             //   data.item_price = data.unit_price * data.total_stock
             //   data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
@@ -3683,6 +3698,7 @@ export default {
       this.search_material_for_module_data = [];
       this.search_items_for_product_data = [];
       this.set_material_search = false;
+      this.add_material_search = false;
       let search_input;
       if(this.tab_main == 1){
         search_input = this.moduleSearchMaterialInputs;

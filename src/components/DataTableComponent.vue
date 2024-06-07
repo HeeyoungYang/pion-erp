@@ -487,7 +487,8 @@
                     >총 재고 : {{ Number(item.total_stock).toLocaleString() }}</v-chip>
                   </p>
                   <p v-if="itemNumInfo" class="my-2">
-                    <v-chip
+                    {{ item.item_code === '총 재료비' ? '' : Number(item.num).toLocaleString() }}
+                    <!-- <v-chip
                       color="yellow lighten-4"
                       class="mr-2"
                       small
@@ -495,21 +496,32 @@
                     <v-chip
                       color="yellow lighten-4"
                       small
-                    >각 필요수량 : {{ Number(item.num).toLocaleString() }}</v-chip>
+                    >각 필요수량 : {{ Number(item.num).toLocaleString() }}</v-chip> -->
                   </p>
                 </td>
-                <td v-if="stockPriceInfo || itemPriceInfo" align="left">
-                  <p v-if="stockPriceInfo" class="my-2">
+                <td v-if="stockPriceInfo || moduleStockPriceInfo || itemPriceInfo" align="left">
+                  <p v-if="stockPriceInfo" class="my-2"><v-chip
+                      color="yellow lighten-4"
+                      small
+                    >재고 총액 : ₩ {{ Number(item.total_stock * item.unit_price.replace(/\,/g,'').replace(/₩ /g,'') ).toLocaleString() }}</v-chip>
+                  </p>
+                  <p v-if="moduleStockPriceInfo" class="my-2">
+                    <v-chip
+                      color="yellow lighten-4"
+                      class="mr-2"
+                      small
+                    >총 재료비 : ₩ {{ Number(item.item_price).toLocaleString() }}</v-chip>
                     <v-chip
                       color="yellow lighten-4"
                       small
                     >재고 총액 : ₩ {{ Number(item.total_stock * item.unit_price.replace(/\,/g,'').replace(/₩ /g,'') ).toLocaleString() }}</v-chip>
                   </p>
                   <p v-if="itemPriceInfo" class="my-2">
-                    <v-chip
+                    {{ item.item_code === '총 재료비' ? item.num_price : '₩ ' + Number(item.num * item.unit_price.replace(/\,/g,'').replace(/₩ /g,'') ).toLocaleString() }}
+                    <!-- <v-chip
                       color="yellow lighten-4"
                       small
-                    >금액 : ₩ {{ Number(item.num * item.unit_price.replace(/\,/g,'').replace(/₩ /g,'') ).toLocaleString() }}</v-chip>
+                    >금액 : ₩ {{ Number(item.num * item.unit_price.replace(/\,/g,'').replace(/₩ /g,'') ).toLocaleString() }}</v-chip> -->
                   </p>
                 </td>
                 <td v-if="showItemDetails" align="center">
@@ -701,7 +713,8 @@
                     >총 재고 : {{ data.total_stock }}</v-chip>
                   </p>
                   <p v-if="itemNumInfoBelong" class="my-2">
-                    <v-chip
+                    {{ Number(data.num).toLocaleString() }}
+                    <!-- <v-chip
                       color="white"
                       class="mr-2"
                       small
@@ -709,7 +722,7 @@
                     <v-chip
                       color="white"
                       small
-                    >각 필요수량 : {{ Number(data.num).toLocaleString() }}</v-chip>
+                    >각 필요수량 : {{ Number(data.num).toLocaleString() }}</v-chip> -->
                   </p>
                 </td>
                 <td v-if="stockPriceInfoBelong || itemPriceInfoBelong" align="left">
@@ -720,10 +733,11 @@
                     >재고 총액 : {{ data.total_stock * data.unit_price }}</v-chip>
                   </p>
                   <p v-if="itemPriceInfoBelong" class="my-2">
-                    <v-chip
+                    ₩ {{ Number(data.num * data.unit_price.replace(/\,/g,'').replace(/₩ /g,'')).toLocaleString() }}
+                    <!-- <v-chip
                     color="white"
                       small
-                    >금액 : ₩ {{ Number(data.used_num * data.unit_price.replace(/\,/g,'').replace(/₩ /g,'')).toLocaleString() }}</v-chip>
+                    >금액 : ₩ {{ Number(data.used_num * data.unit_price.replace(/\,/g,'').replace(/₩ /g,'')).toLocaleString() }}</v-chip> -->
                   </p>
                 </td>
                 <td v-if="showItemDetails" align="center">
@@ -823,6 +837,7 @@
  * @property {Boolean} [showAuthority] - 권한 설정 여부(default:false)
  * @property {Boolean} [showItemDetails] - 자재 상세 내역 노출 여부(default:false)
  * @property {Boolean} [stockNumInfo] - 자재 수량 정보 노출 여부(default:false)
+ * @property {Boolean} [moduleStockPriceInfo] - 자재 수량 정보 노출 여부(default:false)
  * @property {Boolean} [stockPriceInfo] - 자재 수량 정보 노출 여부(default:false)
  * @property {Boolean} [itemNumInfo] - 필요 수량 정보 노출 여부(default:false)
  * @property {Boolean} [itemPriceInfo] - 필요 수량 정보 노출 여부(default:false)
@@ -890,6 +905,7 @@ export default {
     showItemDetails: Boolean,
     stockNumInfo: Boolean,
     itemNumInfo: Boolean,
+    moduleStockPriceInfo: Boolean,
     stockPriceInfo: Boolean,
     itemPriceInfo: Boolean,
     stockNumInfoBelong: Boolean,
@@ -939,7 +955,7 @@ export default {
     if (this.stockNumInfo || this.itemNumInfo || this.stockNumInfoBelong || this.itemNumInfoBelong ){
       this.addedHeaders.push({ text: '수량', align: 'start', value: 'details', sortable: false });
     }
-    if (this.stockPriceInfo || this.itemPriceInfo || this.stockPriceInfoBelong || this.itemPriceInfoBelong ){
+    if (this.stockPriceInfo || this.itemPriceInfo || this.stockPriceInfoBelong || this.itemPriceInfoBelong || this.moduleStockPriceInfo ){
       this.addedHeaders.push({ text: '금액', align: 'start', value: 'details', sortable: false });
     }
     if (this.showItemDetails){

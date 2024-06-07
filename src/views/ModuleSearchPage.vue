@@ -111,7 +111,7 @@
                     children-key="belong_data"
                     table-style=""
                     stockNumInfo
-                    stockPriceInfo
+                    moduleStockPriceInfo
                     itemNumInfoBelong
                     itemPriceInfoBelong
                     show-item-details
@@ -443,20 +443,22 @@ export default {
             }
             data.total_stock = stock_calc
             if (typeof data.unit_price === 'number'){
-              // data.item_price = data.unit_price * data.total_stock
+              // data.item_stock_price = data.unit_price * data.total_stock
               let total_unit_price = 0;
               if(data.belong_data){
                 for(let b=0; b<data.belong_data.length; b++){
                   total_unit_price += data.belong_data[b].unit_price * data.belong_data[b].num;
                 }
-                data.item_price = total_unit_price * data.total_stock
-                data.unit_price = '₩ '+ Number(total_unit_price).toLocaleString()
-              }else{
-                data.item_price = data.unit_price * data.total_stock
+                data.item_stock_price = data.unit_price * data.total_stock;
+                data.item_price = total_unit_price;
                 data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+              }else{
+                data.item_stock_price = data.unit_price * data.total_stock
+                data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+                data.item_price = 0;
               }
             }else {
-              data.item_price = 0;
+              data.item_stock_price = 0;
             }
 
             if(data.belong_data){
@@ -468,7 +470,7 @@ export default {
               }
             }
             this.total_stock_num += data.total_stock
-            this.total_stock_price += data.item_price
+            this.total_stock_price += data.item_stock_price
           })
         }else{
           if (prevURL !== window.location.href) return;
