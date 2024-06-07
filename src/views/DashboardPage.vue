@@ -5,6 +5,16 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
+      <v-row justify="center">
+        <v-col
+          cols="12"
+          sm="11">
+          <v-card>
+            <iframe src="http://www.daum.net" width="100%" height="700"> </iframe>
+          </v-card>
+        </v-col>
+      </v-row>
+
     </v-main>
   </div>
 </template>
