@@ -76,10 +76,10 @@
                 <td v-if="approval" align="center">
                   <!-- 확인 또는 승인자가 아닐 경우 노출되는 단순  chip -->
                   <v-chip
-                    v-if="(item.approval_phase == '미확인' && item.checker_id !== userID)  || (item.approval_phase == '미승인' && item.approver_id !== userID) "
+                    v-if="((item.approval_phase == '미확인' || item.approval_phase == '추가 미확인') && item.checker_id !== userID) || ((item.approval_phase == '미승인' || item.approval_phase == '추가 미승인') && item.approver_id !== userID)"
                     class="ma-2"
                     small
-                    :color="item.approval_phase == '미확인' ? 'default' : 'amber lighten-4'"
+                    :color="item.approval_phase == '미확인' || '추가 미확인' ? 'default' : 'amber lighten-4'"
                   >
                     {{ item.approval_phase }}
                   </v-chip>
@@ -96,7 +96,7 @@
 
                   <!-- 확인 또는 승인자에 해당될 경우 노출되는 list형 chip -->
                   <v-menu
-                    v-if="(item.approval_phase == '미확인' && item.checker_id == userID)  || (item.approval_phase == '미승인' && item.approver_id == userID) "
+                    v-if="(item.approval_phase == '미확인' && item.checker_id == userID) || (item.approval_phase == '미승인' && item.approver_id == userID) || (item.approval_phase == '추가 미확인' && item.checker_id == userID) || (item.approval_phase == '추가 미승인' && item.approver_id == userID)"
                     :close-on-content-click="false"
                     :nudge-width="200"
                     offset-x
@@ -105,7 +105,7 @@
                       <v-chip
                         class="ma-2"
                         small
-                        :color="item.approval_phase == '미확인' ? 'default' : 'amber lighten-4'"
+                        :color="item.approval_phase == '미확인' || '추가 미확인' ? 'default' : 'amber lighten-4'"
                         v-bind="attrs"
                         v-on="on"
                       >
@@ -674,6 +674,14 @@
                       {{ auth }}
                   </v-chip>
                 </td>
+                <td v-if="reshipment" align="center">
+                  <v-btn
+                    small
+                    color="success"
+                    :disabled="item.creater === userID && item.approval_phase === '승인' ? false : true"
+                    @click="addShipData(item)"
+                  > 추가 출하</v-btn>
+                </td>
               </tr>
             </template>
 
@@ -833,6 +841,7 @@
  * @property {String} [addToTable] - 추가버튼 노출 여부(default:false)
  * @property {String} [exceptFromTable] - 제외버튼 노출 여부(default:false)
  * @property {String} [approval] - 승인 노출 여부(default:undefined)
+ * @property {String} [reshipment] - 재출하 버튼 여부(default:false)
  * @property {Boolean} [showFiles] - 첨부파일 노출 여부(default:false)
  * @property {Boolean} [showAuthority] - 권한 설정 여부(default:false)
  * @property {Boolean} [showItemDetails] - 자재 상세 내역 노출 여부(default:false)
@@ -900,6 +909,7 @@ export default {
     addToTable: Boolean,
     exceptFromTable: Boolean,
     approval: String,
+    reshipment: Boolean,
     showFiles: Boolean,
     showAuthority: Boolean,
     showItemDetails: Boolean,
@@ -974,6 +984,9 @@ export default {
     }
     if (this.showAuthority){
       this.addedHeaders.push({ text: '권한', align: 'center', value: 'authority', sortable: false });
+    }
+    if (this.reshipment){
+      this.addedHeaders.push({ text: '', align: 'center', value: 'reshipment', sortable: false });
     }
     if (this.addToTable || this.exceptFromTable){
       this.addedHeaders.unshift({ text: '', align: 'center', value: 'addToTable', sortable: false });
@@ -1088,6 +1101,9 @@ export default {
           return true;
         }
       }
+    },
+    addShipData(item){
+      this.$emit("addShip", item);
     },
     closeAll () {
         Object.keys(this.$refs).forEach(k => {
