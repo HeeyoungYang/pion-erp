@@ -1,14 +1,21 @@
 { 
 
-  "searchCardInputs":[
-    {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All", "원부자재", "반제품", "완제품"]},
-    {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"3"},
-    {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value": ""}
-  ],
+"searchCardInputs":[
+  {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All", "원부자재", "반제품", "완제품"]},
+  {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"3"},
+  {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
+  {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+  {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+  {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
+  {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value": ""}
+],
+"searchShipCardInputs":[
+  {"label":"프로젝트", "col":"12", "sm":"4", "lg":"3", "value": ""},
+  {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
+  {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+  {"label":"출고목적", "col":"12", "sm":"4", "lg":"3", "value": ""},
+  {"label":"출고 요청일", "type":"dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"3"}
+],
   "inboundCardInfoInputs":[
     {"label":"입고일자", "column_name":"inbound_date", "type":"dateSingle", "value": "", "col":"12", "sm":"4", "lg":"2", "menu":"", "rule_set":true},
     {"label":"발주서 번호", "column_name":"order_code", "col":"12", "sm":"4", "lg":"2", "value": "", "rule_set":true},
@@ -19,6 +26,10 @@
     {"label":"비고", "column_name":"note", "type":"textarea", "col":"12", "sm":"4", "lg":"6", "value": ""}
   ],
 
+  "restockCardInfoInputs":[
+    {"label":"입고일자", "column_name":"inbound_date", "type":"dateSingle", "value": "", "col":"12", "sm":"4", "lg":"4", "menu":"", "rule_set":true},
+    {"label":"재입고 사유", "column_name":"note", "type":"textarea", "col":"12", "sm":"4", "lg":"7", "value": "", "rule_set":true}
+  ],
   "product_inbound_headers": [
     { "text": "종류", "align": "center", "value": "type"},
     { "text": "분류", "align": "center", "value": "classification"},
@@ -30,6 +41,7 @@
     { "text": "모델명", "align": "center", "value": "model"},
     { "text": "제조사", "align": "center", "value": "manufacturer"},
     { "text": "단가", "align": "start", "value": "unit_price"},
+    { "text": "출하선택", "align": "center", "value": "ship_select"},
     { "text": "제외", "align": "center", "value": ""}
   ],
 
@@ -66,6 +78,7 @@
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "출고위치", "align": "start", "value": "spot"},
     { "text": "출고수량", "align": "start", "value": "ship_num"}
   ],
 

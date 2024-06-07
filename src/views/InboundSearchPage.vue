@@ -85,14 +85,14 @@
           <v-col cols="12">
             <table style="width:100%">
               <tr>
-                <td class="approve_title" style="width:10%">프로젝트 코드</td>
-                <td class="approve_text" style="width:15%">{{ inbound_info_data.project_code }}</td>
-                <td class="approve_title" style="width:10%">품질검사결과</td>
-                <td class="approve_text" style="width:25%">
+                <td class="approve_title" style="width:10%" v-if="inbound_info_data.add_data !== '재입고'">프로젝트 코드</td>
+                <td class="approve_text" style="width:15%" v-if="inbound_info_data.add_data !== '재입고'">{{ inbound_info_data.project_code }}</td>
+                <td class="approve_title" style="width:10%" v-if="inbound_info_data.add_data !== '재입고'">품질검사결과</td>
+                <td class="approve_text" style="width:25%" v-if="inbound_info_data.add_data !== '재입고'">
                   <p class="mb-0 font-weight-bold">{{ inbound_info_data.abnormal_reason == '' ? '이상 없음' : '이상 있음' }}</p>
                   <p class="mb-0 error--text" v-if="inbound_info_data.abnormal_reason != ''"> : {{ inbound_info_data.abnormal_reason }}</p>
                 </td>
-                <td class="approve_title" style="width:10%">비고</td>
+                <td class="approve_title" style="width:10%">{{ inbound_info_data.add_data !== '재입고' ? '비고' : '재입고 사유'}}</td>
                 <td class="approve_text" style="width:30%">
                   {{  inbound_info_data.note }}
                 </td>
@@ -102,15 +102,42 @@
         </v-row>
         <v-row>
           <v-col cols="12">
-            <DataTableComponent
+            <v-data-table
+              :headers="inbound_product_list_headers"
+              :items="inbound_product_list_data"
+              :item-key="inbound_product_list_data.product_code"
+              class="elevation-1"
+              dense
+            >
+              <template v-slot:[`item.ship_info`] = "{ item }">
+                <td align="center">
+                  <v-icon v-if="item.type !== '원부자재'" color="default" style="cursor:pointer" @click="searchShipData(item.ship_code)">mdi-magnify</v-icon>
+                </td>
+              </template>
+            </v-data-table>
+            <!-- <DataTableComponent
               :headers="inbound_product_list_headers"
               :items="inbound_product_list_data"
               :item-key="inbound_product_list_data.product_code"
               children-key="belong_data"
               dense
+            /> -->
+          </v-col>
+        </v-row>
+
+        <v-row v-if="ship_searched_table === true">
+          <v-col cols="12">
+            <DataTableComponent
+              :headers="ship_search_headers"
+              :items="ship_data_searched"
+              item-key="product_code"
+              children-key="belong_data"
+              dense
             />
           </v-col>
         </v-row>
+
+
         <v-row>
           <v-col cols="12" sm="4" v-if="inbound_info_data.receiving_inspection_file">
             <p class="font-weight-bold primary--text mb-0">▼ 수입검사서</p>
@@ -192,6 +219,9 @@ export default {
       inbound_info_data:{},
       inbound_product_list_data:[],
 
+      ship_searched_table: false,
+      ship_data_searched:[],
+
       change_approve:{},
 
       searched_products:[],
@@ -200,6 +230,7 @@ export default {
       searchCardInputs:InboundSearchPageConfig.searchCardInputs,
       inbound_approve_headers:InboundSearchPageConfig.inbound_approve_headers,
       inbound_product_list_headers:InboundSearchPageConfig.inbound_product_list_headers,
+      ship_search_headers:InboundSearchPageConfig.ship_search_headers,
       inbound_approve_data:[],
     }
   },
@@ -324,6 +355,9 @@ export default {
             for(let d=0; d<datas.belong_data.length; d++){
               datas.belong_data[d].inbound_num = Number(datas.belong_data[d].inbound_num).toLocaleString();
               datas.belong_data[d].unit_price = '₩ ' + Number(datas.belong_data[d].unit_price).toLocaleString();
+
+              // 테스트용
+              // datas.belong_data[d].ship_code = 'ㅈㅂㄷㄷㅂㅈㄷ:2024-06-04 10:18:44.818/TESTPJT-00:2024-06-04 10:09:05.080'
               if(datas.belong_data[d].belong_data){
                 for(let dd=0; dd<datas.belong_data[d].belong_data.length; dd++){
                   datas.belong_data[d].belong_data[dd].inbound_num="";
@@ -351,6 +385,7 @@ export default {
     },
     closeProductList(){
       this.inbound_product_list_dialog = false;
+      this.ship_searched_table = false;
     },
     async clickApproveData(item){
 
@@ -367,12 +402,19 @@ export default {
         })
         }
       })
-      let file_name = item.files.split('/');
-      if(!file_name[0]){
+      let file_name;
+      if(item.files){
+        file_name = item.files.split('/');
+      }else {
         file_name = ""
       }
+
+      // if(!file_name[0]){
+      //   file_name = ""
+      // }
       this.inbound_info_data = {
         code:item.code,
+        add_data:item.add_data,
         project_code:item.project_code,
         spot:item.spot,
         abnormal_reason : item.abnormal_reason,
@@ -528,6 +570,7 @@ export default {
 
       let sendData = {};
 
+      this.loading_dialog = true;
       // 미승인에서 승인으로 변경하는 경우
       if(send_data_belong.length > 0){
         let update_stock_data = [];
@@ -538,7 +581,7 @@ export default {
         let insert_product_data = [];
         let belong_product_module_data = [];
         let belong_product_material_data = [];
-        
+
         for (let i = 0; i < send_data_belong.length; i++) {
           const belong = send_data_belong[i];
 
@@ -764,7 +807,6 @@ export default {
       console.log("sendData ::: ", sendData);
 
       try {
-        this.loading_dialog = true;
         let resultInbound = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -963,7 +1005,7 @@ export default {
       if(send_data_belong.length > 0){
         let insert_product_data = [];
         let update_stock_data = [];
-        
+
         for (let i = 0; i < send_data_belong.length; i++) {
           const belong = send_data_belong[i];
           // product_code기준 재고(자재)검색
@@ -1438,6 +1480,62 @@ export default {
           mux.Util.showAlert(error);
       }
       console.log('sendData :: ' + JSON.stringify(sendData))
+    },
+    async searchShipData(ship_code){
+      this.ship_data_searched = [];
+      this.ship_searched_table = true;
+
+      let ship = ship_code.split('/');
+
+      this.loading_dialog = true;
+      let ship_data_arr = [];
+        const prevURL = window.location.href;
+        try {
+          let result;
+          for(let i = 0; i < ship.length; i++){
+            console.log(ship[i]);
+            result = await mux.Server.post({
+              path: '/api/common_rest_api/',
+              params: [
+                {
+                  "ship_confirmation_table.code": ship[i],
+                }
+              ],
+              "script_file_name": "rooting_출하_검색_24_05_22_14_03_V2V.json",
+              "script_file_path": "data_storage_pion\\json_sql\\ship\\출하_검색_24_05_22_14_03_27B"
+            });
+          }
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0){
+            result.data.forEach(datas =>{
+              for(let d=0; d<datas.belong_data.length; d++){
+                datas.belong_data[d].purpose="";
+                datas.belong_data[d].ship_date="";
+              }
+              ship_data_arr.push(datas); // 최신순으로 정렬
+            })
+
+          }else{
+            alert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          this.loading_dialog = false;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            alert(error.response['data']['failed_info'].msg);
+          else
+            alert(error);
+        }
+      console.log(ship_data_arr);
+
+      ship_data_arr.forEach(data => {
+          this.ship_data_searched.push(data);
+        });
+      this.loading_dialog = false;
     }
   },
 }

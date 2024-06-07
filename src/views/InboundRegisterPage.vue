@@ -16,17 +16,26 @@
             text-class=" pt-3"
             title-class="mb-0 font-weight-black"
             divider-class="mb-3"
-            v-if="!add_self"
+            v-if="add_self === '자재선택'"
           >
             <div slot="cardTitle">
               <span>자재 선택</span>
               <v-btn
                 small
-                color="success"
+                outlined
+                color="primary"
                 class="mr-2 ml-4"
                 @click="addProductInboundData"
               >
                 직접 입력형 전환
+              </v-btn>
+              <v-btn
+                small
+                outlined
+                color="primary"
+                @click="restockData"
+              >
+                재입고
               </v-btn>
             </div>
             <InputsFormComponent
@@ -72,6 +81,71 @@
               </v-col>
             </InputsFormComponent>
           </CardComponent>
+
+
+          <CardComponent
+            elevation="1"
+            text-class=" pt-3"
+            title-class="mb-0 font-weight-black"
+            divider-class="mb-3"
+            v-if="add_self === '재입고'"
+          >
+            <div slot="cardTitle">
+              <span>출고 승인 내역 선택</span>
+              <v-btn
+                small
+                outlined
+                class="mr-2 ml-4"
+                color="error"
+                @click="restockDataCancle"
+              >
+                재입고 취소
+              </v-btn>
+            </div>
+            <InputsFormComponent
+              slot="cardText"
+              dense
+              clearable
+              filled
+              hide-details
+              :inputs="searchShipCardInputs"
+              @enter="searchShipData"
+            >
+              <v-col
+                cols="12"
+                sm="4"
+                lg="3"
+                align-self="center"
+              >
+                <v-btn
+                  color="primary"
+                  class="mr-2"
+                  elevation="2"
+                  @click="searchShipData"
+                >
+                  <v-icon>mdi-magnify</v-icon>검색
+                </v-btn>
+                <v-btn
+                  color="default"
+                  elevation="2"
+                  @click="addItems"
+                >추가</v-btn>
+              </v-col>
+              <v-col cols="12">
+                <v-data-table
+                  class="elevation-1"
+                  dense
+                  v-model="selected_ship_data"
+                  :headers="ship_search_headers"
+                  :items="ship_search_data"
+                  item-key="table_code"
+                  show-select
+                  />
+              </v-col>
+            </InputsFormComponent>
+          </CardComponent>
+
+
           <CardComponent
             elevation="1"
             card-class="mt-5"
@@ -108,10 +182,10 @@
                   clearable
                   filled
                   hide-details
-                  :inputs="inboundCardInfoInputs"
+                  :inputs="add_self === '재입고' ? restockCardInfoInputs : inboundCardInfoInputs"
                   @dateSet = "dateSetImport"
                 >
-                  <v-col cols="12" sm="4" lg="2" align-self="center">
+                  <v-col cols="12" sm="4" lg="2" align-self="center" v-if="add_self !== '재입고'">
                     <v-radio-group
                       dense
                       hide-details
@@ -142,6 +216,16 @@
                       :rules="[v => !!v || '사유 입력']"
                     ></v-text-field>
                   </v-col>
+                  <v-col cols="12" sm="1" v-if="add_self==='재입고'" align-self="center">
+                    <v-btn
+                      small
+                      color="success"
+                      class=" float-right"
+                      @click="restockApprovalRequest"
+                    >
+                      재입고 승인 요청
+                    </v-btn>
+                  </v-col>
                 </InputsFormComponent>
               </v-form>
               <v-divider class="my-5"></v-divider>
@@ -155,7 +239,7 @@
                     clearable
                     hide-details
                     style="width:200px"
-                    v-if="product_inbound_data.length > 0"
+                    v-if="product_inbound_data.length > 0 && add_self !== '재입고'"
                   ></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="6" lg="6" align-self="center">
@@ -164,7 +248,7 @@
                     color="primary"
                     class="mr-2"
                     @click="setSpotAtOnce"
-                    v-if="product_inbound_data.length > 0"
+                    v-if="product_inbound_data.length > 0 && add_self !== '재입고'"
                   >
                     일괄 적용
                   </v-btn>
@@ -173,13 +257,15 @@
                     color="default"
                     class="mr-2"
                     @click="addProductInboundData"
-                    v-if="add_self"
+                    v-if="add_self === '직접기입'"
                   >
                     행 추가
                   </v-btn>
 
                 </v-col>
-                <v-col cols="12" sm="4" lg="4" align-self="center">
+                <v-col cols="12" sm="4" lg="4" align-self="center"
+                    v-if="add_self !== '재입고'"
+                >
                   <v-btn
                     small
                     color="success"
@@ -189,7 +275,7 @@
                     입고 승인 요청
                   </v-btn>
                   <v-btn
-                    v-if="add_self"
+                    v-if="add_self === '직접기입'"
                     small
                     color="error"
                     class="mr-2 float-right"
@@ -211,7 +297,7 @@
                     class="elevation-1"
                   >
                     <template v-slot:item="{ item, index }">
-                      <tr v-if="!add_self">
+                      <tr v-if="add_self === '자재선택' || add_self === '재입고'">
                         <td align="center">{{ item.type }}</td>
                         <td align="center">{{ item.classification }}</td>
                         <td align="center">{{ item._code }}</td>
@@ -226,8 +312,12 @@
                             :oninput="!item.inbound_num ? '' : item.inbound_num = item.inbound_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                           >
                           </v-text-field>
+                          <p class="my-2" v-if="add_self === '재입고'"> 출고수량 : {{ item.ship_num }}</p>
                         </td>
-                        <td align="center">
+                        <td
+                          align="center"
+                          v-if="add_self === '자재선택'"
+                        >
                           <v-autocomplete
                             v-model="item.spot"
                             :items="spot_list"
@@ -237,15 +327,19 @@
                             style="width:150px"
                           ></v-autocomplete>
                         </td>
+                        <td align="center" v-if="add_self === '재입고'">{{  item.spot  }}</td>
                         <td align="center">{{  item.spec  }}</td>
                         <td align="center">{{  item.model }}</td>
                         <td align="center">{{  item.manufacturer }}</td>
                         <td align="center">{{  item.unit_price }}</td>
                         <td align="center">
+                          <v-icon v-if="item.type !== '원부자재'" color="default" style="cursor:pointer" @click="selectShipData(item, index)">mdi-magnify</v-icon>
+                        </td>
+                        <td align="center">
                           <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
                         </td>
                       </tr>
-                      <tr v-else-if="add_self">
+                      <tr v-else-if="add_self === '직접기입'">
                         <td align="center">
                           <v-autocomplete
                             v-model="item.type"
@@ -291,9 +385,10 @@
                             dense
                             hide-details
                             filled
-                            type="number"
                             v-model="item.inbound_num"
                             style="width:150px"
+                            @keyup="calcUnitPrice(item)"
+                            :oninput="!item.inbound_num ? '' : item.inbound_num = item.inbound_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                           >
 
                           </v-text-field>
@@ -329,29 +424,37 @@
                           </v-text-field>
                         </td>
                         <td align="center">
-                          <v-text-field
+                          <!-- <v-text-field
                             dense
                             hide-details
                             filled
                             v-model="item.manufacturer"
                             style="width:150px"
-                          >
-                          </v-text-field>
+                          > -->
+                          <v-autocomplete
+                            v-model="item.manufacturer"
+                            :items="manufacturer_list"
+                            dense
+                            hide-details
+                            filled
+                            style="width:150px"
+                          ></v-autocomplete>
+
+                          <!-- </v-text-field> -->
                         </td>
                         <td align="center">
                           <v-text-field
                             dense
                             hide-details
                             filled
-                            type="number"
                             v-model="item.unit_price"
                             style="width:150px"
+                            :oninput="!item.unit_price ? '' : item.unit_price = item.unit_price.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                           >
-
                           </v-text-field>
                         </td>
                         <td align="center">
-                          <v-icon color="default" style="cursor:pointer" @click="selectShipData(item, index)">mdi-magnify</v-icon>
+                          <v-icon v-if="item.type !== '원부자재'" color="default" style="cursor:pointer" @click="selectShipData(item, index)">mdi-magnify</v-icon>
                         </td>
                         <td align="center">
                           <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
@@ -515,7 +618,7 @@ export default {
       member_dialog: false,
       loading_dialog: false,
       ship_dialog: false,
-      add_self: false,
+      add_self: '자재선택',
       select_product: true,
       inbound_index:-1,
       inbound_date_set:'',
@@ -530,6 +633,7 @@ export default {
       set_spot_selected: '',
       something_wrong_radio: '이상 없음',
       selected_product_data:[],
+      selected_ship_data:[],
       product_inbound_data: [],
       product_inbound_data_added: [],
       member_type_index:0,
@@ -540,8 +644,11 @@ export default {
       inbound_member_info:InboundRegisterPageConfig.inbound_member_info,
       inbound_confirmation_data: InboundRegisterPageConfig.inbound_confirmation_data,
       searchCardInputs:InboundRegisterPageConfig.searchCardInputs,
+      searchShipCardInputs:InboundRegisterPageConfig.searchShipCardInputs,
       inboundCardInfoInputs:InboundRegisterPageConfig.inboundCardInfoInputs,
+      restockCardInfoInputs:InboundRegisterPageConfig.restockCardInfoInputs,
       product_inbound_headers:InboundRegisterPageConfig.product_inbound_headers,
+      product_restock_headers:InboundRegisterPageConfig.product_restock_headers,
       product_search_headers:InboundRegisterPageConfig.product_search_headers,
       searchShipaDataInputs:InboundRegisterPageConfig.searchShipaDataInputs,
       ship_search_headers:InboundRegisterPageConfig.ship_search_headers,
@@ -583,7 +690,9 @@ export default {
       mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list, true);
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
       this.inboundCardInfoInputs = JSON.parse(JSON.stringify(this.inboundCardInfoInputs));
+      this.restockCardInfoInputs = JSON.parse(JSON.stringify(this.restockCardInfoInputs));
       mux.Rules.rulesSet(this.inboundCardInfoInputs);
+      mux.Rules.rulesSet(this.restockCardInfoInputs);
 
       try {
         // console.log('사용자 계정 정보 가졍오기');
@@ -763,12 +872,19 @@ export default {
     addItems(){
       let check_duplicate=[];
       let set_item = this.product_inbound_data
-      let selected_item = this.selected_product_data;
+      let selected_item
+      if(this.add_self === '재입고'){
+        selected_item = this.selected_ship_data
+      }else{
+        selected_item  = this.selected_product_data;
+      }
 
       set_item.forEach(item => {
         for(let d=0; d<selected_item.length; d++){
           if(item.item_code === selected_item[d]._code){
             check_duplicate.push(item.item_code);
+          }else if(item.table_code === selected_item[d].table_code){
+            check_duplicate.push(selected_item[d].product_code);
           }
         }
       })
@@ -778,15 +894,23 @@ export default {
         return
       }else{
         selected_item.forEach(data =>{
-          data.item_code = data._code
+          if(this.add_self === '재입고'){
+            data._code = data.product_code
+            data.unit_price =  '₩ ' + Number(data.unit_price).toLocaleString()
+          }else{
+            data.item_code = data._code
+          }
           set_item.push(data);
         })
         this.selected_product_data = []
+        this.selected_ship_data = []
       }
     },
 
     async addProductInboundData(){
-      if(this.add_self == false){
+      this.selected_ship_data = [];
+      this.ship_search_data = [];
+      if(this.add_self == '자재선택'){
         const confirm = await mux.Util.showConfirm('직접 입력형으로 전환되며, \n위에서 선택한 자재는 선택 해제됩니다. ', '전환 확인');
         if (!confirm){
           return;
@@ -794,11 +918,11 @@ export default {
         this.product_inbound_data = [];
         this.select_product = false;
       }
-      if(this.product_inbound_headers.length !== 12){
-        this.product_inbound_headers.splice(this.product_inbound_headers.length-1, 0, { "text": "출하선택", "align": "center", "value": "ship_select"})
-      }
+      // if(this.product_inbound_headers.length !== 12){
+      //   this.product_inbound_headers.splice(this.product_inbound_headers.length-1, 0, { "text": "출하선택", "align": "center", "value": "ship_select"})
+      // }
 
-      this.add_self = true;
+      this.add_self = '직접기입';
       this.product_inbound_data.push({
         type:'',
         classification:'',
@@ -814,7 +938,7 @@ export default {
       });
     },
     async addProductInboundDataCancle(){
-      if(this.add_self == true){
+      if(this.add_self == '직접기입'){
         const confirm = await mux.Util.showConfirm('자재 선택형으로 전환되며, \n아래 작성된 내용은 초기화됩니다.', '전환 확인');
         if (!confirm){
           return;
@@ -823,14 +947,38 @@ export default {
         this.select_product = true;
       }
 
-      let ship_select = this.product_inbound_headers.findIndex(obj => obj.text === '출하선택');
-      this.product_inbound_headers.splice(ship_select,1)
-      this.add_self = false;
+      // let ship_select = this.product_inbound_headers.findIndex(obj => obj.text === '출하선택');
+      // this.product_inbound_headers.splice(ship_select,1)
+      this.add_self = '자재선택';
     },
     setSpotAtOnce(){
       this.product_inbound_data.forEach(data =>{
         data.spot = this.set_spot_selected
       })
+    },
+    async restockData(){
+      this.selected_ship_data = [];
+      this.ship_search_data = [];
+      if(this.add_self == '자재선택'){
+        const confirm = await mux.Util.showConfirm('재입고형으로 전환되며, \n위에서 선택한 자재는 선택 해제됩니다. ', '전환 확인');
+        if (!confirm){
+          return;
+        }
+        this.product_inbound_data = [];
+        this.select_product = false;
+      }
+      this.add_self = '재입고';
+
+    },
+    async restockDataCancle(){
+      const confirm = await mux.Util.showConfirm('자재 선택형으로 전환되며, \n아래 작성된 내용은 초기화됩니다.', '전환 확인');
+      if (!confirm){
+        return;
+      }
+      this.product_inbound_data = [];
+      this.select_product = true;
+
+      this.add_self = '자재선택';
     },
     async inboundApprovalRequest(){
       let inbound_input = this.inboundCardInfoInputs;
@@ -874,10 +1022,12 @@ export default {
         item.inbound_date = (this.inbound_date_set === "" ? mux.Date.format(currDate, 'yyyy-MM-dd') : this.inbound_date_set);
         item.creater = this.login_id;
         item.code = item.order_code + ":" + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
-        if(this.add_self){
+        if(this.add_self === '직접기입'){
           item.add_data = "직접기입형"
-        }else{
+        }else if(this.add_self === '자재선택'){
           item.add_data = "선택형"
+        }else if(this.add_self === '재입고'){
+          item.add_data = "재입고"
         }
 
 
@@ -928,7 +1078,7 @@ export default {
           mux.Util.showAlert('자재를 선택해주세요.');
           return success = false;
         }else{
-          if(!this.add_self){
+          if(this.add_self === '자재선택'){
             for(let d = 0; d < inbound_product_data.length; d++){
               if(inbound_product_data[d].inbound_num == '' || inbound_product_data[d].spec == '' || inbound_product_data[d].spot == ''){
                 mux.Util.showAlert('입고수량, 입고장소, 규격 필수 입력');
@@ -936,13 +1086,20 @@ export default {
               }else if(inbound_product_data[d].inbound_num == 0){
                 mux.Util.showAlert('입고수량은 0보다 커야합니다.');
                 return success = false;
+              }else if(inbound_product_data[d].type !== '원부자재' && !inbound_product_data[d].belong_data){
+                mux.Util.showAlert(inbound_product_data[d]._code + '의 출하 내역을 선택해주세요');
+                return success = false;
               }
             }
-          }else{
+          }else if(this.add_self === '직접기입'){
             inbound_product_data.forEach(data => {
               for(let add = 0; add < Object.keys(data).length; add++){
                 if(Object.keys(data)[add] != 'model' && Object.values(data)[add] === ''){
                   mux.Util.showAlert('모델을 제외한 모든 정보가 기입되어야 합니다.');
+                  return success = false;
+                }
+                if(Object.keys(data)[add] === 'type' && Object.values(data)[add] !== '원부자재' && !data.belong_data){
+                  mux.Util.showAlert(data._code + '출하 내역을 선택해주세요');
                   return success = false;
                 }
               }
@@ -993,6 +1150,12 @@ export default {
 
           let product_data = [];
           inbound_product_data.forEach(data =>{
+            let inbound_unit_price;
+            if(this.add_self === '직접기입'){
+              inbound_unit_price = data.unit_price.replace(/,/g,'');
+            }else{
+              inbound_unit_price = data.unit_price.replace(/,/g,'').replace(/₩ /g,'')
+            }
             product_data.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -1009,7 +1172,7 @@ export default {
                 "spec" : data.spec,
                 "model" : data.model,
                 "manufacturer" : data.manufacturer,
-                "unit_price" : data.unit_price.replace(/,/g,'').replace(/₩ /g,''),
+                "unit_price" : inbound_unit_price,
                 "ship_code" : data.ship_code,
               },
               "select_where": {"code": this.inbound_confirmation_data.code, "product_code": data._code},
@@ -1151,6 +1314,281 @@ export default {
         }
       }
     },
+    async restockApprovalRequest(){
+      let restock_input = this.restockCardInfoInputs;
+      let member_input = this.inbound_member_info;
+      let item = this.inbound_confirmation_data;
+      let success = true;
+      const validate = this.$refs.inboundForm.validate();
+      if(validate){
+        this.files_value = [];
+        restock_input.forEach(data => {
+          for(let i=0; i<Object.keys(item).length; i++){
+            item[Object.keys(item)[i]] = data.value;
+          }
+        })
+        const currDate = new Date();
+        item.inbound_date = (this.inbound_date_set === "" ? mux.Date.format(currDate, 'yyyy-MM-dd') : this.inbound_date_set);
+        item.creater = this.login_id;
+        item.code = "재입고:" + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
+        item.add_data = "재입고"
+
+        // let receiving_inspection_thumbnail = 'NULL';
+        // let inspection_report_thumbnail = 'NULL';
+        // if(this.receiving_inspection_value){
+        //   const getPdfThumbnail = await mux.Util.getPdfThumbnail(this.receiving_inspection_value, 1, false, 1000, 1000);
+        //   receiving_inspection_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+        // }
+        // if(this.inspection_report_value){
+        //   const getPdfThumbnail = await mux.Util.getPdfThumbnail(this.inspection_report_value, 1, false, 1000, 1000);
+        //   inspection_report_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+        // }
+
+        console.log(item);
+
+        let empty_member = [];
+        member_input.forEach(mem => {
+          if(!mem.user_id){
+            empty_member.push(mem.type)
+          }else{
+            if(mem.type === '확인'){
+              item.checker = mem.name;
+              item.checker_id = mem.user_id;
+              if(item.checker_id == this.login_id){
+                item.approval_phase = '미승인';
+              }else{
+                item.approval_phase = '미확인';
+              }
+            }else if(mem.type === '승인'){
+              item.approver = mem.name;
+              item.approver_id = mem.user_id;
+            }else if(mem.type === '구매담당자'){
+              item.purchase_manager = mem.name;
+            }else if(mem.type === '자재담당자'){
+              item.material_manager = mem.name;
+            }
+          }
+        })
+
+        if(empty_member.length > 0){
+          mux.Util.showAlert(empty_member+"를 선택해주세요.");
+          return success = false;
+        }
+
+        let inbound_product_data = this.product_inbound_data
+        if(inbound_product_data.length === 0){
+          mux.Util.showAlert('자재를 선택해주세요.');
+          return success = false;
+        }else{
+          for(let d = 0; d < inbound_product_data.length; d++){
+            if(inbound_product_data[d].inbound_num == ''){
+              mux.Util.showAlert('입고수량 필수 입력');
+              return success = false;
+            }else if(inbound_product_data[d].inbound_num > inbound_product_data[d].ship_num){
+              mux.Util.showAlert('입고수량은 출고 수량보다 작아야합니다.');
+              return success = false;
+            }
+          }
+        }
+
+        if(success == true){
+          this.loading_dialog = true;
+
+          let sendData = {
+            "inbound_confirmation_table-insert": [{
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "code" : this.inbound_confirmation_data.code,
+                "inbound_date": this.inbound_confirmation_data.inbound_date,
+                // "order_code" : this.inbound_confirmation_data.order_code ? this.inbound_confirmation_data.order_code : '',
+                // "project_code" : this.inbound_confirmation_data.project_code ? this.inbound_confirmation_data.project_code : '',
+                "purchase_manager" : this.inbound_confirmation_data.purchase_manager,
+                "material_manager" : this.inbound_confirmation_data.material_manager,
+                // "abnormal_reason" : this.inbound_confirmation_data.abnormal_reason ? this.inbound_confirmation_data.abnormal_reason : '',
+                "approval_phase": this.inbound_confirmation_data.approval_phase,
+                "checker" : this.inbound_confirmation_data.checker,
+                "checker_id" : this.inbound_confirmation_data.checker_id,
+                "approver" : this.inbound_confirmation_data.approver,
+                "approver_id" : this.inbound_confirmation_data.approver_id,
+                // "receiving_inspection_file" : this.inbound_confirmation_data.receiving_inspection ?  this.inbound_confirmation_data.receiving_inspection : '',
+                // "receiving_inspection_thumbnail" : receiving_inspection_thumbnail,
+                // "inspection_report_file" : this.inbound_confirmation_data.inspection_report ? this.inbound_confirmation_data.inspection_report : '',
+                // "inspection_report_thumbnail" : inspection_report_thumbnail,
+                // "files" : this.inbound_confirmation_data.files ? this.inbound_confirmation_data.files : '',
+                "note" : this.inbound_confirmation_data.note,
+                "add_data": this.inbound_confirmation_data.add_data
+              },
+              "select_where": {"code": this.inbound_confirmation_data.code},
+              "rollback": "yes"
+            }]
+          };
+          if(sendData["inbound_confirmation_table-insert"][0].data.approval_phase === '미승인'){
+            sendData["inbound_confirmation_table-insert"][0].data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+          }
+
+          let product_data = [];
+          inbound_product_data.forEach(data =>{
+            product_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "code" : this.inbound_confirmation_data.code,
+                "type" : data.type,
+                "classification" : data.classification,
+                "product_code" : data._code,
+                "name" : data.name,
+                "inbound_num" : data.inbound_num.replace(/,/g,''),
+                "spot" : data.spot,
+                "spec" : data.spec,
+                "model" : data.model,
+                "manufacturer" : data.manufacturer,
+                "unit_price" : data.unit_price.replace(/,/g,'').replace(/₩ /g,''),
+                "ship_code" : data.ship_code,
+              },
+              "select_where": {"code": this.inbound_confirmation_data.code, "product_code": data._code},
+              "rollback": "yes"
+            });
+          });
+          sendData["inbound_product_table-insert"] = product_data;
+
+          // sendData.path = '/api/multipart_rest_api/';
+          // sendData.prefix = this.inbound_confirmation_data.code + '_';
+          // sendData.files = [];
+          // if (this.inbound_confirmation_data.receiving_inspection) {
+          //   sendData.files.push({
+          //     folder: 'inbound/receiving_inspection',
+          //     file: this.receiving_inspection_value,
+          //     name: this.inbound_confirmation_data.receiving_inspection
+          //   });
+          // }
+          // if (this.inbound_confirmation_data.inspection_report) {
+          //   sendData.files.push({
+          //     folder: 'inbound/inspection_report',
+          //     file: this.inspection_report_value,
+          //     name: this.inbound_confirmation_data.inspection_report
+          //   });
+          // }
+          // if (this.inbound_confirmation_data.files && this.files_value.length > 0) {
+          //   for (let i = 0; i < this.files_value.length; i++) {
+          //     const file = this.files_value[i];
+          //     sendData.files.push({
+          //       folder: 'inbound/files',
+          //       file: file,
+          //       name: this.inbound_confirmation_data.files.split('/')[i]
+          //     });
+          //   }
+          // }
+
+
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/common_rest_api/',
+              params: sendData
+            });
+            // let result = await mux.Server.uploadFile(sendData);
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            if(result['code'] == 0){
+              // console.log('result :>> ', result);
+              mux.Util.showAlert('재입고 승인 요청이 완료되었습니다', '요청 완료', 3000);
+
+              //메일 알림 관련
+              let mailTo = [];
+              let phase;
+              if(item.approval_phase === '미확인'){
+                mailTo.push(item.checker_id);
+                phase = '확인'
+              }else if(item.approval_phase === '미승인'){
+                mailTo.push(item.approver_id);
+                phase = '승인'
+              }
+
+              // 메일 본문 내용
+              let content=`
+                <html>
+                  <body>
+                    <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                      <h2 style="text-align: center; color:#13428a">재입고 ${phase} 요청 알림</h2>
+                      <table style="width: 100%;border-spacing: 10px 10px;">
+                        <tr>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사유</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.note}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">입고 일자</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inbound_date}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                        </tr>
+                      </table>
+                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/inbound-search?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
+                        <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                          확인하기
+                        </p>
+                      </a>
+                    </div>
+                  </body>
+                </html>
+              `;
+              try {
+                let sendEmailAlam = await mux.Server.post({
+                  path: '/api/send_email/',
+                  mailTo: mailTo,
+                  subject: "재입고 " + phase + " 요청 알림",
+                  content: content
+                });
+                if (prevURL !== window.location.href) return;
+                if(sendEmailAlam['code'] == 0){
+                  console.log(sendEmailAlam['message']);
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  mux.Util.showAlert(sendEmailAlam['failed_info']);
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
+                else
+                  mux.Util.showAlert(error);
+              }
+
+              // this.receiving_inspection_value = '';
+              // this.inspection_report_value = '';
+              // this.files_value = [];
+            } else {
+              if (prevURL !== window.location.href) return;
+              mux.Util.showAlert(result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
+            else
+              mux.Util.showAlert(error);
+          }
+          this.loading_dialog = false;
+        }
+      }
+    },
     deleteInboundDataRow(idx){
       if(this.product_inbound_data.length === 1){
         mux.Util.showAlert('행이 한 개 이상 존재해야 합니다.')
@@ -1189,15 +1627,39 @@ export default {
     async searchShipData(){
 
       this.loading_dialog = true;
+      let dataInputs
+      if(this.add_self === '재입고'){
+        dataInputs = this.searchShipCardInputs
+      }else{
+        dataInputs = this.searchShipaDataInputs
+      }
 
-      let searchProjectCode = this.searchShipaDataInputs.find(x=>x.label === '프로젝트').value;
+      let searchProjectCode = dataInputs.find(x=>x.label === '프로젝트').value;
       if (searchProjectCode)
       searchProjectCode = searchProjectCode.trim();
 
-      let searchPurpose = this.searchShipaDataInputs.find(x=>x.label === '출고목적').value;
+      let searchProductCode = dataInputs.find(x=>x.label === '관리코드') ? dataInputs.find(x=>x.label === '관리코드').value : "";
+      if (searchProductCode)
+      searchProductCode = searchProductCode.trim();
+
+      let searchProductName = dataInputs.find(x=>x.label === '제품명') ? dataInputs.find(x=>x.label === '제품명').value : "";
+      if (searchProductName)
+      searchProductName = searchProductName.trim();
+
+      let searchPurpose = dataInputs.find(x=>x.label === '출고목적').value;
       if (searchPurpose)
       searchPurpose = searchPurpose.trim();
 
+      let searchShipDate = dataInputs.find(x=>x.label === '출고 요청일') ? dataInputs.find(x=>x.label === '출고 요청일').value : "";
+      let searchShipStartDate;
+        let searchShipEndDate;
+      if(searchShipDate === ''){
+        searchShipStartDate = "";
+        searchShipEndDate = "";
+      }else{
+        searchShipStartDate = searchShipDate[0];
+        searchShipEndDate = searchShipDate[1];
+      }
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.post({
@@ -1205,6 +1667,10 @@ export default {
           params: [
             {
               "ship_confirmation_table.approval_phase": "승인",
+              "ship_confirmation_table.ship_date_start_date": searchShipStartDate ? searchShipStartDate : "",
+              "ship_confirmation_table.ship_date_end_date": searchShipEndDate ? searchShipEndDate : "",
+              "ship_product_table.product_code": searchProductCode ? searchProductCode : "",
+              "ship_product_table.name": searchProductName ?  searchProductName : "",
               "ship_confirmation_table.project_code": searchProjectCode ? searchProjectCode : "",
               "ship_confirmation_table.purpose": searchPurpose ? searchPurpose : ""
             }
@@ -1218,14 +1684,27 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
-          result.data.forEach(datas =>{
-            for(let d=0; d<datas.belong_data.length; d++){
-              datas.belong_data[d].purpose="";
-              datas.belong_data[d].ship_date="";
-            }
-
-          })
-          this.ship_search_data  = result.data.reverse(); // 최신순으로 정렬
+          if(this.add_self === '재입고'){
+            let ship_data_arr = [];
+            result.data.forEach(datas =>{
+              for(let d=0; d<datas.belong_data.length; d++){
+                datas.belong_data[d].purpose=datas.purpose;
+                datas.belong_data[d].ship_date=datas.ship_date;
+                datas.belong_data[d].project_code=datas.project_code;
+                datas.belong_data[d].table_code=datas.code+'/'+datas.belong_data[d].product_code+'/'+datas.belong_data[d].spot;
+                ship_data_arr.push(datas.belong_data[d]);
+              }
+            })
+            this.ship_search_data  = ship_data_arr.reverse(); // 최신순으로 정렬
+          }else{
+            result.data.forEach(datas =>{
+              for(let d=0; d<datas.belong_data.length; d++){
+                datas.belong_data[d].purpose="";
+                datas.belong_data[d].ship_date="";
+              }
+            })
+            this.ship_search_data  = result.data.reverse(); // 최신순으로 정렬
+          }
         }else{
           mux.Util.showAlert(result['failed_info']);
         }
@@ -1253,16 +1732,34 @@ export default {
       this.ship_selected_data.splice(index,1);
     },
     applyToInboundData(){
+      let unit_price = 0;
       this.product_inbound_data[this.inbound_index].belong_data = [];
       this.ship_selected_data.forEach((data, index) => {
-        this.product_inbound_data[this.inbound_index].belong_data.push(data);
+      this.product_inbound_data[this.inbound_index].belong_data.push(data);
         if(index === 0){
           this.product_inbound_data[this.inbound_index].ship_code = data.code
         }else{
-          this.product_inbound_data[this.inbound_index].ship_code = this.product_inbound_data.ship_code + "/" + data.ship_code
+          this.product_inbound_data[this.inbound_index].ship_code = this.product_inbound_data[this.inbound_index].ship_code + "/" + data.code
+        }
+        for(let i=0; i<data.belong_data.length; i++){
+          unit_price += data.belong_data[i].unit_price * data.belong_data[i].ship_num;
         }
       })
+      if(this.product_inbound_data[this.inbound_index].inbound_num){
+        this.product_inbound_data[this.inbound_index].unit_price = Number(unit_price / this.product_inbound_data[this.inbound_index].inbound_num).toLocaleString();
+      }
       this.close();
+    },
+    calcUnitPrice(item){
+      if(item.belong_data){
+        let unit_price = 0;
+        item.belong_data.forEach(data => {
+          for(let i=0; i<data.belong_data.length; i++){
+            unit_price += data.belong_data[i].unit_price * data.belong_data[i].ship_num;
+          }
+        })
+        item.unit_price = Number(unit_price / item.inbound_num).toLocaleString();
+      }
     }
   },
 

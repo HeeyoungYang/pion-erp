@@ -73,6 +73,7 @@
         :prepend-icon="input.icon"
         :label="input.label"
         :disabled="input.disabled"
+        :rules="input.rules"
         :rows="input.rows ? input.rows : '1'"
       ></v-textarea>
       <v-file-input v-else-if="input.type === 'file'"
@@ -90,9 +91,9 @@
         :label="input.label"
         :disabled="input.disabled"
         :accept="input.accept"
-        @change="input.accept ? 
-        input.accept.includes('jpg') ? mux.Util.checkTypeImage($event, $refs[input.ref ? input.ref : 'file' + input.accept + index][0]) :  
-        input.accept.includes('pdf') ? mux.Util.checkTypePdf($event, $refs[input.ref ? input.ref : 'file' + input.accept + index][0]) :  
+        @change="input.accept ?
+        input.accept.includes('jpg') ? mux.Util.checkTypeImage($event, $refs[input.ref ? input.ref : 'file' + input.accept + index][0]) :
+        input.accept.includes('pdf') ? mux.Util.checkTypePdf($event, $refs[input.ref ? input.ref : 'file' + input.accept + index][0]) :
         input.accept.includes('xlsx') ? mux.Util.checkTypeExcel($event, $refs[input.ref ? input.ref : 'file' + input.accept + index][0]) :  ''
         : ''"
       ></v-file-input>

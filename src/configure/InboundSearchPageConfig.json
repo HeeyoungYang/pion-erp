@@ -35,8 +35,27 @@
     { "text": "입고위치", "align": "start", "value": "spot"},
     { "text": "입고수량", "align": "start", "value": "inbound_num"},
     { "text": "단가", "align": "start", "value": "unit_price"},
-    { "text": "입고금액", "align": "start", "value": "inbound_price"}
+    { "text": "입고금액", "align": "start", "value": "inbound_price"},
+    { "text": "재료출하", "align": "start", "value": "ship_info"}
   ],
+
+  
+  "ship_search_headers": [
+    { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
+    { "text": "출고목적", "align": "start", "value": "purpose"},
+    { "text": "출고요청일", "align": "start", "value": "ship_date"},
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "product_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "출고위치", "align": "start", "value": "spot"},
+    { "text": "출고수량", "align": "start", "value": "ship_num"}
+  ],
+
+
   "login_info": {
     "user_id" : "",
     "name": "",
