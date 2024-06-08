@@ -10,7 +10,7 @@
           cols="12"
           sm="11">
           <v-card>
-            <iframe src="https://i66x939r37.execute-api.ap-northeast-2.amazonaws.com/test/anonymous-embed-sample" width="100%" height="700"> </iframe>
+            <iframe :src="embeddedDashboardUrl" width="100%" height="700"> </iframe>
           </v-card>
         </v-col>
       </v-row>
@@ -19,13 +19,21 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
 import NavComponent from "@/components/NavComponent";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 // import mux from "@/mux";
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=DashboardPage')],
-  mounted() {
+  async mounted() {
+    try {
+        const response = await axios.get('https://i66x939r37.execute-api.ap-northeast-2.amazonaws.com/test/anonymous-embed-sample?mode=getUrl');
+        //var jsonObj = JSON.parse(response);
+        this.embeddedDashboardUrl = response.data.EmbedUrl;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
   },
   components: {
@@ -46,11 +54,13 @@ export default {
     },
     initialize(){
       // this.search_estimate_data = EstimatePageConfig.test_estimate_data
+
     },
 
   },
   data(){
     return{
+      embeddedDashboardUrl: ""
     }
   },
 }
