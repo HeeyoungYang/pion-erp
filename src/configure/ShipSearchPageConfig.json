@@ -24,12 +24,16 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "위치", "align": "start", "value": "spot"},
-    { "text": "출고수량", "align": "start", "value": "ship_num"},
+    { "text": "수량", "align": "start", "value": "ship_num"},
     { "text": "현재고", "align": "start", "value": "stock_num"},
     { "text": "단가", "align": "start", "value": "unit_price"},
     { "text": "출고금액", "align": "start", "value": "ship_price"}
   ],
   
+  "reshipmentCardInfoInputs":[
+    {"label":"출고요청일", "column_name":"ship_date", "type":"dateSingle", "value": "", "col":"12", "sm":"4", "lg":"4", "menu":"", "rule_set":true},
+    {"label":"추가 사유", "column_name":"note", "type":"textarea", "col":"12", "sm":"4", "lg":"7", "value": "", "rule_set":true}
+  ],
   "ship_approved_product_list_headers": [
     { "text": "종류", "align": "start", "value": "type"},
     { "text": "분류", "align": "start", "value": "classification"},
@@ -39,7 +43,7 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "위치", "align": "start", "value": "spot"},
-    { "text": "출고수량", "align": "start", "value": "ship_num"},
+    { "text": "수량", "align": "start", "value": "ship_num"},
     { "text": "단가", "align": "start", "value": "unit_price"},
     { "text": "출고금액", "align": "start", "value": "ship_price"}
   ],
