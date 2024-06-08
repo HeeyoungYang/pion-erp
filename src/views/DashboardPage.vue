@@ -10,7 +10,7 @@
           cols="12"
           sm="11">
           <v-card>
-            <iframe src="http://www.daum.net" width="100%" height="700"> </iframe>
+            <iframe src="https://i66x939r37.execute-api.ap-northeast-2.amazonaws.com/test/anonymous-embed-sample" width="100%" height="700"> </iframe>
           </v-card>
         </v-col>
       </v-row>
