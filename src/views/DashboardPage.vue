@@ -28,7 +28,7 @@ export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=DashboardPage')],
   async mounted() {
     try {
-        const response = await axios.get('https://i66x939r37.execute-api.ap-northeast-2.amazonaws.com/test/anonymous-embed-sample?mode=getUrl');
+        const response = await axios.get('https://i66x939r37.execute-api.ap-northeast-2.amazonaws.com/test/anonymous-embed-sample?mode=static');
         //var jsonObj = JSON.parse(response);
         this.embeddedDashboardUrl = response.data.EmbedUrl;
       } catch (error) {
