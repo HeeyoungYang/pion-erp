@@ -128,7 +128,7 @@
                               class="mt-0"
                             >
                               <v-radio
-                                :label="item.approval_phase == '미승인'? '승인' : '확인'"
+                                :label="item.approval_phase == '미승인' || item.approval_phase == '추가 미승인'? '승인' : '확인'"
                                 :value=true
                               ></v-radio>
                               <v-radio
@@ -158,7 +158,7 @@
                     </v-card>
                   </v-menu>
                   <v-menu
-                    v-else-if="item.approval_phase == '승인'"
+                    v-else-if="item.approval_phase == '승인' || item.approval_phase == '추가 승인'"
                     :close-on-content-click="false"
                     :max-width="190"
                     offset-x

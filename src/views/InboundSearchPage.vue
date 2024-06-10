@@ -581,9 +581,25 @@ export default {
         let insert_product_data = [];
         let belong_product_module_data = [];
         let belong_product_material_data = [];
+        let update_ship_data = [];
 
         for (let i = 0; i < send_data_belong.length; i++) {
           const belong = send_data_belong[i];
+
+          //ship_code가 있을 경우 ship_confirmation_table update
+          if(belong.ship_code !== null && belong.ship_code !== undefined && belong.ship_code !== ''){
+            update_ship_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data": {
+                "inbound_code": send_data.code
+              },
+              "update_where": {"code": belong.ship_code},
+              "rollback": "yes"
+            });
+          }
 
           // product_code기준 재고(자재)검색
           let stock_check = await mux.Server.post({
@@ -686,22 +702,51 @@ export default {
                   "select_where": {"module_code": belong.product_code},
                   "rollback": "yes"
                 });
-                // 만약 요청할 데이터가 belong_data를 가지고 있는 경우 module_material_table에 insert
-                if(belong.belong_data){
-                  for(let bd = 0; bd < belong.belong_data.length; bd++){
-                    belong_module_data.push({
-                      "user_info": {
-                        "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                        "role": "creater"
-                      },
-                      "data":{
-                        "module_code": belong.product_code,
-                        "material_code": belong.belong_data[bd].product_code,
-                        "material_num": belong.belong_data[bd].ship_num / belong.inbound_num.replace(/,/g,'')
-                      },
-                      "select_where": {"module_code": belong.product_code},
-                      "rollback": "yes"
-                    })
+                // 만약 요청할 데이터가 출하정보를 가지고 있는 경우 module_material_table에 insert
+                if(belong.ship_code !== null && belong.ship_code !== undefined && belong.ship_code !== ''){
+                  try {
+                    let result = await mux.Server.post({
+                      path: '/api/common_rest_api/',
+                      params: [
+                        {
+                          "ship_confirmation_table.code": belong.ship_code
+                        }
+                      ],
+                      "script_file_name": "rooting_출하_검색_24_06_07_10_09_W4U.json",
+                      "script_file_path": "data_storage_pion\\json_sql\\ship\\출하_검색_24_06_07_10_09_F1C"
+                    });
+                    if (prevURL !== window.location.href) return;
+
+                    if (typeof result === 'string'){
+                      result = JSON.parse(result);
+                    }
+                    if(result['code'] == 0){
+                      let ship_belong = result.data[0].belong_data
+                      for(let bd = 0; bd < ship_belong.length; bd++){
+                        belong_module_data.push({
+                          "user_info": {
+                            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                            "role": "creater"
+                          },
+                          "data":{
+                            "module_code": belong.product_code,
+                            "material_code": ship_belong[bd].product_code,
+                            "material_num": ship_belong[bd].ship_num / belong.inbound_num.replace(/,/g,'')
+                          },
+                          "select_where": {"module_code": belong.product_code},
+                          "rollback": "yes"
+                        })
+                      }
+                    }else{
+                      mux.Util.showAlert(result['failed_info']);
+                    }
+                  } catch (error) {
+                    if (prevURL !== window.location.href) return;
+                    this.loading_dialog = false;
+                    if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                      mux.Util.showAlert(error.response['data']['failed_info'].msg);
+                    else
+                      mux.Util.showAlert(error);
                   }
                 }
               // 요청할 데이터가 완제품일 경우 product_table에 정보 insert
@@ -719,46 +764,76 @@ export default {
                     "name": belong.name,
                     "spec": belong.spec,
                     "type": belong.type,
-                    "unit_price": belong.unit_price
+                    "unit_price": belong.unit_price.replace(/,/g,'').replace(/₩ /g,''),
                   },
                   "select_where": {"product_code": belong.product_code},
                   "rollback": "yes"
                 });
-                // 만약 요청할 데이터가 belong_data를 가지고 있고
-                if(belong.belong_data){
-                  for(let bp = 0; bp < belong.belong_data.length; bp++){
-                    //belong_data의 type이 원부자재일 경우 product_material_table에 insert
-                    if(belong.belong_data[bp].type === '원부자재'){
-                      belong_product_material_data.push({
-                        "user_info": {
-                          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                          "role": "creater"
-                        },
-                        "data":{
-                          "product_code": belong.product_code,
-                          "material_code": belong.belong_data[bp].product_code,
-                          "material_num": belong.belong_data[bp].ship_num / belong.inbound_num.replace(/,/g,'')
-                        },
-                        "select_where": {"product_code": belong.product_code},
-                        "rollback": "yes"
-                      })
-                    //belong_data의 type이 반제품일 경우 product_module_table에 insert
-                    }else if(belong.belong_data[bp].type === '반제품'){
-                      belong_product_module_data.push({
-                        "user_info": {
-                          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                          "role": "creater"
-                        },
-                        "data":{
-                          "product_code": belong.product_code,
-                          "module_code": belong.belong_data[bp].product_code,
-                          "module_num": belong.belong_data[bp].ship_num / belong.inbound_num.replace(/,/g,'')
-                        },
-                        "select_where": {"product_code": belong.product_code},
-                        "rollback": "yes"
-                      })
-                    }
+                // 만약 요청할 데이터가 출하정보를 가지고 있고
 
+                if(belong.ship_code !== null && belong.ship_code !== undefined && belong.ship_code !== ''){
+                  try {
+                    let result = await mux.Server.post({
+                      path: '/api/common_rest_api/',
+                      params: [
+                        {
+                          "ship_confirmation_table.code": belong.ship_code
+                        }
+                      ],
+                      "script_file_name": "rooting_출하_검색_24_06_07_10_09_W4U.json",
+                      "script_file_path": "data_storage_pion\\json_sql\\ship\\출하_검색_24_06_07_10_09_F1C"
+                    });
+                    if (prevURL !== window.location.href) return;
+
+                    if (typeof result === 'string'){
+                      result = JSON.parse(result);
+                    }
+                    if(result['code'] == 0){
+                      let ship_belong = result.data[0].belong_data
+                      for(let bp = 0; bp < ship_belong.length; bp++){
+                        //belong_data의 type이 원부자재일 경우 product_material_table에 insert
+                        if(ship_belong[bp].type === '원부자재'){
+                          belong_product_material_data.push({
+                            "user_info": {
+                              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                              "role": "creater"
+                            },
+                            "data":{
+                              "product_code": belong.product_code,
+                              "material_code": ship_belong[bp].product_code,
+                              "material_num": ship_belong[bp].ship_num / belong.inbound_num.replace(/,/g,'')
+                            },
+                            "select_where": {"product_code": belong.product_code},
+                            "rollback": "yes"
+                          })
+                        //belong_data의 type이 반제품일 경우 product_module_table에 insert
+                        }else if(ship_belong[bp].type === '반제품'){
+                          belong_product_module_data.push({
+                            "user_info": {
+                              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                              "role": "creater"
+                            },
+                            "data":{
+                              "product_code": belong.product_code,
+                              "module_code": ship_belong[bp].product_code,
+                              "module_num": ship_belong[bp].ship_num / belong.inbound_num.replace(/,/g,'')
+                            },
+                            "select_where": {"product_code": belong.product_code},
+                            "rollback": "yes"
+                          })
+                        }
+
+                      }
+                    }else{
+                      mux.Util.showAlert(result['failed_info']);
+                    }
+                  } catch (error) {
+                    if (prevURL !== window.location.href) return;
+                    this.loading_dialog = false;
+                    if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                      mux.Util.showAlert(error.response['data']['failed_info'].msg);
+                    else
+                      mux.Util.showAlert(error);
                   }
                 }
               }
@@ -790,6 +865,7 @@ export default {
             sendData["product_table-insert"] = insert_product_data;
             sendData["product_material_table-insert"] = belong_product_material_data;
             sendData["product_module_table-insert"] = belong_product_module_data;
+            sendData["ship_confirmation_table-update"] = update_ship_data;
           }
         }
 

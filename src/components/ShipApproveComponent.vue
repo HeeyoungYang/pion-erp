@@ -56,14 +56,14 @@
               <td class="approve_title">출하장소</td>
               <td class="approve_text">{{ shipData.ship_place}}</td>
             </tr>
-            <tr>
+            <tr v-if="shipData.approval_phase === '승인'">
               <td class="approve_title">시험성적서</td>
               <td class="approve_text" colspan="3">
                 {{ shipData.inspection_report ? '■ 유   □무' : '□ 유   ■무' }}
               </td>
             </tr>
             <tr>
-              <td class="approve_title">비고</td>
+              <td class="approve_title">{{ shipData.approval_phase === '승인' ? '비고' : '추가 사유' }}</td>
               <td class="approve_text" colspan="3">{{  shipData.note }}</td>
             </tr>
           </table>

@@ -881,10 +881,14 @@ export default {
 
       set_item.forEach(item => {
         for(let d=0; d<selected_item.length; d++){
-          if(item.item_code === selected_item[d]._code){
-            check_duplicate.push(item.item_code);
-          }else if(item.table_code === selected_item[d].table_code){
-            check_duplicate.push(selected_item[d].product_code);
+          if(this.add_self !== '재입고'){
+            if(item.item_code === selected_item[d]._code){
+              check_duplicate.push(item.item_code);
+            }
+          } else {
+            if(item.table_code === selected_item[d].table_code){
+              check_duplicate.push(selected_item[d].product_code);
+            }
           }
         }
       })
@@ -1391,6 +1395,9 @@ export default {
           }
         }
 
+
+
+
         if(success == true){
           this.loading_dialog = true;
 
@@ -1666,7 +1673,7 @@ export default {
           path: '/api/common_rest_api/',
           params: [
             {
-              "ship_confirmation_table.approval_phase": "승인",
+              "ship_confirmation_table.approval_phase": "",
               "ship_confirmation_table.ship_date_start_date": searchShipStartDate ? searchShipStartDate : "",
               "ship_confirmation_table.ship_date_end_date": searchShipEndDate ? searchShipEndDate : "",
               "ship_product_table.product_code": searchProductCode ? searchProductCode : "",
@@ -1684,27 +1691,31 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
+          let ship_data_arr = [];
           if(this.add_self === '재입고'){
-            let ship_data_arr = [];
             result.data.forEach(datas =>{
-              for(let d=0; d<datas.belong_data.length; d++){
-                datas.belong_data[d].purpose=datas.purpose;
-                datas.belong_data[d].ship_date=datas.ship_date;
-                datas.belong_data[d].project_code=datas.project_code;
-                datas.belong_data[d].table_code=datas.code+'/'+datas.belong_data[d].product_code+'/'+datas.belong_data[d].spot;
-                ship_data_arr.push(datas.belong_data[d]);
+              if(datas.approval_phase === '승인' || datas.approval_phase === '추가 승인'){
+                for(let d=0; d<datas.belong_data.length; d++){
+                  datas.belong_data[d].purpose=datas.purpose;
+                  datas.belong_data[d].ship_date=datas.ship_date;
+                  datas.belong_data[d].project_code=datas.project_code;
+                  datas.belong_data[d].table_code=datas.code+'/'+datas.belong_data[d].product_code+'/'+datas.belong_data[d].spot;
+                  ship_data_arr.push(datas.belong_data[d]);
+                }
               }
             })
-            this.ship_search_data  = ship_data_arr.reverse(); // 최신순으로 정렬
           }else{
             result.data.forEach(datas =>{
-              for(let d=0; d<datas.belong_data.length; d++){
-                datas.belong_data[d].purpose="";
-                datas.belong_data[d].ship_date="";
+              if(datas.approval_phase === '승인' || datas.approval_phase === '추가 승인'){
+                for(let d=0; d<datas.belong_data.length; d++){
+                  datas.belong_data[d].purpose="";
+                  datas.belong_data[d].ship_date="";
+                }
+                  ship_data_arr.push(datas);
               }
             })
-            this.ship_search_data  = result.data.reverse(); // 최신순으로 정렬
           }
+          this.ship_search_data  = ship_data_arr.reverse(); // 최신순으로 정렬
         }else{
           mux.Util.showAlert(result['failed_info']);
         }
