@@ -22,6 +22,15 @@
               required
             ></v-text-field>
           </v-col>
+          <v-col cols="12">
+            <v-text-field
+              label="숨은 참조"
+
+              dense
+              hide-details
+              required
+            ></v-text-field>
+          </v-col>
       </v-row>
     </v-card-text>
     <v-divider></v-divider>
@@ -33,6 +42,42 @@
             required
             hide-details
           ></v-text-field>
+          <v-checkbox
+            label="견적서"
+            color="primary"
+            hide-details
+            class="float-left mr-3"
+          ></v-checkbox>
+          <v-checkbox
+            label="산출내역서"
+            color="primary"
+            hide-details
+            class="float-left mr-3"
+          ></v-checkbox>
+          <v-checkbox
+            label="도면"
+            color="primary"
+            hide-details
+            class="float-left mr-3"
+          ></v-checkbox>
+          <v-checkbox
+            label="승인서"
+            color="primary"
+            hide-details
+            class="float-left mr-3"
+          ></v-checkbox>
+          <v-checkbox
+            label="기타첨부"
+            color="primary"
+            hide-details
+            class="float-left mr-3"
+          ></v-checkbox>
+          <v-checkbox
+            label="사업자등록증"
+            color="primary"
+            hide-details
+            class="float-left mr-3"
+          ></v-checkbox>
         </v-col>
         <v-col cols="12">
           <vue-editor v-model="content" :editor-toolbar="customToolbar" id="email_editor"/>
@@ -40,7 +85,7 @@
         <v-col cols="12">
           <v-file-input
             @change="fileChanged"
-            placeholder="파일 선택"
+            placeholder="추가 첨부"
             hide-details
             dense
             multiple

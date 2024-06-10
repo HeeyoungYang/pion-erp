@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :salesMenu="true" :obtainOrderMenu="true"></NavComponent>
+    <NavComponent :designProductionMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -150,11 +150,11 @@
                               <td class="estimate_info" style="border-bottom: 0px;">2024-05-29</td>
                             </tr>
                             <tr>
-                              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역명</td>
+                              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트명</td>
                               <td class="estimate_info" style="border-bottom: 0px;"></td>
                             </tr>
                             <tr>
-                              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역기간</td>
+                              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트기간</td>
                               <td class="estimate_info" style="border-bottom: 0px;"></td>
                             </tr>
                             <tr>
@@ -286,7 +286,7 @@
                       </v-row>
                     </v-card-title>
                     <v-card-text>
-                      <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >수주 정보</p>
+                      <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >설계 정보</p>
                       <InputsFormComponent
                         dense
                         clearable
@@ -567,20 +567,7 @@
                 <v-tab-item>
                   <v-card>
                     <v-card-text>
-                      <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >수주 정보</p>
-                      <v-radio-group
-                        v-model="type_obtain"
-                        row
-                      >
-                        <v-radio
-                          label="프로젝트"
-                          value="프로젝트"
-                        ></v-radio>
-                        <v-radio
-                          label="용역"
-                          value="용역"
-                        ></v-radio>
-                      </v-radio-group>
+                      <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >설계 정보</p>
                       <InputsFormComponent
                         dense
                         clearable
@@ -655,7 +642,7 @@
                       elevation="1"
                       @click="estimate_dialog = true"
                     >
-                      견적서 불러오기
+                      수주서 불러오기
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -694,11 +681,11 @@
                           <td class="estimate_info" style="border-bottom: 0px;">2024-05-29</td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">{{ type_obtain }}명</td>
+                          <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트명</td>
                           <td class="estimate_info" style="border-bottom: 0px;"></td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">{{ type_obtain }}기간</td>
+                          <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트기간</td>
                           <td class="estimate_info" style="border-bottom: 0px;"></td>
                         </tr>
                         <tr>
@@ -1165,7 +1152,7 @@ import NavComponent from "@/components/NavComponent";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import DataTableComponent from "@/components/DataTableComponent.vue";
-import ObtainOrderPageConfig from "@/configure/ObtainOrderPageConfig.json";
+import DesignProductionPageConfig from "@/configure/DesignProductionPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import CostTableComponent from "@/components/CostTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
@@ -1200,11 +1187,11 @@ export default {
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     initialize(){
-      // this.search_estimate_data = ObtainOrderPageConfig.test_estimate_data
+      // this.search_estimate_data = DesignProductionPageConfig.test_estimate_data
     },
     async searchButton(){
       this.loading_dialog = true;
-      this.search_estimate_data = ObtainOrderPageConfig.test_estimate_data
+      this.search_estimate_data = DesignProductionPageConfig.test_estimate_data
       this.loading_dialog = false;
     },
     test(){
@@ -1218,7 +1205,6 @@ export default {
   },
   data(){
     return{
-      type_obtain: '프로젝트',
       estimate_dialog: false,
       edit_survey_cost_num_disabled: true,
       edit_buttons_show: true,
@@ -1226,25 +1212,25 @@ export default {
       tab_main: null,
       tab_search: null,
       tab_dialog_search_product: null,
-      tab_main_items: ObtainOrderPageConfig.tab_main_items,
-      dialog_search_product_items: ObtainOrderPageConfig.dialog_search_product_items,
+      tab_main_items: DesignProductionPageConfig.tab_main_items,
+      dialog_search_product_items: DesignProductionPageConfig.dialog_search_product_items,
       dialog_search_product: false,
       dialog_calculate_labor: false,
 
-      save_costs: ObtainOrderPageConfig.save_costs,
-      search_estimate_headers: ObtainOrderPageConfig.search_estimate_headers,
-      survey_cost_headers: ObtainOrderPageConfig.survey_cost_headers,
-      labor_cost_headers: ObtainOrderPageConfig.labor_cost_headers,
-      labor_list_headers: ObtainOrderPageConfig.labor_list_headers,
-      dialog_search_product_headers: ObtainOrderPageConfig.dialog_search_product_headers,
-      construction_materials_headers: ObtainOrderPageConfig.construction_materials_headers,
+      save_costs: DesignProductionPageConfig.save_costs,
+      search_estimate_headers: DesignProductionPageConfig.search_estimate_headers,
+      survey_cost_headers: DesignProductionPageConfig.survey_cost_headers,
+      labor_cost_headers: DesignProductionPageConfig.labor_cost_headers,
+      labor_list_headers: DesignProductionPageConfig.labor_list_headers,
+      dialog_search_product_headers: DesignProductionPageConfig.dialog_search_product_headers,
+      construction_materials_headers: DesignProductionPageConfig.construction_materials_headers,
 
 
 
 
-      construction_materials_data: JSON.parse(JSON.stringify(ObtainOrderPageConfig.construction_materials_data)),
-      calc_cost_detail_data: JSON.parse(JSON.stringify(ObtainOrderPageConfig.calc_cost_detail_data)),
-      calc_cost_detail_data2: ObtainOrderPageConfig.calc_cost_detail_data.map(x => {
+      construction_materials_data: JSON.parse(JSON.stringify(DesignProductionPageConfig.construction_materials_data)),
+      calc_cost_detail_data: JSON.parse(JSON.stringify(DesignProductionPageConfig.calc_cost_detail_data)),
+      calc_cost_detail_data2: DesignProductionPageConfig.calc_cost_detail_data.map(x => {
         if (x.cost_list === '재료비') {
           x.costListBtn = {
             text: '작성',
@@ -1279,12 +1265,12 @@ export default {
         }
       ],
 
-      search_tab_items: ObtainOrderPageConfig.search_tab_items,
-      write_tab_items: ObtainOrderPageConfig.write_tab_items,
-      searchCardInputs: ObtainOrderPageConfig.searchCardInputs,
-      estimateDefaultInfoInputs: ObtainOrderPageConfig.estimateDefaultInfoInputs,
-      estimateCompanyInfoInputs: ObtainOrderPageConfig.estimateCompanyInfoInputs,
-      estimateFilesInputs: ObtainOrderPageConfig.estimateFilesInputs,
+      search_tab_items: DesignProductionPageConfig.search_tab_items,
+      write_tab_items: DesignProductionPageConfig.write_tab_items,
+      searchCardInputs: DesignProductionPageConfig.searchCardInputs,
+      estimateDefaultInfoInputs: DesignProductionPageConfig.estimateDefaultInfoInputs,
+      estimateCompanyInfoInputs: DesignProductionPageConfig.estimateCompanyInfoInputs,
+      estimateFilesInputs: DesignProductionPageConfig.estimateFilesInputs,
       search_estimate_data: [],
     }
   },

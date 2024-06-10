@@ -98,6 +98,34 @@
           <v-card ref="calcCostCard" style="border: 1px solid #ccc;">
             <v-row>
               <v-col align-self="center" cols="12" sm="12">
+                <v-checkbox
+                  v-model="estimate_checkbox.labor_cost"
+                  label="노무비"
+                  color="primary"
+                  hide-details
+                  class="float-left mr-3"
+                ></v-checkbox>
+                <v-checkbox
+                  v-model="estimate_checkbox.expense"
+                  label="경비"
+                  color="primary"
+                  hide-details
+                  class="float-left mr-3"
+                ></v-checkbox>
+                <v-checkbox
+                  v-model="estimate_checkbox.general_management"
+                  label="일반관리비"
+                  color="primary"
+                  hide-details
+                  class="float-left mr-3"
+                ></v-checkbox>
+                <v-checkbox
+                  v-model="estimate_checkbox.profit"
+                  label="이윤"
+                  color="primary"
+                  hide-details
+                  class="float-left"
+                ></v-checkbox>
                 <v-btn
                   color="primary"
                   elevation="0"
@@ -392,7 +420,12 @@ export default {
       tab_search: null,
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
-
+      estimate_checkbox:{
+        labor_cost:true,
+        expense:true,
+        general_management:true,
+        profit:true
+      },
       estimate_info_data:{},
       estimate_product_list_data:[],
 

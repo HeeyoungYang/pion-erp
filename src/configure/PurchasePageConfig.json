@@ -1,0 +1,129 @@
+
+{ 
+  "stock_detail_header":[
+    { "text": "위치", "align": "center", "value": "spot" },
+    { "text": "수량", "align": "center", "value": "stock_num" },
+    { "text": "상태", "align": "center", "value": "conditions" }
+  ],
+  "inbound_detail_header":[
+    { "text": "위치", "align": "center", "value": "spot"},
+    { "text": "수량", "align": "center", "value": "inbound_num" },
+    { "text": "입고일자", "align": "center", "value": "inbound_date"}
+  ],
+
+  "searchCardInputs":[
+    {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "원부자재", "반제품", "완제품"]},
+    {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"2"},
+    {"label":"상태", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "G", "B"]},
+    {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":""}
+  ],
+  "headers": [
+    { "text": "종류", "align": "start", "value": "type" },
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "단가", "align": "start", "value": "unit_price"}
+  ],
+
+  "bom_list_purchase_headers": [
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "product_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "단가", "align": "start", "value": "unit_price"},
+    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
+    { "text": "필요수량", "align": "start", "value": "item_num"},
+    { "text": "재고", "align": "start", "value": "stock_num"}
+  ],
+  "setPurchaseInputs":[
+    {"label":"견적서 첨부", "type":"file", "col":"12", "sm":"4", "lg":"3"},
+    {"label":"담당자", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"연락처", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"email", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"결제조건", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"리드타임", "col":"12", "sm":"4", "lg":"3", "value": ""}
+  ],
+
+
+  "purchase_member_info":[
+    {"type": "확인", "name": "", "user_id": "", "email": ""},
+    {"type": "승인", "name": "", "user_id": "", "email": ""},
+    {"type": "구매담당자", "name": "", "user_id": "", "email": ""}
+  ],
+
+  
+  "bom_list_purchase_test_data":[
+    {
+      "type":"원부자재",
+      "classification":"GFM",
+      "product_code":"원부자재BB",
+      "name":"원부자재B",
+      "model":"MODEL-002",
+      "spec":"SPEC-002",
+      "manufacturer":"PIONELECTRIC",
+      "unit_price":"10",
+      "item_num":"3",
+      "purchase_num":"3",
+      "stock_num":"0"
+    },
+    {
+      "type":"반제품",
+      "classification":"GFM",
+      "product_code":"반제품CC",
+      "name":"반제품C",
+      "model":"MODEL-003",
+      "spec":"SPEC-003",
+      "manufacturer":"PIONELECTRIC",
+      "unit_price":"70",
+      "item_num":"1",
+      "purchase_num":"0",
+      "stock_num":"1"
+    }
+  ],
+  "test_manufacturer_list": ["파이온일렉트릭", "라온코리아", "액트솔루션", "옵토마린", "성민우텍"],
+  "test_classification_list": ["전력변환기", "GFM"],
+
+  "test_product_data": [
+    {
+      "type":"원부자재",
+      "classification":"일반",
+      "_code": "공장2F_E-09-01",
+      "name": "IGBT & SMPS",
+      "model": "원부자재 모델1",
+      "spec": "원부자재 사양1",
+      "manufacturer": "파이온일렉트릭",
+      "unit_price": 2,
+      "thumbnail":"",
+      "spot_stock":[
+        {"spot": "공장동 1층", "stock_num": 400, "conditions": "G"},
+        {"spot": "공장동 2층", "stock_num": 600, "conditions": "G"}
+      ]
+    },
+    {
+      "type":"원부자재",
+      "classification":"일반",
+      "_code": "공장2F_E-09-02",
+      "name": "쿨링팬",
+      "model": "원부자재 모델2",
+      "spec": "원부자재 사양2",
+      "manufacturer": "파이온일렉트릭",
+      "unit_price": 2,
+      "thumbnail":"",
+      "spot_stock":[
+        {"spot": "공장동 1층", "stock_num": 300, "conditions": "G"},
+        {"spot": "공장동 2층", "stock_num": 100, "conditions": "G"}
+      ]
+    }
+  ]
+}
+  

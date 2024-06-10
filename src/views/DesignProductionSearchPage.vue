@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :salesMenu="true" :obtainOrderMenu="true"></NavComponent>
+    <NavComponent :designProductionMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -80,6 +80,16 @@
       :card-elevation="'0'"
       @close="closeProductList"
     >
+      <v-row>
+        <v-col cols="12" sm="5">
+          <v-combobox
+            label="version"
+            filled
+            value="3차 수정"
+            :items="versions"
+          ></v-combobox>
+        </v-col>
+      </v-row>
       <v-tabs
         v-model="tab_search"
         background-color="transparent"
@@ -213,7 +223,7 @@
           </v-card>
           <v-row class="mt-3">
             <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
+              <p class="font-weight-bold primary--text mb-0">▼ 승인도서</p>
               <div style="width:100%; background-color: #ccc; height:300px"></div>
               <!-- <v-img
                 alt="thumbnail"
@@ -227,7 +237,7 @@
               /> -->
             </v-col>
             <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
+              <p class="font-weight-bold primary--text mb-0">▼ 제작사양서</p>
               <div style="width:100%; background-color: #ccc; height:300px"></div>
               <!-- <v-img
                 alt="thumbnail"
@@ -241,21 +251,101 @@
               /> -->
             </v-col>
             <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
-              <v-chip
-                color="grey lighten-2"
-                class="ma-2"
-              >
-                기타첨부파일.pdf
-              </v-chip>
-              <v-chip
-                color="grey lighten-2"
-                class="ma-2"
-              >
-                기타첨부파일2.xlsx
-              </v-chip>
+              <p class="font-weight-bold primary--text mb-0">▼ 상세도면</p>
+              <div style="width:100%; background-color: #ccc; height:300px"></div>
+              <!-- <v-img
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                style="cursor: pointer;"
+              /> -->
             </v-col>
           </v-row>
+        </v-tab-item>
+        <!-- BOM List -->
+        <v-tab-item>
+          <v-card ref="calcCostCard" style="border: 1px solid #ccc;" class="pa-4 elevation-0">
+            <v-row>
+              <v-col cols="12" sm="12">
+                <p class="text-h6 primary--text mb-0 font-weight-bold">요청 자재 선택</p>
+              </v-col>
+              <v-col cols="12" sm="12">
+                <DataTableComponent
+                  :headers="bom_list_headers"
+                  :items="bom_list_data"
+                  item-key="product_code"
+                  children-key="belong_data"
+                  dense
+                  tableClass="elevation-0"
+                  addToTable
+                  @addDataToTable="addShipData"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="12" >
+                <p class="mt-6 mb-0">
+                  <span class="text-h6 primary--text float-left font-weight-bold">구매 요청</span>
+                  <v-checkbox
+                    v-model="setPurchase"
+                    label="구매 견적서 첨부"
+                    color="primary"
+                    hide-details
+                    class="mx-5 mt-0 float-left"
+                  ></v-checkbox>
+                  <v-btn
+                    small
+                    color="success"
+                  >요청</v-btn>
+                </p>
+              </v-col>
+              <v-col cols="12" sm="12">
+                <v-chip
+                  class="mr-2"
+                  style="cursor:pointer"
+                  v-for="(member, i) in purchase_member_info"
+                  :key="i"
+                  :color="member.name ? 'success' : 'default'"
+                  @click="selectMemberDialog(i)"
+                >
+                  {{ member.type }} : {{ member.name }}
+                </v-chip>
+              </v-col>
+              <v-col cols="12" sm="12" v-if="setPurchase">
+                <InputsFormComponent
+                  slot="cardText"
+                  dense
+                  clearable
+                  filled
+                  hide-details
+                  :inputs="setPurchaseInputs"
+                >
+                </InputsFormComponent>
+              </v-col>
+              <v-col cols="12" sm="12">
+                <v-data-table
+                  :headers="bom_list_purchase_headers"
+                  :items="bom_list_purchase_data"
+                  item-key="product_code"
+                  dense
+                >
+                <template v-slot:[`item.purchase_num`] = "{ item }">
+                  <v-text-field
+                    dense
+                    hide-details
+                    v-model="item.purchase_num"
+                    style="width:100px;font-size: 0.775rem !important;"
+                    filled
+                  ></v-text-field>
+                </template>
+                </v-data-table>
+              </v-col>
+            </v-row>
+          </v-card>
         </v-tab-item>
         <!-- 산출내역서 -->
         <v-tab-item>
@@ -349,7 +439,7 @@ import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import CostTableComponent from "@/components/CostTableComponent.vue";
 import MailFormComponent from "@/components/MailFormComponent.vue";
-import ObtainOrderSearchPageConfig from "@/configure/ObtainOrderSearchPageConfig.json";
+import DesignProductionSearchPageConfig from "@/configure/DesignProductionSearchPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import mux from "@/mux";
 
@@ -370,7 +460,9 @@ export default {
               },
   data(){
     return{
+      setPurchase: false,
       mux: mux,
+      versions:['1차 수정', '2차 수정', '3차 수정'],
       dates: [],
       inbound_product_list_dialog: false,
       loading_dialog: false,
@@ -385,16 +477,22 @@ export default {
 
       searched_products:[],
 
-      login_info: ObtainOrderSearchPageConfig.login_info,
-      searchCardInputs:ObtainOrderSearchPageConfig.searchCardInputs,
-      inbound_approve_headers:ObtainOrderSearchPageConfig.inbound_approve_headers,
-      inbound_product_list_headers:ObtainOrderSearchPageConfig.inbound_product_list_headers,
+      purchase_member_info:DesignProductionSearchPageConfig.purchase_member_info,
+      login_info: DesignProductionSearchPageConfig.login_info,
+      searchCardInputs:DesignProductionSearchPageConfig.searchCardInputs,
+      setPurchaseInputs:DesignProductionSearchPageConfig.setPurchaseInputs,
+      inbound_approve_headers:DesignProductionSearchPageConfig.inbound_approve_headers,
+      inbound_product_list_headers:DesignProductionSearchPageConfig.inbound_product_list_headers,
       // inbound_approve_data:[],
-      survey_cost_headers: ObtainOrderSearchPageConfig.survey_cost_headers,
-      search_tab_items: ObtainOrderSearchPageConfig.search_tab_items,
-      labor_cost_headers: ObtainOrderSearchPageConfig.labor_cost_headers,
-      calc_cost_detail_data: JSON.parse(JSON.stringify(ObtainOrderSearchPageConfig.calc_cost_detail_data)),
-      inbound_approve_data:ObtainOrderSearchPageConfig.test_inbound_approve_data
+      bom_list_headers: DesignProductionSearchPageConfig.bom_list_headers,
+      bom_list_purchase_headers: DesignProductionSearchPageConfig.bom_list_purchase_headers,
+      bom_list_data: DesignProductionSearchPageConfig.bom_list_test_data,
+      bom_list_purchase_data: DesignProductionSearchPageConfig.bom_list_purchase_test_data,
+      survey_cost_headers: DesignProductionSearchPageConfig.survey_cost_headers,
+      search_tab_items: DesignProductionSearchPageConfig.search_tab_items,
+      labor_cost_headers: DesignProductionSearchPageConfig.labor_cost_headers,
+      calc_cost_detail_data: JSON.parse(JSON.stringify(DesignProductionSearchPageConfig.calc_cost_detail_data)),
+      inbound_approve_data:DesignProductionSearchPageConfig.test_inbound_approve_data
     }
   },
 
@@ -540,7 +638,7 @@ export default {
         else
           mux.Util.showAlert(error);
       }
-      // this.inbound_approve_data = ObtainOrderSearchPageConfig.test_inbound_approve_data
+      // this.inbound_approve_data = DesignProductionSearchPageConfig.test_inbound_approve_data
       this.loading_dialog = false;
     },
     closeProductList(){

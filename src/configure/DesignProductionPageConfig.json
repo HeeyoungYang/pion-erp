@@ -7,10 +7,10 @@
     "조회", "작성"
   ],
   "search_tab_items": [
-    "수주서", "기본 정보", "산출내역서", "노무비 산출"
+    "수주서", "설계 정보", "산출내역서", "노무비 산출"
   ],
   "write_tab_items": [
-    "수주서", "산출내역서"
+    "설계", "산출내역서"
   ],
   "dialog_search_product_items": [
     "제품 불러오기", "공사 자재"
@@ -40,9 +40,9 @@
     {"label":"담당자 E-mail", "col":"12", "sm":"4", "lg":"4", "disabled":true}
   ],
   "estimateFilesInputs":[
-    {"label":"도면", "column_name":"blueprint", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
-    {"label":"승인서", "column_name":"approval", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
-    {"label":"기타", "column_name":"files", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true}
+    {"label":"승인도서", "column_name":"blueprint", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"제작사양서", "column_name":"approval", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"상세도면", "column_name":"files", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true}
   ],
   "search_estimate_headers":[
     { "text": "발행일", "align": "start", "value": "created_time"},

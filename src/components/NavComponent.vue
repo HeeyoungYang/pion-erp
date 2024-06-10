@@ -178,6 +178,54 @@
           </v-list-group>
         </v-list-group>
 
+        <v-list-group
+          v-if="designProductionPagesInfo.length > 0"
+          :value="designProductionMenu"
+          prepend-icon="mdi-cogs"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>설계 관리</v-list-item-title>
+          </template>
+
+          <v-list-item
+              v-for="([title, icon, to], i) in designProductionPagesInfo"
+              :key="i"
+              link
+              :to="to"
+              class="pl-6"
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
+
+        <v-list-group
+          v-if="purchasePagesInfo.length > 0"
+          :value="purchaseMenu"
+          prepend-icon="mdi-account-cash"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>구매 관리</v-list-item-title>
+          </template>
+
+          <v-list-item
+              v-for="([title, icon, to], i) in purchasePagesInfo"
+              :key="i"
+              link
+              :to="to"
+              class="pl-6"
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
+
         <!-- <v-list-group
           :value="estimateMenu"
           prepend-icon="mdi-invoice-list"
@@ -307,7 +355,7 @@
 import mux from '@/mux';
 
   export default {
-    props: ['userMenu', 'productMenu', 'inboundMenu', 'shipMenu', 'estimateMenu', 'backDataMenu', 'salesMenu', 'obtainOrderMenu'],
+    props: ['userMenu', 'productMenu', 'inboundMenu', 'shipMenu', 'estimateMenu', 'backDataMenu', 'salesMenu', 'obtainOrderMenu', 'designProductionMenu', 'purchaseMenu'],
     data: () => ({
       drawer: null,
       menuList: [
@@ -349,6 +397,14 @@ import mux from '@/mux';
       obtainOrderPages: [
         ['수주서', '', '/obtain-order', ['master', '매니저']],
         ['수주서 현황', '', '/obtain-order-search', ['master', '매니저']],
+      ],
+      designProductionPages: [
+        ['설계', '', '/design-production', ['master', '매니저']],
+        ['설계 현황', '', '/design-production-search', ['master', '매니저']],
+      ],
+      purchasePages: [
+        ['구매 요청', '', '/purchase-request', ['master', '매니저']],
+        ['구매 현황', '', '/purchase-search', ['master', '매니저']],
       ],
       // estimatePages: [
       //   ['견적 작성', '', '/home'],
@@ -403,6 +459,42 @@ import mux from '@/mux';
           }
         });
         return productPagesInfo;
+      },
+      designProductionPagesInfo() {
+        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
+        let designProductionPagesInfo = [];
+        this.designProductionPages.forEach(data => {
+          if (data[data.length-1].length === 0){
+            designProductionPagesInfo.push(data);
+          } else {
+            data[data.length-1].forEach(permission => {
+              if (permissionArr.includes(permission)){
+                designProductionPagesInfo.push(data);
+              }
+            });
+          }
+        });
+        return designProductionPagesInfo;
+      },
+      purchasePagesInfo() {
+        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
+        let purchasePagesInfo = [];
+        this.purchasePages.forEach(data => {
+          if (data[data.length-1].length === 0){
+            purchasePagesInfo.push(data);
+          } else {
+            data[data.length-1].forEach(permission => {
+              if (permissionArr.includes(permission)){
+                purchasePagesInfo.push(data);
+              }
+            });
+          }
+        });
+        return purchasePagesInfo;
       },
       inboundPagesInfo() {
         const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음

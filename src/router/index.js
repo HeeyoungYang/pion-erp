@@ -17,6 +17,10 @@ import ShipRegisterPage from '@/views/ShipRegisterPage'
 import DashboardPage from '@/views/DashboardPage'
 import EstimatePage from '@/views/EstimatePage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
+import PurchasePage from '@/views/PurchasePage'
+import PurchaseSearchPage from '@/views/PurchaseSearchPage'
+import DesignProductionPage from '@/views/DesignProductionPage'
+import DesignProductionSearchPage from '@/views/DesignProductionSearchPage'
 import ObtainOrderPage from '@/views/ObtainOrderPage'
 import ObtainOrderSearchPage from '@/views/ObtainOrderSearchPage'
 import ProductBackdataPage from '@/views/ProductBackdataPage'
@@ -138,6 +142,38 @@ const routes = [
     path: '/estimate-search',
     name: 'EstimateSearchPage',
     component: EstimateSearchPage,
+    meta: {
+      permission: ['매니저', 'admin', 'master']
+    }
+  },
+  {
+    path: '/purchase-request',
+    name: 'PurchasePage',
+    component: PurchasePage,
+    meta: {
+      permission: ['매니저', 'admin', 'master']
+    }
+  },
+  {
+    path: '/purchase-search',
+    name: 'PurchaseSearchPage',
+    component: PurchaseSearchPage,
+    meta: {
+      permission: ['매니저', 'admin', 'master']
+    }
+  },
+  {
+    path: '/design-production',
+    name: 'DesignProductionPage',
+    component: DesignProductionPage,
+    meta: {
+      permission: ['매니저', 'admin', 'master']
+    }
+  },
+  {
+    path: '/design-production-search',
+    name: 'DesignProductionSearchPage',
+    component: DesignProductionSearchPage,
     meta: {
       permission: ['매니저', 'admin', 'master']
     }
