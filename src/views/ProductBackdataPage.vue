@@ -549,7 +549,6 @@
                                 <p class="text-h6 font-weight-black mb-0">선택 원부자재
                                   <v-btn color="primary" x-small @click="set_material_search = true" v-if="!set_material_search">원부자재 선택</v-btn>
                                   <v-btn color="primary" x-small @click="set_material_search = false" v-if="set_material_search">선택 닫기</v-btn>
-                                  <v-btn color="primary" class="ml-4" x-small @click="add_material_search = true" v-if="!add_material_search">원부자재 직접 기입</v-btn>
                                   <v-btn x-small color="error" class="ml-4" @click="resetData('module')">비우기</v-btn>
                                 </p>
                               </v-col>

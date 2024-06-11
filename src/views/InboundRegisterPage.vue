@@ -1082,6 +1082,8 @@ export default {
           mux.Util.showAlert('자재를 선택해주세요.');
           return success = false;
         }else{
+          let ship_belog = [];
+          let ship_belog_product = [];
           if(this.add_self === '자재선택'){
             for(let d = 0; d < inbound_product_data.length; d++){
               if(inbound_product_data[d].inbound_num == '' || inbound_product_data[d].spec == '' || inbound_product_data[d].spot == ''){
@@ -1094,7 +1096,40 @@ export default {
                 mux.Util.showAlert(inbound_product_data[d]._code + '의 출하 내역을 선택해주세요');
                 return success = false;
               }
+              if(inbound_product_data[d].belong_data){
+
+                for(let s=0; s<inbound_product_data[d].belong_data.length; s++){
+                  inbound_product_data[d].belong_data[s].belong_data.forEach(b => {
+                    ship_belog.push({"product_code":b.product_code, "ship_num": b.ship_num});
+                    // ship_belog_product.push({"product_code" : b.product_code, "total_ship_num" : 0});
+                    ship_belog_product.push(b.product_code);
+                  })
+                }
+                let set = new Set(ship_belog_product);
+                let ship_belog_product_unique = [...set];
+
+                let total_ship_data = [];
+                ship_belog_product_unique.forEach(ship => {
+                  let total_ship_num = 0;
+                  for(let sbp=0; sbp<ship_belog.length; sbp++){
+                    if(ship === ship_belog[sbp].product_code){
+                      total_ship_num += ship_belog[sbp].ship_num;
+                    }
+                  }
+                  total_ship_data.push({"product_code" : ship, "total_ship_num" : total_ship_num});
+                })
+                console.log('total_ship_data : ' + JSON.stringify(total_ship_data));
+
+                for(let ts=0; ts<total_ship_data.length; ts++){
+                  if(!Number.isInteger(total_ship_data[ts].total_ship_num / inbound_product_data[d].inbound_num)){
+                    mux.Util.showAlert(inbound_product_data[d]._code + '에 연결된 출고수량과<br>기입한 입고수량을 확인해주세요.<br><br> - 입고수량 : ' + inbound_product_data[d].inbound_num + '<br> - 출고 정보 : ' + total_ship_data[ts].product_code + '/' + total_ship_data[ts].total_ship_num + '개')
+                    return success=false;
+                  }
+                }
+              }
             }
+
+
           }else if(this.add_self === '직접기입'){
             inbound_product_data.forEach(data => {
               for(let add = 0; add < Object.keys(data).length; add++){
@@ -1105,6 +1140,37 @@ export default {
                 if(Object.keys(data)[add] === 'type' && Object.values(data)[add] !== '원부자재' && !data.belong_data){
                   mux.Util.showAlert(data._code + '출하 내역을 선택해주세요');
                   return success = false;
+                }
+              }
+              if(data.belong_data){
+
+                for(let s=0; s<data.belong_data.length; s++){
+                  data.belong_data[s].belong_data.forEach(b => {
+                    ship_belog.push({"product_code":b.product_code, "ship_num": b.ship_num});
+                    // ship_belog_product.push({"product_code" : b.product_code, "total_ship_num" : 0});
+                    ship_belog_product.push(b.product_code);
+                  })
+                }
+                let set = new Set(ship_belog_product);
+                let ship_belog_product_unique = [...set];
+
+                let total_ship_data = [];
+                ship_belog_product_unique.forEach(ship => {
+                  let total_ship_num = 0;
+                  for(let sbp=0; sbp<ship_belog.length; sbp++){
+                    if(ship === ship_belog[sbp].product_code){
+                      total_ship_num += ship_belog[sbp].ship_num;
+                    }
+                  }
+                  total_ship_data.push({"product_code" : ship, "total_ship_num" : total_ship_num});
+                })
+                console.log('total_ship_data : ' + JSON.stringify(total_ship_data));
+
+                for(let ts=0; ts<total_ship_data.length; ts++){
+                  if(!Number.isInteger(total_ship_data[ts].total_ship_num / data.inbound_num)){
+                    mux.Util.showAlert(data._code + '에 연결된 출고수량과<br>기입한 입고수량을 확인해주세요.<br><br> - 입고수량 : ' + data.inbound_num + '<br> - 출고 정보 : ' + total_ship_data[ts].product_code + '/' + total_ship_data[ts].total_ship_num + '개')
+                    return success=false;
+                  }
                 }
               }
             })

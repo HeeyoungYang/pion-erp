@@ -1418,7 +1418,7 @@ export default {
 
       const currDate = new Date();
       ship_confirmation.ship_date = (this.ship_date_set === "" ? mux.Date.format(currDate, 'yyyy-MM-dd') : this.ship_date_set);
-      let add_code = ship_confirmation.code + '/추가';
+      let add_code = ship_confirmation.code + '+추가';
       let phase;
       if(ship_confirmation.checker_id === this.login_info.id){
         ship_confirmation.approval_phase = '추가 미승인';
