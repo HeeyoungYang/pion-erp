@@ -360,7 +360,7 @@
       persistent
       max-width="1000px"
     >
-      <MailFormComponent v-model="files">
+      <MailFormComponent v-model="mailData">
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
@@ -539,6 +539,64 @@ export default {
     sendEstiamteMail(){
       this.estimate_product_list_dialog = false;
       this.mailDialog = true;
+    },
+
+    async test(){
+      console.log('this.mailData :>> ', this.mailData);
+      
+      let sendData = JSON.parse(JSON.stringify(this.mailData));
+      sendData.path = '/api/email/send/';
+      sendData.files = this.mailData.files;
+      sendData.to = sendData.to.trim();
+      sendData.to = sendData.to.split(/,|\/|\s/); // 콤마, 슬래시, 공백으로 구분
+      sendData.to = sendData.to.filter(x => x !== '');
+      sendData.cc = sendData.cc.trim();
+      sendData.cc = sendData.cc.split(/,|\/|\s/); // 콤마, 슬래시, 공백으로 구분
+      sendData.cc = sendData.cc.filter(x => x !== '');
+      sendData.bcc = sendData.bcc.trim();
+      sendData.bcc = sendData.bcc.split(/,|\/|\s/); // 콤마, 슬래시, 공백으로 구분
+      sendData.bcc = sendData.bcc.filter(x => x !== '');
+      
+      let attachment = [];
+      if (sendData.estimate) {
+        attachment.push({folder: 'estimate', fileName: 'estimate.pdf'});
+      }
+      delete sendData.estimate;
+
+      if (sendData.specification) {
+        attachment.push({folder: 'specification', fileName: 'specification.pdf'});
+      }
+      delete sendData.specification;
+
+      if (sendData.drawing) {
+        attachment.push({folder: 'drawing', fileName: 'drawing.pdf'});
+      }
+      delete sendData.drawing;
+
+      if (sendData.approval) {
+        attachment.push({folder: 'approval', fileName: 'approval.pdf'});
+      }
+      delete sendData.approval;
+
+      if (sendData.etc) {
+        attachment.push({folder: 'etc', fileName: 'etc.pdf'});
+      }
+      delete sendData.etc;
+
+      if (sendData.business_license) {
+        attachment.push({folder: 'business_license', fileName: 'business_license.pdf'});
+      }
+      delete sendData.business_license;
+
+      sendData.attachment = attachment;
+
+      try {
+        await mux.Server.sendEmail(sendData);
+        mux.Util.showAlert('메일 발송이 완료되었습니다.', '발송 완료', 3000);
+        this.mailDialog = false;
+      } catch (error) {
+        mux.Util.showAlert(error);
+      }
     }
   },
 }

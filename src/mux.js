@@ -199,9 +199,101 @@ mux.Server = {
   },
 
   /**
+   * 메일 발송
+   * @param {Object} reqObj
+   * 필수 key: path, to, subject, content
+   * 선택 key: cc, bcc, files : [{folder,file}], attachment: [folder, fileName], timeout, ...
+   */
+  async sendEmail(reqObj) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        if (!reqObj.path) {
+          reject('upload file error: path 정보와 함께 요청해야 합니다.');
+          return;
+        }
+        if (!Array.isArray(reqObj.to) || reqObj.to.length === 0 || !reqObj.subject || !reqObj.content){
+          reject('send email error: 수신자, 제목, 내용 정보와 함께 요청해야 합니다.');
+          return;
+        }
+        if (!reqObj.files) {
+          reqObj.files = [];
+        }
+        for (let i = 0; i < reqObj.to.length; i++) {
+          const to = reqObj.to[i];
+          reqObj['to_'+i] = to;
+        }
+        delete reqObj.to;
+        if (reqObj.cc) {
+          for (let i = 0; i < reqObj.cc.length; i++) {
+            const cc = reqObj.cc[i];
+            reqObj['cc_'+i] = cc;
+          }
+          delete reqObj.cc;
+        }
+        if (reqObj.bcc) {
+          for (let i = 0; i < reqObj.bcc.length; i++) {
+            const bcc = reqObj.bcc[i];
+            reqObj['bcc_'+i] = bcc;
+          }
+          delete reqObj.bcc;
+        }
+
+        if (reqObj.attachment) {
+          for (let i = 0; i < reqObj.attachment.length; i++) {
+            const attach = reqObj.attachment[i];
+            if (!attach.folder || !attach.fileName){
+              reject('send email error: 체크 항목을 첨부할 수 없습니다.');
+              return;
+            }
+            reqObj['attachment_folder_'+i] = attach.folder;
+            reqObj['attachment_fileName_'+i] = attach.fileName;
+          }
+          delete reqObj.attachment;
+        }
+
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
+        if (reqObj.timeout){
+          this.axiosInstance.defaults.timeout = reqObj.timeout;
+        }
+
+        let formData = new FormData();
+        if (reqObj.files && Array.isArray(reqObj.files)){
+          reqObj.files.forEach((file, index) => {
+            formData.append('fileName_'+index, file.name);
+            formData.append('file', file);
+          });
+        }
+
+        Object.keys(reqObj).forEach(key => {
+          if (key !== 'files' && key !== 'path' && key !== 'timeout'){
+            formData.append(key, JSON.stringify(reqObj[key]));
+          }
+        });
+
+        // console.log('formData :>> ', formData);
+        // for (let [key, value] of formData.entries()) {
+        //   console.log(`${key}: ${value}`);
+        // }
+
+        const response = await this.axiosInstance.post(reqObj.path, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
+        resolve(response);
+      } catch (error) {
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
+        reject(error)
+      }
+    });
+  },
+
+  /**
    * 파일 업로드
    * @param {Object} reqObj
-   * 필수 key: path, (folder, file) | {obj}files : {folder,file}
+   * 필수 key: path, (folder, file) | files : [{folder,file}]
    * 선택 key: prefix, files.prefix, timeout, ...
    */
   async uploadFile(reqObj) {

@@ -8,7 +8,7 @@
             <v-text-field
               label="받는 사람"
               required
-
+              v-model="mailData.to"
               dense
               hide-details
             ></v-text-field>
@@ -16,7 +16,7 @@
           <v-col cols="12">
             <v-text-field
               label="참조"
-
+              v-model="mailData.cc"
               dense
               hide-details
               required
@@ -25,7 +25,7 @@
           <v-col cols="12">
             <v-text-field
               label="숨은 참조"
-
+              v-model="mailData.bcc"
               dense
               hide-details
               required
@@ -40,51 +40,59 @@
           <v-text-field
             label="제목"
             required
+            v-model="mailData.subject"
             hide-details
           ></v-text-field>
           <v-checkbox
             label="견적서"
+            v-model="mailData.estimate"
             color="primary"
             hide-details
             class="float-left mr-3"
           ></v-checkbox>
           <v-checkbox
             label="산출내역서"
+            v-model="mailData.specification"
             color="primary"
             hide-details
             class="float-left mr-3"
           ></v-checkbox>
           <v-checkbox
             label="도면"
+            v-model="mailData.drawing"
             color="primary"
             hide-details
             class="float-left mr-3"
           ></v-checkbox>
           <v-checkbox
             label="승인서"
+            v-model="mailData.approval"
             color="primary"
             hide-details
             class="float-left mr-3"
           ></v-checkbox>
           <v-checkbox
             label="기타첨부"
+            v-model="mailData.etc"
             color="primary"
             hide-details
             class="float-left mr-3"
           ></v-checkbox>
           <v-checkbox
             label="사업자등록증"
+            v-model="mailData.business_license"
             color="primary"
             hide-details
             class="float-left mr-3"
           ></v-checkbox>
         </v-col>
         <v-col cols="12">
-          <vue-editor v-model="content" :editor-toolbar="customToolbar" id="email_editor"/>
+          <vue-editor v-model="mailData.content" :editor-toolbar="customToolbar" id="email_editor"/>
         </v-col>
         <v-col cols="12">
           <v-file-input
-            @change="fileChanged"
+            
+            v-model="mailData.files"
             placeholder="추가 첨부"
             hide-details
             dense
@@ -112,18 +120,23 @@
 <script>
 
 export default {
-  methods: {
-    fileChanged(file) {
-      // 파일이 변경되면 부모 컴포넌트로 파일 정보를 전달
-      this.$emit('input', file);
-    }
-  },
-  components: {
-  },
-  data(){
-    return{
-      content:
-      `
+  props: {
+    value: {
+      type: Object,
+      default: () => {
+        return {
+          to: '',
+          cc: '',
+          bcc: '',
+          subject: '',
+          estimate: false,
+          specification: false,
+          drawing: false,
+          approval: false,
+          etc: false,
+          business_license: false,
+          content:
+        `
 
 
 
@@ -148,6 +161,31 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
 ∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)
 ∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)
 ∙ 전기공사면허</p>`,
+          files: []
+
+        }
+      }
+    }
+  },
+  created() {
+    this.mailData = this.value
+  },
+  methods: {
+    
+  },
+  watch: {
+    mailData: {
+      handler: function (val) {
+        this.$emit('input', val)
+      },
+      deep: true
+    }
+  },
+  components: {
+  },
+  data(){
+    return{
+      mailData: {},
     }
   },
 }
