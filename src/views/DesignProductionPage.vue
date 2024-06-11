@@ -351,6 +351,105 @@
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
+
+                <v-tab-item>
+                  <v-card>
+                    <v-card-text>
+                      <v-row>
+                        <v-col cols="12" sm="12">
+                          <!-- <p class="font-weight-black primary--text text-h6 mb-0 float-left">자재 검색</p> -->
+
+                          <v-btn
+                            color="success"
+                            fab
+                            x-small
+                            elevation="1"
+                            class="float-right ml-2"
+                          >
+                            <v-icon small>mdi-content-save</v-icon>
+                          </v-btn>
+                          <v-btn
+                            color="primary"
+                            fab
+                            x-small
+                            class="mr-3 float-right dont_print"
+                            elevation="0"
+                            data-html2canvas-ignore="true"
+                            @click="dialog_calculate_labor = true"
+                          >
+                            <v-icon
+                              small
+                            >mdi-pencil</v-icon>
+                          </v-btn>
+                        </v-col>
+                        <!-- <v-col cols="12" sm="12">
+                          <v-col cols="12">
+                            <InputsFormComponent
+                              dense
+                              filled
+                              clearable
+                              hide-details
+                              :inputs="productSearchItemInputs"
+                              @enter="searchItem"
+                            >
+                              <v-col
+                                cols="12"
+                                sm="4"
+                                lg="3"
+                                align-self="center"
+                              >
+                                <v-btn
+                                  color="primary"
+                                  elevation="2"
+                                  class="mr-2"
+                                  small
+                                  @click="searchItem"
+                                >
+                                  검색
+                                </v-btn>
+                                <v-btn
+                                  color="success"
+                                  elevation="2"
+                                  class="mr-2"
+                                  small
+                                  @click="addItems"
+                                >
+                                  추가
+                                </v-btn>
+                                <v-btn color="default" small @click="set_material_search = false" v-if="set_material_search">
+                                  자재 선택 닫기
+                                </v-btn>
+                              </v-col>
+                            </InputsFormComponent>
+                          </v-col>
+                          <v-col cols="12">
+
+                            <v-data-table
+                              v-model="selected_items_for_product_data"
+                              :headers="product_search_item_headers"
+                              :items="search_items_for_product_data"
+                              item-key="_code"
+                              show-select
+                              dense
+                            ></v-data-table>
+                          </v-col>
+                        </v-col> -->
+                        <v-col cols="12" sm="12">
+
+                          <p class="font-weight-black primary--text text-h6 mb-0">TEST-01 구성 자재</p>
+
+                          <v-data-table
+                            v-model="selected_items_for_product_data"
+                            :headers="product_item_setting_headers"
+                            :items="search_items_for_product_data"
+                            item-key="_code"
+                            dense
+                          ></v-data-table>
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
+                  </v-card>
+                </v-tab-item>
                 <!-- 산출내역서 -->
                 <v-tab-item>
                   <v-card ref="calcDetailCard">
@@ -593,6 +692,125 @@
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
+
+                <v-tab-item>
+                  <v-card ref="calcDetailCard">
+                    <v-row class="mt-3">
+                      <v-col
+                        cols="12"
+                        sm="12"
+                      >
+                        <p class="font-weight-black primary--text text-h6 mb-0">완제품 조회</p>
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="4"
+                        lg="3"
+                      >
+                        <v-text-field
+                          v-model="search_complete_product_code"
+                          dense
+                          clearable
+                          filled
+                          hide-details
+                          label="제품코드"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="4"
+                        lg="3"
+                      >
+                        <v-text-field
+                          v-model="search_complete_product_name"
+                          dense
+                          clearable
+                          filled
+                          hide-details
+                          label="제품명"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="4"
+                        lg="3"
+                      >
+                        <v-text-field
+                          v-model="search_product_capacity"
+                          dense
+                          clearable
+                          filled
+                          hide-details
+                          label="용량"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col
+                        cols="6"
+                        sm="4"
+                        lg="3"
+                        align-self="center"
+                      >
+                        <v-btn
+                          color="primary"
+                          elevation="2"
+                          @click="searchProduct"
+                        >
+                          <v-icon>mdi-magnify</v-icon>검색
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col cols="12">
+                        <v-data-table
+                          dense
+                          :headers="dialog_search_product_headers"
+                          :items="dialog_search_product_data"
+                          item-key="product_code"
+                          class="elevation-1"
+                        >
+                          <template v-slot:[`item.actions`]="{ item }">
+                            <v-btn
+                              color="success"
+                              x-small
+                              class="ml-3"
+                              elevation="0"
+                              @click="addCostList(item)"
+                            >선택
+                            </v-btn>
+                          </template>
+                        </v-data-table>
+                      </v-col>
+                    </v-row>
+
+
+                    <v-row>
+                      <v-col
+                        cols="12"
+                        sm="12"
+                        class="mt-6"
+                      >
+                        <span class="font-weight-black primary--text text-h6 mb-0">선택 구성</span>
+                        <v-btn small class="ml-3 float-right" color="success">산출내역서 적용</v-btn>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-data-table
+                          dense
+                          :headers="dialog_product_details_headers"
+                          :items="dialog_search_product_data"
+                          item-key="product_code"
+                          class="elevation-1"
+                        >
+                          <template v-slot:[`item.actions`]>
+
+                            <v-icon
+                              @click="dialog_bom_detail = true"
+                            >mdi-magnify</v-icon>
+                          </template>
+                        </v-data-table>
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </v-tab-item>
                 <!-- 산출내역서 -->
                 <v-tab-item>
                   <v-card ref="calcDetailCard">
@@ -782,22 +1000,136 @@
     </div>
 
 
-    <!-- 제품 불러오기 Modal -->
+    <!-- BOM LIST 상세 Modal -->
     <ModalDialogComponent
-        :dialog-value="dialog_search_product"
-        max-width="1300px"
-        title-class=" "
-        :dialog-transition="'slide-x-transition'"
-        :dialog-custom="'custom-dialog elevation-0 white'"
-        :card-elevation="'0'"
-        :persistent="true"
-      >
-        <v-container>
+      :dialog-value="dialog_bom_detail"
+      max-width="1300px"
+      title-class=" "
+      :dialog-transition="'slide-x-transition'"
+      :dialog-custom="'custom-dialog elevation-0 white'"
+      :card-elevation="'0'"
+      :persistent="true"
+    >
+      <v-container>
+        <!-- 모달 내용 구성 -->
+        <v-row>
+          <v-col cols="12" sm="12">
+            <p class="font-weight-black primary--text text-h6 mb-0 float-left">자재 검색</p>
             <v-btn
               fab
               color="blue-grey darken-1"
               x-small
-              class="float-right white--text"
+              class="float-right white--text ml-2"
+              elevation="1"
+              @click="dialog_bom_detail=false"
+            >
+              <v-icon> mdi-close-thick </v-icon>
+            </v-btn>
+            <v-btn
+              color="primary"
+              fab
+              x-small
+              elevation="1"
+              class="float-right ml-2"
+            >
+              <v-icon small>mdi-content-save</v-icon>
+            </v-btn>
+          </v-col>
+          <v-col cols="12" sm="12">
+            <v-col cols="12">
+              <InputsFormComponent
+                dense
+                filled
+                clearable
+                hide-details
+                :inputs="productSearchItemInputs"
+                @enter="searchItem"
+              >
+                <v-col
+                  cols="12"
+                  sm="4"
+                  lg="3"
+                  align-self="center"
+                >
+                  <v-btn
+                    color="primary"
+                    elevation="2"
+                    class="mr-2"
+                    small
+                    @click="searchItem"
+                  >
+                    검색
+                  </v-btn>
+                  <v-btn
+                    color="success"
+                    elevation="2"
+                    class="mr-2"
+                    small
+                    @click="addItems"
+                  >
+                    추가
+                  </v-btn>
+                  <v-btn color="default" small @click="set_material_search = false" v-if="set_material_search">
+                    자재 선택 닫기
+                  </v-btn>
+                </v-col>
+              </InputsFormComponent>
+            </v-col>
+            <v-col cols="12">
+              <!-- <DataTableComponent
+                v-model="selected_items_for_product_data"
+                :headers="product_search_item_headers"
+                :items="search_items_for_product_data"
+                item-key="_code"
+                show-select
+                dense
+              /> -->
+
+              <v-data-table
+                v-model="selected_items_for_product_data"
+                :headers="product_search_item_headers"
+                :items="search_items_for_product_data"
+                item-key="_code"
+                show-select
+                dense
+              ></v-data-table>
+            </v-col>
+          </v-col>
+          <v-col cols="12" sm="12">
+
+            <p class="font-weight-black primary--text text-h6 mb-0">TEST-01 구성 자재</p>
+
+            <v-data-table
+              v-model="selected_items_for_product_data"
+              :headers="product_item_setting_headers"
+              :items="search_items_for_product_data"
+              item-key="_code"
+              dense
+            ></v-data-table>
+          </v-col>
+        </v-row>
+      </v-container>
+    </ModalDialogComponent>
+
+    <!-- 공사자재 Modal -->
+    <ModalDialogComponent
+      :dialog-value="dialog_search_product"
+      max-width="1300px"
+      title-class=" "
+      :dialog-transition="'slide-x-transition'"
+      :dialog-custom="'custom-dialog elevation-0 white'"
+      :card-elevation="'0'"
+      :persistent="true"
+    >
+      <v-container>
+        <!-- 모달 내용 구성 -->
+        <v-row>
+          <v-col cols="12" sm="12">
+            <v-btn
+              fab
+              color="blue-grey darken-1"
+              x-small
+              class="float-right white--text ml-2"
               elevation="1"
               @click="dialog_search_product=false"
             >
@@ -808,182 +1140,81 @@
               fab
               x-small
               elevation="1"
-              class="float-right mr-2"
+              class="float-right ml-2"
             >
               <v-icon small>mdi-content-save</v-icon>
             </v-btn>
-          <!-- 모달 내용 구성 -->
-          <v-tabs
-            v-model="tab_dialog_search_product"
-            background-color="transparent"
-          >
-            <v-tab
-              v-for="item in dialog_search_product_items"
-              :key="item"
+            <v-btn
+              color="success"
+              elevation="1"
+              small
+              class="ml-2 float-right"
+              :href="`https://www.kpi.or.kr/www/`"
+              target="_blank"
             >
-              {{ item }}
-            </v-tab>
-          </v-tabs>
-
-          <v-tabs-items v-model="tab_dialog_search_product" class="pb-1">
-            <v-tab-item>
-              <v-row class="mt-3">
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="search_complete_product_code"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="제품코드"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="search_complete_product_name"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="제품명"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                  lg="3"
-                >
-                  <v-text-field
-                    v-model="search_product_capacity"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    label="용량"
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="6"
-                  sm="4"
-                  lg="3"
-                  align-self="center"
-                >
-                  <v-btn
-                    color="primary"
-                    elevation="2"
-                    @click="searchProduct"
-                  >
-                    <v-icon>mdi-magnify</v-icon>검색
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12">
-                  <v-data-table
-                    dense
-                    :headers="dialog_search_product_headers"
-                    :items="dialog_search_product_data"
-                    item-key="product_code"
-                    class="elevation-1"
-                  >
-                  <template v-slot:[`item.actions`]="{ item }">
-                    <v-btn
-                      color="success"
-                      x-small
-                      class="ml-3"
-                      elevation="0"
-                      @click="addCostList(item)"
-                    >적용
-                    </v-btn>
-                  </template>
-                  </v-data-table>
-                </v-col>
-              </v-row>
-            </v-tab-item>
-            <v-tab-item>
-              <v-row>
-                <v-col cols="12" sm="12">
-                  <v-btn
-                    color="success"
-                    elevation="1"
-                    small
-                    class="ml-2 float-right"
-                    :href="`https://www.kpi.or.kr/www/`"
-                    target="_blank"
-                  >
-                    물가정보 바로가기
-                  </v-btn>
-                  <v-btn
-                    small
-                    elevation="1"
-                    class=" float-right"
-                    color="default"
-                  >
-                    행 추가
-                  </v-btn>
-                </v-col>
-                <v-col cols="12" sm="12">
-                  <v-data-table
-                    dense
-                    :headers="construction_materials_headers"
-                    :items="construction_materials_data"
-                    hide-default-footer
-                    disable-pagination
-                    item-key="construction_materials"
-                    class="elevation-1"
-                  >
-                    <template v-slot:item>
-                      <tr>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            style="width:200px"
-                          >
-                          </v-text-field>
-                        </td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            style="width:200px"
-                          >
-                          </v-text-field>
-                        </td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            style="width:200px"
-                          >
-                          </v-text-field>
-                        </td>
-                        <td align="center">
-                          0000
-                        </td>
-                        <td align="center">
-                          <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
-                        </td>
-                      </tr>
-                    </template>
-                  </v-data-table>
-                </v-col>
-              </v-row>
-            </v-tab-item>
-          </v-tabs-items>
-        </v-container>
-      </ModalDialogComponent>
+              물가정보 바로가기
+            </v-btn>
+            <v-btn
+              small
+              elevation="1"
+              class=" float-right"
+              color="default"
+            >
+              행 추가
+            </v-btn>
+          </v-col>
+          <v-col cols="12" sm="12">
+            <v-data-table
+              dense
+              :headers="construction_materials_headers"
+              :items="construction_materials_data"
+              hide-default-footer
+              disable-pagination
+              item-key="construction_materials"
+              class="elevation-1"
+            >
+              <template v-slot:item>
+                <tr>
+                  <td align="center">
+                    <v-text-field
+                      dense
+                      hide-details
+                      filled
+                      style="width:200px"
+                    >
+                    </v-text-field>
+                  </td>
+                  <td align="center">
+                    <v-text-field
+                      dense
+                      hide-details
+                      filled
+                      style="width:200px"
+                    >
+                    </v-text-field>
+                  </td>
+                  <td align="center">
+                    <v-text-field
+                      dense
+                      hide-details
+                      filled
+                      style="width:200px"
+                    >
+                    </v-text-field>
+                  </td>
+                  <td align="center">
+                    0000
+                  </td>
+                  <td align="center">
+                    <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+          </v-col>
+        </v-row>
+      </v-container>
+    </ModalDialogComponent>
 
     <!-- 노무비 산출 Modal -->
       <ModalDialogComponent
@@ -1215,6 +1446,7 @@ export default {
       tab_main_items: DesignProductionPageConfig.tab_main_items,
       dialog_search_product_items: DesignProductionPageConfig.dialog_search_product_items,
       dialog_search_product: false,
+      dialog_bom_detail: false,
       dialog_calculate_labor: false,
 
       save_costs: DesignProductionPageConfig.save_costs,
@@ -1222,17 +1454,19 @@ export default {
       survey_cost_headers: DesignProductionPageConfig.survey_cost_headers,
       labor_cost_headers: DesignProductionPageConfig.labor_cost_headers,
       labor_list_headers: DesignProductionPageConfig.labor_list_headers,
+      dialog_product_details_headers: DesignProductionPageConfig.dialog_product_details_headers,
       dialog_search_product_headers: DesignProductionPageConfig.dialog_search_product_headers,
       construction_materials_headers: DesignProductionPageConfig.construction_materials_headers,
 
-
-
+      dialog_search_product_data: DesignProductionPageConfig.dialog_search_product_test_data,
+      product_search_item_headers: DesignProductionPageConfig.product_search_item_headers,
+      product_item_setting_headers: DesignProductionPageConfig.product_item_setting_headers,
 
       construction_materials_data: JSON.parse(JSON.stringify(DesignProductionPageConfig.construction_materials_data)),
       calc_cost_detail_data: JSON.parse(JSON.stringify(DesignProductionPageConfig.calc_cost_detail_data)),
       calc_cost_detail_data2: DesignProductionPageConfig.calc_cost_detail_data.map(x => {
         if (x.cost_list === '재료비') {
-          x.costListBtn = {
+          x.belong_data[1].costListBtn = {
             text: '작성',
             click: ()=>{this.dialog_search_product = true}
           }
@@ -1268,6 +1502,7 @@ export default {
       search_tab_items: DesignProductionPageConfig.search_tab_items,
       write_tab_items: DesignProductionPageConfig.write_tab_items,
       searchCardInputs: DesignProductionPageConfig.searchCardInputs,
+      productSearchItemInputs: DesignProductionPageConfig.productSearchItemInputs,
       estimateDefaultInfoInputs: DesignProductionPageConfig.estimateDefaultInfoInputs,
       estimateCompanyInfoInputs: DesignProductionPageConfig.estimateCompanyInfoInputs,
       estimateFilesInputs: DesignProductionPageConfig.estimateFilesInputs,

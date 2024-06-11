@@ -7,10 +7,10 @@
     "조회", "작성"
   ],
   "search_tab_items": [
-    "수주서", "설계 정보", "산출내역서", "노무비 산출"
+    "수주서", "설계 정보", "BOM LIST", "산출내역서", "노무비 산출"
   ],
   "write_tab_items": [
-    "설계", "산출내역서"
+    "설계", "BOM LIST", "산출내역서"
   ],
   "dialog_search_product_items": [
     "제품 불러오기", "공사 자재"
@@ -22,6 +22,17 @@
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"발행일", "type": "dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"8"}
   ],
+  
+  "productSearchItemInputs":[
+    {"label":"종류", "type":"auto", "list":["원부자재", "반제품"], "value":"원부자재", "col":"12", "sm":"4", "lg":"3"},
+    {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"3"},
+    {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value": ""}
+  ],
+
   "estimateDefaultInfoInputs":[    
     {"label":"발행일", "col":"12", "sm":"4", "lg":"4", "disabled":true},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4", "disabled":true},
@@ -43,6 +54,28 @@
     {"label":"승인도서", "column_name":"blueprint", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
     {"label":"제작사양서", "column_name":"approval", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
     {"label":"상세도면", "column_name":"files", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true}
+  ],
+  
+  "product_search_item_headers": [
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "_code"},
+    { "text": "자재명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "단가", "align": "start", "value": "unit_price"}
+  ],
+  "product_item_setting_headers": [
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "_code"},
+    { "text": "자재명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "단가", "align": "start", "value": "unit_price"},
+    { "text": "제외", "align": "start", "value": "actions"}
   ],
   "search_estimate_headers":[
     { "text": "발행일", "align": "start", "value": "created_time"},
@@ -110,8 +143,15 @@
     { "text": "제품명", "align": "center", "value": "complete_product_name"},
     { "text": "모델명", "align": "center", "value": "product_model"},
     { "text": "사양", "align": "center", "value": "product_spec"},
+    { "text": "제조사", "align": "center", "value": "manufacturer"}
+  ],
+  "dialog_product_details_headers":[
+    { "text": "제품코드", "align": "center", "value": "product_code"},
+    { "text": "제품명", "align": "center", "value": "complete_product_name"},
+    { "text": "모델명", "align": "center", "value": "product_model"},
+    { "text": "사양", "align": "center", "value": "product_spec"},
     { "text": "제조사", "align": "center", "value": "manufacturer"},
-    { "text": "단가", "align": "center", "value": "unit_price"}
+    { "text": "상세", "align": "center", "value":"actions"}
   ],
 
   "calc_cost_detail_data": [
@@ -307,8 +347,15 @@
     }
 
   ],
-
-
+  "dialog_search_product_test_data":[
+    {
+      "product_code": "TEST-01",
+      "complete_product_name": "제품명",
+      "product_model": "모델명",
+      "product_spec": "사양",
+      "manufacturer": "제조사"
+    }
+  ],
   "test_estimate_data":[
     {
       "created_time" : "2024-05-29", 
