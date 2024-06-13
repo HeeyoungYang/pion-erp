@@ -174,6 +174,12 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
     
   },
   watch: {
+    value: {
+      handler: function (val) {
+        this.mailData = val;
+      },
+      deep: true
+    },
     mailData: {
       handler: function (val) {
         this.$emit('input', val)
