@@ -543,7 +543,7 @@ export default {
       console.log(item)
     },
     sendEstiamteMail(){
-      this.estimate_product_list_dialog = false;
+      // this.estimate_product_list_dialog = false;
       this.mailDialog = true;
     },
 
