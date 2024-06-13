@@ -508,16 +508,11 @@
                   <p v-if="moduleStockPriceInfo" class="my-2">
                     <v-chip
                       color="yellow lighten-4"
-                      class="mr-2"
-                      small
-                    >총 재료비 : ₩ {{ Number(item.item_price).toLocaleString() }}</v-chip>
-                    <v-chip
-                      color="yellow lighten-4"
                       small
                     >재고 총액 : ₩ {{ Number(item.total_stock * item.unit_price.replace(/\,/g,'').replace(/₩ /g,'') ).toLocaleString() }}</v-chip>
                   </p>
                   <p v-if="itemPriceInfo" class="my-2">
-                    {{ item.item_code === '총 재료비' ? item.num_price : '₩ ' + Number(item.num * item.unit_price.replace(/\,/g,'').replace(/₩ /g,'') ).toLocaleString() }}
+                    {{ item.item_code === '총 재료비' ? item.num_price : '₩ ' + Number(item.num * item.unit_price.replace(/\,/g,'').replace(/₩ /g,'')).toLocaleString() }}
                     <!-- <v-chip
                       color="yellow lighten-4"
                       small
