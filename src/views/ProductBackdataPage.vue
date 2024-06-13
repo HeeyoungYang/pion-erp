@@ -2843,8 +2843,10 @@ export default {
       }
       if (item.belong_data){
         for(let d=0; d<item.belong_data.length; d++){
-          item.belong_data[d].num = Number(item.belong_data[d].num).toLocaleString();
-          this.product_set_items_data.push(item.belong_data[d])
+          if(item.belong_data[d].item_code !== '총 재료비'){
+            item.belong_data[d].num = Number(item.belong_data[d].num).toLocaleString();
+            this.product_set_items_data.push(item.belong_data[d])
+          }
         }
       }
       this.product_dialog = true;
