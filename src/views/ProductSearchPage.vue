@@ -429,8 +429,6 @@ export default {
             }
             data.total_stock = stock_calc
 
-
-
             if(data.belong_data){
               for(let b=0; b<data.belong_data.length; b++){
                 data.belong_data[b].item_code = data.belong_data[b].code;

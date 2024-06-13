@@ -1383,35 +1383,20 @@ export default {
             data.unit_price = data.unit_price.toLocaleString();
 
             if(data.belong_data){
+              let total_unit_price = 0;
               for(let b=0; b<data.belong_data.length; b++){
                 data.belong_data[b].cost_list = data.belong_data[b].name;
                 data.belong_data[b].cost_unit = 'SET';
                 data.belong_data[b].cost_num = data.belong_data[b].num;
                 data.belong_data[b].cost_unit_price = data.belong_data[b].unit_price;
+                total_unit_price += data.belong_data[b].unit_price * data.belong_data[b].num;
 
-                // data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 if(data.belong_data[b].belong_data){
                   delete data.belong_data[b].belong_data;
                 }
               }
+              data.unit_price = '₩ ' + Number(total_unit_price).toLocaleString();
             }
-            // let stock_calc = 0;
-            // if (data.spot_stock){
-            //   for(let d=0; d<data.spot_stock.length; d++){
-            //     if (typeof data.spot_stock[d].stock_num === 'number'){
-            //       stock_calc += data.spot_stock[d].stock_num;
-            //     }
-            //   }
-            // }
-            // data.total_stock = stock_calc
-            // if (typeof data.unit_price === 'number'){
-            //   data.item_price = data.unit_price * data.total_stock
-            //   data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
-            // }else {
-            //   data.item_price = 0;
-            // }
-            // // this.total_stock_num += data.total_stock
-            // // this.total_stock_price += data.item_price
           })
         }else{
           if (prevURL !== window.location.href) return;
