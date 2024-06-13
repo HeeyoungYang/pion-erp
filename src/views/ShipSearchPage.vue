@@ -1393,7 +1393,7 @@ export default {
         data.ship_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.ship_num).toLocaleString();
         this.ship_product_list_data.push(data);
       })
-      alert(item)
+      // alert(item)
     },
     async reshipmentApprovalRequest(){
       let ship_confirmation = this.ship_info_data;
