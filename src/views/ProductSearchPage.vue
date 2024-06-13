@@ -49,6 +49,7 @@
           <div>
             <ExpansionPanelComponent
               :data="product_data"
+              @headerStockApply="headerStockApply"
               elevation="1"
               class="mt-5"
               multiple>
@@ -65,6 +66,25 @@
                   >
                     : {{ data.item_code }}
                   </span>
+                </p>
+                <p
+                  class="mb-0"
+                  :id="'stock_price_'+data.item_code"
+                >
+                  <v-chip
+                    class="mr-2 font-weight-bold white--text float-right"
+                    color="indigo"
+                    small
+                  >
+                    총 재고 금액 : {{ data.total_stock_price }}
+                  </v-chip>
+                  <v-chip
+                    class="mr-2 font-weight-bold white--text float-right"
+                    color="indigo"
+                    small
+                  >
+                    총 재고 : {{ data.total_stock }}개
+                  </v-chip>
                 </p>
               </template>
               <template v-slot:content="{ data }">
@@ -532,6 +552,14 @@ export default {
         data.stock_price = '₩ '+ Number(data.total_stock.replace(/,/g,'') * data.unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
       })
       mux.Excel.downloadTable(excelHeaders, items, items[0].name+'_엑셀다운로드');
+    },
+    headerStockApply(item_code){
+      let header_stock_info = document.querySelector('#stock_price_'+item_code);
+      if(header_stock_info.classList.contains('d-none')){
+        header_stock_info.classList.remove('d-none');
+      }else{
+        header_stock_info.classList.add('d-none');
+      }
     }
   },
   computed: {

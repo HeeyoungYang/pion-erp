@@ -9,9 +9,9 @@
         v-for="(panelData, index) in data "
         :key="index"
       >
-        <v-expansion-panel-header :class="headerClass ? headerClass : 'font-weight-black primary--text text-h6'">
+        <v-expansion-panel-header :class="headerClass ? headerClass : 'font-weight-black primary--text text-h6'" @click="headerClick(panelData.item_code)">
           <slot name="header" :data="panelData"></slot>
-          <span v-if="!$slots.header">{{ panelData.header }}</span>
+          <span v-if="!$slots.header && panelData.header">{{ panelData.header }}</span>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <slot name="content" :data="panelData"></slot>
@@ -49,7 +49,7 @@ export default {
   },
   data() {
     return {
-      
+
     };
   },
   watch: {
@@ -58,7 +58,9 @@ export default {
     // }
   },
   methods: {
-
+    headerClick(item_code){
+      this.$emit("headerStockApply", item_code);
+    }
   }
 }
 </script>
