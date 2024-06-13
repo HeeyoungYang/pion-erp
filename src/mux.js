@@ -905,6 +905,66 @@ mux.Util = {
 
   },
 
+  async getPDF(element, fileName = 'data'){
+    return new Promise((resolve, reject) => {
+      try {
+        let thisElement;
+        if (element.$el){
+          thisElement = element.$el;
+        }else {
+          thisElement = element;
+        }
+        const a4Width = 1240;
+        const a4Height = 1754;
+
+        const styleCopy = this.copyStyleToNewWindowWithoutHover();
+        // 미리보기 팝업을 띄우기
+        const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
+        const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
+        previewPopup.document.write(previewContent);
+
+        // 포커스를 설정하고 1초 뒤에 프린트 도구 시작
+        setTimeout(async() => {
+          previewPopup.focus();
+
+          // PDF 생성 옵션 설정
+          const options = {
+            // margin: [15, 0, 15, 0], // top, right, bottom, left 마진 여백
+            margin: 10,
+            filename: fileName+'.pdf', // Pdf 파일 명
+            pagebreak: { mode: 'avoid-all' }, // pagebreak 옵션
+            // image: { type: 'pdf', quality: 1 },
+            image: { type: 'jpeg', quality: 1 }, // 이미지 퀄리티 (pdf 들어갈 영역을 사진을 찍어 변환 하기 때문에 이미지 퀄리티 = pdf 퀄리티
+            html2canvas: { // html2canvas 옵션
+              useCORS: true, // 영역 안에 로컬 이미지를 삽입 할 때 옵션 필요
+              scrollY: 0, // 스크롤 이슈 때문에 필수
+              scale: 2, // browsers device pixel ratio !! 1로 하면 부분적으로 회색 영역 생겨서 2로 해야 함
+              dpi: 300,
+              letterRendering: true,
+              allowTaint: false, //useCORS를 true로 설정 시 반드시 allowTaint를 false처리 해주어야함
+            },
+            // jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' }
+            jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
+          };
+
+          // HTML을 PDF로 변환하여 다운로드
+          const pdfBlob = await html2pdf().set(options).from(previewPopup.document.body).output('blob');
+          const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
+          resolve(file);
+
+          // 프린트 도구가 닫히면 팝업도 닫기
+          setTimeout(() => {
+            previewPopup.close();
+            resolve();
+          }, 500);
+        }, 1000);
+
+      } catch (error) {
+        // console.warn(error);
+        reject(error);
+      }
+    });
+  },
 
   async downloadPDF(element, fileName = 'data'){
     return new Promise((resolve, reject) => {
