@@ -506,15 +506,17 @@ export default {
       let items = [];
       this.product_data.forEach((data, index) => {
         let total_stock_calc = 0;
-        for(let i=0; i<data.belong_data.length; i++){
-          for(let s=0; s<data.belong_data[i].spot_stock.length; s++){
-            total_stock_calc += data.belong_data[i].spot_stock[s].stock_num
+        if(data.belong_data){
+          for(let i=0; i<data.belong_data.length; i++){
+            for(let s=0; s<data.belong_data[i].spot_stock.length; s++){
+              total_stock_calc += data.belong_data[i].spot_stock[s].stock_num
+            }
+            data.belong_data[i].total_stock = Number(total_stock_calc).toLocaleString();
+            data.belong_data[i].stock_price = Number(total_stock_calc* data.belong_data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
+            data.belong_data[i].num_price = Number(data.belong_data[i].num* data.belong_data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
+            data.belong_data[i].no = (index+1)+'-'+(i+1)
+            total_stock_calc = 0;
           }
-          data.belong_data[i].total_stock = Number(total_stock_calc).toLocaleString();
-          data.belong_data[i].stock_price = Number(total_stock_calc* data.belong_data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
-          data.belong_data[i].num_price = Number(data.belong_data[i].num* data.belong_data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
-          data.belong_data[i].no = (index+1)+'-'+(i+1)
-          total_stock_calc = 0;
         }
         data.no = index+1;
         items.push(data)
