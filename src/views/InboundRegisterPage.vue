@@ -332,8 +332,28 @@
                         <td align="center">{{  item.model }}</td>
                         <td align="center">{{  item.manufacturer }}</td>
                         <td align="center">{{  item.unit_price }}</td>
-                        <td align="center">
-                          <v-icon v-if="item.type !== '원부자재'" color="default" style="cursor:pointer" @click="selectShipData(item, index)">mdi-magnify</v-icon>
+                        <td align="center" style="min-width: 160px;">
+                          <v-checkbox
+                            v-if="item.type !== '원부자재'"
+                            label="미선택"
+                            color="primary"
+                            hide-details
+                            class="float-left mr-3 mt-0"
+                            v-model="item.dont_select_ship"
+                            @click="clickDontSelectShip(index)"
+                          ></v-checkbox>
+                          <v-btn
+                             v-if="item.type !== '원부자재'"
+                            color="primary"
+                            class="float-left"
+                            fab
+                            x-small
+                            elevation="0"
+                            @click="selectShipData(item, index)"
+                          >
+                            <v-icon style="cursor:pointer">mdi-magnify</v-icon>
+                          </v-btn>
+
                         </td>
                         <td align="center">
                           <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
@@ -453,8 +473,29 @@
                           >
                           </v-text-field>
                         </td>
-                        <td align="center">
-                          <v-icon v-if="item.type !== '원부자재'" color="default" style="cursor:pointer" @click="selectShipData(item, index)">mdi-magnify</v-icon>
+                        <td align="center" style="min-width: 160px;">
+                          <v-checkbox
+                            v-if="item.type !== '원부자재'"
+                            label="미선택"
+                            color="primary"
+                            hide-details
+                            class="float-left mr-3 mt-0"
+                            v-model="item.dont_select_ship"
+                            @click="clickDontSelectShip(index)"
+                          ></v-checkbox>
+                          <v-btn
+                             v-if="item.type !== '원부자재'"
+                            color="primary"
+                            class="float-left"
+                            fab
+                            x-small
+                            elevation="0"
+                            @click="selectShipData(item, index)"
+                          >
+                            <v-icon style="cursor:pointer">mdi-magnify</v-icon>
+                          </v-btn>
+
+                          <!-- <v-icon v-if="item.type !== '원부자재'" color="default" style="cursor:pointer" @click="selectShipData(item, index)">mdi-magnify</v-icon> -->
                         </td>
                         <td align="center">
                           <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
@@ -868,7 +909,6 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-
     addItems(){
       let check_duplicate=[];
       let set_item = this.product_inbound_data
@@ -902,12 +942,22 @@ export default {
             data._code = data.product_code
             data.unit_price =  '₩ ' + Number(data.unit_price).toLocaleString()
           }else{
+            data.dont_select_ship = false;
             data.item_code = data._code
           }
           set_item.push(data);
         })
         this.selected_product_data = []
         this.selected_ship_data = []
+      }
+    },
+    async clickDontSelectShip(index){
+      if(this.product_inbound_data[index].belong_data.length > 0){
+        const confirm = await mux.Util.showConfirm('미선택 체크 시 선택한 출하내역은 초기화됩니다.  ', '선택 확인');
+          if (!confirm){
+            return;
+          }
+        this.product_inbound_data[index].belong_data = [];
       }
     },
 
@@ -1092,12 +1142,11 @@ export default {
               }else if(inbound_product_data[d].inbound_num == 0){
                 mux.Util.showAlert('입고수량은 0보다 커야합니다.');
                 return success = false;
-              }else if(inbound_product_data[d].type !== '원부자재' && !inbound_product_data[d].belong_data){
+              }else if(inbound_product_data[d].type !== '원부자재' && !inbound_product_data[d].dont_select_ship && !inbound_product_data[d].belong_data){
                 mux.Util.showAlert(inbound_product_data[d]._code + '의 출하 내역을 선택해주세요');
                 return success = false;
               }
               if(inbound_product_data[d].belong_data){
-
                 for(let s=0; s<inbound_product_data[d].belong_data.length; s++){
                   inbound_product_data[d].belong_data[s].belong_data.forEach(b => {
                     ship_belog.push({"product_code":b.product_code, "ship_num": b.ship_num});
@@ -1137,7 +1186,7 @@ export default {
                   mux.Util.showAlert('모델을 제외한 모든 정보가 기입되어야 합니다.');
                   return success = false;
                 }
-                if(Object.keys(data)[add] === 'type' && Object.values(data)[add] !== '원부자재' && !data.belong_data){
+                if(Object.keys(data)[add] === 'type' && Object.values(data)[add] !== '원부자재' && !data.dont_select_ship && !data.belong_data){
                   mux.Util.showAlert(data._code + '출하 내역을 선택해주세요');
                   return success = false;
                 }
@@ -1219,12 +1268,36 @@ export default {
           }
 
           let product_data = [];
+          let update_ship_data = [];
           inbound_product_data.forEach(data =>{
             let inbound_unit_price;
             if(this.add_self === '직접기입'){
               inbound_unit_price = data.unit_price.replace(/,/g,'');
             }else{
               inbound_unit_price = data.unit_price.replace(/,/g,'').replace(/₩ /g,'')
+            }
+
+            let ship_code_info;
+            if(data.dont_select_ship){
+              ship_code_info = '미선택'
+            }else{
+              ship_code_info = data.ship_code
+              let ship = data.ship_code.split('/');
+              //ship_code가 있을 경우 ship_confirmation_table update
+
+              for(let i = 0; i < ship.length; i++){
+                update_ship_data.push({
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "modifier"
+                  },
+                  "data": {
+                    "inbound_code": this.inbound_confirmation_data.code
+                  },
+                  "update_where": {"code": ship[i]},
+                  "rollback": "yes"
+                });
+              }
             }
             product_data.push({
               "user_info": {
@@ -1243,13 +1316,14 @@ export default {
                 "model" : data.model,
                 "manufacturer" : data.manufacturer,
                 "unit_price" : inbound_unit_price,
-                "ship_code" : data.ship_code,
+                "ship_code" : ship_code_info,
               },
               "select_where": {"code": this.inbound_confirmation_data.code, "product_code": data._code},
               "rollback": "yes"
             });
           });
           sendData["inbound_product_table-insert"] = product_data;
+          sendData["ship_confirmation_table-update"] = update_ship_data;
 
           sendData.path = '/api/multipart_rest_api/';
           sendData.prefix = this.inbound_confirmation_data.code + '_';
@@ -1690,7 +1764,14 @@ export default {
       this.ship_search_data = [];
       this.ship_selected_data = [];
     },
-    selectShipData(item, index){
+    async selectShipData(item, index){
+      if(this.product_inbound_data[index].dont_select_ship){
+        const confirm = await mux.Util.showConfirm('미선택이 체크되어 있습니다. <br> 체크 해제 후 출하 선택이 가능합니다.', '선택 확인');
+        if (!confirm){
+          return;
+        }
+        return;
+      }
       this.ship_dialog = true;
       this.inbound_index = index;
       if(item.belong_data){
@@ -1825,6 +1906,7 @@ export default {
       if(this.product_inbound_data[this.inbound_index].inbound_num){
         this.product_inbound_data[this.inbound_index].unit_price = Number(unit_price / this.product_inbound_data[this.inbound_index].inbound_num).toLocaleString();
       }
+      this.product_inbound_data[this.inbound_index].dont_select_ship = false;
       this.close();
     },
     calcUnitPrice(item){

@@ -111,7 +111,7 @@
             >
               <template v-slot:[`item.ship_info`] = "{ item }">
                 <td align="center">
-                  <v-icon v-if="item.type !== '원부자재'" color="default" style="cursor:pointer" @click="searchShipData(item.ship_code)">mdi-magnify</v-icon>
+                  <v-icon v-if="item.type !== '원부자재' && item.ship_code !== '미선택'" color="default" style="cursor:pointer" @click="searchShipData(item.ship_code)">mdi-magnify</v-icon>
                 </td>
               </template>
             </v-data-table>
@@ -571,6 +571,7 @@ export default {
       let sendData = {};
 
       this.loading_dialog = true;
+
       // 미승인에서 승인으로 변경하는 경우
       if(send_data_belong.length > 0){
         let update_stock_data = [];
@@ -581,30 +582,30 @@ export default {
         let insert_product_data = [];
         let belong_product_module_data = [];
         let belong_product_material_data = [];
-        let update_ship_data = [];
+        // let update_ship_data = [];
 
 
         for (let i = 0; i < send_data_belong.length; i++) {
           const belong = send_data_belong[i];
           let ship = belong.ship_code.split('/');
 
-          //ship_code가 있을 경우 ship_confirmation_table update
-          if(belong.ship_code !== null && belong.ship_code !== undefined && belong.ship_code !== ''){
+          // //ship_code가 있을 경우 ship_confirmation_table update
+          // if(belong.ship_code !== null && belong.ship_code !== undefined && belong.ship_code !== ''){
 
-            for(let i = 0; i < ship.length; i++){
-              update_ship_data.push({
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
-                "data": {
-                  "inbound_code": send_data.code
-                },
-                "update_where": {"code": ship[i]},
-                "rollback": "yes"
-              });
-            }
-          }
+          //   for(let i = 0; i < ship.length; i++){
+          //     update_ship_data.push({
+          //       "user_info": {
+          //         "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+          //         "role": "modifier"
+          //       },
+          //       "data": {
+          //         "inbound_code": send_data.code
+          //       },
+          //       "update_where": {"code": ship[i]},
+          //       "rollback": "yes"
+          //     });
+          //   }
+          // }
 
           // product_code기준 재고(자재)검색
           let stock_check = await mux.Server.post({
@@ -761,14 +762,14 @@ export default {
                   let ship_belog_product_unique = [...set];
 
                   let total_ship_data = [];
-                  ship_belog_product_unique.forEach(ship => {
+                  ship_belog_product_unique.forEach(ship_codes => {
                     let total_ship_num = 0;
                     for(let sbp=0; sbp<ship_belog_info.length; sbp++){
-                      if(ship === ship_belog_info[sbp].product_code){
+                      if(ship_codes === ship_belog_info[sbp].product_code){
                         total_ship_num += ship_belog_info[sbp].ship_num;
                       }
                     }
-                    total_ship_data.push({"product_code" : ship, "total_ship_num" : total_ship_num});
+                    total_ship_data.push({"product_code" : ship_codes, "total_ship_num" : total_ship_num});
                   })
                   for(let ts=0; ts<total_ship_data.length; ts++){
                     if(!Number.isInteger(total_ship_data[ts].total_ship_num / belong.inbound_num)){
@@ -868,16 +869,16 @@ export default {
                   let ship_belog_product_unique = [...set];
 
                   let total_ship_data = [];
-                  ship_belog_product_unique.forEach(ship => {
+                  ship_belog_product_unique.forEach(ship_codes => {
                     let total_ship_num = 0;
                     let product_type = 0;
                     for(let sbp=0; sbp<ship_belog_info.length; sbp++){
-                      if(ship === ship_belog_info[sbp].product_code){
+                      if(ship_codes === ship_belog_info[sbp].product_code){
                         total_ship_num += ship_belog_info[sbp].ship_num;
                         product_type = ship_belog_info[sbp].type;
                       }
                     }
-                    total_ship_data.push({"product_code" : ship, "type" : product_type, "total_ship_num" : total_ship_num});
+                    total_ship_data.push({"product_code" : ship_codes, "type" : product_type, "total_ship_num" : total_ship_num});
                   })
 
 
@@ -945,10 +946,34 @@ export default {
             sendData["product_table-insert"] = insert_product_data;
             sendData["product_material_table-insert"] = belong_product_material_data;
             sendData["product_module_table-insert"] = belong_product_module_data;
-            sendData["ship_confirmation_table-update"] = update_ship_data;
+            // sendData["ship_confirmation_table-update"] = update_ship_data;
           }
         }
 
+      }else{
+        if(send_data.approval_phase === '반려'){
+          let update_ship_data = [];
+          let belongs = item.belong_data;
+          for(let s=0; s<belongs.length; s++){
+            if(belongs[s].ship_code !== '미선택'){
+              let ship = belongs[s].ship_code.split('/');
+              for(let i = 0; i < ship.length; i++){
+                update_ship_data.push({
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "modifier"
+                  },
+                  "data": {
+                    "inbound_code": null
+                  },
+                  "update_where": {"code": ship[i]},
+                  "rollback": "yes"
+                });
+              }
+            }
+          }
+          sendData["ship_confirmation_table-update"] = update_ship_data;
+        }
       }
 
       sendData["inbound_confirmation_table-update"] = [{
@@ -1161,9 +1186,26 @@ export default {
       if(send_data_belong.length > 0){
         let insert_product_data = [];
         let update_stock_data = [];
+        let update_ship_data = [];
 
         for (let i = 0; i < send_data_belong.length; i++) {
           const belong = send_data_belong[i];
+          if(belong.ship_code !== '미선택'){
+            let ship = belong.ship_code.split('/');
+            for(let i = 0; i < ship.length; i++){
+              update_ship_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {
+                  "inbound_code": null
+                },
+                "update_where": {"code": ship[i]},
+                "rollback": "yes"
+              });
+            }
+          }
           // product_code기준 재고(자재)검색
           let stock_check = await mux.Server.post({
             path: '/api/common_rest_api/',
@@ -1227,6 +1269,7 @@ export default {
 
             sendData["inbound_product_table-insert"] = insert_product_data;
             sendData["stock_table-update"] = update_stock_data;
+            sendData["ship_confirmation_table-update"] = update_ship_data;
           }
         }
 
@@ -1424,9 +1467,27 @@ export default {
       if(send_product_data.length > 0){
         let insert_product_data = [];
         let update_stock_data = [];
+        let update_ship_data = [];
 
         for (let i = 0; i < send_product_data.length; i++) {
           const product = send_product_data[i];
+
+          if(product.ship_code !== '미선택'){
+            let ship = product.ship_code.split('/');
+            for(let i = 0; i < ship.length; i++){
+              update_ship_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {
+                  "inbound_code": null
+                },
+                "update_where": {"code": ship[i]},
+                "rollback": "yes"
+              });
+            }
+          }
           // product_code기준 재고(자재)검색
           let stock_check = await mux.Server.post({
             path: '/api/common_rest_api/',
@@ -1490,6 +1551,7 @@ export default {
 
             sendData["inbound_product_table-insert"] = insert_product_data;
             sendData["stock_table-update"] = update_stock_data;
+            sendData["ship_confirmation_table-update"] = update_ship_data;
           }
         }
 
