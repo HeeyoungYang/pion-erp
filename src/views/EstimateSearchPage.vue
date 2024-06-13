@@ -417,6 +417,7 @@ export default {
       estimate_product_list_dialog: false,
       loading_dialog: false,
       mailDialog: false,
+      defaultMailData: EstimateSearchPageConfig.default_mail_data,
       tab_search: null,
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
@@ -455,6 +456,11 @@ export default {
     estimate_product_list_dialog(val){
       val || this.closeProductList()
     },
+    mailDialog(val){
+      if (!val){
+        this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
+      }
+    }
   },
   created () {
     this.initialize()
@@ -542,8 +548,6 @@ export default {
     },
 
     async test(){
-      console.log('this.mailData :>> ', this.mailData);
-      
       let sendData = JSON.parse(JSON.stringify(this.mailData));
       sendData.path = '/api/email/send/';
       sendData.files = this.mailData.files;
