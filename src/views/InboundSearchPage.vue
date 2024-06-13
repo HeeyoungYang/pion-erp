@@ -1736,7 +1736,7 @@ export default {
               })
 
             }else{
-              alert(result['failed_info']);
+              mux.Util.showAlert(result['failed_info']);
             }
 
           }
@@ -1744,9 +1744,9 @@ export default {
           if (prevURL !== window.location.href) return;
           this.loading_dialog = false;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            alert(error.response['data']['failed_info'].msg);
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
-            alert(error);
+            mux.Util.showAlert(error);
         }
       console.log(ship_data_arr);
 
