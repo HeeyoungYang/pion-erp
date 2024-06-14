@@ -13,6 +13,8 @@ import AlertComponent from '@/components/AlertComponent.vue';
 const AlertConstructor = Vue.extend(AlertComponent);
 import ConfirmComponent from '@/components/ConfirmComponent.vue';
 const ConfirmConstructor = Vue.extend(ConfirmComponent);
+import LoadingComponent from '@/components/LoadingModalComponent.vue';
+const LoadingConstructor = Vue.extend(LoadingComponent);
 
 
 const Aes256Crypto = require('./common_js/Aes256Crypto');
@@ -25,7 +27,7 @@ Vue.use(VueCookies);
  * @namespace mux
  */
 const mux = {};
-
+let loadingInstance = null;
 
 /**
  * 서버 관련 유틸리티 함수 그룹
@@ -1367,6 +1369,24 @@ mux.Util = {
         confirmInstance.$destroy();
       });
     });
+  },
+
+  showLoading(hideOverlay = false) {
+    this.hideLoading();
+    
+    loadingInstance = new LoadingConstructor({
+      propsData: { dialogValue: true, hideOverlay }
+    });
+
+    loadingInstance.$mount();
+    document.body.appendChild(loadingInstance.$el);
+  },
+  hideLoading() {
+    if (loadingInstance) {
+      document.body.removeChild(loadingInstance.$el); // DOM에서 제거
+      loadingInstance.$destroy(); // 인스턴스 파괴
+      loadingInstance = null; // 참조 초기화
+    }
   }
 
 }
