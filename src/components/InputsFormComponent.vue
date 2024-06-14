@@ -112,6 +112,7 @@
             v-model="dateSet"
             :dense="dense"
             :rules="input.rules"
+            :disabled="input.disabled"
             :hide-details="hideDetails"
             :clearable="input.clearable === undefined ? (clearable ? clearable : false) : input.clearable"
             :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
@@ -145,6 +146,7 @@
             :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
             :outlined="input.outlined === undefined ? (outlined ? outlined : false) : input.outlined"
             :label="input.label"
+            :disabled="input.disabled"
             readonly
             v-bind="attrs"
             v-on="on"

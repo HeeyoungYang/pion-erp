@@ -466,7 +466,7 @@
       </v-tabs-items>
 
       <!-- 노무비 산출 출력 화면 -->
-      <div ref="calcLaborCard" style="background-color: white;" v-show="print_labor_table" id="print_labor_cost">
+      <div ref="calcLaborCard" style="background-color: white; max-width:800px" v-show="print_labor_table" id="print_labor_cost">
         <p class="text-h5 font-weight-black black--text mb-5">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 노무비 산출</p>
           <v-data-table
             dense

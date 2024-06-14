@@ -81,9 +81,9 @@
                 </v-tab>
               </v-tabs>
               <v-tabs-items v-model="tab_search" class="pb-1">
-                <!-- 원가 계산서 -->
+                <!-- 견적서 -->
                 <v-tab-item>
-                  <v-card ref="calcCostCard">
+                  <v-card ref="calcEstimateCard">
                     <div style="text-align: right;">
                       <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
@@ -104,11 +104,11 @@
                         </template>
                         <v-list>
                           <v-list-item
-                            v-for="(item, index) in save_costs"
+                            v-for="(item, index) in save_estimate"
                             :key="index"
                             dense
-                            @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                                    : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                            @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcEstimateCard, 'edit_survey_cost_data')
+                                    : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcEstimateCard, 'edit_survey_cost_data', '원가계산서') : ''"
                           >
                             <v-list-item-title>{{ item.title }}</v-list-item-title>
                           </v-list-item>
@@ -159,7 +159,7 @@
                             </tr>
                             <tr>
                               <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">유효기간</td>
-                              <td class="estimate_info"></td>
+                              <td class="estimate_info"> 발행일로부터 30일 이내 </td>
                             </tr>
                           </table>
                           <p style=" font-size: 12px;" class="mt-3 text-center font-weight-bold">하기와 같이 견적 드립니다.</p>
@@ -237,7 +237,18 @@
                   <v-card>
                     <v-card-title>
                       <v-row>
-                        <v-col v-show="edit_buttons_show" cols="12" sm="12">
+                        <v-col cols="12" sm="6">
+                          <v-chip
+                            class="mr-2 mb-4"
+                            style="cursor:pointer"
+                            v-for="(member, i) in estimate_member_info"
+                            :key="i"
+                            :color="member.name ? 'success' : 'default'"
+                          >
+                            {{ member.type }} : {{ member.name }}
+                          </v-chip>
+                        </v-col>
+                        <v-col v-show="edit_buttons_show" cols="12" sm="6">
                           <v-menu offset-y>
                             <template v-slot:activator="{ on, attrs }">
                               <v-btn
@@ -290,7 +301,7 @@
                       <InputsFormComponent
                         dense
                         clearable
-                        :inputs="estimateDefaultInfoInputs"
+                        :inputs="estimateSearchDefaultInfoInputs"
                       >
                       </InputsFormComponent>
 
@@ -298,7 +309,7 @@
                       <InputsFormComponent
                         dense
                         clearable
-                        :inputs="estimateCompanyInfoInputs"
+                        :inputs="estimateSearchCompanyInfoInputs"
                       >
                       </InputsFormComponent>
 
@@ -566,12 +577,32 @@
                 <!-- 기본 정보 -->
                 <v-tab-item>
                   <v-card>
+                    <v-card-title>
+                      <MemberSearchDialogComponent
+                        :dialog-value="member_dialog"
+                        :persistent="true"
+                        @close="close"
+                        @setMember = "setMember"
+                        @members = "members"
+                      >
+                      </MemberSearchDialogComponent>
+                      <v-chip
+                        class="mr-2 mb-4"
+                        style="cursor:pointer"
+                        v-for="(member, i) in estimate_member_info"
+                        :key="i"
+                        :color="member.name ? 'success' : 'default'"
+                        @click="selectMemberDialog(i)"
+                      >
+                        {{ member.type }} : {{ member.name }}
+                      </v-chip>
+                    </v-card-title>
                     <v-card-text>
-                      <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >견적서 정보</p>
+                      <p class="text-h6 font-weight-bold py-2 px-4 mb-8" style="background-color: #E3F2FD;" >견적서 정보</p>
                       <InputsFormComponent
                         dense
                         clearable
-                        :inputs="estimateDefaultInfoInputs"
+                        :inputs="estimateWriteDefaultInfoInputs"
                       >
                       </InputsFormComponent>
 
@@ -579,7 +610,7 @@
                       <InputsFormComponent
                         dense
                         clearable
-                        :inputs="estimateCompanyInfoInputs"
+                        :inputs="estimateWriteCompanyInfoInputs"
                       >
                       </InputsFormComponent>
                       <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;" >첨부</p>
@@ -689,7 +720,7 @@
                         </tr>
                         <tr>
                           <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">유효기간</td>
-                          <td class="estimate_info"></td>
+                          <td class="estimate_info"> 발행일로부터 30일 이내 </td>
                         </tr>
                       </table>
                       <p style=" font-size: 12px;" class="mt-3 text-center font-weight-bold">하기와 같이 견적 드립니다.</p>
@@ -1155,6 +1186,7 @@ import EstimatePageConfig from "@/configure/EstimatePageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import CostTableComponent from "@/components/CostTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
+import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent";
 import ProductCostSearchDialogComponent from "@/components/ProductCostSearchDialogComponent.vue";
 
 import mux from "@/mux";
@@ -1166,6 +1198,7 @@ export default {
   },
   components: {
                 NavComponent,
+                MemberSearchDialogComponent,
                 InputsFormComponent,
                 CardComponent,
                 DataTableComponent,
@@ -1217,7 +1250,8 @@ export default {
       dialog_search_product: false,
       dialog_calculate_labor: false,
 
-      save_costs: EstimatePageConfig.save_costs,
+      estimate_member_info:EstimatePageConfig.estimate_member_info,
+      save_estimate: EstimatePageConfig.save_estimate,
       search_estimate_headers: EstimatePageConfig.search_estimate_headers,
       survey_cost_headers: EstimatePageConfig.survey_cost_headers,
       labor_cost_headers: EstimatePageConfig.labor_cost_headers,
@@ -1268,8 +1302,10 @@ export default {
       search_tab_items: EstimatePageConfig.search_tab_items,
       write_tab_items: EstimatePageConfig.write_tab_items,
       searchCardInputs: EstimatePageConfig.searchCardInputs,
-      estimateDefaultInfoInputs: EstimatePageConfig.estimateDefaultInfoInputs,
-      estimateCompanyInfoInputs: EstimatePageConfig.estimateCompanyInfoInputs,
+      estimateSearchDefaultInfoInputs: EstimatePageConfig.estimateSearchDefaultInfoInputs,
+      estimateWriteDefaultInfoInputs: EstimatePageConfig.estimateWriteDefaultInfoInputs,
+      estimateSearchCompanyInfoInputs: EstimatePageConfig.estimateSearchCompanyInfoInputs,
+      estimateWriteCompanyInfoInputs: EstimatePageConfig.estimateWriteCompanyInfoInputs,
       estimateFilesInputs: EstimatePageConfig.estimateFilesInputs,
       search_estimate_data: [],
     }
