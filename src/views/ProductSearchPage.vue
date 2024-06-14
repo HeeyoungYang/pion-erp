@@ -446,6 +446,7 @@ export default {
                     // total_item_unit_price += data.belong_data[b].belong_data[c].unit_price * data.belong_data[b].belong_data[c].num;
                     data.belong_data[b].belong_data[c].unit_price = '₩ '+ Number(data.belong_data[b].belong_data[c].unit_price).toLocaleString()
                   }
+                  data.belong_data[b].belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
                   // data.belong_data[b].unit_price = '₩ '+ Number(total_item_unit_price).toLocaleString()
 
                   data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
@@ -453,6 +454,8 @@ export default {
                   data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 }
               }
+              console.log(JSON.stringify(data.belong_data) )
+              data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
             }
 
 

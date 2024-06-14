@@ -748,6 +748,7 @@
                                           filled
                                           style="width:100px"
                                           v-model="item.num"
+                                          @keyup="calcUnitPrice"
                                           :oninput="!item.num ? '' : item.num = item.num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                                         >
                                         </v-text-field>
@@ -759,6 +760,7 @@
                                           filled
                                           style="width:100px"
                                           v-model="item.unit_price"
+                                          @keyup="calcUnitPrice"
                                           :oninput="!item.unit_price ? '' : item.unit_price = item.unit_price.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                                         >
                                         </v-text-field>
@@ -1344,7 +1346,6 @@ export default {
       registProductSpotInputs:[],
       set_material_search: false,
       set_material_write: false,
-      add_material_search: false,
       product_set_items_data:[],
       selected_items_for_product_data: [],
       searchProductCardInputs:ProductBackDataPageConfig.searchProductCardInputs,
@@ -1738,6 +1739,7 @@ export default {
             }
             return a;
           });
+          result.sort((a, b) => a._code.localeCompare(b._code));
           let product_data_arr = [];
           result.forEach(data => {
             let isExist = false;
@@ -2379,6 +2381,7 @@ export default {
           }
           this.module_data = result['data'].filter(data=>(!this.module_stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
 
+          this.module_data.sort((a, b) => a.code.localeCompare(b.code));
           this.module_data.forEach(data =>{
             data.item_code = data.code;
             delete data.code;
@@ -2418,6 +2421,7 @@ export default {
                 delete data.belong_data[b].code;
                 data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
               }
+              data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
             }
             this.module_total_stock_num += data.total_stock
             this.module_total_stock_price += data.item_stock_price
@@ -2702,7 +2706,7 @@ export default {
                   "model": data.model,
                   "spec": data.spec,
                   "manufacturer": data.manufacturer,
-                  "unit_price": data.unit_price,
+                  "unit_price": data.unit_price.replace(/,/g,'' ),
                   "directly_written": data.directly_written
                 },
                 "select_where": {"material_code": data.item_code},
@@ -2804,10 +2808,44 @@ export default {
             "delete_where": {"module_code": this.editRegistModule.item_code},
             "rollback": "no"
           }];
+          let delete_material_data = [];
+          let new_material_data = [];
+          if(this.module_set_material_data[0].directly_written === 1){
+            for(let md=0; md < this.module_set_material_data.length; md++){
+              let md_belong = this.module_set_material_data[md];
+              delete_material_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"material_code": md_belong.item_code},
+                "rollback": "no"
+              });
+              new_material_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "type": "원부자재",
+                  "classification": md_belong.classification,
+                  "material_code": md_belong.item_code,
+                  "name": md_belong.name,
+                  "model": md_belong.model,
+                  "spec": md_belong.spec,
+                  "manufacturer": md_belong.manufacturer,
+                  "unit_price": md_belong.unit_price.replace(/,/g,'' ),
+                  "directly_written": 1
+                },
+                "select_where": {"material_code": md_belong.item_code},
+                "rollback": "no"
+              })
+
+            }
+          }
 
           let module_material_data = [];
-          let new_material_data = [];
-          let delete_material_data = [];
           this.module_set_material_data.forEach(data =>{
             module_material_data.push({
               "user_info": {
@@ -2822,36 +2860,6 @@ export default {
               "select_where": {"module_code": "!JUST_INSERT!"},
               "rollback": "no"
             });
-            if(data.directly_written === 1){
-              delete_material_data.push({
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
-                "data": {},
-                "delete_where": {"material_code": data.item_code},
-                "rollback": "no"
-              });
-              new_material_data.push({
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "creater"
-                },
-                "data":{
-                  "type": "원부자재",
-                  "classification": data.classification,
-                  "material_code": data.item_code,
-                  "name": data.name,
-                  "model": data.model,
-                  "spec": data.spec,
-                  "manufacturer": data.manufacturer,
-                  "unit_price": data.unit_price,
-                  "directly_written": data.directly_written
-                },
-                "select_where": {"material_code": data.item_code},
-                "rollback": "yes"
-              })
-            }
           });
           sendData["module_material_table-insert"] = module_material_data;
           sendData["material_table-delete"] = delete_material_data;
@@ -3025,11 +3033,13 @@ export default {
                     data.belong_data[b].belong_data[c].unit_price = '₩ '+ Number(data.belong_data[b].belong_data[c].unit_price).toLocaleString()
                   }
                   // data.belong_data[b].unit_price = '₩ '+ Number(total_item_unit_price).toLocaleString()
+                  data.belong_data[b].belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
                   data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 }else{
                   data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 }
               }
+              data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
             }
 
 
@@ -3684,6 +3694,7 @@ export default {
         this.deleteItemList.material_code = this.editRegistMaterial.item_code;
         // console.log('원부자재 삭제 : ' + JSON.stringify(this.deleteItemList));
 
+
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
@@ -3741,43 +3752,62 @@ export default {
         this.deleteItemList.module_code = this.editRegistModule.item_code;
         // console.log('반제품 삭제 : ' + JSON.stringify(this.deleteItemList));
 
+        let sendData = {
+          "product_module_table-cancel": [{
+            "data": {},
+            "cancel_where": {"module_code": this.deleteItemList.module_code}
+          }],
+          "module_table-delete": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data": {},
+            "delete_where": {"module_code": this.deleteItemList.module_code},
+            "rollback": "yes"
+          }],
+          "stock_table-delete": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data": {},
+            "delete_where": {"product_code": this.deleteItemList.module_code, "type": "반제품"},
+            "rollback": "no"
+          }],
+          "module_material_table-delete": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data": {},
+            "delete_where": {"module_code": this.deleteItemList.module_code},
+            "rollback": "no"
+          }]
+        }
+
+        if(this.editRegistModule.belong_data.length > 0){
+          let delete_material_data = [];
+          let belong_data = this.editRegistModule.belong_data;
+          for(let b=0; b<belong_data.length; b++){
+            delete_material_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"material_code": belong_data[b].item_code},
+                "rollback": "no"
+              });
+          }
+          sendData["material_table-delete"] = delete_material_data;
+        }
+
         const prevURL = window.location.href;
         try {
           let result = await mux.Server.post({
             path: '/api/common_rest_api/',
-            params: {
-              "product_module_table-cancel": [{
-                "data": {},
-                "cancel_where": {"module_code": this.deleteItemList.module_code}
-              }],
-              "module_table-delete": [{
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
-                "data": {},
-                "delete_where": {"module_code": this.deleteItemList.module_code},
-                "rollback": "yes"
-              }],
-              "stock_table-delete": [{
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
-                "data": {},
-                "delete_where": {"product_code": this.deleteItemList.module_code, "type": "반제품"},
-                "rollback": "no"
-              }],
-              "module_material_table-delete": [{
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
-                "data": {},
-                "delete_where": {"module_code": this.deleteItemList.module_code},
-                "rollback": "no"
-              }]
-            }
+            params: sendData
           });
           if (prevURL !== window.location.href) return;
 
@@ -4006,7 +4036,6 @@ export default {
       this.search_items_for_product_data = [];
       this.set_material_search = false;
       this.set_material_write = false;
-      this.add_material_search = false;
       let search_input;
       if(this.tab_main == 1){
         search_input = this.moduleSearchMaterialInputs;

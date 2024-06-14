@@ -430,6 +430,9 @@ export default {
           }
           this.product_data = result['data'].filter(data=>(!this.stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
 
+
+          this.product_data.sort((a, b) => a.code.localeCompare(b.code));
+
           this.product_data.forEach(data =>{
             data.item_code = data.code;
             delete data.code;
@@ -468,6 +471,7 @@ export default {
                 delete data.belong_data[b].code;
                 data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
               }
+              data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
             }
             this.total_stock_num += data.total_stock
             this.total_stock_price += data.item_stock_price
