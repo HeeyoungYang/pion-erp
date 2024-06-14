@@ -18,6 +18,7 @@
         :disabled="input.disabled"
         :suffix="input.suffix"
         :rules="input.rules"
+        @keyup="textKeyUp(input.column_name, input.value)"
         @keyup.enter="enterKeyup">
       </v-text-field>
 
@@ -237,6 +238,9 @@ export default {
     enterKeyup() {
       this.$emit('enter');
     },
+    textKeyUp(column_name, value) {
+      this.$emit('textFieldKeyup',column_name, value);
+    }
   }
 };
 </script>

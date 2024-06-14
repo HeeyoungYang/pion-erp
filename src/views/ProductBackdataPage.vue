@@ -481,6 +481,7 @@
                                 filled
                                 col_class="py-0"
                                 :inputs="registModuleInputs"
+                                @textFieldKeyup="itemCodeKeyup"
                               >
                                 <v-menu
                                   open-on-hover
@@ -547,10 +548,64 @@
                             <v-row>
                               <v-col cols="12" class="pb-0">
                                 <p class="text-h6 font-weight-black mb-0">선택 원부자재
-                                  <v-btn color="primary" x-small @click="set_material_search = true" v-if="!set_material_search">원부자재 선택</v-btn>
-                                  <v-btn color="primary" x-small @click="set_material_search = false" v-if="set_material_search">선택 닫기</v-btn>
+                                  <v-btn color="success" x-small class="ml-4" @click="set_material_search = true" v-if="!set_material_search && !set_material_write">원부자재 선택</v-btn>
+                                  <v-btn color="primary" x-small class="ml-4" @click="set_material_search = false" v-if="set_material_search">선택 닫기</v-btn>
+                                  <v-btn color="primary"  x-small class="ml-4" @click="writeModuleItemsData" v-if="!set_material_search && !set_material_write">부자재 직접기입</v-btn>
+                                  <v-btn color="primary" x-small class="ml-4" @click="set_material_write = false" v-if="set_material_write">직접기입 닫기</v-btn>
                                   <v-btn x-small color="error" class="ml-4" @click="resetData('module')">비우기</v-btn>
                                 </p>
+                              </v-col>
+                            </v-row>
+                            <v-row v-if="set_material_write" class="mt-8" >
+                              <v-col cols="12" sm="2" lg="2" align-self="center">
+                                <v-autocomplete
+                                  v-model="set_classification_selected"
+                                  :items="classification_list"
+                                  label="분류"
+                                  dense
+                                  clearable
+                                  hide-details
+                                  style="width:200px"
+                                ></v-autocomplete>
+                              </v-col>
+                              <v-col cols="12" sm="1">
+                                <v-btn
+                                  small
+                                  color="grey"
+                                  class="mr-2 white--text"
+                                  @click="setAtOnce('classification')"
+                                >
+                                  일괄 적용
+                                </v-btn>
+                              </v-col>
+                              <v-col cols="12" sm="2" lg="2" align-self="center">
+                                <v-autocomplete
+                                  v-model="set_manufacturer_selected"
+                                  :items="manufacturer_list"
+                                  label="제조사"
+                                  dense
+                                  clearable
+                                  hide-details
+                                  style="width:200px"
+                                ></v-autocomplete>
+                              </v-col>
+                              <v-col cols="12" sm="6">
+                                <v-btn
+                                  small
+                                  color="grey"
+                                  class="mr-2 white--text"
+                                  @click="setAtOnce('manufacturer')"
+                                >
+                                  일괄 적용
+                                </v-btn>
+                                <v-btn
+                                  small
+                                  color="default"
+                                  class="mr-2"
+                                  @click="writeModuleItemsData"
+                                >
+                                  행 추가
+                                </v-btn>
                               </v-col>
                             </v-row>
                             <v-row v-if="set_material_search" style="background: #efefef;">
@@ -613,14 +668,8 @@
                             </v-row>
                             <v-row>
                               <v-col cols="12">
-                                <!-- <DataTableComponent
-                                  :headers="module_set_material_headers"
-                                  :items="module_set_material_data"
-                                  item-key="item_code"
-                                  item-num-input
-                                  dense
-                                ></DataTableComponent> -->
                                 <InputsDataTableComponent
+                                  v-if="!set_material_write"
                                   :headers="module_set_material_headers"
                                   :items="module_set_material_data"
                                   item-key="item_code"
@@ -629,6 +678,98 @@
                                   @delete="deleteBelongItem"
                                   @calcUnitPrice="calcUnitPrice"
                                 ></InputsDataTableComponent>
+                                <v-data-table
+                                  v-if="set_material_write"
+                                  dense
+                                  :headers="module_set_material_headers"
+                                  :items="module_set_material_data"
+                                  item-key="item_code"
+                                  class="elevation-1"
+                                >
+                                  <template v-slot:item="{ item, index }">
+                                    <tr>
+                                      <td align="center">
+                                        <v-autocomplete
+                                          v-model="item.classification"
+                                          :items="classification_list"
+                                          dense
+                                          filled
+                                          hide-details
+                                          style="width:150px"
+                                        ></v-autocomplete>
+                                      </td>
+                                      <td align="center">
+                                        {{ item.item_code }}
+                                      </td>
+                                      <td align="center">
+                                        <v-text-field
+                                          dense
+                                          hide-details
+                                          filled
+                                          style="width:150px"
+                                          v-model="item.name"
+                                        >
+                                        </v-text-field>
+                                      </td>
+                                      <td align="center">
+                                        <v-text-field
+                                          dense
+                                          hide-details
+                                          filled
+                                          style="width:150px"
+                                          v-model="item.model"
+                                        >
+                                        </v-text-field>
+                                      </td>
+                                      <td align="center">
+                                        <v-text-field
+                                          dense
+                                          hide-details
+                                          filled
+                                          style="width:150px"
+                                          v-model="item.spec"
+                                        >
+                                        </v-text-field>
+                                      </td>
+                                      <td align="center">
+                                        <v-autocomplete
+                                          v-model="item.manufacturer"
+                                          :items="manufacturer_list"
+                                          dense
+                                          filled
+                                          hide-details
+                                          style="width:150px"
+                                        ></v-autocomplete>
+                                      </td>
+                                      <td align="center">
+                                        <v-text-field
+                                          dense
+                                          hide-details
+                                          filled
+                                          style="width:100px"
+                                          v-model="item.num"
+                                          :oninput="!item.num ? '' : item.num = item.num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+                                        >
+                                        </v-text-field>
+                                      </td>
+                                      <td align="center">
+                                        <v-text-field
+                                          dense
+                                          hide-details
+                                          filled
+                                          style="width:100px"
+                                          v-model="item.unit_price"
+                                          :oninput="!item.unit_price ? '' : item.unit_price = item.unit_price.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+                                        >
+                                        </v-text-field>
+                                      </td>
+                                      <td align="center">{{  !item.num ? 0 : Number(item.num.replace(/,/g,'') * item.unit_price.replace(/,/g,'')).toLocaleString() }}</td>
+                                      <td align="center">
+                                        <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                                      </td>
+                                    </tr>
+                                  </template>
+                                </v-data-table>
                               </v-col>
                             </v-row>
                           </v-container>
@@ -1139,6 +1280,8 @@ export default {
       materialImg: '',
       moduleImg: '',
       productImg: '',
+      set_classification_selected: '',
+      set_manufacturer_selected: '',
       menu: false,
       editedIndex: -1,
       deleteItemList:{},
@@ -1200,6 +1343,7 @@ export default {
       //완제품 정보
       registProductSpotInputs:[],
       set_material_search: false,
+      set_material_write: false,
       add_material_search: false,
       product_set_items_data:[],
       selected_items_for_product_data: [],
@@ -1400,6 +1544,7 @@ export default {
               "material_table.material_code": searchProductCode ? searchProductCode : "",
               "material_table.spec": searchProductSpec ? searchProductSpec : "",
               "material_table.type": searchType ? searchType : "",
+              "material_table.directly_written": 0,
 
               "stock_table.conditions": "",
               "stock_table.stock_num": searchStockMoreZero
@@ -1567,6 +1712,7 @@ export default {
               "material_table.material_code": searchProductCode ? searchProductCode : "",
               "material_table.spec": searchProductSpec ? searchProductSpec : "",
               "material_table.type": searchType ? searchType : "",
+              "material_table.directly_written": 0,
 
               "stock_table.conditions": searchConditions ? searchConditions : "",
               "stock_table.stock_num": searchStockMoreZero
@@ -2320,6 +2466,13 @@ export default {
           script_file_name = "rooting_product_thumbname_검색_24_05_09_12_05_UP0.json";
           script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\product_thumbname_검색_24_05_09_12_06_FHY";
         }else if (item.type === '반제품'){
+          if(item.belong_data[0].directly_written === 1){
+            this.set_material_search = false;
+            this.set_material_write = true;
+          }else{
+            this.set_material_search = false;
+            this.set_material_write = false;
+          }
           params = [
             {
               "module_table.module_code": item.item_code
@@ -2520,6 +2673,7 @@ export default {
           sendData["stock_table-insert"] = stock_data;
 
           let module_material_data = [];
+          let new_material_data = [];
           this.module_set_material_data.forEach(data =>{
             module_material_data.push({
               "user_info": {
@@ -2534,8 +2688,30 @@ export default {
               "select_where": {"module_code": this.editRegistModule.item_code, "material_code": data.item_code},
               "rollback": "yes"
             });
+            if(data.directly_written === 1){
+              new_material_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "type": "원부자재",
+                  "classification": data.classification,
+                  "material_code": data.item_code,
+                  "name": data.name,
+                  "model": data.model,
+                  "spec": data.spec,
+                  "manufacturer": data.manufacturer,
+                  "unit_price": data.unit_price,
+                  "directly_written": data.directly_written
+                },
+                "select_where": {"material_code": data.item_code},
+                "rollback": "yes"
+              })
+            }
           });
           sendData["module_material_table-insert"] = module_material_data;
+          sendData["material_table-insert"] = new_material_data;
 
           const prevURL = window.location.href;
           try {
@@ -2630,6 +2806,8 @@ export default {
           }];
 
           let module_material_data = [];
+          let new_material_data = [];
+          let delete_material_data = [];
           this.module_set_material_data.forEach(data =>{
             module_material_data.push({
               "user_info": {
@@ -2644,8 +2822,40 @@ export default {
               "select_where": {"module_code": "!JUST_INSERT!"},
               "rollback": "no"
             });
+            if(data.directly_written === 1){
+              delete_material_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {},
+                "delete_where": {"material_code": data.item_code},
+                "rollback": "no"
+              });
+              new_material_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "type": "원부자재",
+                  "classification": data.classification,
+                  "material_code": data.item_code,
+                  "name": data.name,
+                  "model": data.model,
+                  "spec": data.spec,
+                  "manufacturer": data.manufacturer,
+                  "unit_price": data.unit_price,
+                  "directly_written": data.directly_written
+                },
+                "select_where": {"material_code": data.item_code},
+                "rollback": "yes"
+              })
+            }
           });
           sendData["module_material_table-insert"] = module_material_data;
+          sendData["material_table-delete"] = delete_material_data;
+          sendData["material_table-insert"] = new_material_data;
 
           const prevURL = window.location.href;
           try {
@@ -2675,6 +2885,70 @@ export default {
         }
         this.close();
         // console.log('반제품 데이터 : ' + JSON.stringify(this.editRegistModule));
+      }
+    },
+
+    async writeModuleItemsData(){
+      this.selected_material_for_module_data = [];
+      this.search_material_for_module_data = [];
+      let origin_code;
+      for(let o=0; o<this.registModuleInputs.length; o++){
+        let inputs = this.registModuleInputs[o];
+        if(inputs.column_name == 'item_code'){
+          if(inputs.value !== '' && inputs.value !== undefined){
+            origin_code = inputs.value;
+          }else {
+            origin_code = '반제품 관리코드 미기입'
+          }
+        }
+      }
+
+      if(!this.set_material_write){
+        const confirm = await mux.Util.showConfirm('부자재 직접 입력형으로 전환되며, \n선택한 자재는 선택 해제됩니다. ', '전환 확인');
+        if (!confirm){
+          return;
+        }
+        this.module_set_material_data = [];
+        this.set_material_write = true;
+      }
+      // if(this.product_inbound_headers.length !== 12){
+      //   this.product_inbound_headers.splice(this.product_inbound_headers.length-1, 0, { "text": "출하선택", "align": "center", "value": "ship_select"})
+      // }
+      let belong_item_code;
+      if(this.module_set_material_data.length === 0){
+        belong_item_code = origin_code + '-001';
+      }else{
+        belong_item_code = origin_code + '-' + ('00' + (this.module_set_material_data.length + 1)).slice(-3);
+      }
+      this.module_set_material_data.push({
+        classification:'',
+        item_code: belong_item_code,
+        name: '',
+        num: '',
+        spec: '',
+        model: '',
+        manufacturer: '',
+        unit_price: '',
+        directly_written: 1,
+      });
+
+    },
+    setAtOnce(type){
+      this.module_set_material_data.forEach(data =>{
+        if(type === 'manufacturer'){
+          data.manufacturer = this.set_manufacturer_selected
+        }else{
+          data.classification = this.set_classification_selected
+        }
+      })
+    },
+    itemCodeKeyup(column_name, val){
+      if(this.set_material_write && this.module_set_material_data.length > 0){
+        if(column_name === 'item_code'){
+          this.module_set_material_data.forEach((data, index) =>{
+            data.item_code =  val + '-' + ('00' + (index + 1)).slice(-3);
+          })
+        }
       }
     },
 
@@ -3731,6 +4005,7 @@ export default {
       this.search_material_for_module_data = [];
       this.search_items_for_product_data = [];
       this.set_material_search = false;
+      this.set_material_write = false;
       this.add_material_search = false;
       let search_input;
       if(this.tab_main == 1){

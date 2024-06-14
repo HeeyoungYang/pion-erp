@@ -414,6 +414,7 @@ export default {
               "material_table.material_code": searchMaterialCode ? searchMaterialCode : "",
               "material_table.spec": searchSpec ? searchSpec : "",
               "material_table.type": "원부자재",
+              "material_table.directly_written": 0,
 
               "stock_table.conditions": searchConditions ? searchConditions : "",
               "stock_table.stock_num": searchStockMoreZero
