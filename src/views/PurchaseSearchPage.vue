@@ -558,6 +558,7 @@ export default {
                 "module_table.module_code": datas.product_code,
 
                 "material_table.material_code": datas.product_code,
+                "material_table.directly_written": 0,
               }
             ],
             "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
@@ -669,6 +670,7 @@ export default {
                 "product_table.product_code": belong.product_code,
                 "module_table.module_code": belong.product_code,
                 "material_table.material_code": belong.product_code,
+                "material_table.directly_written": 0,
               }
             ],
             "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
@@ -1093,6 +1095,7 @@ export default {
                 "product_table.product_code": belong.product_code,
                 "module_table.module_code": belong.product_code,
                 "material_table.material_code": belong.product_code,
+                "material_table.directly_written": 0,
                 "stock_table.spot": belong.spot
               }
             ],
@@ -1356,6 +1359,7 @@ export default {
                 "product_table.product_code": product.product_code,
                 "module_table.module_code": product.product_code,
                 "material_table.material_code": product.product_code,
+                "material_table.directly_written": 0,
                 "stock_table.spot": product.spot
               }
             ],

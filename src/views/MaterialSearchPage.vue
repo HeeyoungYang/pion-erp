@@ -414,6 +414,7 @@ export default {
               "material_table.material_code": searchMaterialCode ? searchMaterialCode : "",
               "material_table.spec": searchSpec ? searchSpec : "",
               "material_table.type": "원부자재",
+              "material_table.directly_written": 0,
 
               "stock_table.conditions": searchConditions ? searchConditions : "",
               "stock_table.stock_num": searchStockMoreZero
@@ -428,6 +429,10 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
+
+          if(result.length === 0){
+            mux.Util.showAlert('검색 결과가 없습니다.');
+          }
           result = result['data'].map(a => {
             if (!a.stock_num){
               a.stock_price = 0;
@@ -437,9 +442,7 @@ export default {
             return a;
           });
 
-          if(result.length === 0){
-            mux.Util.showAlert('검색 결과가 없습니다.');
-          }
+          result.sort((a, b) => a._code.localeCompare(b._code));
           let product_data_arr = [];
           result.forEach(data => {
             let isExist = false;

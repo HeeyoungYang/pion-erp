@@ -404,7 +404,7 @@ import mux from '@/mux';
       ],
       purchasePages: [
         ['구매 요청', '', '/purchase-request', ['master', '매니저']],
-        ['구매 현황', '', '/purchase-search', ['master', '매니저']],
+        ['구매 요청 현황', '', '/purchase-search', ['master', '매니저']],
       ],
       // estimatePages: [
       //   ['견적 작성', '', '/home'],

@@ -341,6 +341,7 @@ export default {
               "material_table.material_code": searchProductCode ? searchProductCode : "",
               "material_table.spec": searchProductSpec ? searchProductSpec : "",
               "material_table.type": searchType ? searchType : "",
+              "material_table.directly_written": 0,
 
               "stock_table.conditions": searchCondition ? searchCondition : "",
               "stock_table.stock_num": searchStockMoreZero

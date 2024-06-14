@@ -18,6 +18,7 @@
         :disabled="input.disabled"
         :suffix="input.suffix"
         :rules="input.rules"
+        @keyup="textKeyUp(input.column_name, input.value)"
         @keyup.enter="enterKeyup">
       </v-text-field>
 
@@ -111,6 +112,7 @@
             v-model="dateSet"
             :dense="dense"
             :rules="input.rules"
+            :disabled="input.disabled"
             :hide-details="hideDetails"
             :clearable="input.clearable === undefined ? (clearable ? clearable : false) : input.clearable"
             :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
@@ -144,6 +146,7 @@
             :filled="input.filled === undefined ? (filled ? filled : false) : input.filled"
             :outlined="input.outlined === undefined ? (outlined ? outlined : false) : input.outlined"
             :label="input.label"
+            :disabled="input.disabled"
             readonly
             v-bind="attrs"
             v-on="on"
@@ -237,6 +240,9 @@ export default {
     enterKeyup() {
       this.$emit('enter');
     },
+    textKeyUp(column_name, value) {
+      this.$emit('textFieldKeyup',column_name, value);
+    }
   }
 };
 </script>
