@@ -353,9 +353,7 @@ mux.Server = {
         }
 
         let formData = new FormData();
-
         if (reqObj.files && Array.isArray(reqObj.files)){
-
           let local_files = [];
           reqObj.files.forEach((file) => {
             let file_info = {file_name: file.name, file: file};
@@ -363,7 +361,7 @@ mux.Server = {
             //formData.append('fileName_'+index, file.name);
             //formData.append('file', file);
           });
-          formData.append("local_attachment_files", local_files)
+          formData.append("local_attachment_files", JSON.stringify(local_files))
         }
 
         Object.keys(reqObj).forEach(key => {
@@ -372,10 +370,10 @@ mux.Server = {
           }
         });
 
-        // console.log('formData :>> ', formData);
-        // for (let [key, value] of formData.entries()) {
-        //   console.log(`${key}: ${value}`);
-        // }
+        console.log('formData :>> ', formData);
+        for (let [key, value] of formData.entries()) {
+           console.log(`${key}: ${value}`);
+        }
 
         const response = await this.axiosInstance.post(reqObj.path, formData, {
           headers: {

@@ -592,7 +592,7 @@ export default {
       sendData.attachment = attachment;
 
       try {
-        await mux.Server.sendEmail(sendData);
+        await mux.Server.sendEmail2(sendData);
         mux.Util.showAlert('메일 발송이 완료되었습니다.', '발송 완료', 3000);
         this.mailDialog = false;
       } catch (error) {
