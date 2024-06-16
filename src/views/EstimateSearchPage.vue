@@ -521,8 +521,6 @@ export default {
       }
       this.loading_dialog = false;
     },
-
-
     async searchButton(){
       this.loading_dialog = true;
       this.loading_dialog = false;
@@ -546,10 +544,9 @@ export default {
       // this.estimate_product_list_dialog = false;
       this.mailDialog = true;
     },
-
     async test(){
       let sendData = JSON.parse(JSON.stringify(this.mailData));
-      sendData.path = '/api/email/send/';
+      sendData.path = '/api/send_email_extention/';
       sendData.files = this.mailData.files;
       sendData.to = sendData.to.trim();
       sendData.to = sendData.to.split(/,|\/|\s/); // 콤마, 슬래시, 공백으로 구분
@@ -560,7 +557,7 @@ export default {
       sendData.bcc = sendData.bcc.trim();
       sendData.bcc = sendData.bcc.split(/,|\/|\s/); // 콤마, 슬래시, 공백으로 구분
       sendData.bcc = sendData.bcc.filter(x => x !== '');
-      
+
       let attachment = [];
       if (sendData.estimate) {
         attachment.push({folder: 'estimate', fileName: 'estimate.pdf'});
@@ -601,8 +598,8 @@ export default {
       } catch (error) {
         mux.Util.showAlert(error);
       }
-    }
-  },
+    },
+  }
 }
 </script>
 

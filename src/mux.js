@@ -291,7 +291,106 @@ mux.Server = {
       }
     });
   },
+  async sendEmail2(reqObj) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        if (!reqObj.path) {
+          reject('upload file error: path 정보와 함께 요청해야 합니다.');
+          return;
+        }
+        if (!Array.isArray(reqObj.to) || reqObj.to.length === 0 || !reqObj.subject || !reqObj.content){
+          reject('send email error: 수신자, 제목, 내용 정보와 함께 요청해야 합니다.');
+          return;
+        }
+        if (!reqObj.files) {
+          reqObj.files = [];
+        }
+        if (reqObj.to) {
+          reqObj.to_addrs = [];
+          for (let i = 0; i < reqObj.to.length; i++) {
+            const to = reqObj.to[i];
+            reqObj.to_addrs.push(to);
+          }
+          delete reqObj.to;
+        }
 
+        if (reqObj.cc) {
+          reqObj.cc_addrs = [];
+          for (let i = 0; i < reqObj.cc.length; i++) {
+            const cc = reqObj.cc[i];
+            reqObj.cc_addrs.push(cc);
+          }
+          delete reqObj.cc;
+        }
+
+
+        if (reqObj.bcc) {
+          reqObj.bcc_addrs = [];
+          for (let i = 0; i < reqObj.bcc.length; i++) {
+            const bcc = reqObj.bcc[i];
+            reqObj.bcc_addrs.push(bcc);
+          }
+          delete reqObj.bcc;
+        }
+
+        if (reqObj.attachment) {
+          reqObj.s3_attachment_files = [];
+          for (let i = 0; i < reqObj.attachment.length; i++) {
+            const attach = reqObj.attachment[i];
+            if (!attach.folder || !attach.fileName){
+              reject('send email error: 체크 항목을 첨부할 수 없습니다.');
+              return;
+            }
+            let attachfile = {folder: attach.folder, file_name: attach.fileName}
+            reqObj.s3_attachment_files.push(attachfile);
+          }
+          delete reqObj.attachment;
+        }
+
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
+        if (reqObj.timeout){
+          this.axiosInstance.defaults.timeout = reqObj.timeout;
+        }
+
+        let formData = new FormData();
+
+        if (reqObj.files && Array.isArray(reqObj.files)){
+
+          let local_files = [];
+          reqObj.files.forEach((file) => {
+            let file_info = {file_name: file.name, file: file};
+            local_files.push(file_info)
+            //formData.append('fileName_'+index, file.name);
+            //formData.append('file', file);
+          });
+          formData.append("local_attachment_files", local_files)
+        }
+
+        Object.keys(reqObj).forEach(key => {
+          if (key !== 'files' && key !== 'path' && key !== 'timeout'){
+            formData.append(key, JSON.stringify(reqObj[key]));
+          }
+        });
+
+        // console.log('formData :>> ', formData);
+        // for (let [key, value] of formData.entries()) {
+        //   console.log(`${key}: ${value}`);
+        // }
+
+        const response = await this.axiosInstance.post(reqObj.path, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
+        resolve(response);
+      } catch (error) {
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
+        reject(error)
+      }
+    });
+  },
   /**
    * 파일 업로드
    * @param {Object} reqObj
@@ -602,7 +701,7 @@ mux.Server = {
         const aes256Crypto = new Aes256Crypto()
         const encrypted_id = aes256Crypto.encrypt(id, hashed_key)
         const encrypted_pw = aes256Crypto.encrypt(pw, hashed_key)
-        
+
         this.post({
           path:'/api/user/login/', user_name:encrypted_id, password:encrypted_pw, salt:salt
         }).then(result => {
@@ -640,13 +739,13 @@ mux.Server = {
             // case 'id':
             //   mux.Util.showAlert('존재하지 않는 아이디');
             //   break;
-    
+
             default:
               mux.Util.showAlert('아이디 또는 비밀번호를 확인해주세요.', '로그인 오류', 3000);
               break;
           }
         });
-        
+
       }else{
         mux.Util.showAlert("확인코드를 확인해주세요.");
       }
@@ -1340,7 +1439,7 @@ mux.Util = {
     const modalInstance = new AlertConstructor({
       propsData: { message, title, timeout }
     });
-  
+
     modalInstance.$mount();
     document.body.appendChild(modalInstance.$el);
     modalInstance.show();
@@ -1349,7 +1448,7 @@ mux.Util = {
       document.body.removeChild(modalInstance.$el);
       modalInstance.$destroy();
     });
-  
+
     return modalInstance;
   },
 
@@ -1358,11 +1457,11 @@ mux.Util = {
       const confirmInstance = new ConfirmConstructor({
         propsData: { message, title, useInput }
       });
-  
+
       confirmInstance.$mount();
       document.body.appendChild(confirmInstance.$el);
       confirmInstance.show();
-  
+
       confirmInstance.$on('close', (result) => {
         resolve(result);
         document.body.removeChild(confirmInstance.$el);
@@ -1373,7 +1472,7 @@ mux.Util = {
 
   showLoading(hideOverlay = false) {
     this.hideLoading();
-    
+
     loadingInstance = new LoadingConstructor({
       propsData: { dialogValue: true, hideOverlay }
     });

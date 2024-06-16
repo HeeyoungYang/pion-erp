@@ -1282,22 +1282,24 @@ export default {
             if(data.dont_select_ship){
               ship_code_info = '미선택'
             }else{
-              ship_code_info = data.ship_code
-              let ship = data.ship_code.split('/');
-              //ship_code가 있을 경우 ship_confirmation_table update
+              if(data.ship_code) {
+                ship_code_info = data.ship_code;  // data.ship_code가 undefined일 경우 ship_code_info에 undefined가 들어가서 오류 발생
+                let ship = data.ship_code.split('/');
+                //ship_code가 있을 경우 ship_confirmation_table update
 
-              for(let i = 0; i < ship.length; i++){
-                update_ship_data.push({
-                  "user_info": {
-                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                    "role": "modifier"
-                  },
-                  "data": {
-                    "inbound_code": this.inbound_confirmation_data.code
-                  },
-                  "update_where": {"code": ship[i]},
-                  "rollback": "yes"
-                });
+                for(let i = 0; i < ship.length; i++){
+                  update_ship_data.push({
+                    "user_info": {
+                      "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                      "role": "modifier"
+                    },
+                    "data": {
+                      "inbound_code": this.inbound_confirmation_data.code
+                    },
+                    "update_where": {"code": ship[i]},
+                    "rollback": "yes"
+                  });
+                }
               }
             }
             product_data.push({
@@ -1422,7 +1424,7 @@ export default {
               try {
                 let sendEmailAlam = await mux.Server.post({
                   path: '/api/send_email/',
-                  mailTo: mailTo,
+                  to_addrs: mailTo,
                   subject: "입고 " + phase + " 요청 알림",
                   content: content
                 });
