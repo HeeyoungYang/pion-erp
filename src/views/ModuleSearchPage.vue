@@ -428,10 +428,23 @@ export default {
           if(result['data'].length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
-          this.product_data = result['data'].filter(data=>(!this.stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
+          let results = result['data'].filter(data=>(!this.stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
 
+          let code_only_num = [];
+          let code_with_text =[];
+          results.forEach(product => {
+            if(isNaN(Number(product.code))){
+              code_with_text.push(product)
+            }else{
+              code_only_num.push(product)
+            }
+          })
+          code_only_num.sort((a, b) => a.code - b.code);
+          code_with_text.sort((a, b) => a.code.localeCompare(b.code));
 
-          this.product_data.sort((a, b) => a.code.localeCompare(b.code));
+          this.product_data = [];
+          this.product_data.push(...code_only_num);
+          this.product_data.push(...code_with_text);
 
           this.product_data.forEach(data =>{
             data.item_code = data.code;
@@ -465,13 +478,25 @@ export default {
             }
 
             if(data.belong_data){
+              let code_only_num = [];
+              let code_with_text =[];
               for(let b=0; b<data.belong_data.length; b++){
                 data.belong_data[b].item_code = data.belong_data[b].code;
                 data.belong_data[b].used_num = data.total_stock * data.belong_data[b].num
                 delete data.belong_data[b].code;
                 data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
+                if(isNaN(Number(data.belong_data[b].item_code))){
+                  code_with_text.push(data.belong_data[b])
+                }else{
+                  code_only_num.push(data.belong_data[b])
+                }
               }
-              data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
+              code_only_num.sort((a, b) => a.item_code - b.item_code);
+              code_with_text.sort((a, b) => a.item_code.localeCompare(b.item_code));
+
+              data.belong_data = [];
+              data.belong_data.push(...code_only_num);
+              data.belong_data.push(...code_with_text);
             }
             this.total_stock_num += data.total_stock
             this.total_stock_price += data.item_stock_price
