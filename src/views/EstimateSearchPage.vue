@@ -549,7 +549,11 @@ export default {
       mux.Util.showLoading();
       let sendData = JSON.parse(JSON.stringify(this.mailData));
       sendData.path = '/api/send_email_extention/';
-      sendData.files = this.mailData.files;
+      sendData.files = [];
+      for (let i = 0; i < this.mailData.files.length; i++) {
+        const file = this.mailData.files[i];
+        sendData.files.push(file);
+      }
       sendData.to = sendData.to.trim();
       sendData.to = sendData.to.split(/,|\/|\s/); // 콤마, 슬래시, 공백으로 구분
       sendData.to = sendData.to.filter(x => x !== '');
@@ -573,7 +577,6 @@ export default {
           mux.Util.showAlert('산출내역서 PDF 파일 생성 중 오류가 발생했습니다.');
           return;
         }
-        console.log('estimateFile :>> ', estimateFile);
       }
       delete sendData.estimate;
 
@@ -595,7 +598,6 @@ export default {
           return;
         }
         this.tab_search = origin_tab;
-        console.log('specificationFile :>> ', specificationFile);
       }
       delete sendData.specification;
       
