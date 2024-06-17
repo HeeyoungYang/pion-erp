@@ -95,36 +95,40 @@
       <v-tabs-items v-model="tab_search" class="pb-1">
         <!-- 원가 계산서 -->
         <v-tab-item>
-          <v-card ref="calcCostCard" style="border: 1px solid #ccc;">
-            <v-row>
+          <v-card ref="calcCostCard" style="border: 1px solid #ccc; overflow-x: auto">
+            <v-row style="max-width: 868.5px;" class="dont_print" data-html2canvas-ignore="true">
               <v-col align-self="center" cols="12" sm="12">
                 <v-checkbox
                   v-model="estimate_checkbox.labor_cost"
                   label="노무비"
                   color="primary"
                   hide-details
-                  class="float-left mr-3"
+                  class="float-left mr-3 dont_print"
+                  data-html2canvas-ignore="true"
                 ></v-checkbox>
                 <v-checkbox
                   v-model="estimate_checkbox.expense"
                   label="경비"
                   color="primary"
                   hide-details
-                  class="float-left mr-3"
+                  class="float-left mr-3 dont_print"
+                  data-html2canvas-ignore="true"
                 ></v-checkbox>
                 <v-checkbox
                   v-model="estimate_checkbox.general_management"
                   label="일반관리비"
                   color="primary"
                   hide-details
-                  class="float-left mr-3"
+                  class="float-left mr-3 dont_print"
+                  data-html2canvas-ignore="true"
                 ></v-checkbox>
                 <v-checkbox
                   v-model="estimate_checkbox.profit"
                   label="이윤"
                   color="primary"
                   hide-details
-                  class="float-left"
+                  class="float-left dont_print"
+                  data-html2canvas-ignore="true"
                 ></v-checkbox>
                 <v-btn
                   color="primary"
@@ -132,13 +136,14 @@
                   fab
                   x-small
                   @click="sendEstiamteMail"
-                  class="mb-3 float-right"
+                  class="mb-3 float-right dont_print"
+                  data-html2canvas-ignore="true"
                 >
                   <v-icon >mdi-email</v-icon>
                 </v-btn>
               </v-col>
             </v-row>
-            <v-card-title>
+            <v-card-title style="max-width: 868.5px;">
               <v-row
                 class="px-3"
                 style="background: #efefef;"
@@ -160,7 +165,7 @@
                 </v-col>
               </v-row>
             </v-card-title>
-            <v-card-text>
+            <v-card-text style="max-width: 868.5px;">
               <v-row class="mt-5" justify="space-between">
                 <v-col align-self="center" cols="12" sm="5" class="pb-0">
                   <v-row style="border-bottom:1px solid #b4b4b4; font-size: 15px;" class="mb-4">
@@ -455,12 +460,8 @@ export default {
   watch:{
     estimate_product_list_dialog(val){
       val || this.closeProductList()
+      this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
     },
-    mailDialog(val){
-      if (!val){
-        this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
-      }
-    }
   },
   created () {
     this.initialize()
@@ -545,6 +546,7 @@ export default {
       this.mailDialog = true;
     },
     async test(){
+      mux.Util.showLoading();
       let sendData = JSON.parse(JSON.stringify(this.mailData));
       sendData.path = '/api/send_email_extention/';
       sendData.files = this.mailData.files;
@@ -557,17 +559,49 @@ export default {
       sendData.bcc = sendData.bcc.trim();
       sendData.bcc = sendData.bcc.split(/,|\/|\s/); // 콤마, 슬래시, 공백으로 구분
       sendData.bcc = sendData.bcc.filter(x => x !== '');
-
-      let attachment = [];
+      
+      let estimateFile = null;
+      // 견적서 PDF 파일 생성
       if (sendData.estimate) {
-        attachment.push({folder: 'estimate', fileName: 'estimate.pdf'});
+        const estimate = this.$refs.calcCostCard.$el;
+        try {
+          // await mux.Util.downloadPDF(estimate, 'estimate');
+          estimateFile = await mux.Util.getPDF(estimate, 'estimate');
+          sendData.files.push(estimateFile);
+        } catch (error) {
+          this.mailDialog = true;
+          mux.Util.showAlert('산출내역서 PDF 파일 생성 중 오류가 발생했습니다.');
+          return;
+        }
+        console.log('estimateFile :>> ', estimateFile);
       }
       delete sendData.estimate;
 
+      let specificationFile = null;
+      // 산출내역서 PDF 파일 생성
       if (sendData.specification) {
-        attachment.push({folder: 'specification', fileName: 'specification.pdf'});
+        const origin_tab = this.tab_search;
+        this.tab_search = 1; // 산출내역서 탭을 load 한 적이 없는 것을 대비하여 이동
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const specification = this.$refs.calcDetailCard.$el;
+        try {
+          // await mux.Util.downloadPDF(specification, 'specification');
+          specificationFile = await mux.Util.getPDF(specification, 'specification');
+          sendData.files.push(specificationFile);
+        } catch (error) {
+          this.tab_search = origin_tab;
+          this.mailDialog = true;
+          mux.Util.showAlert('산출내역서 PDF 파일 생성 중 오류가 발생했습니다.');
+          return;
+        }
+        this.tab_search = origin_tab;
+        console.log('specificationFile :>> ', specificationFile);
       }
       delete sendData.specification;
+      
+
+      // S3에서 찾아서 첨부할 목록
+      let attachment = [];
 
       if (sendData.drawing) {
         attachment.push({folder: 'drawing', fileName: 'drawing.pdf'});
@@ -592,14 +626,16 @@ export default {
       sendData.attachment = attachment;
 
       try {
-        await mux.Server.sendEmail2(sendData);
+        await mux.Server.sendEmail(sendData);
         mux.Util.showAlert('메일 발송이 완료되었습니다.', '발송 완료', 3000);
         this.mailDialog = false;
       } catch (error) {
+        this.mailDialog = true;
         mux.Util.showAlert(error);
       }
-    },
-  }
+      mux.Util.hideLoading();
+    }
+  },
 }
 </script>
 
