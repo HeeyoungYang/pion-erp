@@ -1,10 +1,12 @@
 import Vue from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
+import globalDataTableMixin from './mixins/globalDataTableMixin';
 import router from './router'
 import configJson from '@/mux.json';
 
 Vue.config.productionTip = false;
+Vue.mixin(globalDataTableMixin);
 
 Vue.prototype.$configJson = configJson;
 

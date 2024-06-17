@@ -13,6 +13,8 @@ import AlertComponent from '@/components/AlertComponent.vue';
 const AlertConstructor = Vue.extend(AlertComponent);
 import ConfirmComponent from '@/components/ConfirmComponent.vue';
 const ConfirmConstructor = Vue.extend(ConfirmComponent);
+import LoadingComponent from '@/components/LoadingModalComponent.vue';
+const LoadingConstructor = Vue.extend(LoadingComponent);
 
 
 const Aes256Crypto = require('./common_js/Aes256Crypto');
@@ -25,7 +27,7 @@ Vue.use(VueCookies);
  * @namespace mux
  */
 const mux = {};
-
+let loadingInstance = null;
 
 /**
  * 서버 관련 유틸리티 함수 그룹
@@ -218,26 +220,35 @@ mux.Server = {
         if (!reqObj.files) {
           reqObj.files = [];
         }
+        reqObj['to_addrs'] = [];
         for (let i = 0; i < reqObj.to.length; i++) {
-          const to = reqObj.to[i];
-          reqObj['to_'+i] = to;
+          // const to = reqObj.to[i];
+          // reqObj['to_'+i] = to;
+          reqObj['to_addrs'].push(reqObj.to[i]);
         }
         delete reqObj.to;
+
+        reqObj['cc_addrs'] = [];
         if (reqObj.cc) {
           for (let i = 0; i < reqObj.cc.length; i++) {
-            const cc = reqObj.cc[i];
-            reqObj['cc_'+i] = cc;
+            // const cc = reqObj.cc[i];
+            // reqObj['cc_'+i] = cc;
+            reqObj['cc_addrs'].push(reqObj.cc[i]);
           }
           delete reqObj.cc;
         }
+
+        reqObj['bcc_addrs'] = [];
         if (reqObj.bcc) {
           for (let i = 0; i < reqObj.bcc.length; i++) {
-            const bcc = reqObj.bcc[i];
-            reqObj['bcc_'+i] = bcc;
+            // const bcc = reqObj.bcc[i];
+            // reqObj['bcc_'+i] = bcc;
+            reqObj['bcc_addrs'].push(reqObj.bcc[i]);
           }
           delete reqObj.bcc;
         }
 
+        reqObj['s3_attachment_files'] = [];
         if (reqObj.attachment) {
           for (let i = 0; i < reqObj.attachment.length; i++) {
             const attach = reqObj.attachment[i];
@@ -245,8 +256,9 @@ mux.Server = {
               reject('send email error: 체크 항목을 첨부할 수 없습니다.');
               return;
             }
-            reqObj['attachment_folder_'+i] = attach.folder;
-            reqObj['attachment_fileName_'+i] = attach.fileName;
+            // reqObj['attachment_folder_'+i] = attach.folder;
+            // reqObj['attachment_fileName_'+i] = attach.fileName;
+            reqObj['s3_attachment_files'].push({folder: attach.folder, file_name: attach.fileName, new_name: attach.newName ? attach.newName : attach.fileName});
           }
           delete reqObj.attachment;
         }
@@ -258,8 +270,9 @@ mux.Server = {
 
         let formData = new FormData();
         if (reqObj.files && Array.isArray(reqObj.files)){
-          reqObj.files.forEach((file, index) => {
-            formData.append('fileName_'+index, file.name);
+          reqObj.files.forEach((file) => {
+            // formData.append('fileName_'+index, file.name);
+            // formData.append('file', file);
             formData.append('file', file);
           });
         }
@@ -271,8 +284,8 @@ mux.Server = {
         });
 
         // console.log('formData :>> ', formData);
-        // for (let [key, value] of formData.entries()) {
-        //   console.log(`${key}: ${value}`);
+        // for (let pair of formData.entries()) {
+        //   console.log(pair[0], pair[1]);
         // }
 
         const response = await this.axiosInstance.post(reqObj.path, formData, {
@@ -289,7 +302,7 @@ mux.Server = {
       }
     });
   },
-
+  
   /**
    * 파일 업로드
    * @param {Object} reqObj
@@ -600,7 +613,7 @@ mux.Server = {
         const aes256Crypto = new Aes256Crypto()
         const encrypted_id = aes256Crypto.encrypt(id, hashed_key)
         const encrypted_pw = aes256Crypto.encrypt(pw, hashed_key)
-        
+
         this.post({
           path:'/api/user/login/', user_name:encrypted_id, password:encrypted_pw, salt:salt
         }).then(result => {
@@ -618,7 +631,7 @@ mux.Server = {
                 this.move(result.data);
               }).catch((error) => {
                 // console.log('사용자 정보 쿠키 저장 실패:', error);
-                mux.Util.showAlert('로그인 실패:', error);
+                mux.Util.showAlert(error, '로그인 실패');
                 mux.Server.logOut();
               });
             }else {
@@ -638,13 +651,13 @@ mux.Server = {
             // case 'id':
             //   mux.Util.showAlert('존재하지 않는 아이디');
             //   break;
-    
+
             default:
               mux.Util.showAlert('아이디 또는 비밀번호를 확인해주세요.', '로그인 오류', 3000);
               break;
           }
         });
-        
+
       }else{
         mux.Util.showAlert("확인코드를 확인해주세요.");
       }
@@ -1338,7 +1351,7 @@ mux.Util = {
     const modalInstance = new AlertConstructor({
       propsData: { message, title, timeout }
     });
-  
+
     modalInstance.$mount();
     document.body.appendChild(modalInstance.$el);
     modalInstance.show();
@@ -1347,7 +1360,7 @@ mux.Util = {
       document.body.removeChild(modalInstance.$el);
       modalInstance.$destroy();
     });
-  
+
     return modalInstance;
   },
 
@@ -1356,17 +1369,35 @@ mux.Util = {
       const confirmInstance = new ConfirmConstructor({
         propsData: { message, title, useInput }
       });
-  
+
       confirmInstance.$mount();
       document.body.appendChild(confirmInstance.$el);
       confirmInstance.show();
-  
+
       confirmInstance.$on('close', (result) => {
         resolve(result);
         document.body.removeChild(confirmInstance.$el);
         confirmInstance.$destroy();
       });
     });
+  },
+
+  showLoading(hideOverlay = false) {
+    this.hideLoading();
+
+    loadingInstance = new LoadingConstructor({
+      propsData: { dialogValue: true, hideOverlay }
+    });
+
+    loadingInstance.$mount();
+    document.body.appendChild(loadingInstance.$el);
+  },
+  hideLoading() {
+    if (loadingInstance) {
+      document.body.removeChild(loadingInstance.$el); // DOM에서 제거
+      loadingInstance.$destroy(); // 인스턴스 파괴
+      loadingInstance = null; // 참조 초기화
+    }
   }
 
 }
