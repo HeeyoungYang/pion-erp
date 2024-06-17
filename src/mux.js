@@ -1348,17 +1348,60 @@ mux.Util = {
   },
 
   showAlert(message, title = '알림', timeout = 0) {
+    let messageStr = '';
     if (typeof message === 'object') {
       if (message.message){
-        message = message.message;
+        messageStr = message.message;
       }else if (message.msg){
-        message = message.msg;
+        messageStr = message.msg;
+      }else if (message.failed_info){
+        if (message.failed_info.message){
+          messageStr = message.failed_info.message;
+        }else if (message.failed_info.msg){
+          messageStr = message.failed_info.msg;
+        }else {
+          messageStr = message.failed_info;
+        }
+      }else if (message.response){
+        if (message.response.data){
+          if (message.response.data.message){
+            messageStr = message.response.data.message;
+          }else if (message.response.data.msg){
+            messageStr = message.response.data.msg;
+          }else if (message.response.data.failed_info){
+            if (message.response.data.failed_info.message){
+              messageStr = message.response.data.failed_info.message;
+            }else if (message.response.data.failed_info.msg){
+              messageStr = message.response.data.failed_info.msg;
+            }else {
+              messageStr = message.response.data.failed_info;
+            }
+          }else {
+            messageStr = message.response.data;
+          }
+        }else {
+          messageStr = message.response;
+        }
+      }else if (message.error){
+        if (message.error.message){
+          messageStr = message.error.message;
+        }else if (message.error.msg){
+          messageStr = message.error.msg;
+        }else {
+          messageStr = message.error;
+        }
       }else {
-        message = JSON.stringify(message);
+        messageStr = message;
       }
+    }else {
+      messageStr = message;
     }
+    if (typeof messageStr !== 'string'){
+      messageStr = JSON.stringify(messageStr);
+    }
+
     const modalInstance = new AlertConstructor({
-      propsData: { message, title, timeout }
+      propsData: { message: messageStr, title, timeout }
     });
 
     modalInstance.$mount();
@@ -1375,17 +1418,24 @@ mux.Util = {
 
   showConfirm(message, title = '확인', useInput = false) {
     return new Promise((resolve) => {
+      let messageStr = '';
       if (typeof message === 'object') {
         if (message.message){
-          message = message.message;
+          messageStr = message.message;
         }else if (message.msg){
-          message = message.msg;
+          messageStr = message.msg;
         }else {
-          message = JSON.stringify(message);
+          messageStr = message;
         }
+      }else {
+        messageStr = message;
       }
+      if (typeof messageStr !== 'string'){
+        messageStr = JSON.stringify(messageStr);
+      }
+
       const confirmInstance = new ConfirmConstructor({
-        propsData: { message, title, useInput }
+        propsData: { message: messageStr, title, useInput }
       });
 
       confirmInstance.$mount();
