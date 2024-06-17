@@ -97,7 +97,7 @@
         <v-tab-item>
           <v-card ref="calcCostCard" style="border: 1px solid #ccc; overflow-x: auto">
             <v-row style="max-width: 868.5px;" class="dont_print" data-html2canvas-ignore="true">
-              <v-col align-self="center" cols="12" sm="12">
+              <v-col align-self="center" cols="12" sm="12" class="dont_print" data-html2canvas-ignore="true">
                 <v-checkbox
                   v-model="estimate_checkbox.labor_cost"
                   label="노무비"
@@ -326,7 +326,7 @@
 
         <!-- 노무비 산출 -->
         <v-tab-item>
-          <v-card>
+          <v-card ref="calcLaborCard">
             <v-card-text>
               <v-data-table
                 dense
@@ -600,6 +600,27 @@ export default {
         this.tab_search = origin_tab;
       }
       delete sendData.specification;
+
+      let laborFile = null;
+      // 노무비 산출 PDF 파일 생성
+      if (sendData.labor) {
+        const origin_tab = this.tab_search;
+        this.tab_search = 2; // 노무비 산출 탭을 load 한 적이 없는 것을 대비하여 이동
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const labor = this.$refs.calcLaborCard.$el;
+        try {
+          // await mux.Util.downloadPDF(labor, 'labor');
+          laborFile = await mux.Util.getPDF(labor, '노무비 산출');
+          sendData.files.push(laborFile);
+        } catch (error) {
+          this.tab_search = origin_tab;
+          this.mailDialog = true;
+          mux.Util.showAlert('노무비 산출 PDF 파일 생성 중 오류가 발생했습니다.');
+          return;
+        }
+        this.tab_search = origin_tab;
+      }
+      delete sendData.labor;
       
 
       // S3에서 찾아서 첨부할 목록
