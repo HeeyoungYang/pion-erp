@@ -566,7 +566,7 @@ export default {
         const estimate = this.$refs.calcCostCard.$el;
         try {
           // await mux.Util.downloadPDF(estimate, 'estimate');
-          estimateFile = await mux.Util.getPDF(estimate, 'estimate');
+          estimateFile = await mux.Util.getPDF(estimate, '견적서');
           sendData.files.push(estimateFile);
         } catch (error) {
           this.mailDialog = true;
@@ -586,7 +586,7 @@ export default {
         const specification = this.$refs.calcDetailCard.$el;
         try {
           // await mux.Util.downloadPDF(specification, 'specification');
-          specificationFile = await mux.Util.getPDF(specification, 'specification');
+          specificationFile = await mux.Util.getPDF(specification, '산출내역서');
           sendData.files.push(specificationFile);
         } catch (error) {
           this.tab_search = origin_tab;
@@ -604,22 +604,23 @@ export default {
       let attachment = [];
 
       if (sendData.drawing) {
-        attachment.push({folder: 'drawing', fileName: 'drawing.pdf'});
+        attachment.push({folder: 'drawing', fileName: 'drawing.pdf', newName: '도면.pdf'});
       }
       delete sendData.drawing;
 
       if (sendData.approval) {
-        attachment.push({folder: 'approval', fileName: 'approval.pdf'});
+        attachment.push({folder: 'approval', fileName: 'approval.pdf', newName: '승인서.pdf'});
       }
       delete sendData.approval;
 
       if (sendData.etc) {
-        attachment.push({folder: 'etc', fileName: 'etc.pdf'});
+        attachment.push({folder: 'etc', fileName: 'etc.pdf', newName: '기타첨부파일.pdf'});
+        attachment.push({folder: 'etc', fileName: 'etc2.pdf', newName: '기타첨부파일2.pdf'});
       }
       delete sendData.etc;
 
       if (sendData.business_license) {
-        attachment.push({folder: 'business_license', fileName: 'business_license.pdf'});
+        attachment.push({folder: 'business_license', fileName: 'business_license.pdf', newName: '사업자등록증.pdf'});
       }
       delete sendData.business_license;
 

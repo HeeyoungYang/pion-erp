@@ -258,7 +258,7 @@ mux.Server = {
             }
             // reqObj['attachment_folder_'+i] = attach.folder;
             // reqObj['attachment_fileName_'+i] = attach.fileName;
-            reqObj['s3_attachment_files'].push({folder: attach.folder, file_name: attach.fileName});
+            reqObj['s3_attachment_files'].push({folder: attach.folder, file_name: attach.fileName, new_name: attach.newName ? attach.newName : attach.fileName});
           }
           delete reqObj.attachment;
         }
