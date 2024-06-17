@@ -40,9 +40,10 @@
     {"label":"담당자 E-mail", "col":"12", "sm":"4", "lg":"4", "disabled":true}
   ],
   "estimateFilesInputs":[
-    {"label":"도면", "column_name":"blueprint", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
-    {"label":"승인서", "column_name":"approval", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
-    {"label":"기타", "column_name":"files", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true}
+    {"label":"도면", "column_name":"blueprint", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"승인서", "column_name":"approval", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"수주확인서", "column_name":"confirmation", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"기타", "column_name":"files", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true}
   ],
   "search_estimate_headers":[
     { "text": "발행일", "align": "start", "value": "created_time"},

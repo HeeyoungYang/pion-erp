@@ -58,6 +58,13 @@
             class="float-left mr-3"
           ></v-checkbox>
           <v-checkbox
+            label="노무비 산출"
+            v-model="mailData.labor"
+            color="primary"
+            hide-details
+            class="float-left mr-3"
+          ></v-checkbox>
+          <v-checkbox
             label="도면"
             v-model="mailData.drawing"
             color="primary"
@@ -91,7 +98,7 @@
         </v-col>
         <v-col cols="12">
           <v-file-input
-            
+
             v-model="mailData.files"
             placeholder="추가 첨부"
             hide-details
@@ -131,6 +138,7 @@ export default {
           subject: '',
           estimate: false,
           specification: false,
+          labor: false,
           drawing: false,
           approval: false,
           etc: false,
@@ -171,7 +179,7 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
     this.mailData = this.value
   },
   methods: {
-    
+
   },
   watch: {
     value: {

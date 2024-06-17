@@ -442,7 +442,6 @@ export default {
             return a;
           });
 
-          result.sort((a, b) => a._code.localeCompare(b._code));
           let product_data_arr = [];
           result.forEach(data => {
             let isExist = false;
@@ -468,6 +467,22 @@ export default {
               }
             }
           });
+          let code_only_num = [];
+          let code_with_text =[];
+          product_data_arr.forEach(product => {
+            if(isNaN(Number(product._code))){
+              code_with_text.push(product)
+            }else{
+              code_only_num.push(product)
+            }
+          })
+          code_only_num.sort((a, b) => a._code - b._code);
+          code_with_text.sort((a, b) => a._code.localeCompare(b._code));
+
+          product_data_arr = [];
+          product_data_arr.push(...code_only_num);
+          product_data_arr.push(...code_with_text);
+
           this.product_data = product_data_arr;
 
           this.product_data.forEach(data =>{

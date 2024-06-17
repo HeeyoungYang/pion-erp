@@ -1739,7 +1739,7 @@ export default {
             }
             return a;
           });
-          result.sort((a, b) => a._code.localeCompare(b._code));
+
           let product_data_arr = [];
           result.forEach(data => {
             let isExist = false;
@@ -1765,6 +1765,21 @@ export default {
               }
             }
           });
+          let code_only_num = [];
+          let code_with_text =[];
+          product_data_arr.forEach(product => {
+            if(isNaN(Number(product._code))){
+              code_with_text.push(product)
+            }else{
+              code_only_num.push(product)
+            }
+          })
+          code_only_num.sort((a, b) => a._code - b._code);
+          code_with_text.sort((a, b) => a._code.localeCompare(b._code));
+
+          product_data_arr = [];
+          product_data_arr.push(...code_only_num);
+          product_data_arr.push(...code_with_text);
 
           this.material_data = product_data_arr;
           // this.material_data = ProductBackDataPageConfig.test_material_data;
@@ -2379,9 +2394,24 @@ export default {
           if(result['data'].length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
-          this.module_data = result['data'].filter(data=>(!this.module_stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
+          let results = result['data'].filter(data=>(!this.module_stock_more_0 || (data.spot_stock && data.spot_stock.length > 0 && data.spot_stock.find(x=>x.stock_num > 0)) ));
 
-          this.module_data.sort((a, b) => a.code.localeCompare(b.code));
+          let code_only_num = [];
+          let code_with_text =[];
+          results.forEach(product => {
+            if(isNaN(Number(product.code))){
+              code_with_text.push(product)
+            }else{
+              code_only_num.push(product)
+            }
+          })
+          code_only_num.sort((a, b) => a.code - b.code);
+          code_with_text.sort((a, b) => a.code.localeCompare(b.code));
+
+          this.module_data = [];
+          this.module_data.push(...code_only_num);
+          this.module_data.push(...code_with_text);
+
           this.module_data.forEach(data =>{
             data.item_code = data.code;
             delete data.code;
@@ -2415,13 +2445,25 @@ export default {
             }
 
             if(data.belong_data){
+              let code_only_num = [];
+              let code_with_text =[];
               for(let b=0; b<data.belong_data.length; b++){
                 data.belong_data[b].item_code = data.belong_data[b].code;
                 data.belong_data[b].used_num = data.total_stock * data.belong_data[b].num
                 delete data.belong_data[b].code;
                 data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
+                if(isNaN(Number(data.belong_data[b].item_code))){
+                  code_with_text.push(data.belong_data[b])
+                }else{
+                  code_only_num.push(data.belong_data[b])
+                }
               }
-              data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
+              code_only_num.sort((a, b) => a.item_code - b.item_code);
+              code_with_text.sort((a, b) => a.item_code.localeCompare(b.item_code));
+
+              data.belong_data = [];
+              data.belong_data.push(...code_only_num);
+              data.belong_data.push(...code_with_text);
             }
             this.module_total_stock_num += data.total_stock
             this.module_total_stock_price += data.item_stock_price
@@ -3025,20 +3067,36 @@ export default {
                 // let total_item_unit_price = 0;
                 // data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 if(data.belong_data[b].belong_data){
+                  let code_only_num = [];
+                  let code_with_text =[];
                   for(let c=0; c<data.belong_data[b].belong_data.length; c++){
                     data.belong_data[b].belong_data[c].item_code = data.belong_data[b].belong_data[c].code;
                     data.belong_data[b].belong_data[c].used_num = data.total_stock * data.belong_data[b].used_num * data.belong_data[b].belong_data[c].num
                     delete data.belong_data[b].belong_data[c].code;
                     // total_item_unit_price += data.belong_data[b].belong_data[c].unit_price * data.belong_data[b].belong_data[c].num;
                     data.belong_data[b].belong_data[c].unit_price = '₩ '+ Number(data.belong_data[b].belong_data[c].unit_price).toLocaleString()
+                    if(isNaN(Number(data.belong_data[b].belong_data[c].item_code))){
+                      code_with_text.push(data.belong_data[b].belong_data[c])
+                    }else{
+                      code_only_num.push(data.belong_data[b].belong_data[c])
+                    }
                   }
                   // data.belong_data[b].unit_price = '₩ '+ Number(total_item_unit_price).toLocaleString()
-                  data.belong_data[b].belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
+                  // data.belong_data[b].belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
+                  code_only_num.sort((a, b) => a.item_code - b.item_code);
+                  code_with_text.sort((a, b) => a.item_code.localeCompare(b.item_code));
+
+                  data.belong_data[b].belong_data = [];
+                  data.belong_data[b].belong_data.push(...code_only_num);
+                  data.belong_data[b].belong_data.push(...code_with_text);
+
                   data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 }else{
                   data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 }
               }
+              // data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
+
               data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
             }
 
