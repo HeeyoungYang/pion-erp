@@ -1348,6 +1348,15 @@ mux.Util = {
   },
 
   showAlert(message, title = '알림', timeout = 0) {
+    if (typeof message === 'object') {
+      if (message.message){
+        message = message.message;
+      }else if (message.msg){
+        message = message.msg;
+      }else {
+        message = JSON.stringify(message);
+      }
+    }
     const modalInstance = new AlertConstructor({
       propsData: { message, title, timeout }
     });
@@ -1366,6 +1375,15 @@ mux.Util = {
 
   showConfirm(message, title = '확인', useInput = false) {
     return new Promise((resolve) => {
+      if (typeof message === 'object') {
+        if (message.message){
+          message = message.message;
+        }else if (message.msg){
+          message = message.msg;
+        }else {
+          message = JSON.stringify(message);
+        }
+      }
       const confirmInstance = new ConfirmConstructor({
         propsData: { message, title, useInput }
       });
