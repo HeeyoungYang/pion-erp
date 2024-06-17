@@ -244,6 +244,7 @@
                             v-for="(member, i) in estimate_member_info"
                             :key="i"
                             :color="member.name ? 'success' : 'default'"
+                            @click="selectMemberDialog(i)"
                           >
                             {{ member.type }} : {{ member.name }}
                           </v-chip>
@@ -1209,6 +1210,7 @@ export default {
 
   created () {
     this.initialize()
+    this.members()
   },
 
   methods:{
@@ -1221,6 +1223,17 @@ export default {
     },
     initialize(){
       // this.search_estimate_data = EstimatePageConfig.test_estimate_data
+      const prevURL = window.location.href;
+      try {
+        if (prevURL !== window.location.href) return;
+        this.estimate_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+        this.estimate_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
+        this.estimate_member_info[0].user_id =  this.$cookies.get(this.$configJson.cookies.id.key);
+        this.login_id =  this.$cookies.get(this.$configJson.cookies.id.key);
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.showAlert(error);
+      }
     },
     async searchButton(){
       this.loading_dialog = true;
@@ -1234,6 +1247,21 @@ export default {
     },
     closeProductCostSearch(){
       this.product_cost_dialog = false;
+    },
+    selectMemberDialog(idx){
+      this.member_type_index = idx
+      this.member_dialog = true;
+    },
+    setMember(item){
+      this.estimate_member_info[this.member_type_index].name = item.name.trim()
+      this.estimate_member_info[this.member_type_index].user_id = item.user_id
+      this.close();
+    },
+    members(data){
+      this.members_list=data;
+    },
+    close(){
+      this.member_dialog = false;
     },
   },
   data(){
@@ -1250,8 +1278,13 @@ export default {
       dialog_search_product: false,
       dialog_calculate_labor: false,
 
+      member_dialog: false,
+      member_type_index:0,
+      members_list:[],
+
       estimate_member_info:EstimatePageConfig.estimate_member_info,
       save_estimate: EstimatePageConfig.save_estimate,
+      content_save_items: EstimatePageConfig.content_save_items,
       search_estimate_headers: EstimatePageConfig.search_estimate_headers,
       survey_cost_headers: EstimatePageConfig.survey_cost_headers,
       labor_cost_headers: EstimatePageConfig.labor_cost_headers,

@@ -80,6 +80,17 @@
       :card-elevation="'0'"
       @close="closeProductList"
     >
+
+    <v-row>
+        <v-col cols="12" sm="5">
+          <v-combobox
+            label="version"
+            filled
+            value="3차 수정"
+            :items="versions"
+          ></v-combobox>
+        </v-col>
+      </v-row>
       <v-tabs
         v-model="tab_search"
         background-color="transparent"
@@ -241,6 +252,20 @@
               /> -->
             </v-col>
             <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 수주 확인서</p>
+              <div style="width:100%; background-color: #ccc; height:300px"></div>
+              <!-- <v-img
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                style="cursor: pointer;"
+              /> -->
+            </v-col>
+            <v-col cols="12" sm="12">
               <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
               <v-chip
                 color="grey lighten-2"
@@ -372,6 +397,7 @@ export default {
     return{
       mux: mux,
       dates: [],
+      versions:['1차 수정', '2차 수정', '3차 수정'],
       inbound_product_list_dialog: false,
       loading_dialog: false,
       tab_search: null,
