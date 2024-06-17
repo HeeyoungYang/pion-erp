@@ -17,7 +17,8 @@
           <v-btn v-if="!preventButton && item.costListBtn"
             :color="item.costListBtn.color ? item.costListBtn.color : 'primary'"
             x-small
-            :class="item.costListBtn.class ? item.costListBtn.class : 'ml-3'"
+            :class="'dont_print ' + (item.costListBtn.class ? item.costListBtn.class : 'ml-3')"
+            data-html2canvas-ignore="true"
             :elevation="item.costListBtn.elevation ? item.costListBtn.elevation : '0'"
             @click="item.costListBtn.click"
           >{{ item.costListBtn.text }}
@@ -90,7 +91,8 @@
             <v-btn v-if="!preventButton && innerItem.costListBtn"
               :color="innerItem.costListBtn.color ? innerItem.costListBtn.color : 'primary'"
               x-small
-              :class="innerItem.costListBtn.class ? innerItem.costListBtn.class : 'ml-3'"
+              :class="'dont_print ' + (innerItem.costListBtn.class ? innerItem.costListBtn.class : 'ml-3')"
+              data-html2canvas-ignore="true"
               :elevation="innerItem.costListBtn.elevation ? innerItem.costListBtn.elevation : '0'"
               @click="innerItem.costListBtn.click"
             >{{ innerItem.costListBtn.text }}
@@ -153,7 +155,8 @@
             <v-btn v-if="!preventButton && innerBelongItem.costListBtn"
               :color="innerBelongItem.costListBtn.color ? innerBelongItem.costListBtn.color : 'primary'"
               x-small
-              :class="innerBelongItem.costListBtn.class ? innerBelongItem.costListBtn.class : 'ml-3'"
+              :class="'dont_print ' + (innerBelongItem.costListBtn.class ? innerBelongItem.costListBtn.class : 'ml-3')"
+              data-html2canvas-ignore="true"
               :elevation="innerBelongItem.costListBtn.elevation ? innerBelongItem.costListBtn.elevation : '0'"
               @click="innerBelongItem.costListBtn.click"
             >{{ innerBelongItem.costListBtn.text }}
