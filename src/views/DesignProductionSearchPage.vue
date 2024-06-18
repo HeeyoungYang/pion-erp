@@ -72,8 +72,8 @@
     </v-main>
 
     <ModalDialogComponent
-      :dialog-value="inbound_product_list_dialog"
-      max-width="50%"
+      :dialog-value="design_production_info_dialog"
+      max-width="60%"
       title-class=" "
       :dialog-transition="'slide-x-transition'"
       :dialog-custom="'custom-dialog elevation-0 white'"
@@ -224,7 +224,7 @@
           <v-row class="mt-3">
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 승인도서</p>
-              <div style="width:100%; background-color: #ccc; height:300px"></div>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
               <!-- <v-img
                 alt="thumbnail"
                 class="shrink mr-2"
@@ -238,7 +238,7 @@
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 제작사양서</p>
-              <div style="width:100%; background-color: #ccc; height:300px"></div>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
               <!-- <v-img
                 alt="thumbnail"
                 class="shrink mr-2"
@@ -251,8 +251,8 @@
               /> -->
             </v-col>
             <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 상세도면</p>
-              <div style="width:100%; background-color: #ccc; height:300px"></div>
+              <p class="font-weight-bold primary--text mb-0">▼ 배치도</p>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
               <!-- <v-img
                 alt="thumbnail"
                 class="shrink mr-2"
@@ -264,6 +264,77 @@
                 style="cursor: pointer;"
               /> -->
             </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 구조도</p>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+              <!-- <v-img
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                style="cursor: pointer;"
+              /> -->
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 단선도</p>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+              <!-- <v-img
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                style="cursor: pointer;"
+              /> -->
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 삼선도</p>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+              <!-- <v-img
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                style="cursor: pointer;"
+              /> -->
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 회로도</p>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+              <!-- <v-img
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                style="cursor: pointer;"
+              /> -->
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 기타</p>
+              <v-chip
+                color="grey lighten-2"
+                class="ma-2"
+              >
+                기타첨부파일.pdf
+              </v-chip>
+              <v-chip
+                color="grey lighten-2"
+                class="ma-2"
+              >
+                기타첨부파일2.xlsx
+              </v-chip>
+            </v-col>
           </v-row>
         </v-tab-item>
         <!-- BOM List -->
@@ -271,7 +342,17 @@
           <v-card ref="calcCostCard" style="border: 1px solid #ccc;" class="pa-4 elevation-0">
             <v-row>
               <v-col cols="12" sm="12">
-                <p class="text-h6 primary--text mb-0 font-weight-bold">요청 자재 선택</p>
+                <p class="text-h6 primary--text mb-0 font-weight-bold float-left">요청 자재 선택</p>
+                <v-checkbox
+                  hide-details
+                  class="float-right mt-0"
+                  label="필요수량 ≤ 재고수량"
+                ></v-checkbox>
+                <v-checkbox
+                  hide-details
+                  class="float-right mt-0 mr-4"
+                  label="필요수량 > 재고수량"
+                ></v-checkbox>
               </v-col>
               <v-col cols="12" sm="12">
                 <DataTableComponent
@@ -290,16 +371,10 @@
               <v-col cols="12" sm="12" >
                 <p class="mt-6 mb-0">
                   <span class="text-h6 primary--text float-left font-weight-bold">구매 요청</span>
-                  <v-checkbox
-                    v-model="setPurchase"
-                    label="구매 견적서 첨부"
-                    color="primary"
-                    hide-details
-                    class="mx-5 mt-0 float-left"
-                  ></v-checkbox>
                   <v-btn
                     small
                     color="success"
+                    class="ml-4"
                   >요청</v-btn>
                 </p>
               </v-col>
@@ -315,24 +390,29 @@
                   {{ member.type }} : {{ member.name }}
                 </v-chip>
               </v-col>
-              <v-col cols="12" sm="12" v-if="setPurchase">
-                <InputsFormComponent
-                  slot="cardText"
-                  dense
-                  clearable
-                  filled
-                  hide-details
-                  :inputs="setPurchaseInputs"
-                >
-                </InputsFormComponent>
-              </v-col>
               <v-col cols="12" sm="12">
                 <v-data-table
                   :headers="bom_list_purchase_headers"
                   :items="bom_list_purchase_data"
-                  item-key="product_code"
+                  group-by="product_code"
+                  item-key="item_code"
                   dense
                 >
+                <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                  <th colspan="12">
+                    <v-icon @click="toggle"
+                      >{{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                    </v-icon>
+                    {{ items[0].product_code }}
+                  </th>
+                  <th>
+                    <v-icon
+                      color="grey"
+                      small
+                      @click="deleteItem(items[0].product_code)"
+                    >mdi-minus-thick</v-icon>
+                  </th>
+                </template>
                 <template v-slot:[`item.purchase_num`] = "{ item }">
                   <v-text-field
                     dense
@@ -341,6 +421,34 @@
                     style="width:100px;font-size: 0.775rem !important;"
                     filled
                   ></v-text-field>
+                </template>
+                <template v-slot:[`item.estimate`] = "{ item }">
+                  <div  style="min-width: 160px;">
+                    <v-checkbox
+                      label="미선택"
+                      color="primary"
+                      hide-details
+                      class="float-left mr-3 mt-0"
+                      v-model="item.estimate"
+                    ></v-checkbox>
+                    <v-btn
+                      color="primary"
+                      class="float-left"
+                      fab
+                      x-small
+                      elevation="0"
+                      @click="selectShipData(item, index)"
+                    >
+                      <v-icon style="cursor:pointer">mdi-magnify</v-icon>
+                    </v-btn>
+                  </div>
+                </template>
+                <template v-slot:[`item.cancle`] = "{ index }">
+                  <v-icon
+                    color="grey"
+                    small
+                    @click="deleteItem(index)"
+                  >mdi-minus-thick</v-icon>
                 </template>
                 </v-data-table>
               </v-col>
@@ -408,7 +516,10 @@
       persistent
       max-width="1000px"
     >
-      <MailFormComponent v-model="files">
+      <MailFormComponent
+        v-model="files"
+        addCardClass="d-none"
+      >
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
@@ -460,11 +571,10 @@ export default {
               },
   data(){
     return{
-      setPurchase: false,
       mux: mux,
       versions:['1차 수정', '2차 수정', '3차 수정'],
       dates: [],
-      inbound_product_list_dialog: false,
+      design_production_info_dialog: false,
       loading_dialog: false,
       tab_search: null,
       receivingInspectionThumbnail: '',
@@ -502,7 +612,7 @@ export default {
     },
   },
   watch:{
-    inbound_product_list_dialog(val){
+    design_production_info_dialog(val){
       val || this.closeProductList()
     },
   },
@@ -642,7 +752,7 @@ export default {
       this.loading_dialog = false;
     },
     closeProductList(){
-      this.inbound_product_list_dialog = false;
+      this.design_production_info_dialog = false;
     },
     async clickApproveData(){
 
@@ -715,7 +825,7 @@ export default {
       //   else
       //     mux.Util.showAlert(error);
       // }
-      this.inbound_product_list_dialog = true;
+      this.design_production_info_dialog = true;
     },
 
     async searchItemStock(data){

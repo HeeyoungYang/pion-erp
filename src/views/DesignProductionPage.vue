@@ -302,11 +302,85 @@
                       >
                       </InputsFormComponent>
 
+                      <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;" >상세 도면</p>
+                      <v-row>
+                        <v-col cols="12" sm="4">
+                          <p class="font-weight-bold primary--text mb-0">▼ 배치도</p>
+                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                          <!-- <v-img
+                            alt="thumbnail"
+                            class="shrink mr-2"
+                            contain
+                            :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                            transition="scale-transition"
+                            width="350"
+                            @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                            style="cursor: pointer;"
+                          /> -->
+                        </v-col>
+                        <v-col cols="12" sm="4">
+                          <p class="font-weight-bold primary--text mb-0">▼ 구조도</p>
+                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                          <!-- <v-img
+                            alt="thumbnail"
+                            class="shrink mr-2"
+                            contain
+                            :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                            transition="scale-transition"
+                            width="350"
+                            @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                            style="cursor: pointer;"
+                          /> -->
+                        </v-col>
+                        <v-col cols="12" sm="4">
+                          <p class="font-weight-bold primary--text mb-0">▼ 단선도</p>
+                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                          <!-- <v-img
+                            alt="thumbnail"
+                            class="shrink mr-2"
+                            contain
+                            :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                            transition="scale-transition"
+                            width="350"
+                            @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                            style="cursor: pointer;"
+                          /> -->
+                        </v-col>
+                        <v-col cols="12" sm="4">
+                          <p class="font-weight-bold primary--text mb-0">▼ 삼선도</p>
+                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                          <!-- <v-img
+                            alt="thumbnail"
+                            class="shrink mr-2"
+                            contain
+                            :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                            transition="scale-transition"
+                            width="350"
+                            @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                            style="cursor: pointer;"
+                          /> -->
+                        </v-col>
+                        <v-col cols="12" sm="4">
+                          <p class="font-weight-bold primary--text mb-0">▼ 회로도</p>
+                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                          <!-- <v-img
+                            alt="thumbnail"
+                            class="shrink mr-2"
+                            contain
+                            :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                            transition="scale-transition"
+                            width="350"
+                            @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                            style="cursor: pointer;"
+                          /> -->
+                        </v-col>
+                      </v-row>
+
                       <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;" >첨부</p>
                       <v-row>
                         <v-col cols="12" sm="4">
-                          <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-                          <div style="width:100%; background-color: #ccc; height:300px"></div>
+                          <p class="font-weight-bold primary--text mb-0">▼ 승인도서</p>
+                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
                           <!-- <v-img
                             alt="thumbnail"
                             class="shrink mr-2"
@@ -319,8 +393,8 @@
                           /> -->
                         </v-col>
                         <v-col cols="12" sm="4">
-                          <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
-                          <div style="width:100%; background-color: #ccc; height:300px"></div>
+                          <p class="font-weight-bold primary--text mb-0">▼ 제작사양서</p>
+                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
                           <!-- <v-img
                             alt="thumbnail"
                             class="shrink mr-2"
@@ -333,7 +407,7 @@
                           /> -->
                         </v-col>
                         <v-col cols="12" sm="4">
-                          <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
+                          <p class="font-weight-bold primary--text mb-0">▼ 기타</p>
                           <v-chip
                             color="grey lighten-2"
                             class="ma-2"
@@ -683,11 +757,39 @@
                       >
                       </InputsFormComponent>
                       <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;" >첨부</p>
+                      <v-row>
+                        <v-col cols="12">
+                          <v-btn
+                            v-if="!blueprint_inputs_show"
+                            @click="blueprint_inputs_show = true"
+                            class="mb-3"
+                            x-small
+                            color="primary"
+                          >상세 도면 첨부</v-btn>
+                          <InputsFormComponent
+                            dense
+                            clearable
+                            :inputs="blueprintDetailInputs"
+                            v-if="blueprint_inputs_show"
+                          >
+                          <v-col cols="12" sm="4">
+                            <v-btn
+                              @click="blueprint_inputs_show = false"
+                              class="mb-3 white--text"
+                              x-small
+                              color="grey"
+                            >상세 도면 닫기</v-btn>
+                          </v-col>
+                          </InputsFormComponent>
+                        </v-col>
+                      </v-row>
+                      <v-divider class="my-4"></v-divider>
                       <InputsFormComponent
                         dense
                         clearable
                         :inputs="estimateFilesInputs"
                       >
+
                       </InputsFormComponent>
                     </v-card-text>
                   </v-card>
@@ -1448,6 +1550,7 @@ export default {
       dialog_search_product: false,
       dialog_bom_detail: false,
       dialog_calculate_labor: false,
+      blueprint_inputs_show: false,
 
       save_costs: DesignProductionPageConfig.save_costs,
       search_estimate_headers: DesignProductionPageConfig.search_estimate_headers,
@@ -1506,6 +1609,7 @@ export default {
       estimateDefaultInfoInputs: DesignProductionPageConfig.estimateDefaultInfoInputs,
       estimateCompanyInfoInputs: DesignProductionPageConfig.estimateCompanyInfoInputs,
       estimateFilesInputs: DesignProductionPageConfig.estimateFilesInputs,
+      blueprintDetailInputs: DesignProductionPageConfig.blueprintDetailInputs,
       search_estimate_data: [],
     }
   },

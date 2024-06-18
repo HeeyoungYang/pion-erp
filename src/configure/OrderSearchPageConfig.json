@@ -5,10 +5,10 @@
   "searchCardInputs":[
     {"label":"승인", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All","미확인", "미승인", "승인", "반려"]},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"업체명", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"발행일", "type":"dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"3"}
+    {"label":"구매 업체명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"계산일", "type":"dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"3"}
   ],
   "setPurchaseInputs":[
     {"label":"견적서 첨부", "type":"file", "col":"12", "sm":"4", "lg":"4"},
@@ -19,15 +19,14 @@
     {"label":"리드타임", "col":"12", "sm":"4", "lg":"4", "value": ""}
   ],
 
-
-  "inbound_approve_headers": [
-    { "text": "발행일", "align": "start", "value": "created_time"},
-    { "text": "업체명", "align": "start", "value": "company_name"},
+  "order_data_headers": [
+    { "text": "승인 요청일", "align": "start", "value": "created_time"},
+    { "text": "발주일", "align": "start", "value": "ordered_time"},
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
-    { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
-    { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"},
-    { "text": "총액", "align": "start", "value": "cost_total_amount"},
-    { "text": "진행 상태", "align": "start", "value": "progress"}
+    { "text": "발주 업체", "align": "start", "value": "order_company"},
+    { "text": "1차 계산일", "align": "start", "value": "first_bill_date"},
+    { "text": "2차 계산일", "align": "start", "value": "second_bill_date"},
+    { "text": "3차 계산일", "align": "start", "value": "third_bill_date"}
   ],
 
   "inbound_product_list_headers": [
@@ -37,10 +36,7 @@
     { "text": "제품명", "align": "start", "value": "name"},
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
-    { "text": "입고위치", "align": "start", "value": "spot"},
-    { "text": "입고수량", "align": "start", "value": "inbound_num"},
-    { "text": "단가", "align": "start", "value": "unit_price"},
-    { "text": "입고금액", "align": "start", "value": "inbound_price"}
+    { "text": "구매 요청 수량", "align": "start", "value": "spot"}
   ],
   "survey_cost_headers": [
     { "text": "No.", "align": "start", "value": ""},
@@ -65,7 +61,7 @@
   "bom_list_purchase_headers": [
     { "text": "종류", "align": "start", "value": "type"},
     { "text": "분류", "align": "start", "value": "classification"},
-    { "text": "관리코드", "align": "start", "value": "item_code"},
+    { "text": "관리코드", "align": "start", "value": "product_code"},
     { "text": "제품명", "align": "start", "value": "name"},
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
@@ -73,9 +69,7 @@
     { "text": "단가", "align": "start", "value": "unit_price"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "필요수량", "align": "start", "value": "item_num"},
-    { "text": "재고", "align": "start", "value": "stock_num"},
-    { "text": "견적/선주문", "align": "start", "value": "estimate"},
-    { "text": "제외", "align": "start", "value": "cancle"}
+    { "text": "재고", "align": "start", "value": "stock_num"}
   ],
 
   "purchase_member_info":[
@@ -87,8 +81,7 @@
     {
       "type":"원부자재",
       "classification":"GFM",
-      "product_code":"완제품AA",
-      "item_code":"원부자재BB",
+      "product_code":"원부자재BB",
       "name":"원부자재B",
       "model":"MODEL-002",
       "spec":"SPEC-002",
@@ -101,8 +94,7 @@
     {
       "type":"반제품",
       "classification":"GFM",
-      "product_code":"완제품AA",
-      "item_code":"반제품CC",
+      "product_code":"반제품CC",
       "name":"반제품C",
       "model":"MODEL-003",
       "spec":"SPEC-003",
@@ -378,16 +370,34 @@
   },
   "test_inbound_approve_data":[
     {
-      "id": 59,
       "created_time": "2024-05-17 08:32:44",
       "given_name": "양희영",
       "code": "ORDER-001:2024-05-17 08:31:28.759",
-      "inbound_date": "2024-05-17",
-      "order_code": "ORDER-001",
+      "order_company": "업체A",
       "project_code": "PROJECT-001",
-      "purchase_manager": " 알렉스",
-      "material_manager": " 테스터민",
-      "abnormal_reason": "",
+      "first_bill_date": "2024-06-01",
+      "second_bill_date": "2024-06-02",
+      "third_bill_date": "2024-06-03",
+      "approval_phase": "승인",
+      "checker": "양희영",
+      "checker_id": "heeyoung",
+      "checked_date": "2024-05-17 09:33:04",
+      "approver": " 윤준수",
+      "approver_id": "yjs",
+      "approved_date": null,
+      "rejecter": null,
+      "rejected_date": null,
+      "reject_reason": null
+    },
+    {
+      "created_time": "2024-05-17 08:32:44",
+      "given_name": "양희영",
+      "code": "ORDER-001:2024-05-17 08:31:28.759",
+      "order_company": "업체A",
+      "project_code": "PROJECT-001",
+      "first_bill_date": "",
+      "second_bill_date": "",
+      "third_bill_date": "",
       "approval_phase": "미승인",
       "checker": "양희영",
       "checker_id": "heeyoung",
@@ -397,17 +407,7 @@
       "approved_date": null,
       "rejecter": null,
       "rejected_date": null,
-      "reject_reason": null,
-      "receiving_inspection_file": "출고요청서.pdf",
-      "receiving_inspection_thumbnail": "",
-      "inspection_report_file": "입고확인서 (2).pdf",
-      "inspection_report_thumbnail": "",
-      "files": "20240318_091859.png/20240318_091749.png",
-      "note": "TEST DATA",
-      "company_name": "테스트업체",
-      "inhouse_bid_number": "INHOUSE-001",
-      "company_bid_number": "COMPANY-001",
-      "cost_total_amount": 1000000
+      "reject_reason": null
     }
   ]
 }

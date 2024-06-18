@@ -70,7 +70,7 @@
             <template v-slot:item="{ index, item, select, isSelected, expand }">
               <tr  @click="clickTr(item)">
                 <td v-if="addToTable || exceptFromTable" align="center">
-                  <v-btn v-if="addToTable" @click="addData(item)" :disabled="checkAddToTableDisalbed(item)" x-small color="success">추가</v-btn>
+                  <v-btn v-if="addToTable" @click="addData(item)" :disabled="checkAddToTableDisalbed(item)" x-small color="success">일괄 추가</v-btn>
                   <v-btn v-if="exceptFromTable" @click="exceptData(index)" x-small color="grey" class="white--text">제외</v-btn>
                 </td>
                 <td v-if="approval" align="center">
@@ -684,6 +684,8 @@
               <tr v-for="(data,idx) in item[childrenKey]" :key="index+'_'+idx" style="background-color: #efefef;" v-show="expanded.includes(item)">
 
                 <td v-if="addToTable || exceptFromTable" align="center">
+                  <v-btn v-if="addToTable" @click="addData(item)" :disabled="checkAddToTableDisalbed(item)" x-small color="default">추가</v-btn>
+                  <v-btn v-if="exceptFromTable" @click="exceptData(index)" x-small color="grey" class="white--text">제외</v-btn>
                 </td>
                 <td v-if="showSelect && !showSelectChildren"></td>
                 <td v-if="showSelectChildren">

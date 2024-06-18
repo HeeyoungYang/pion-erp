@@ -52,8 +52,8 @@
               >
                 <v-card-text class=" pt-3">
                   <DataTableComponent
-                    :headers="purchase_headers"
-                    :items="purchase_data"
+                    :headers="order_data_headers"
+                    :items="inbound_approve_data"
                     item-key="product_code"
                     approval="inbound"
                     dense
@@ -73,7 +73,7 @@
 
     <ModalDialogComponent
       :dialog-value="inbound_product_list_dialog"
-      max-width="70%"
+      max-width="50%"
       title-class=" "
       :dialog-transition="'slide-x-transition'"
       :dialog-custom="'custom-dialog elevation-0 white'"
@@ -82,282 +82,116 @@
     >
     <v-container>
       <v-row>
-        <v-col cols="12" sm="12">
-          <v-chip
-            class="mr-2"
-            style="cursor:pointer"
-            v-for="(member, i) in purchase_member_info"
-            :key="i"
-            :color="member.name ? 'success' : 'default'"
-            @click="selectMemberDialog(i)"
-          >
-            {{ member.type }} : {{ member.name }}
-          </v-chip>
+        <v-col cols="12">
+          <v-btn small color="primary" @click="orderPurchaseDialog = true">발주서 확인</v-btn>
           <v-btn
-            small
             color="primary"
+            elevation="0"
+            fab
+            x-small
+            @click="mailDialog = true"
+            class="mb-3 float-right dont_print"
+            data-html2canvas-ignore="true"
           >
-            발주 승인 요청
+            <v-icon >mdi-email</v-icon>
           </v-btn>
         </v-col>
         <v-col cols="12">
-          <v-data-table
-            :headers="purchase_detail_headers"
-            :items="purchase_detail_data"
-            :item-key="purchase_detail_data.product_code"
-            group-by="estimate_company"
+          <DataTableComponent
+            :headers="inbound_product_list_headers"
+            :items="inbound_product_list_data"
+            :item-key="inbound_product_list_data.product_code"
             dense
-          >
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" sm="4">
+          <p class="font-weight-bold primary--text mb-0">▼ 구매 견적서</p>
+          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+          <!-- <v-img
+            alt="thumbnail"
+            class="shrink mr-2"
+            contain
+            :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+            transition="scale-transition"
+            width="350"
+            @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+            style="cursor: pointer;"
+          /> -->
+        </v-col>
+        <v-col cols="12" sm="8">
+          <v-col cols="12">
+            <p class="font-weight-bold primary--text mb-0">▼ 계산서</p>
+            <v-chip
+              color="grey lighten-2"
+              class="ma-2">
+              1차 계산서
+            </v-chip>
+            <v-chip
+              color="grey lighten-2"
+              class="ma-2">
+              2차 계산서
+            </v-chip>
+            <v-chip
+              color="grey lighten-2"
+              class="ma-2">
+              3차 계산서
+            </v-chip>
+          </v-col>
 
-            <template v-slot:[`group.header`]="{items, isOpen, toggle}">
-              <th  @click="toggle" colspan="7">
-                <v-icon
-                >
-                  {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-                </v-icon>
-                {{ items[0].estimate_phase }}
-              </th>
-              <th>
-                <v-icon
-                  v-if="items[0].estimate_phase === '견적 미요청'"
-                  color="primary"
-                  small
-                  @click="estiamteDialog('견적 미요청')"
-                >mdi-email</v-icon>
-                <v-icon
-                  v-else-if="items[0].estimate_phase.includes('견적 요청') === true"
-                  color="primary"
-                  small
-                  @click="estiamteDialog('견적 요청')"
-                >mdi-plus-thick</v-icon>
-                <v-icon
-                  v-else
-                  color="primary"
-                  small
-                  @click="estiamteDialog('견적 완료')"
-                >mdi-file</v-icon>
-              </th>
-            </template>
-          </v-data-table>
+          <v-col cols="12">
+            <p class="font-weight-bold primary--text mb-0">▼ 송금 확인증</p>
+            <v-chip
+              color="grey lighten-2"
+              class="ma-2">
+              1차 송금 확인증
+            </v-chip>
+            <v-chip
+              color="grey lighten-2"
+              class="ma-2">
+              2차 송금 확인증
+            </v-chip>
+            <v-chip
+              color="grey lighten-2"
+              class="ma-2">
+              3차 송금 확인증
+            </v-chip>
+          </v-col>
         </v-col>
       </v-row>
     </v-container>
     </ModalDialogComponent>
 
     <v-dialog
-      v-model="unestimatedMailDialog"
+      v-model="mailDialog"
       persistent
       max-width="1000px"
     >
-      <v-stepper v-model="unestimated_steppers">
-        <v-stepper-header>
-          <template v-for="n in unestimated_step">
-            <v-stepper-step
-              :key="`${n}-step`"
-              :complete="unestimated_steppers > n"
-              :step="n"
-              editable
-            >
-              {{ n ===  1 ? '관련 자재 선택' : '메일 발송'}}
-            </v-stepper-step>
-
-            <v-divider
-              v-if="n !== unestimated_step"
-              :key="n"
-            ></v-divider>
-          </template>
-        </v-stepper-header>
-
-        <v-stepper-items>
-          <v-stepper-content
-            v-for="n in unestimated_step"
-            :key="`${n}-content`"
-            :step="n"
-          >
-            <div v-if="n === 1">
-              <v-row>
-                <v-col cols="12" sm="4">
-                  <v-text-field
-                    filled
-                    label="견적 업체명"
-                    hide-details
-                    dense
-                  >
-                  </v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-data-table
-                    v-model="selected_unestimated_data"
-                    :headers="purchase_detail_headers"
-                    :items="purchase_detail_data"
-                    item-key="product_code"
-                    dense
-                    show-select
-                  ></v-data-table>
-                </v-col>
-              </v-row>
-              <v-btn
-                color="primary"
-                @click="unestimated_steppers = 2"
-              >
-                다음 ▶
-              </v-btn>
-
-              <v-btn text color="error">
-                취소
-              </v-btn>
-            </div>
-            <div v-if="n === 2">
-              <v-card class="elevation-0">
-                <v-card-text>
-                  <v-row>
-                    <v-col cols="12">
-                      <v-btn
-                        x-small
-                        color="primary"
-                        @click="!show_selected_unestimated_data ? show_selected_unestimated_data = true :  show_selected_unestimated_data = false"
-                      >관련 자재</v-btn>
-                    </v-col>
-                    <v-col cols="12" v-if="show_selected_unestimated_data">
-                      <v-data-table
-                      style="border:1px solid #c0c0c0"
-                        :headers="purchase_detail_headers"
-                        :items="selected_unestimated_data"
-                        item-key="product_code"
-                        dense
-                      ></v-data-table>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-              </v-card>
-              <MailFormComponent
-                v-model="files"
-                title-class="d-none"
-                addCardClass="d-none"
-                mailCardClass="elevation-0"
-              >
-              </MailFormComponent>
-
-              <v-card class="elevation-0">
-                <v-card-text>
-                  <v-btn
-                    color="primary"
-                    @click="unestimated_steppers = 1"
-                  >
-                    ◀ 이전
-                  </v-btn>
-                  <v-btn
-                    color="success"
-                    @click="test(), unestimatedMailDialog = false"
-                  >
-                    발송
-                  </v-btn>
-
-                  <v-btn
-                    text
-                    color="error"
-                    @click="unestimatedMailDialog = false"
-                  >
-                    취소
-                  </v-btn>
-
-                </v-card-text>
-              </v-card>
-            </div>
-          </v-stepper-content>
-        </v-stepper-items>
-      </v-stepper>
-    </v-dialog>
-
-    <ModalDialogComponent
-      :dialog-value="estimateRequestedDialog"
-      max-width="550px"
-      title-class="display-none"
-      text-class="pb-0"
-      closeText="취소"
-      saveText="저장"
-      :persistent="true"
-      @close="estimateRequestedDialog = false"
-      @save="uploadProductInfo"
-    >
-      <CardComponent
-        elevation="0"
-        text-class="pa-0 pt-4"
-        title-class="pa-0"
+      <MailFormComponent
+        v-model="files"
+        addSystemFiles="order"
+        addCardClass="d-none"
       >
-        <div slot="cardTitle">
-          <span>견적서</span>
+        <v-card-actions>
+          <v-spacer></v-spacer>
           <v-btn
-            x-small
-            color="primary"
-            class="ml-3"
-            @click="!show_selected_unestimated_data ? show_selected_unestimated_data = true :  show_selected_unestimated_data = false"
-          >관련 자재</v-btn>
-        </div>
-        <div slot="cardText">
-          <v-row>
-            <v-col cols="12" v-if="show_selected_unestimated_data">
-              <v-data-table
-              style="border:1px solid #c0c0c0"
-                :headers="purchase_detail_headers"
-                :items="selected_unestimated_data"
-                item-key="product_code"
-                dense
-              ></v-data-table>
-            </v-col>
-          </v-row>
-        </div>
-        <InputsFormComponent
-          slot="cardText"
-          dense
-          clearable
-          filled
-          hide-details
-          :inputs="estimateInfoInputs"
-        >
-        </InputsFormComponent>
-      </CardComponent>
-    </ModalDialogComponent>
-
-
-
-    <ModalDialogComponent
-      :dialog-value="estimatedDialog"
-      max-width="550px"
-      title-class="display-none"
-      text-class="pb-0"
-      closeText="닫기"
-      :persistent="true"
-      @close="estimatedDialog = false"
-    >
-      <CardComponent
-        elevation="0"
-        text-class="pa-0 pt-4"
-        title-class="pa-0"
-      >
-        <div slot="cardTitle">
-          <span>구매 견적서</span>
-        </div>
-        <div slot="cardText">
-          <v-row>
-            <v-col cols="12" v-if="show_selected_unestimated_data">
-              <v-data-table
-              style="border:1px solid #c0c0c0"
-                :headers="purchase_detail_headers"
-                :items="selected_unestimated_data"
-                item-key="product_code"
-                dense
-              ></v-data-table>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-            </v-col>
-          </v-row>
-        </div>
-      </CardComponent>
-    </ModalDialogComponent>
+            color="blue darken-1"
+            text
+            @click="mailDialog = false"
+          >
+            취소
+          </v-btn>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="test(), mailDialog = false"
+          >
+            발송
+          </v-btn>
+        </v-card-actions>
+      </MailFormComponent>
+    </v-dialog>
 
     <ModalDialogComponent
       :dialog-value="orderPurchaseDialog"
@@ -425,7 +259,7 @@ import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import orderPurchaseComponent from "@/components/orderPurchaseComponent.vue";
 import MailFormComponent from "@/components/MailFormComponent.vue";
-import PurchaseSearchPageConfig from "@/configure/PurchaseSearchPageConfig.json";
+import OrderSearchPageConfig from "@/configure/OrderSearchPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import mux from "@/mux";
 
@@ -448,39 +282,38 @@ export default {
     return{
       mux: mux,
       dates: [],
-      unestimated_steppers: 1,
-      unestimated_step: 2,
       orderPurchaseDialog: false,
       inbound_product_list_dialog: false,
       loading_dialog: false,
-      unestimatedMailDialog: false,
-      estimateRequestedDialog: false,
-      estimatedDialog: false,
-      show_selected_unestimated_data: false,
+      mailDialog: false,
+      tab_search: null,
+      setPurchase: false,
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
 
       inbound_info_data:{},
+      inbound_product_list_data:[],
 
       change_approve:{},
 
       searched_products:[],
-      selected_unestimated_data:[],
 
-      purchase_member_info:PurchaseSearchPageConfig.purchase_member_info,
-      login_info: PurchaseSearchPageConfig.login_info,
-      searchCardInputs:PurchaseSearchPageConfig.searchCardInputs,
-      estimateInfoInputs:PurchaseSearchPageConfig.estimateInfoInputs,
-      setPurchaseInputs:PurchaseSearchPageConfig.setPurchaseInputs,
-      purchase_headers:PurchaseSearchPageConfig.purchase_headers,
-      purchase_detail_headers:PurchaseSearchPageConfig.purchase_detail_headers,
-      bom_list_headers: PurchaseSearchPageConfig.bom_list_headers,
-      bom_list_purchase_headers: PurchaseSearchPageConfig.bom_list_purchase_headers,
-      bom_list_data: PurchaseSearchPageConfig.bom_list_test_data,
-      bom_list_purchase_data: PurchaseSearchPageConfig.bom_list_purchase_test_data,
-      purchase_data:PurchaseSearchPageConfig.test_purchase_data,
-      purchase_detail_data:PurchaseSearchPageConfig.test_purchase_detail_data,
-      // purchase_detail_data:[]
+      purchase_member_info:OrderSearchPageConfig.purchase_member_info,
+      login_info: OrderSearchPageConfig.login_info,
+      searchCardInputs:OrderSearchPageConfig.searchCardInputs,
+      setPurchaseInputs:OrderSearchPageConfig.setPurchaseInputs,
+      order_data_headers:OrderSearchPageConfig.order_data_headers,
+      inbound_product_list_headers:OrderSearchPageConfig.inbound_product_list_headers,
+      // inbound_approve_data:[],
+      bom_list_headers: OrderSearchPageConfig.bom_list_headers,
+      bom_list_purchase_headers: OrderSearchPageConfig.bom_list_purchase_headers,
+      bom_list_data: OrderSearchPageConfig.bom_list_test_data,
+      bom_list_purchase_data: OrderSearchPageConfig.bom_list_purchase_test_data,
+      survey_cost_headers: OrderSearchPageConfig.survey_cost_headers,
+      search_tab_items: OrderSearchPageConfig.search_tab_items,
+      labor_cost_headers: OrderSearchPageConfig.labor_cost_headers,
+      calc_cost_detail_data: JSON.parse(JSON.stringify(OrderSearchPageConfig.calc_cost_detail_data)),
+      inbound_approve_data:OrderSearchPageConfig.test_inbound_approve_data
     }
   },
 
@@ -493,11 +326,6 @@ export default {
     inbound_product_list_dialog(val){
       val || this.closeProductList()
     },
-    unestimated_step(val){
-      if (this.unestimated_steppers > val) {
-        this.unestimated_steppers = val
-      }
-    }
   },
   created () {
     this.initialize()
@@ -509,15 +337,6 @@ export default {
     }
   },
   methods:{
-
-    nextStep (n, steppers, steps) {
-      if (n === steps) {
-        steppers = 1
-      } else {
-        steppers = n + 1
-      }
-    },
-
     async initialize () {
       const prevURL = window.location.href;
       try {
@@ -538,7 +357,6 @@ export default {
         mux.Util.showAlert(error);
       }
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
-      this.estimateInfoInputs = JSON.parse(JSON.stringify(this.estimateInfoInputs));
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -641,7 +459,7 @@ export default {
         else
           mux.Util.showAlert(error);
       }
-      // this.inbound_approve_data = PurchaseSearchPageConfig.test_inbound_approve_data
+      // this.inbound_approve_data = OrderSearchPageConfig.test_inbound_approve_data
       this.loading_dialog = false;
     },
     closeProductList(){
@@ -650,11 +468,11 @@ export default {
     async clickApproveData(){
 
       // let belong_datas = item.belong_data
-      // this.purchase_detail_data = [];
+      // this.inbound_product_list_data = [];
       // this.inbound_info_data = {};
       // belong_datas.forEach(data =>{
       //   data.inbound_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
-      //   this.purchase_detail_data.push(data);
+      //   this.inbound_product_list_data.push(data);
 
       //   if(data.belong_data){
       //     data.belong_data.forEach(shipdata => {
@@ -1737,14 +1555,6 @@ export default {
           mux.Util.showAlert(error);
       }
       console.log('sendData :: ' + JSON.stringify(sendData))
-    },
-    estiamteDialog(type){
-      if(type === '견적 미요청')
-        this.unestimatedMailDialog = true;
-      else if(type === '견적 요청')
-        this.estimateRequestedDialog = true;
-      else
-        this.estimatedDialog = true;
     },
   },
 }

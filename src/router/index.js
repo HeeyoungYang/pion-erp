@@ -19,6 +19,7 @@ import EstimatePage from '@/views/EstimatePage'
 import EstimateSearchPage from '@/views/EstimateSearchPage'
 import PurchasePage from '@/views/PurchasePage'
 import PurchaseSearchPage from '@/views/PurchaseSearchPage'
+import OrderSearchPage from '@/views/OrderSearchPage'
 import DesignProductionPage from '@/views/DesignProductionPage'
 import DesignProductionSearchPage from '@/views/DesignProductionSearchPage'
 import ObtainOrderPage from '@/views/ObtainOrderPage'
@@ -158,6 +159,14 @@ const routes = [
     path: '/purchase-search',
     name: 'PurchaseSearchPage',
     component: PurchaseSearchPage,
+    meta: {
+      permission: ['매니저', 'admin', 'master']
+    }
+  },
+  {
+    path: '/order-search',
+    name: 'OrderSearchPage',
+    component: OrderSearchPage,
     meta: {
       permission: ['매니저', 'admin', 'master']
     }

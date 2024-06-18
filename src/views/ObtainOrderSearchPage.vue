@@ -225,7 +225,7 @@
           <v-row class="mt-3">
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-              <div style="width:100%; background-color: #ccc; height:300px"></div>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
               <!-- <v-img
                 alt="thumbnail"
                 class="shrink mr-2"
@@ -239,7 +239,7 @@
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
-              <div style="width:100%; background-color: #ccc; height:300px"></div>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
               <!-- <v-img
                 alt="thumbnail"
                 class="shrink mr-2"
@@ -253,7 +253,7 @@
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 수주 확인서</p>
-              <div style="width:100%; background-color: #ccc; height:300px"></div>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
               <!-- <v-img
                 alt="thumbnail"
                 class="shrink mr-2"
@@ -343,7 +343,10 @@
       persistent
       max-width="1000px"
     >
-      <MailFormComponent v-model="files">
+      <MailFormComponent
+        v-model="files"
+        addCardClass="d-none"
+      >
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn

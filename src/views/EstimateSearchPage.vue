@@ -73,7 +73,7 @@
 
     <ModalDialogComponent
       :dialog-value="estimate_product_list_dialog"
-      max-width="50%"
+      max-width="51%"
       title-class=" "
       :dialog-transition="'slide-x-transition'"
       :dialog-custom="'custom-dialog elevation-0 white'"
@@ -261,7 +261,7 @@
           <v-row class="mt-3">
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-              <div style="width:100%; background-color: #ccc; height:300px"></div>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
               <!-- <v-img
                 alt="thumbnail"
                 class="shrink mr-2"
@@ -275,7 +275,7 @@
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
-              <div style="width:100%; background-color: #ccc; height:300px"></div>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
               <!-- <v-img
                 alt="thumbnail"
                 class="shrink mr-2"
@@ -365,7 +365,11 @@
       persistent
       max-width="1000px"
     >
-      <MailFormComponent v-model="mailData">
+      <MailFormComponent
+        v-model="mailData"
+        addCardClass="d-none"
+        addSystemFiles="estimate"
+      >
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
@@ -563,7 +567,7 @@ export default {
       sendData.bcc = sendData.bcc.trim();
       sendData.bcc = sendData.bcc.split(/,|\/|\s/); // 콤마, 슬래시, 공백으로 구분
       sendData.bcc = sendData.bcc.filter(x => x !== '');
-      
+
       let estimateFile = null;
       // 견적서 PDF 파일 생성
       if (sendData.estimate) {
@@ -601,6 +605,7 @@ export default {
       }
       delete sendData.specification;
 
+
       let laborFile = null;
       // 노무비 산출 PDF 파일 생성
       if (sendData.labor) {
@@ -621,7 +626,7 @@ export default {
         this.tab_search = origin_tab;
       }
       delete sendData.labor;
-      
+
 
       // S3에서 찾아서 첨부할 목록
       let attachment = [];

@@ -11,16 +11,22 @@
     { "text": "입고일자", "align": "center", "value": "inbound_date"}
   ],
 
-  "searchCardInputs":[
-    {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "원부자재", "반제품", "완제품"]},
+  "searchProductCardInputs":[
+    {"label":"제품코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""}
+  ],
+
+  "searchItemsCardInputs":[
+    {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"원부자재", "list":["원부자재", "반제품"]},
     {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"2"},
-    {"label":"상태", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All", "G", "B"]},
+    {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":""},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"모델명", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"제조사", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":""}
+    {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
+
   "headers": [
     { "text": "종류", "align": "start", "value": "type" },
     { "text": "분류", "align": "start", "value": "classification"},
@@ -32,8 +38,7 @@
     { "text": "단가", "align": "start", "value": "unit_price"}
   ],
 
-  "bom_list_purchase_headers": [
-    { "text": "종류", "align": "start", "value": "type"},
+  "bom_list_purchase_product_headers": [
     { "text": "분류", "align": "start", "value": "classification"},
     { "text": "관리코드", "align": "start", "value": "product_code"},
     { "text": "제품명", "align": "start", "value": "name"},
@@ -43,6 +48,19 @@
     { "text": "단가", "align": "start", "value": "unit_price"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "필요수량", "align": "start", "value": "item_num"},
+    { "text": "재고", "align": "start", "value": "stock_num"}
+  ],
+
+  "bom_list_purchase_items_headers": [
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "product_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "단가", "align": "start", "value": "unit_price"},
+    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "재고", "align": "start", "value": "stock_num"}
   ],
   "setPurchaseInputs":[

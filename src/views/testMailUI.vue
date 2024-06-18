@@ -103,7 +103,10 @@
                         <v-icon >mdi-email</v-icon>
                       </v-btn>
                     </template>
-                    <MailFormComponent v-model="files">
+                    <MailFormComponent
+                      v-model="files"
+                      addCardClass="d-none"
+                    >
                       <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn

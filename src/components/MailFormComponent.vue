@@ -1,133 +1,174 @@
 
 
 <template>
-  <v-card>
-    <v-card-text>
-      <v-row class="py-3">
-        <v-col cols="12">
-            <v-text-field
-              label="받는 사람"
-              required
-              v-model="mailData.to"
-              dense
-              hide-details
-            ></v-text-field>
-          </v-col>
+  <v-container class="pa-1">
+    <v-card  :class="addCardClass ? addCardClass : ''">
+      <slot name="addCard"></slot>
+    </v-card>
+    <v-card  :class="mailCardClass ? mailCardClass : ''">
+      <v-card-title  :class="titleClass ? titleClass : ''">
+        <slot name="cardTitle"></slot>
+      </v-card-title>
+      <v-card-text>
+        <v-row class="py-3">
+          <v-col cols="12">
+              <v-text-field
+                label="받는 사람"
+                required
+                v-model="mailData.to"
+                dense
+                hide-details
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                label="참조"
+                v-model="mailData.cc"
+                dense
+                hide-details
+                required
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                label="숨은 참조"
+                v-model="mailData.bcc"
+                dense
+                hide-details
+                required
+              ></v-text-field>
+            </v-col>
+        </v-row>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-text class="mt-6">
+        <v-row>
           <v-col cols="12">
             <v-text-field
-              label="참조"
-              v-model="mailData.cc"
-              dense
-              hide-details
+              label="제목"
               required
+              v-model="mailData.subject"
+              hide-details
             ></v-text-field>
+          </v-col>
+          <v-col cols="12" v-if="addSystemFiles === 'estimate'">
+            <v-checkbox
+              label="견적서"
+              v-model="mailData.estimate"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+            <v-checkbox
+              label="산출내역서"
+              v-model="mailData.specification"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+            <v-checkbox
+              label="노무비 산출"
+              v-model="mailData.labor"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+            <v-checkbox
+              label="도면"
+              v-model="mailData.drawing"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+            <v-checkbox
+              label="승인서"
+              v-model="mailData.approval"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+            <v-checkbox
+              label="기타첨부"
+              v-model="mailData.etc"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+            <v-checkbox
+              label="사업자등록증"
+              v-model="mailData.business_license"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+          </v-col>
+          <v-col cols="12" v-if="addSystemFiles === 'order'">
+            <v-checkbox
+              label="발주서"
+              v-model="mailData.estimate"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+            <v-checkbox
+              label="사업자등록증"
+              v-model="mailData.business_license"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
           </v-col>
           <v-col cols="12">
-            <v-text-field
-              label="숨은 참조"
-              v-model="mailData.bcc"
-              dense
-              hide-details
-              required
-            ></v-text-field>
+            <vue-editor v-model="mailData.content" :editor-toolbar="customToolbar" id="email_editor"/>
           </v-col>
-      </v-row>
-    </v-card-text>
-    <v-divider></v-divider>
-    <v-card-text class="mt-6">
-      <v-row>
-        <v-col cols="12">
-          <v-text-field
-            label="제목"
-            required
-            v-model="mailData.subject"
-            hide-details
-          ></v-text-field>
-          <v-checkbox
-            label="견적서"
-            v-model="mailData.estimate"
-            color="primary"
-            hide-details
-            class="float-left mr-3"
-          ></v-checkbox>
-          <v-checkbox
-            label="산출내역서"
-            v-model="mailData.specification"
-            color="primary"
-            hide-details
-            class="float-left mr-3"
-          ></v-checkbox>
-          <v-checkbox
-            label="노무비 산출"
-            v-model="mailData.labor"
-            color="primary"
-            hide-details
-            class="float-left mr-3"
-          ></v-checkbox>
-          <v-checkbox
-            label="도면"
-            v-model="mailData.drawing"
-            color="primary"
-            hide-details
-            class="float-left mr-3"
-          ></v-checkbox>
-          <v-checkbox
-            label="승인서"
-            v-model="mailData.approval"
-            color="primary"
-            hide-details
-            class="float-left mr-3"
-          ></v-checkbox>
-          <v-checkbox
-            label="기타첨부"
-            v-model="mailData.etc"
-            color="primary"
-            hide-details
-            class="float-left mr-3"
-          ></v-checkbox>
-          <v-checkbox
-            label="사업자등록증"
-            v-model="mailData.business_license"
-            color="primary"
-            hide-details
-            class="float-left mr-3"
-          ></v-checkbox>
-        </v-col>
-        <v-col cols="12">
-          <vue-editor v-model="mailData.content" :editor-toolbar="customToolbar" id="email_editor"/>
-        </v-col>
-        <v-col cols="12">
-          <v-file-input
+          <v-col cols="12">
+            <v-file-input
 
-            v-model="mailData.files"
-            placeholder="추가 첨부"
-            hide-details
-            dense
-            multiple
-            prepend-icon="mdi-paperclip"
-          >
-            <template v-slot:selection="{ text }">
-              <v-chip
-                small
-                label
-                color="primary"
-              >
-                {{ text }}
-              </v-chip>
-            </template>
-          </v-file-input>
-        </v-col>
-      </v-row>
-    </v-card-text>
-    <slot></slot>
+              v-model="mailData.files"
+              placeholder="추가 첨부"
+              hide-details
+              dense
+              multiple
+              prepend-icon="mdi-paperclip"
+            >
+              <template v-slot:selection="{ text }">
+                <v-chip
+                  small
+                  label
+                  color="primary"
+                >
+                  {{ text }}
+                </v-chip>
+              </template>
+            </v-file-input>
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <slot></slot>
 
-  </v-card>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
 
+/**
+ * @file MailFormComponent.vue
+ * @description 메일 발송 컴포넌트
+ *
+ * @typedef {Object} props
+ * @property {String} [addSystemFiles] - 첨부파일 체크박스 사용 여부 및 종류 (default:false)
+ * @property {String} [titleClass] - v-card-title 클래스(default:'')
+ * @property {String} [mailCardClass] - mail card 영역 관련 클래스(default:'')
+ * @property {String} [addCardClass] - mail card 상단 card 영역 관련 클래스(default:'')
+ *
+ */
 export default {
   props: {
+    addSystemFiles: String,
+    titleClass: String,
+    mailCardClass: String,
+    addCardClass: String,
     value: {
       type: Object,
       default: () => {

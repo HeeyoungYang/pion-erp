@@ -12,50 +12,71 @@
           sm="11"
         >
           <CardComponent
+            v-if="add_data_type !== '직접입력'"
             elevation="1"
             text-class=" pt-3"
-            title-class="d-none"
+            title-class="mb-0 font-weight-black"
+            divider-class="mb-3"
           >
+
+            <div slot="cardTitle">
+              <span>완제품 자재 선택</span>
+              <v-btn
+                small
+                outlined
+                color="primary"
+                class="mr-2 ml-4"
+                @click="itemSelect"
+              >
+                개별 자재 선택
+              </v-btn>
+              <v-btn
+                small
+                outlined
+                color="primary"
+                @click="itemWrite"
+              >
+                직접 입력
+              </v-btn>
+            </div>
             <InputsFormComponent
               slot="cardText"
               dense
               clearable
               filled
               hide-details
-              :inputs="searchCardInputs"
+              :inputs="add_data_type === '완제품자재' ? searchProductCardInputs : searchItemsCardInputs"
               @enter="searchButton"
             >
               <v-col
-                cols="12"
-                sm="4"
+                cols="6"
+                sm="3"
                 lg="3"
+                align-self="center"
               >
-                <v-row>
-                  <v-col
-                    cols="6"
-                    sm="6"
-                    lg="6"
-                  >
-                    <v-checkbox
-                      v-model="stock_more_0"
-                      label="재고 > 0"
-                    ></v-checkbox>
-                  </v-col>
-                  <v-col
-                    cols="6"
-                    sm="6"
-                    lg="6"
-                    align-self="center"
-                  >
-                    <v-btn
-                      color="primary"
-                      elevation="2"
-                      @click="searchButton"
-                    >
-                      <v-icon>mdi-magnify</v-icon>검색
-                    </v-btn>
-                  </v-col>
-                </v-row>
+                <v-btn
+                  color="primary"
+                  elevation="2"
+                  @click="searchButton"
+                >
+                  <v-icon>mdi-magnify</v-icon>검색
+                </v-btn>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="12"
+              >
+                <DataTableComponent
+                  :headers="headers"
+                  :items="product_data"
+                  :item-key="product_data._code"
+                  dense
+                  stockNumInfo
+                  stockPriceInfo
+                  show-item-details
+                  @itemDetials="detailInfoItem"
+                  show-select
+                />
               </v-col>
             </InputsFormComponent>
           </CardComponent>
@@ -66,48 +87,6 @@
           >
             <v-card-text class=" pt-3">
               <v-row>
-                <v-col
-                  cols="12"
-                >
-                  <DataTableComponent
-                    :headers="headers"
-                    :items="product_data"
-                    :item-key="product_data._code"
-                    dense
-                    stockNumInfo
-                    stockPriceInfo
-                    show-item-details
-                    @itemDetials="detailInfoItem"
-                    show-select
-                  />
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-
-
-          <v-card
-          elevation="1"
-          class="mt-5"
-          >
-            <v-card-text class=" pt-3">
-              <v-row>
-                <v-col cols="12" sm="12" >
-                  <p class="mt-6 mb-0">
-                    <span class="text-h6 primary--text float-left font-weight-bold">구매 요청</span>
-                    <v-checkbox
-                      v-model="setPurchase"
-                      label="구매 견적서 첨부"
-                      color="primary"
-                      hide-details
-                      class="mx-5 mt-0 float-left"
-                    ></v-checkbox>
-                    <v-btn
-                      small
-                      color="success"
-                    >요청</v-btn>
-                  </p>
-                </v-col>
                 <v-col cols="12" sm="12">
                   <v-chip
                     class="mr-2"
@@ -120,36 +99,163 @@
                     {{ member.type }} : {{ member.name }}
                   </v-chip>
                 </v-col>
-                <v-col cols="12" sm="12" v-if="setPurchase">
-                  <InputsFormComponent
-                    slot="cardText"
-                    dense
-                    clearable
-                    filled
-                    hide-details
-                    :inputs="setPurchaseInputs"
-                  >
-                  </InputsFormComponent>
-                </v-col>
                 <v-col
                   cols="12"
                 >
-                <v-data-table
-                  :headers="bom_list_purchase_headers"
-                  :items="bom_list_purchase_data"
-                  item-key="product_code"
-                  dense
-                >
-                <template v-slot:[`item.purchase_num`] = "{ item }">
-                  <v-text-field
+                  <v-data-table
+                    v-if="add_data_type === '완제품자재'"
+                    :headers="bom_list_purchase_product_headers"
+                    :items="bom_list_purchase_data"
+                    item-key="product_code"
                     dense
-                    hide-details
-                    v-model="item.purchase_num"
-                    style="width:100px;font-size: 0.775rem !important;"
-                    filled
-                  ></v-text-field>
-                </template>
-                </v-data-table>
+                  >
+                    <template v-slot:[`item.purchase_num`] = "{ item }">
+                      <v-text-field
+                        dense
+                        hide-details
+                        v-model="item.purchase_num"
+                        style="width:100px;font-size: 0.775rem !important;"
+                        filled
+                      ></v-text-field>
+                    </template>
+                  </v-data-table>
+
+                  <v-data-table
+                    v-else
+                    dense
+                    :headers="bom_list_purchase_items_headers"
+                    :items="bom_list_purchase_data"
+                    hide-default-footer
+                    disable-pagination
+                    item-key="product_code"
+                    class="elevation-1"
+                  >
+                    <template v-slot:item="{ item, index }">
+                      <tr v-if="add_data_type === '개별자재'">
+                        <td align="center">{{ item.type }}</td>
+                        <td align="center">{{ item.classification }}</td>
+                        <td align="center">{{ item.product_code }}</td>
+                        <td align="center">{{ item.name }}</td>
+                        <td align="center">{{  item.model }}</td>
+                        <td align="center">{{  item.spec  }}</td>
+                        <td align="center">{{  item.manufacturer }}</td>
+                        <td align="center">{{  item.unit_price }}</td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            style="max-width:150px"
+                            v-model="item.purchase_num"
+                            :oninput="!item.purchase_num ? '' : item.purchase_num = item.purchase_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">{{  item.stock_num }}</td>
+                        <td align="center">
+                          <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                        </td>
+                      </tr>
+                      <tr v-else-if="add_data_type === '직접입력'">
+                        <td align="center">
+                          <v-autocomplete
+                            v-model="item.type"
+                            :items="type_list"
+                            dense
+                            filled
+                            hide-details
+                            style="width:150px"
+                          ></v-autocomplete>
+                        </td>
+                        <td align="center">
+                          <v-autocomplete
+                            v-model="item.classification"
+                            :items="classification_list.slice(1)"
+                            dense
+                            filled
+                            hide-details
+                            style="width:150px"
+                          ></v-autocomplete>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.name"
+                            style="width:150px"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.model"
+                            style="width:150px"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.spec"
+                            style="width:150px"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-autocomplete
+                            v-model="item.manufacturer"
+                            :items="manufacturer_list"
+                            dense
+                            hide-details
+                            filled
+                            style="width:150px"
+                          ></v-autocomplete>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.unit_price"
+                            style="width:150px"
+                            :oninput="!item.unit_price ? '' : item.unit_price = item.unit_price.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.product_code"
+                            style="width:200px"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.purchase_num"
+                            style="width:150px"
+                            @keyup="calcUnitPrice(item)"
+                            :oninput="!item.purchase_num ? '' : item.purchase_num = item.purchase_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+                          >
+                          </v-text-field>
+                        </td>
+                        <td align="center">
+                          <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                        </td>
+                      </tr>
+                    </template>
+                  </v-data-table>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -227,23 +333,23 @@ export default {
               },
   data(){
     return{
-      setPurchase: false,
       mux: mux,
-      total_stock_num:0,
-      total_stock_price:0,
+      add_data_type: '완제품자재',
       manufacturer_list:[],
       classification_list:[],
-      stock_more_0: true,
       detail_dialog: false,
       loading_dialog: false,
       detailThumbnail: '',
       stockDetails:[],
       inboundDetails:[],
+      selected_product_data:[],
       stock_detail_header:PurchasePageConfig.stock_detail_header,
       inbound_detail_header:PurchasePageConfig.inbound_detail_header,
-      searchCardInputs:PurchasePageConfig.searchCardInputs,
+      searchProductCardInputs:PurchasePageConfig.searchProductCardInputs,
+      searchItemsCardInputs:PurchasePageConfig.searchItemsCardInputs,
       headers:PurchasePageConfig.headers,
-      bom_list_purchase_headers:PurchasePageConfig.bom_list_purchase_headers,
+      bom_list_purchase_product_headers:PurchasePageConfig.bom_list_purchase_product_headers,
+      bom_list_purchase_items_headers:PurchasePageConfig.bom_list_purchase_items_headers,
 
       bom_list_purchase_data:PurchasePageConfig.bom_list_purchase_test_data,
       purchase_member_info:PurchasePageConfig.purchase_member_info,
@@ -288,8 +394,9 @@ export default {
         mux.Util.showAlert(error);
       }
 
-      mux.List.addProductBasicInfoLists(this.searchCardInputs, this.classification_list, this.manufacturer_list, true);
-      this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
+      mux.List.addProductBasicInfoLists(this.searchItemsCardInputs, this.classification_list, this.manufacturer_list, true);
+      this.searchProductCardInputs = JSON.parse(JSON.stringify(this.searchProductCardInputs));
+      this.searchItemsCardInputs = JSON.parse(JSON.stringify(this.searchItemsCardInputs));
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -403,9 +510,6 @@ export default {
 
       this.loading_dialog = true;
 
-      this.total_stock_num = 0;
-      this.total_stock_price = 0;
-
       let searchType = this.searchCardInputs.find(x=>x.label === '종류').value;
       if (searchType === 'All')
         searchType = '%';
@@ -496,30 +600,30 @@ export default {
           }
 
           let product_data_arr = [];
-          result.forEach(data => {
-            let isExist = false;
-            if (!this.stock_more_0 || (data.stock_num && data.stock_num > 0)){
-              for (let i = 0; i < product_data_arr.length; i++) {
-                if (product_data_arr[i]._code === data._code) {
-                  if (data.stock_num){
-                    if (product_data_arr[i].spot_stock !== undefined){
-                      product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
-                    }else {
-                      product_data_arr[i].spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
-                    }
-                  }
-                  isExist = true;
-                  break;
-                }
-              }
-              if (!isExist) {
-                if (data.stock_num){
-                  data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
-                }
-                product_data_arr.push(data);
-              }
-            }
-          });
+          // result.forEach(data => {
+          //   let isExist = false;
+          //   if (!this.stock_more_0 || (data.stock_num && data.stock_num > 0)){
+          //     for (let i = 0; i < product_data_arr.length; i++) {
+          //       if (product_data_arr[i]._code === data._code) {
+          //         if (data.stock_num){
+          //           if (product_data_arr[i].spot_stock !== undefined){
+          //             product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
+          //           }else {
+          //             product_data_arr[i].spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
+          //           }
+          //         }
+          //         isExist = true;
+          //         break;
+          //       }
+          //     }
+          //     if (!isExist) {
+          //       if (data.stock_num){
+          //         data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
+          //       }
+          //       product_data_arr.push(data);
+          //     }
+          //   }
+          // });
           this.product_data = product_data_arr;
           // this.product_data = PurchasePageConfig.test_product_data;
 
@@ -539,8 +643,6 @@ export default {
             }else {
               data.item_price = 0;
             }
-            this.total_stock_num += data.total_stock
-            this.total_stock_price += data.item_price
           })
         } else {
           mux.Util.showAlert(result['failed_info']);
@@ -555,29 +657,46 @@ export default {
       }
       this.loading_dialog = false;
     },
-    downloadToExcel(){
-      if( this.product_data.length === 0){
-        mux.Util.showAlert('다운로드할 데이터가 검색 결과에 없습니다.')
-        return;
+    async itemSelect(){
+      this.selected_product_data = [];
+      this.product_data = [];
+      if(this.add_data_type == '완제품자재'){
+        const confirm = await mux.Util.showConfirm('개별 자재 선택으로 전환되며, \n위에서 선택한 자재는 선택 해제됩니다. ', '전환 확인');
+        if (!confirm){
+          return;
+        }
+        this.bom_list_purchase_data = [];
       }
-      let excelHeaders = [];
-      this.headers.forEach(data => {
-        excelHeaders.push(data)
-      })
-      excelHeaders.push({ "text": "총 재고", "align": "center", "value": "stock_num" });
-      excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" })
-      excelHeaders.unshift({ "text": "No.", "align": "center", "value": "no" });
+      this.add_data_type = '개별자재';
+    },
+    async itemWrite(){
+      this.selected_product_data = [];
+      this.product_data = [];
+      if(this.add_data_type == '완제품자재'){
+        const confirm = await mux.Util.showConfirm('직접 입력형으로 전환되며, \n위에서 선택한 자재는 선택 해제됩니다. ', '전환 확인');
+        if (!confirm){
+          return;
+        }
+        this.bom_list_purchase_data = [];
+      }
+      // if(this.product_inbound_headers.length !== 12){
+      //   this.product_inbound_headers.splice(this.product_inbound_headers.length-1, 0, { "text": "출하선택", "align": "center", "value": "ship_select"})
+      // }
 
-      let items = [];
-      this.product_data.forEach((data, index) => {
-        data.no = index+1;
-        data.stock_num = typeof data.stock_num === "number" ? Number(data.stock_num).toLocaleString() : data.stock_num;
-        data.stock_price = typeof data.stock_price === "number" ? '₩ '+ Number(data.stock_price).toLocaleString() : data.stock_price;
-
-        items.push(data)
+      this.add_data_type = '직접입력';
+      this.bom_list_purchase_data.push({
+        type:'',
+        classification:'',
+        product_code: '',
+        name: '',
+        model: '',
+        spec: '',
+        manufacturer: '',
+        unit_price: '',
+        purchase_num: '',
+        registe_type: '직접입력',
       });
-      mux.Excel.downloadTable(excelHeaders, items, '재고현황_엑셀다운로드');
-    }
+    },
   }
 }
 </script>
