@@ -52,33 +52,33 @@
           <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
             <tr class="text-body-1">
               <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">수신업체</td>
-              <td class="estimate_info" style="border-bottom: 0px;">AAAAA</td>
+              <td class="estimate_info" style="border-bottom: 0px;border-right: 0px;">AAAAA</td>
               <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
               <td class="estimate_info" style="border-bottom: 0px;">AAAAA</td>
             </tr>
             <tr>
               <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-              <td class="estimate_info" style="border-bottom: 0px;"></td>
+              <td colspan="3" class="estimate_info" style="border-bottom: 0px;"></td>
             </tr>
             <tr>
               <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
-              <td class="estimate_info" style="border-bottom: 0px;"></td>
+              <td colspan="3" class="estimate_info" style="border-bottom: 0px;"></td>
             </tr>
             <tr class="text-body-1">
               <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">전화</td>
-              <td class="estimate_info" style="border-bottom: 0px;">AAAAA</td>
+              <td class="estimate_info" style="border-bottom: 0px;border-right: 0px;">AAAAA</td>
               <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">팩스</td>
               <td class="estimate_info" style="border-bottom: 0px;">AAAAA</td>
             </tr>
             <tr class="text-body-1">
               <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">결제조건</td>
-              <td class="estimate_info" style="border-bottom: 0px;">AAAAA</td>
+              <td class="estimate_info" style="border-bottom: 0px;border-right: 0px;">AAAAA</td>
               <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트</td>
               <td class="estimate_info" style="border-bottom: 0px;">AAAAA</td>
             </tr>
             <tr>
               <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">계좌정보</td>
-              <td class="estimate_info"></td>
+              <td colspan="3" class="estimate_info"></td>
             </tr>
           </table>
         </v-col>
@@ -126,7 +126,7 @@
             </tr>
           </table>
         </v-col>
-        <v-col align-self="center" cols="12" sm="12" class="pb-0">
+        <!-- <v-col align-self="center" cols="12" sm="12" class="pb-0">
 
           <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
             <tr class="text-body-1">
@@ -136,7 +136,7 @@
               <td class="estimate_info">2024-00-00</td>
             </tr>
           </table>
-        </v-col>
+        </v-col> -->
         <v-col cols="12">
           <table class="doc_detail_table">
             <thead>
@@ -144,7 +144,6 @@
                   <th class="approve_title">순번</th>
                   <th class="approve_title">품명</th>
                   <th class="approve_title">규격</th>
-                  <th class="approve_title">단위</th>
                   <th class="approve_title">단가</th>
                   <th class="approve_title">수량</th>
                   <th class="approve_title">공급가액</th>
@@ -160,11 +159,9 @@
                   <td class="approve_text"></td>
                   <td class="approve_text"></td>
                   <td class="approve_text"></td>
-                  <td class="approve_text"></td>
                 </tr>
                 <tr>
                   <td class="approve_text">2</td>
-                  <td class="approve_text"></td>
                   <td class="approve_text"></td>
                   <td class="approve_text"></td>
                   <td class="approve_text"></td>

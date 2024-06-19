@@ -19,6 +19,16 @@
   "estimateInfoInputs":[
     {"label":"첨부", "column_name":"files", "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true}
   ],
+  "orderRequestInfoInputs":[
+    {"label":"납기일", "type": "dateSingle", "menu":"","col":"12", "sm":"4", "lg":"4"},
+    {"label":"대표자", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"등록번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"주소", "col":"12", "sm":"4", "lg":"8", "value": ""},
+    {"label":"전화", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"팩스", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"결제조건", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"계좌정보", "col":"12", "sm":"4", "lg":"4", "value": ""}
+  ],
 
   "purchase_headers": [
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},

@@ -83,19 +83,10 @@
     <v-container>
       <v-row>
         <v-col cols="12" sm="12">
-          <v-chip
-            class="mr-2"
-            style="cursor:pointer"
-            v-for="(member, i) in purchase_member_info"
-            :key="i"
-            :color="member.name ? 'success' : 'default'"
-            @click="selectMemberDialog(i)"
-          >
-            {{ member.type }} : {{ member.name }}
-          </v-chip>
           <v-btn
             small
             color="primary"
+            @click="orderRequestDialog = true"
           >
             발주 승인 요청
           </v-btn>
@@ -360,59 +351,48 @@
     </ModalDialogComponent>
 
     <ModalDialogComponent
-      :dialog-value="orderPurchaseDialog"
+      :dialog-value="orderRequestDialog"
       max-width="900px"
       title-class="display-none"
       text-class="pb-0"
       :persistent="true"
     >
-      <orderPurchaseComponent
-      ref="orderPurchaseComponent"
-      />
-      <div style="position: sticky; bottom: 60px;">
-        <p style="text-align: right;">
-          <v-menu offset-x>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                fab
-                x-small
-                elevation="1"
-                v-bind="attrs"
-                v-on="on"
+      <CardComponent
+        elevation="0"
+        text-class="pa-0 pt-4"
+        title-class="pa-0"
+      >
+        <div slot="cardTitle">
+          <span>발주 요청 정보</span>
+        </div>
+        <div slot="cardText">
+          <v-row>
+            <v-col cols="12">
+              <v-chip
+                class="mr-2"
+                style="cursor:pointer"
+                v-for="(member, i) in purchase_member_info"
+                :key="i"
+                :color="member.name ? 'success' : 'default'"
+                @click="selectMemberDialog(i)"
               >
-                <v-icon small>mdi-content-save</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
+                {{ member.type }} : {{ member.name }}
+              </v-chip>
+            </v-col>
+            <v-col cols="12">
+              <InputsFormComponent
+                slot="cardText"
                 dense
-                @click="printInboundApprove('입고확인서')"
+                clearable
+                filled
+                hide-details
+                :inputs="orderRequestInfoInputs"
               >
-                <v-list-item-title>PDF</v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                dense
-                @click="printInboundApprove()"
-              >
-                <v-list-item-title>출력</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </p>
-        <p style="text-align: right;">
-          <v-btn
-            fab
-            color="blue-grey darken-1"
-            x-small
-            class="white--text"
-            elevation="1"
-            @click="confirmationDialog=false"
-          >
-            <v-icon> mdi-close-thick </v-icon>
-          </v-btn>
-        </p>
-      </div>
+              </InputsFormComponent>
+            </v-col>
+          </v-row>
+        </div>
+      </CardComponent>
     </ModalDialogComponent>
   </div>
 </template>
@@ -423,7 +403,6 @@ import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
-import orderPurchaseComponent from "@/components/orderPurchaseComponent.vue";
 import MailFormComponent from "@/components/MailFormComponent.vue";
 import PurchaseSearchPageConfig from "@/configure/PurchaseSearchPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
@@ -441,7 +420,6 @@ export default {
                 CardComponent,
                 InputsFormComponent,
                 LoadingModalComponent,
-                orderPurchaseComponent,
                 MailFormComponent,
               },
   data(){
@@ -450,7 +428,7 @@ export default {
       dates: [],
       unestimated_steppers: 1,
       unestimated_step: 2,
-      orderPurchaseDialog: false,
+      orderRequestDialog: false,
       inbound_product_list_dialog: false,
       loading_dialog: false,
       unestimatedMailDialog: false,
@@ -471,6 +449,7 @@ export default {
       login_info: PurchaseSearchPageConfig.login_info,
       searchCardInputs:PurchaseSearchPageConfig.searchCardInputs,
       estimateInfoInputs:PurchaseSearchPageConfig.estimateInfoInputs,
+      orderRequestInfoInputs:PurchaseSearchPageConfig.orderRequestInfoInputs,
       setPurchaseInputs:PurchaseSearchPageConfig.setPurchaseInputs,
       purchase_headers:PurchaseSearchPageConfig.purchase_headers,
       purchase_detail_headers:PurchaseSearchPageConfig.purchase_detail_headers,
@@ -539,6 +518,7 @@ export default {
       }
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
       this.estimateInfoInputs = JSON.parse(JSON.stringify(this.estimateInfoInputs));
+      this.estimateInfoInpuorderRequestInfoInputsts = JSON.parse(JSON.stringify(this.orderRequestInfoInputs));
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {

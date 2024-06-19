@@ -83,79 +83,129 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <v-btn small color="primary" @click="orderPurchaseDialog = true">발주서 확인</v-btn>
+          <v-btn small color="default" @click="orderPurchase ? orderPurchase = false :orderPurchase = true">발주서 {{ orderPurchase ? '접기' : '펼치기'}}</v-btn>
+
+
+          <v-menu offset-x
+                v-if="orderPurchase">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                color="success"
+                class="mx-3"
+                fab
+                x-small
+                elevation="1"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon small>mdi-content-save</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                dense
+                @click="printInboundApprove('발주서')"
+              >
+                <v-list-item-title>PDF</v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                dense
+                @click="printInboundApprove()"
+              >
+                <v-list-item-title>출력</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+
           <v-btn
+            v-if="orderPurchase"
             color="primary"
             elevation="0"
             fab
             x-small
             @click="mailDialog = true"
-            class="mb-3 float-right dont_print"
-            data-html2canvas-ignore="true"
           >
             <v-icon >mdi-email</v-icon>
           </v-btn>
         </v-col>
-        <v-col cols="12">
+        <v-col
+          v-if="orderPurchase"
+          cols="12"
+          class="pa-4"
+          style="border: 1px solid #c3c3c3;"
+        >
+          <orderPurchaseComponent
+            ref="orderPurchaseComponent"
+          />
+        </v-col>
+        <!-- <v-col cols="12">
           <DataTableComponent
             :headers="inbound_product_list_headers"
             :items="inbound_product_list_data"
             :item-key="inbound_product_list_data.product_code"
             dense
           />
-        </v-col>
+        </v-col> -->
       </v-row>
       <v-row>
-        <v-col cols="12" sm="4">
-          <p class="font-weight-bold primary--text mb-0">▼ 구매 견적서</p>
-          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-          <!-- <v-img
-            alt="thumbnail"
-            class="shrink mr-2"
-            contain
-            :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-            transition="scale-transition"
-            width="350"
-            @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-            style="cursor: pointer;"
-          /> -->
-        </v-col>
-        <v-col cols="12" sm="8">
+        <v-col cols="12" sm="12">
           <v-col cols="12">
-            <p class="font-weight-bold primary--text mb-0">▼ 계산서</p>
-            <v-chip
+            <p class="font-weight-bold primary--text mb-0" style="font-size: 18px;">
+              <v-btn
+                color="primary"
+                x-small
+                elevation="0"
+                @click="openUploadFilesDialog(orderCompanyFiles, false)"
+              >
+                관리
+              </v-btn>
+              발주 업체 관련 첨부
+            </p>
+            <v-chip v-for="(type, i) in orderCompanyFiles" :key="i"
               color="grey lighten-2"
-              class="ma-2">
-              1차 계산서
-            </v-chip>
-            <v-chip
-              color="grey lighten-2"
-              class="ma-2">
-              2차 계산서
-            </v-chip>
-            <v-chip
-              color="grey lighten-2"
-              class="ma-2">
-              3차 계산서
+              class="ma-2 ml-0"
+            >
+              {{ type }}
             </v-chip>
           </v-col>
-
+          <v-divider></v-divider>
           <v-col cols="12">
-            <p class="font-weight-bold primary--text mb-0">▼ 송금 확인증</p>
-            <v-chip
+            <p class="font-weight-bold primary--text mb-0" style="font-size: 18px;">
+              <v-btn
+                color="primary"
+                x-small
+                elevation="0"
+                @click="openUploadFilesDialog('계산서', billNum)"
+              >
+                관리
+              </v-btn>
+              계산서
+            </p>
+            <v-chip v-for="idx in billNum" :key="idx"
               color="grey lighten-2"
-              class="ma-2">
-              1차 송금 확인증
+              class="ma-2 ml-0"
+            >
+              {{ idx }}차 계산서
             </v-chip>
-            <v-chip
+          </v-col>
+          <v-divider></v-divider>
+          <v-col cols="12">
+            <p class="font-weight-bold primary--text mb-0" style="font-size: 18px;">
+              <v-btn
+                color="primary"
+                x-small
+                elevation="0"
+                @click="openUploadFilesDialog('송금 확인증', billNum)"
+              >
+                관리
+              </v-btn>
+              송금 확인증
+            </p>
+            <v-chip v-for="idx in billNum" :key="idx"
               color="grey lighten-2"
-              class="ma-2">
-              2차 송금 확인증
-            </v-chip>
-            <v-chip
-              color="grey lighten-2"
-              class="ma-2">
-              3차 송금 확인증
+              class="ma-2 ml-0"
+            >
+              {{ idx }}차 송금 확인증
             </v-chip>
           </v-col>
         </v-col>
@@ -194,6 +244,36 @@
     </v-dialog>
 
     <ModalDialogComponent
+      :dialog-value="uploadFilesDialog"
+      max-width="550px"
+      title-class="display-none"
+      text-class="pb-0"
+      closeText="취소"
+      saveText="저장"
+      :persistent="true"
+      @close="uploadFilesDialog = false"
+      @save="uploadProductInfo"
+    >
+      <CardComponent
+        elevation="0"
+        text-class="pa-0 pt-4"
+        title-class="pa-0"
+      >
+        <div slot="cardTitle">
+          <span>파일 관리</span>
+        </div>
+        <InputsFormComponent
+          slot="cardText"
+          dense
+          clearable
+          filled
+          hide-details
+          :inputs="uploadFilesInputs"
+        >
+        </InputsFormComponent>
+      </CardComponent>
+    </ModalDialogComponent>
+    <ModalDialogComponent
       :dialog-value="orderPurchaseDialog"
       max-width="900px"
       title-class="display-none"
@@ -208,7 +288,7 @@
           <v-menu offset-x>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                color="primary"
+                color="success"
                 fab
                 x-small
                 elevation="1"
@@ -221,7 +301,7 @@
             <v-list>
               <v-list-item
                 dense
-                @click="printInboundApprove('입고확인서')"
+                @click="printInboundApprove('발주서')"
               >
                 <v-list-item-title>PDF</v-list-item-title>
               </v-list-item>
@@ -236,12 +316,23 @@
         </p>
         <p style="text-align: right;">
           <v-btn
+            color="primary"
+            elevation="0"
+            fab
+            x-small
+            @click="mailDialog = true"
+          >
+            <v-icon >mdi-email</v-icon>
+          </v-btn>
+        </p>
+        <p style="text-align: right;">
+          <v-btn
             fab
             color="blue-grey darken-1"
             x-small
             class="white--text"
             elevation="1"
-            @click="confirmationDialog=false"
+            @click="orderPurchaseDialog=false"
           >
             <v-icon> mdi-close-thick </v-icon>
           </v-btn>
@@ -281,15 +372,18 @@ export default {
   data(){
     return{
       mux: mux,
+      billNum:3,
       dates: [],
-      orderPurchaseDialog: false,
+      orderPurchase: false,
       inbound_product_list_dialog: false,
       loading_dialog: false,
       mailDialog: false,
+      uploadFilesDialog: false,
       tab_search: null,
       setPurchase: false,
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
+      uploadFilesTitle: '',
 
       inbound_info_data:{},
       inbound_product_list_data:[],
@@ -297,12 +391,14 @@ export default {
       change_approve:{},
 
       searched_products:[],
+      uploadFilesInputs: [],
 
       purchase_member_info:OrderSearchPageConfig.purchase_member_info,
       login_info: OrderSearchPageConfig.login_info,
       searchCardInputs:OrderSearchPageConfig.searchCardInputs,
       setPurchaseInputs:OrderSearchPageConfig.setPurchaseInputs,
       order_data_headers:OrderSearchPageConfig.order_data_headers,
+      orderCompanyFiles:OrderSearchPageConfig.orderCompanyFiles,
       inbound_product_list_headers:OrderSearchPageConfig.inbound_product_list_headers,
       // inbound_approve_data:[],
       bom_list_headers: OrderSearchPageConfig.bom_list_headers,
@@ -310,7 +406,6 @@ export default {
       bom_list_data: OrderSearchPageConfig.bom_list_test_data,
       bom_list_purchase_data: OrderSearchPageConfig.bom_list_purchase_test_data,
       survey_cost_headers: OrderSearchPageConfig.survey_cost_headers,
-      search_tab_items: OrderSearchPageConfig.search_tab_items,
       labor_cost_headers: OrderSearchPageConfig.labor_cost_headers,
       calc_cost_detail_data: JSON.parse(JSON.stringify(OrderSearchPageConfig.calc_cost_detail_data)),
       inbound_approve_data:OrderSearchPageConfig.test_inbound_approve_data
@@ -1556,6 +1651,23 @@ export default {
       }
       console.log('sendData :: ' + JSON.stringify(sendData))
     },
+    openUploadFilesDialog(type, idx){
+      this.uploadFilesDialog = true;
+      this.uploadFilesInputs = [];
+      if(idx > 0){
+        for(let i=1; i<=idx; i++){
+          this.uploadFilesInputs.push(
+            {"label":i + "차 " + type, "column_name":(type === '계산서' ? 'bill_file_' : 'remittance_file_')+i, "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip"},
+          )
+        }
+      }else{
+        for(let i=0; i<type.length; i++){
+          this.uploadFilesInputs.push(
+            {"label":type[i], "column_name":(type[i] === '통장 사본' ? 'bankbook_copy_file' : (type[i] === '사업자 등록증' ? 'business_registration_file': 'order_confirmation_file'))+idx, "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip"},
+          )
+        }
+      }
+    }
   },
 }
 </script>
