@@ -578,7 +578,7 @@ export default {
           sendData.files.push(estimateFile);
         } catch (error) {
           this.mailDialog = true;
-          mux.Util.showAlert('산출내역서 PDF 파일 생성 중 오류가 발생했습니다.');
+          mux.Util.showAlert('견적서 PDF 파일 생성 중 오류가 발생했습니다.');
           return;
         }
       }
@@ -589,7 +589,7 @@ export default {
       if (sendData.specification) {
         const origin_tab = this.tab_search;
         this.tab_search = 1; // 산출내역서 탭을 load 한 적이 없는 것을 대비하여 이동
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         const specification = this.$refs.calcDetailCard.$el;
         try {
           // await mux.Util.downloadPDF(specification, 'specification');
@@ -611,7 +611,7 @@ export default {
       if (sendData.labor) {
         const origin_tab = this.tab_search;
         this.tab_search = 2; // 노무비 산출 탭을 load 한 적이 없는 것을 대비하여 이동
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         const labor = this.$refs.calcLaborCard.$el;
         try {
           // await mux.Util.downloadPDF(labor, 'labor');
