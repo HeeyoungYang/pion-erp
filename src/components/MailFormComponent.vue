@@ -75,7 +75,7 @@
             ></v-checkbox>
             <v-checkbox
               label="도면"
-              v-model="mailData.drawing"
+              v-model="mailData.blueprint"
               color="primary"
               hide-details
               class="float-left mr-3"
@@ -180,7 +180,7 @@ export default {
           estimate: false,
           specification: false,
           labor: false,
-          drawing: false,
+          blueprint: false,
           approval: false,
           etc: false,
           business_license: false,
