@@ -102,23 +102,66 @@
                 <v-col
                   cols="12"
                 >
-                  <v-data-table
-                    v-if="add_data_type === '완제품자재'"
-                    :headers="bom_list_purchase_product_headers"
+                <v-data-table
+                  v-if="add_data_type === '완제품자재'"
+                    :headers="bom_list_purchase_items_headers"
                     :items="bom_list_purchase_data"
-                    item-key="product_code"
-                    dense
-                  >
-                    <template v-slot:[`item.purchase_num`] = "{ item }">
-                      <v-text-field
-                        dense
+                  group-by="product_code"
+                  item-key="item_code"
+                  dense
+                >
+                  <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                    <th colspan="12">
+                      <v-icon @click="toggle"
+                        >{{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                      </v-icon>
+                      {{ items[0].product_code }}
+                    </th>
+                    <th>
+                      <v-icon
+                        color="grey"
+                        small
+                        @click="deleteItem(items[0].product_code)"
+                      >mdi-minus-thick</v-icon>
+                    </th>
+                  </template>
+                  <template v-slot:[`item.purchase_num`] = "{ item }">
+                    <v-text-field
+                      dense
+                      hide-details
+                      v-model="item.purchase_num"
+                      style="width:100px;font-size: 0.775rem !important;"
+                      filled
+                    ></v-text-field>
+                  </template>
+                  <template v-slot:[`item.estimate`] = "{ item }">
+                    <div  style="min-width: 160px;">
+                      <v-checkbox
+                        label="미선택"
+                        color="primary"
                         hide-details
-                        v-model="item.purchase_num"
-                        style="width:100px;font-size: 0.775rem !important;"
-                        filled
-                      ></v-text-field>
-                    </template>
-                  </v-data-table>
+                        class="float-left mr-3 mt-0"
+                        v-model="item.estimate"
+                      ></v-checkbox>
+                      <v-btn
+                        color="primary"
+                        class="float-left"
+                        x-small
+                        elevation="0"
+                        @click="estimateDialog = true"
+                      >
+                        견적서
+                      </v-btn>
+                    </div>
+                  </template>
+                  <template v-slot:[`item.cancle`] = "{ index }">
+                    <v-icon
+                      color="grey"
+                      small
+                      @click="deleteItem(index)"
+                    >mdi-minus-thick</v-icon>
+                  </template>
+                </v-data-table>
 
                   <v-data-table
                     v-else
