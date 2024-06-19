@@ -270,7 +270,7 @@
     "subject": "",
     "estimate": false,
     "specification": false,
-    "drawing": false,
+    "blueprint": false,
     "approval": false,
     "etc": false,
     "business_license": false,

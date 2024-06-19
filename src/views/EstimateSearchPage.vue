@@ -631,24 +631,24 @@ export default {
       // S3에서 찾아서 첨부할 목록
       let attachment = [];
 
-      if (sendData.drawing) {
-        attachment.push({folder: 'drawing', fileName: 'drawing.pdf', newName: '도면.pdf'});
+      if (sendData.blueprint) {
+        attachment.push({folder: 'estimate/blueprint', fileName: 'blueprint_test.pdf', newName: '도면.pdf'});
       }
-      delete sendData.drawing;
+      delete sendData.blueprint;
 
       if (sendData.approval) {
-        attachment.push({folder: 'approval', fileName: 'approval.pdf', newName: '승인서.pdf'});
+        attachment.push({folder: 'estimate/approval', fileName: 'approval_test.pdf', newName: '승인서.pdf'});
       }
       delete sendData.approval;
 
       if (sendData.etc) {
-        attachment.push({folder: 'etc', fileName: 'etc.pdf', newName: '기타첨부파일.pdf'});
-        attachment.push({folder: 'etc', fileName: 'etc2.pdf', newName: '기타첨부파일2.pdf'});
+        attachment.push({folder: 'estimate/etc', fileName: '기타첨부테스트.jpg', newName: '기타첨부파일.jpg'});
+        attachment.push({folder: 'estimate/etc', fileName: '기타첨부테스트2.xlsx', newName: '기타첨부파일2.xlsx'});
       }
       delete sendData.etc;
 
       if (sendData.business_license) {
-        attachment.push({folder: 'business_license', fileName: 'business_license.pdf', newName: '사업자등록증.pdf'});
+        attachment.push({folder: 'common', fileName: 'business_license_test.pdf', newName: '사업자등록증.pdf'});
       }
       delete sendData.business_license;
 
