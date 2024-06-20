@@ -1,0 +1,259 @@
+{
+  "progress_tab_items": [
+    "수주서", "설계", "구매/발주"
+  ],
+  "searchCardInputs":[
+    {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4"}
+  ],
+  
+  "search_estimate_headers":[
+    { "text": "발행일", "align": "start", "value": "created_time"},
+    { "text": "작성자", "align": "start", "value": "given_name"},
+    { "text": "업체명", "align": "start", "value": "company_name"},
+    { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
+    { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
+    { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"},
+    { "text": "총액", "align": "start", "value": "cost_total_amount"}
+  ],
+  "survey_cost_headers": [
+    { "text": "No.", "align": "start", "value": ""},
+    { "text": "항목", "align": "start", "value": "cost_list"},
+    { "text": "단위", "align": "start", "value": "cost_unit"},
+    { "text": "수량", "align": "start", "value": "cost_num"},
+    { "text": "단가", "align": "start", "value": "cost_unit_price"},
+    { "text": "합계", "align": "start", "value": "cost_total"}
+  ],
+  "construction_materials_headers":[
+    { "text": "품목", "align": "center", "value": "construction_materials"},
+    { "text": "수량", "align": "center", "value": "construction_materials_num"},
+    { "text": "단가", "align": "center", "value": "construction_materials_unit_price"},
+    { "text": "총액", "align": "center", "value": "total_price"},
+    { "text": "제외", "align": "center", "value": ""}
+  ],
+  "purchase_detail_headers": [
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "product_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
+    { "text": "구매 현황", "align": "start", "value": "purchase_estimate"},  
+    { "text": "발주 현황", "align": "start", "value": "purchase_estimate"}
+  ],
+  "bom_list_headers": [
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "product_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "단가", "align": "start", "value": "unit_price"},
+    { "text": "필요수량", "align": "start", "value": "item_num"}
+  ],
+
+  "dialog_search_product_headers":[
+    { "text": "", "align": "center", "value":"actions"},
+    { "text": "제품코드", "align": "center", "value": "product_code"},
+    { "text": "제품명", "align": "center", "value": "complete_product_name"},
+    { "text": "모델명", "align": "center", "value": "product_model"},
+    { "text": "사양", "align": "center", "value": "product_spec"},
+    { "text": "제조사", "align": "center", "value": "manufacturer"},
+    { "text": "단가", "align": "center", "value": "unit_price"}
+  ],
+
+  "calc_cost_detail_data": [
+    {
+      "cost_list": "재료비",
+      "cost_list_colspan": 4,
+      "belong_data": [
+        {
+          "cost_list": "가. 재료",
+          "cost_list_colspan": 4,
+          "belong_data": []
+        },
+        {
+          "cost_list": "나. 공사 자재",
+          "cost_list_colspan": 4,
+          "belong_data": []
+        }
+      ]
+    },
+    {
+      "cost_list": "노무비",
+      "cost_list_colspan": 4,
+      "belong_data": [
+        {
+          "cost_list": "가. 직접 노무비",
+          "cost_list_colspan": 4,
+          "belong_data": []
+        },
+        {
+          "cost_list": "나. 간접 노무비",
+          "cost_unit": "식",
+          "cost_num": 1,
+          "cost_unit_price": 0,
+          "belong_data": [
+            {
+              "cost_list": "",
+              "cost_list_colspan": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cost_list": "경비",
+      "cost_list_colspan": 4,
+      "belong_data": [
+        {
+          "cost_list": "가. 고용보험료",
+          "cost_unit": "식",
+          "cost_num": 1,
+          "cost_num_editable": true,
+          "cost_unit_price": 0,
+          "belong_data": [
+            {
+              "cost_list": "",
+              "cost_list_colspan": 5
+            }
+          ]
+        },
+        {
+          "cost_list": "나. 공구손료",
+          "cost_unit": "식",
+          "cost_num": 1,
+          "cost_num_editable": true,
+          "cost_unit_price": 0,
+          "belong_data": [
+            {
+              "cost_list": "",
+              "cost_list_colspan": 5
+            }
+          ]
+        },
+        {
+          "cost_list": "다. 여비교통 통신비",
+          "cost_unit": "식",
+          "cost_num": 1,
+          "cost_num_editable": true,
+          "cost_unit_price": 0,
+          "belong_data": [
+            {
+              "cost_list": "",
+              "cost_list_colspan": 5
+            }
+          ]
+        },
+        {
+          "cost_list": "라. 산재보험료",
+          "cost_unit": "식",
+          "cost_num": 1,
+          "cost_num_editable": true,
+          "cost_unit_price": 0,
+          "belong_data": [
+            {
+              "cost_list": "",
+              "cost_list_colspan": 5
+            }
+          ]
+        },
+        {
+          "cost_list": "마. 세금과공과",
+          "cost_unit": "식",
+          "cost_num": 1,
+          "cost_num_editable": true,
+          "cost_unit_price": 0,
+          "belong_data": [
+            {
+              "cost_list": "",
+              "cost_list_colspan": 5
+            }
+          ]
+        },
+        {
+          "cost_list": "바. 복리후생비",
+          "cost_unit": "식",
+          "cost_num": 1,
+          "cost_num_editable": true,
+          "cost_unit_price": 0,
+          "belong_data": [
+            {
+              "cost_list": "",
+              "cost_list_colspan": 5
+            }
+          ]
+        },
+        {
+          "cost_list": "사. 퇴직공제 부금비",
+          "cost_unit": "식",
+          "cost_num": 1,
+          "cost_num_editable": true,
+          "cost_unit_price": 0,
+          "belong_data": [
+            {
+              "cost_list": "",
+              "cost_list_colspan": 5
+            }
+          ]
+        },
+        {
+          "cost_list": "아. 소모품비",
+          "cost_unit": "식",
+          "cost_num": 1,
+          "cost_num_editable": true,
+          "cost_unit_price": 	0,
+          "belong_data": [
+            {
+              "cost_list": "",
+              "cost_list_colspan": 5
+            }
+          ]
+        },
+        {
+          "cost_list": "자. 산업안전보건관리비",
+          "cost_unit": "식",
+          "cost_num": 1,
+          "cost_num_editable": true,
+          "cost_unit_price": 0,
+          "belong_data": [
+            {
+              "cost_list": "",
+              "cost_list_colspan": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cost_list": "일반관리비",
+      "cost_unit": "식",
+      "cost_num": 1,
+      "cost_unit_price": 0,
+      "cost_num_editable": true,
+      "allow_edit_decimal_point": true,
+      "belong_data": [
+        {
+          "cost_list": "",
+          "cost_list_colspan": 5
+        }
+      ]
+    },
+    {
+      "cost_list": "이윤",
+      "cost_unit": "식",
+      "cost_num": 1,
+      "cost_num_editable": true,
+      "allow_edit_decimal_point": true,
+      "cost_unit_price": 0,
+      "belong_data": [
+        {
+          "cost_list": "",
+          "cost_list_colspan": 5
+        }
+      ]
+    }
+
+  ]
+}

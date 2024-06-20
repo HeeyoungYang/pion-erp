@@ -397,6 +397,7 @@ import mux from '@/mux';
       obtainOrderPages: [
         ['수주서', '', '/obtain-order', ['master', '매니저']],
         ['수주서 현황', '', '/obtain-order-search', ['master', '매니저']],
+        ['진행 사항', '', '/obtain-progress', ['master', '매니저']],
       ],
       designProductionPages: [
         ['설계', '', '/design-production', ['master', '매니저']],

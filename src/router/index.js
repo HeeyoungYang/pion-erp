@@ -23,6 +23,7 @@ import OrderSearchPage from '@/views/OrderSearchPage'
 import DesignProductionPage from '@/views/DesignProductionPage'
 import DesignProductionSearchPage from '@/views/DesignProductionSearchPage'
 import ObtainOrderPage from '@/views/ObtainOrderPage'
+import ObtainProgressPage from '@/views/ObtainProgressPage'
 import ObtainOrderSearchPage from '@/views/ObtainOrderSearchPage'
 import ProductBackdataPage from '@/views/ProductBackdataPage'
 import LaborCostBackdataPage from '@/views/LaborCostBackdataPage'
@@ -191,6 +192,14 @@ const routes = [
     path: '/obtain-order',
     name: 'ObtainOrderPage',
     component: ObtainOrderPage,
+    meta: {
+      permission: ['매니저', 'admin', 'master']
+    }
+  },
+  {
+    path: '/obtain-progress',
+    name: 'ObtainProgressPage',
+    component: ObtainProgressPage,
     meta: {
       permission: ['매니저', 'admin', 'master']
     }

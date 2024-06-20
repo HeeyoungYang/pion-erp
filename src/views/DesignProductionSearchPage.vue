@@ -250,75 +250,40 @@
                 style="cursor: pointer;"
               /> -->
             </v-col>
+
+
             <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 배치도</p>
-              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-              <!-- <v-img
-                alt="thumbnail"
-                class="shrink mr-2"
-                contain
-                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                transition="scale-transition"
-                width="350"
-                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                style="cursor: pointer;"
-              /> -->
-            </v-col>
-            <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 구조도</p>
-              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-              <!-- <v-img
-                alt="thumbnail"
-                class="shrink mr-2"
-                contain
-                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                transition="scale-transition"
-                width="350"
-                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                style="cursor: pointer;"
-              /> -->
-            </v-col>
-            <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 단선도</p>
-              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-              <!-- <v-img
-                alt="thumbnail"
-                class="shrink mr-2"
-                contain
-                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                transition="scale-transition"
-                width="350"
-                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                style="cursor: pointer;"
-              /> -->
-            </v-col>
-            <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 삼선도</p>
-              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-              <!-- <v-img
-                alt="thumbnail"
-                class="shrink mr-2"
-                contain
-                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                transition="scale-transition"
-                width="350"
-                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                style="cursor: pointer;"
-              /> -->
-            </v-col>
-            <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 회로도</p>
-              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-              <!-- <v-img
-                alt="thumbnail"
-                class="shrink mr-2"
-                contain
-                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                transition="scale-transition"
-                width="350"
-                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                style="cursor: pointer;"
-              /> -->
+              <p class="font-weight-bold primary--text mb-0">상세 도면</p>
+              <v-chip
+                color="grey lighten-2"
+                class="ma-2"
+              >
+                배치도
+              </v-chip>
+              <v-chip
+                color="grey lighten-2"
+                class="ma-2"
+              >
+                구조도
+              </v-chip>
+              <v-chip
+                color="grey lighten-2"
+                class="ma-2"
+              >
+                단선도
+              </v-chip>
+              <v-chip
+                color="grey lighten-2"
+                class="ma-2"
+              >
+                삼선도
+              </v-chip>
+              <v-chip
+                color="grey lighten-2"
+                class="ma-2"
+              >
+                회로도
+              </v-chip>
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 기타</p>
