@@ -88,7 +88,6 @@
           "cost_list": "가. 고용보험료",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -101,7 +100,6 @@
           "cost_list": "나. 공구손료",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -114,7 +112,6 @@
           "cost_list": "다. 여비교통 통신비",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -127,7 +124,6 @@
           "cost_list": "라. 산재보험료",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -140,7 +136,6 @@
           "cost_list": "마. 세금과공과",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -153,7 +148,6 @@
           "cost_list": "바. 복리후생비",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -166,7 +160,6 @@
           "cost_list": "사. 퇴직공제 부금비",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -179,7 +172,6 @@
           "cost_list": "아. 소모품비",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 	0,
           "belong_data": [
             {
@@ -192,7 +184,6 @@
           "cost_list": "자. 산업안전보건관리비",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -208,7 +199,6 @@
       "cost_unit": "식",
       "cost_num": 1,
       "cost_unit_price": 0,
-      "cost_num_editable": true,
       "allow_edit_decimal_point": true,
       "belong_data": [
         {
@@ -221,7 +211,6 @@
       "cost_list": "이윤",
       "cost_unit": "식",
       "cost_num": 1,
-      "cost_num_editable": true,
       "allow_edit_decimal_point": true,
       "cost_unit_price": 0,
       "belong_data": [
