@@ -485,6 +485,93 @@ mux.Server = {
     });
   },
 
+  /**
+   * S3 파일 URL 생성
+   * @param {string} folder
+   * @param {string} fileName
+   * @example
+   * this.iframeSrc = await mux.Server.getFileUrl('folderName', 'fileName', 'application/pdf');
+   * @memberof mux.Server
+   * @inner
+   * @private
+   * @returns {Promise}
+  */
+  async getFileUrl(folder, fileName, blobType) {
+    if (folder && fileName){
+      try {
+        const url = await mux.Server.getFileUrlPromise({ folder: folder, fileName: fileName }, blobType ? blobType : null);
+        return url;
+      } catch (error) {
+        return '';
+      }
+    }else {
+      return '';
+    }
+  },
+
+  /**
+   * S3 파일 URL 생성 프로미스
+   * @param {Object} reqObj
+   * 필수 key: folder, fileName
+   * 선택 key: timeout, ...
+   */
+  async getFileUrlPromise(reqObj, blobType) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let sendData = {};
+        sendData.path = '/api/file/';
+        if(reqObj.folder && reqObj.fileName){
+          sendData.path += '?folder=' + reqObj.folder;
+          sendData.path += '&file_name=' + reqObj.fileName;
+        }else {
+          reject('download file error: 폴더명, 파일 정보와 함께 요청해야 합니다.');
+          return;
+        }
+        // if (!reqObj.path) {
+        //   reject('upload file error: path 정보와 함께 요청해야 합니다.');
+        //   return;
+        // }
+
+        this.axiosInstance.defaults.timeout = this.defaultTimeout;
+        if (reqObj.timeout){
+          this.axiosInstance.defaults.timeout = reqObj.timeout;
+        }
+
+        Object.keys(reqObj).forEach(key => {
+          if (key !== 'path' && key !== 'folder' && key !== 'fileName'){
+            sendData[key] = reqObj[key];
+          }
+        });
+
+        const result = await mux.Server.get(sendData);
+
+        if (result.code == 0) {
+          const fileData = result.data; // Base64로 인코딩된 파일 데이터
+
+          // Base64 디코딩하여 Blob 객체 생성
+          const byteCharacters = atob(fileData);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: blobType ? blobType : 'application/octet-stream' });
+
+          // Blob 객체를 다운로드할 수 있는 URL 생성
+          const url = window.URL.createObjectURL(blob);
+          resolve(url);
+          return;
+        }else {
+          reject(result.message);
+          return;
+        }
+      } catch (error) {
+        reject(error);
+        return;
+      }
+    });
+  },
+
 
   /**
    * REST Api 요청 함수
