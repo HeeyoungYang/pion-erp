@@ -70,7 +70,7 @@
             <v-tabs-items v-model="tab_progress" class="pb-1">
               <!-- 수주서 -->
               <v-tab-item>
-                <v-card ref="calcCostCard">
+                <v-card class="elevation-0">
                   <div style="text-align: right;">
                     <v-menu offset-y>
                       <template v-slot:activator="{ on, attrs }">
@@ -221,7 +221,7 @@
 
               <!-- 설계 -->
               <v-tab-item>
-                <v-card>
+                <v-card class="elevation-0">
                   <v-card-text>
                     <v-row class="mt-3">
                       <v-col cols="12" sm="12">
@@ -320,7 +320,7 @@
               </v-tab-item>
               <!-- 구매 -->
               <v-tab-item>
-                <v-card ref="calcDetailCard">
+                <v-card class="elevation-0">
                   <v-card-text>
                     <DataTableComponent
                       dense

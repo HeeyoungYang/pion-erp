@@ -1,3 +1,21 @@
+
+<!--
+  * 견적서 조회
+    1. 원가 페이지 > 계산서 > 재료비는 완제품 하나에 대한 재료(반제품, 원부자재)가 리스트업 되었으나 재료비 > 가. 재료 는 원가와 다르게 완제품이 리스트업 되며 완제품 별 사양이 보여야 함 (spec)
+    
+      No. | 항목         | 단위 | 수량 | 단가 | 합계
+      1   | 재료비       |
+          | 가. 재료     |
+          |   완제품 A   | 제품 | 1    | 100 | 100
+          |   사양: SPEC123-01111
+          |   완제품 B   | 제품 | 1    | 200 | 200
+          |   사양: SPEC123-022222
+      ...
+
+ -->
+
+
+
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
@@ -243,7 +261,6 @@
                             v-for="(member, i) in estimate_member_info"
                             :key="i"
                             :color="member.name ? 'success' : 'default'"
-                            @click="selectMemberDialog(i)"
                           >
                             {{ member.type }} : {{ member.name }}
                           </v-chip>
@@ -475,7 +492,7 @@
                             class="mr-3 float-right dont_print white--text"
                             elevation="0"
                             data-html2canvas-ignore="true"
-                            @click="this.dialog_search_product = true"
+                            @click="dialog_search_product = true"
                           >
                             재료 수정
                           </v-btn>

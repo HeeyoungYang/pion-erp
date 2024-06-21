@@ -22,7 +22,7 @@
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"발행일", "type": "dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"8"}
   ],
-  "estimateDefaultInfoInputs":[    
+  "obtainSearchDefaultInfoInputs":[    
     {"label":"발행일", "col":"12", "sm":"4", "lg":"4", "disabled":true},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4", "disabled":true},
     {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4", "disabled":true},
@@ -34,12 +34,29 @@
     {"label":"유효기간", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
     {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": "", "disabled":true}
   ],
-  "estimateCompanyInfoInputs":[
+  "obtainWriteDefaultInfoInputs":[    
+    {"label":"발행일", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"납기", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"인도조건", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"프로젝트/용역 명", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"프로젝트/용역 기간", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"유효기간", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": ""}
+  ],
+  "obtainSearchCompanyInfoInputs":[
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "disabled":true},
     {"label":"담당자", "col":"12", "sm":"4", "lg":"4", "disabled":true},
     {"label":"담당자 E-mail", "col":"12", "sm":"4", "lg":"4", "disabled":true}
   ],
-  "estimateFilesInputs":[
+  "obtainWriteCompanyInfoInputs":[
+    {"label":"업체명", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"담당자", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"담당자 E-mail", "col":"12", "sm":"4", "lg":"4"}
+  ],
+  "obtainFilesInputs":[
     {"label":"도면", "column_name":"blueprint", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
     {"label":"승인서", "column_name":"approval", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
     {"label":"수주확인서", "column_name":"confirmation", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
@@ -53,6 +70,10 @@
     { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"},
     { "text": "총액", "align": "start", "value": "cost_total_amount"}
+  ],
+  "obtain_member_info":[
+    {"type": "확인", "name": "", "user_id": "", "email": ""},
+    {"type": "승인", "name": "", "user_id": "", "email": ""}
   ],
   "survey_cost_headers": [
     { "text": "No.", "align": "start", "value": ""},

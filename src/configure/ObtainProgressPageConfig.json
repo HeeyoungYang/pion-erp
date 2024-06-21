@@ -1,4 +1,8 @@
 {
+  "save_costs": [
+    {"title":"출력", "click":"print"},
+    {"title":"PDF", "click":"pdf"}
+  ],
   "progress_tab_items": [
     "수주서", "설계", "구매/발주"
   ],

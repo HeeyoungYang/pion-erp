@@ -18,8 +18,7 @@
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
     { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"},
-    { "text": "총액", "align": "start", "value": "cost_total_amount"},
-    { "text": "진행 상태", "align": "start", "value": "progress"}
+    { "text": "총액", "align": "start", "value": "cost_total_amount"}
   ],
 
   "inbound_product_list_headers": [

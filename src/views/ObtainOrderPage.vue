@@ -237,52 +237,62 @@
                   <v-card>
                     <v-card-title>
                       <v-row>
-                        <v-col v-show="edit_buttons_show" cols="12" sm="12">
-                          <v-menu offset-y>
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-btn
-                                color="success"
-                                fab
-                                x-small
-                                class="float-right dont_print"
-                                elevation="0"
-                                v-bind="attrs"
-                                v-on="on"
-                                data-html2canvas-ignore="true"
-                              >
-                                <v-icon
-                                  small
-                                >mdi-content-save</v-icon>
-                              </v-btn>
-                            </template>
-                            <v-list>
-                              <v-list-item
-                                v-for="(item, index) in content_save_items"
-                                :key="index"
-                                dense
-                                @click="item.click === 'print' ? printLaborCost()
-                                        : item.click === 'excel' ? mux.Excel.downloadTable(labor_cost_headers, labor_cost_data, '노무비 산출')
-                                        : item.click === 'pdf' ? printLaborCost('노무비 산출') : ''"
-                              >
-                                <v-list-item-title>{{ item.title }}</v-list-item-title>
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
+                        <v-col cols="12" sm="6">
+                          <v-chip
+                            class="mr-2 mb-4"
+                            style="cursor:pointer"
+                            v-for="(member, i) in obtain_member_info"
+                            :key="i"
+                            :color="member.name ? 'success' : 'default'"
+                          >
+                            {{ member.type }} : {{ member.name }}
+                          </v-chip>
+                        </v-col>
 
+                        <v-col v-show="edit_buttons_show" cols="12" sm="6">
                           <v-btn
+                            v-show="!edit_obtain_info"
+                            color="error"
+                            fab
+                            x-small
+                            class="float-right dont_print"
+                            elevation="0"
+                            data-html2canvas-ignore="true"
+                            @click="editObtainInfo(true)"
+                          >
+                            <v-icon
+                              small
+                            >mdi-undo-variant</v-icon>
+                          </v-btn>
+                          <v-btn
+                            v-if="edit_obtain_info"
                             color="primary"
                             fab
                             x-small
                             class="mr-3 float-right dont_print"
                             elevation="0"
                             data-html2canvas-ignore="true"
-                            @click="dialog_calculate_labor = true"
+                            @click="editObtainInfo(false)"
                           >
                             <v-icon
                               small
                             >mdi-pencil</v-icon>
                           </v-btn>
-                        </v-col>
+                          <v-btn
+                            v-if="!edit_obtain_info"
+                            color="primary"
+                            fab
+                            x-small
+                            class="mr-3 float-right dont_print"
+                            elevation="0"
+                            data-html2canvas-ignore="true"
+                            @click="surveyCostNumEditSave"
+                          >
+                            <v-icon
+                              small
+                            >mdi-check</v-icon>
+                          </v-btn>
+                          </v-col>
                       </v-row>
                     </v-card-title>
                     <v-card-text>
@@ -290,7 +300,7 @@
                       <InputsFormComponent
                         dense
                         clearable
-                        :inputs="estimateDefaultInfoInputs"
+                        :inputs="obtainSearchDefaultInfoInputs"
                       >
                       </InputsFormComponent>
 
@@ -298,26 +308,14 @@
                       <InputsFormComponent
                         dense
                         clearable
-                        :inputs="estimateCompanyInfoInputs"
+                        :inputs="obtainSearchCompanyInfoInputs"
                       >
                       </InputsFormComponent>
 
                       <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;" >첨부</p>
-                      <v-row>
-                        <v-col cols="12" sm="4">
-                          <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                          <!-- <v-img
-                            alt="thumbnail"
-                            class="shrink mr-2"
-                            contain
-                            :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                            transition="scale-transition"
-                            width="350"
-                            @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                            style="cursor: pointer;"
-                          /> -->
-                        </v-col>
+                      <v-row
+                        v-if="edit_obtain_info"
+                      >
                         <v-col cols="12" sm="4">
                           <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
                           <div style="width:100%; background-color: #ccc; min-height:300px"></div>
@@ -346,6 +344,15 @@
                             style="cursor: pointer;"
                           /> -->
                         </v-col>
+                        <v-col cols="12" sm="4">
+                          <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
+                          <v-chip
+                            color="grey lighten-2"
+                            class="ma-2"
+                          >
+                            도면 파일 명
+                          </v-chip>
+                        </v-col>
                         <v-col cols="12" sm="12">
                           <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
                           <v-chip
@@ -362,6 +369,18 @@
                           </v-chip>
                         </v-col>
                       </v-row>
+                      <v-row
+                        v-else
+                      >
+                        <v-col cols="12">
+                          <InputsFormComponent
+                            dense
+                            clearable
+                            :inputs="obtainFilesInputs"
+                          >
+                          </InputsFormComponent>
+                        </v-col>
+                      </v-row>
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
@@ -370,11 +389,11 @@
                   <v-card ref="calcDetailCard">
                     <v-card-title>
                       <v-row>
-                        <v-col cols="12" sm="10">
+                        <v-col cols="12" sm="9">
                           <p class="text-h5 black--text mb-0 font-weight-black"  style="font-weight: bold;">산출내역서</p>
                         </v-col>
 
-                        <v-col v-show="edit_buttons_show" cols="12" sm="2">
+                        <v-col v-show="edit_buttons_show" cols="12" sm="3">
                           <v-menu offset-y>
                             <template v-slot:activator="{ on, attrs }">
                               <v-btn
@@ -447,6 +466,18 @@
                             <v-icon
                               small
                             >mdi-check</v-icon>
+                          </v-btn>
+
+                          <v-btn
+                            v-if="!edit_survey_cost_num_disabled"
+                            color="grey"
+                            small
+                            class="mr-3 float-right dont_print white--text"
+                            elevation="0"
+                            data-html2canvas-ignore="true"
+                            @click="dialog_search_product = true"
+                          >
+                            재료 수정
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -565,7 +596,7 @@
           <v-row class=" mt-5">
             <v-col cols="12" sm="5">
               <v-tabs
-                v-model="tab_search"
+                v-model="tab_write"
                 background-color="transparent"
                 class="tab_search"
               >
@@ -576,10 +607,30 @@
                   {{ sub_item }}
                 </v-tab>
               </v-tabs>
-              <v-tabs-items v-model="tab_search" class="pb-1">
+              <v-tabs-items v-model="tab_write" class="pb-1">
                 <!-- 기본 정보 -->
                 <v-tab-item>
                   <v-card>
+                    <v-card-title>
+                      <MemberSearchDialogComponent
+                        :dialog-value="member_dialog"
+                        :persistent="true"
+                        @close="close"
+                        @setMember = "setMember"
+                        @members = "members"
+                      >
+                      </MemberSearchDialogComponent>
+                      <v-chip
+                        class="mr-2 mb-4"
+                        style="cursor:pointer"
+                        v-for="(member, i) in obtain_member_info"
+                        :key="i"
+                        :color="member.name ? 'success' : 'default'"
+                        @click="selectMemberDialog(i)"
+                      >
+                        {{ member.type }} : {{ member.name }}
+                      </v-chip>
+                    </v-card-title>
                     <v-card-text>
                       <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >수주 정보</p>
                       <v-radio-group
@@ -598,7 +649,7 @@
                       <InputsFormComponent
                         dense
                         clearable
-                        :inputs="estimateDefaultInfoInputs"
+                        :inputs="obtainWriteDefaultInfoInputs"
                       >
 
                       </InputsFormComponent>
@@ -607,14 +658,14 @@
                       <InputsFormComponent
                         dense
                         clearable
-                        :inputs="estimateCompanyInfoInputs"
+                        :inputs="obtainWriteCompanyInfoInputs"
                       >
                       </InputsFormComponent>
                       <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;" >첨부</p>
                       <InputsFormComponent
                         dense
                         clearable
-                        :inputs="estimateFilesInputs"
+                        :inputs="obtainFilesInputs"
                       >
                       </InputsFormComponent>
                     </v-card-text>
@@ -1184,6 +1235,7 @@ import CheckPagePermission from "@/common_js/CheckPagePermission";
 import CostTableComponent from "@/components/CostTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import EstimateSearchDialogComponent from "@/components/EstimateSearchDialogComponent";
+import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent";
 import mux from "@/mux";
 
 export default {
@@ -1199,6 +1251,7 @@ export default {
                 CostTableComponent,
                 ModalDialogComponent,
                 EstimateSearchDialogComponent,
+                MemberSearchDialogComponent,
               },
 
   created () {
@@ -1215,6 +1268,17 @@ export default {
     },
     initialize(){
       // this.search_estimate_data = ObtainOrderPageConfig.test_estimate_data
+      const prevURL = window.location.href;
+      try {
+        if (prevURL !== window.location.href) return;
+        this.obtain_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+        this.obtain_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
+        this.obtain_member_info[0].user_id =  this.$cookies.get(this.$configJson.cookies.id.key);
+        this.login_id =  this.$cookies.get(this.$configJson.cookies.id.key);
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.showAlert(error);
+      }
     },
     async searchButton(){
       this.loading_dialog = true;
@@ -1229,23 +1293,118 @@ export default {
     closEstimateSearch(){
       this.estimate_dialog = false;
     },
+    selectMemberDialog(idx){
+      this.member_type_index = idx
+      this.member_dialog = true;
+    },
+    editObtainInfo(type){
+      this.edit_obtain_info = type;
+      this.obtainSearchCompanyInfoInputs.forEach(input => {
+        input.disabled = type;
+      });
+      this.obtainSearchDefaultInfoInputs.forEach(input => {
+        input.disabled = type;
+      });
+
+    },
+    async searchProduct(){
+      this.loading_dialog = true;
+      const product_code = this.search_complete_product_code ? this.search_complete_product_code.trim() : "";
+      const product_name = this.search_complete_product_name ? this.search_complete_product_name.trim() : "";
+      const product_capacity = this.search_product_capacity ? this.search_product_capacity.trim() : "";
+      // console.log(`${product_code} / ${product_name} / ${product_capacity}`);
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          "params": [
+              {
+                "product_table.product_code": product_code,
+                "product_table.name": product_name,
+                "product_table.spec": product_capacity
+              }
+          ],
+          "script_file_name": "rooting_완제품_검색_24_05_16_13_52_1IN.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          this.dialog_search_product_data = result['data'];
+          this.dialog_search_product_data.forEach(data =>{
+            data.product_code = data.code;
+            delete data.code;
+            data.complete_product_name = data.name;
+            delete data.name;
+            data.product_model = data.model;
+            delete data.model;
+            data.product_spec = data.spec;
+            delete data.spec;
+            data.unit_price = data.unit_price.toLocaleString();
+
+            if(data.belong_data){
+              let total_unit_price = 0;
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].cost_list = data.belong_data[b].name;
+                data.belong_data[b].cost_unit = 'SET';
+                data.belong_data[b].cost_num = data.belong_data[b].num;
+                data.belong_data[b].cost_unit_price = data.belong_data[b].unit_price;
+                total_unit_price += data.belong_data[b].unit_price * data.belong_data[b].num;
+
+                if(data.belong_data[b].belong_data){
+                  delete data.belong_data[b].belong_data;
+                }
+              }
+              data.unit_price = '₩ ' + Number(total_unit_price).toLocaleString();
+            }
+          })
+        }else{
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        // console.error(error);
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      this.loading_dialog = false;
+    },
   },
   data(){
     return{
       type_obtain: '프로젝트',
       estimate_dialog: false,
+      member_dialog: false,
       edit_survey_cost_num_disabled: true,
       edit_buttons_show: true,
+      edit_obtain_info: true,
 
       tab_main: null,
       tab_search: null,
+      tab_write: null,
       tab_dialog_search_product: null,
       tab_main_items: ObtainOrderPageConfig.tab_main_items,
       dialog_search_product_items: ObtainOrderPageConfig.dialog_search_product_items,
       dialog_search_product: false,
       dialog_calculate_labor: false,
 
+      search_complete_product_code: '',
+      search_complete_product_name: '',
+      search_product_capacity: '',
+
+      dialog_search_product_data: [],
+
       save_costs: ObtainOrderPageConfig.save_costs,
+      obtain_member_info:ObtainOrderPageConfig.obtain_member_info,
+      content_save_items: ObtainOrderPageConfig.content_save_items,
       search_estimate_headers: ObtainOrderPageConfig.search_estimate_headers,
       survey_cost_headers: ObtainOrderPageConfig.survey_cost_headers,
       labor_cost_headers: ObtainOrderPageConfig.labor_cost_headers,
@@ -1273,6 +1432,8 @@ export default {
         return x;
       }),
 
+      labor_list:[],
+      labor_occupation_list:[],
       labor_cost_data: [],
       merged_labor_cost_data: [],
 
@@ -1296,9 +1457,11 @@ export default {
       search_tab_items: ObtainOrderPageConfig.search_tab_items,
       write_tab_items: ObtainOrderPageConfig.write_tab_items,
       searchCardInputs: ObtainOrderPageConfig.searchCardInputs,
-      estimateDefaultInfoInputs: ObtainOrderPageConfig.estimateDefaultInfoInputs,
-      estimateCompanyInfoInputs: ObtainOrderPageConfig.estimateCompanyInfoInputs,
-      estimateFilesInputs: ObtainOrderPageConfig.estimateFilesInputs,
+      obtainSearchDefaultInfoInputs: ObtainOrderPageConfig.obtainSearchDefaultInfoInputs,
+      obtainWriteDefaultInfoInputs: ObtainOrderPageConfig.obtainWriteDefaultInfoInputs,
+      obtainSearchCompanyInfoInputs: ObtainOrderPageConfig.obtainSearchCompanyInfoInputs,
+      obtainWriteCompanyInfoInputs: ObtainOrderPageConfig.obtainWriteCompanyInfoInputs,
+      obtainFilesInputs: ObtainOrderPageConfig.obtainFilesInputs,
       search_estimate_data: [],
     }
   },
