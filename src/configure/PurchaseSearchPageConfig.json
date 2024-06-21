@@ -1,4 +1,7 @@
 { 
+  "search_tab_items": [
+    "견적 필요", "견적 요청", "견적 완료"
+  ],
   "searchCardInputs":[
     {"label":"승인", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All","미확인", "미승인", "승인", "반려"]},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
@@ -17,10 +20,12 @@
   ],
 
   "estimateInfoInputs":[
-    {"label":"첨부", "column_name":"files", "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true}
+    {"label":"견적 확정 업체", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"첨부", "column_name":"files", "type":"file", "col":"12", "sm":"8", "lg":"8", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true}
   ],
   "orderRequestInfoInputs":[
     {"label":"납기일", "type": "dateSingle", "menu":"","col":"12", "sm":"4", "lg":"4"},
+    {"label":"수신업체", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"대표자", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"등록번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"주소", "col":"12", "sm":"4", "lg":"8", "value": ""},
@@ -44,8 +49,28 @@
     { "text": "제품명", "align": "start", "value": "name"},
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"}
+  ],
+
+  "purchase_order_headers": [
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "product_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
-    { "text": "견적", "align": "start", "value": "purchase_estimate"}
+    { "text": "견적서", "align": "start", "value": "purchase_estimate"},
+    { "text": "발주", "align": "start", "value": "order"}
+  ],
+
+  "order_request_headers": [
+    { "text": "품명", "align": "start", "value": "name"},
+    { "text": "규격", "align": "start", "value": "spec"},
+    { "text": "단가", "align": "start", "value": "unit_price"},
+    { "text": "수량", "align": "start", "value": "purchase_num"},
+    { "text": "공급가액", "align": "start", "value": "supply_price"},
+    { "text": "부가세", "align": "start", "value": "vat"}
   ],
   "bom_list_headers": [
     { "text": "종류", "align": "start", "value": "type"},
@@ -75,8 +100,7 @@
 
   "purchase_member_info":[
     {"type": "확인", "name": "", "user_id": "", "email": ""},
-    {"type": "승인", "name": "", "user_id": "", "email": ""},
-    {"type": "구매담당자", "name": "", "user_id": "", "email": ""}
+    {"type": "승인", "name": "", "user_id": "", "email": ""}
   ],
   "bom_list_purchase_test_data":[
     {
@@ -210,8 +234,51 @@
   ],
   "test_purchase_detail_data":[
     {
-      "estimate_phase": "업체A - 견적 완료",
       "estimate_company": "업체A",
+      "type":"원부자재",
+      "classification":"GFM",
+      "product_code":"1",
+      "name":"원부자재B",
+      "model":"MODEL-002",
+      "spec":"SPEC-002",
+      "manufacturer":"PIONELECTRIC",
+      "unit_price":"10",
+      "purchase_num":"3",
+      "purchase_estimate":"",
+      "order":""
+    },
+    {
+      "estimate_company": "업체A",
+      "type":"반제품",
+      "classification":"GFM",
+      "product_code":"2",
+      "name":"반제품C",
+      "model":"MODEL-003",
+      "spec":"SPEC-003",
+      "manufacturer":"PIONELECTRIC",
+      "unit_price":"70",
+      "purchase_num":"1",
+      "purchase_estimate":"",
+      "order":""
+    },
+    {
+      "estimate_company": "업체B",
+      "type":"원부자재",
+      "classification":"GFM",
+      "product_code":"5",
+      "name":"원부자재B",
+      "model":"MODEL-002",
+      "spec":"SPEC-002",
+      "manufacturer":"PIONELECTRIC",
+      "unit_price":"10",
+      "purchase_num":"3",
+      "purchase_estimate":"",
+      "order":"2024-05-21"
+    }
+  ],
+  "test_purchase_detail_unestimated_data":[
+    {
+      "estimate_company": "",
       "type":"원부자재",
       "classification":"GFM",
       "product_code":"1",
@@ -224,8 +291,7 @@
       "purchase_estimate":""
     },
     {
-      "estimate_phase": "업체A - 견적 완료",
-      "estimate_company": "업체A",
+      "estimate_company": "",
       "type":"반제품",
       "classification":"GFM",
       "product_code":"2",
@@ -238,7 +304,6 @@
       "purchase_estimate":""
     },
     {
-      "estimate_phase": "견적 미요청",
       "estimate_company": "",
       "type":"반제품",
       "classification":"GFM",
@@ -252,7 +317,6 @@
       "purchase_estimate":""
     },
     {
-      "estimate_phase": "견적 미요청",
       "estimate_company": "",
       "type":"원부자재",
       "classification":"GFM",
@@ -264,13 +328,53 @@
       "unit_price":"10",
       "purchase_num":"3",
       "purchase_estimate":""
-    },
+    }
+  ],
+  "test_purchase_detail_estimate_requested_data":[
     {
-      "estimate_phase": "업체B - 견적 요청",
-      "estimate_company": "업체B",
+      "estimate_company": "",
       "type":"원부자재",
       "classification":"GFM",
-      "product_code":"5",
+      "product_code":"1",
+      "name":"원부자재B",
+      "model":"MODEL-002",
+      "spec":"SPEC-002",
+      "manufacturer":"PIONELECTRIC",
+      "unit_price":"10",
+      "purchase_num":"3",
+      "purchase_estimate":""
+    },
+    {
+      "estimate_company": "",
+      "type":"반제품",
+      "classification":"GFM",
+      "product_code":"2",
+      "name":"반제품C",
+      "model":"MODEL-003",
+      "spec":"SPEC-003",
+      "manufacturer":"PIONELECTRIC",
+      "unit_price":"70",
+      "purchase_num":"1",
+      "purchase_estimate":""
+    },
+    {
+      "estimate_company": "",
+      "type":"반제품",
+      "classification":"GFM",
+      "product_code":"3",
+      "name":"반제품C",
+      "model":"MODEL-003",
+      "spec":"SPEC-003",
+      "manufacturer":"PIONELECTRIC",
+      "unit_price":"70",
+      "purchase_num":"1",
+      "purchase_estimate":""
+    },
+    {
+      "estimate_company": "",
+      "type":"원부자재",
+      "classification":"GFM",
+      "product_code":"4",
       "name":"원부자재B",
       "model":"MODEL-002",
       "spec":"SPEC-002",

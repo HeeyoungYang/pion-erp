@@ -81,57 +81,98 @@
       @close="closeProductList"
     >
     <v-container>
-      <v-row>
-        <v-col cols="12" sm="12">
-          <v-btn
-            small
-            color="primary"
-            @click="orderRequestDialog = true"
-          >
-            발주 승인 요청
-          </v-btn>
-        </v-col>
-        <v-col cols="12">
-          <v-data-table
-            :headers="purchase_detail_headers"
-            :items="purchase_detail_data"
-            :item-key="purchase_detail_data.product_code"
-            group-by="estimate_company"
-            dense
-          >
+      <v-tabs
+        v-model="tab_search"
+        background-color="transparent"
+        class="tab_search"
+      >
+        <v-btn
+          v-if="tab_search === 0 || tab_search === 1"
+          color="success"
+          small
+          style="position: absolute;right: 0px;"
+          @click="estiamteDialog"
+        >
+          {{ tab_search === 0 ? '견적 요청' : (tab_search === 1 ? '견적 등록' : '') }}
+        </v-btn>
+        <v-tab
+          v-for="sub_item in search_tab_items"
+          :key="sub_item"
+        >
+          {{ sub_item }}
+        </v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tab_search" class="pb-1">
+        <!-- 견적 필요 -->
+        <v-tab-item>
+          <v-row>
+            <v-col cols="12">
+              <DataTableComponent
+                :headers="purchase_detail_headers"
+                :items="purchase_detail_unestimated_data"
+                :item-key="purchase_detail_unestimated_data.product_code"
+                dense
+              >
+              </DataTableComponent>
+            </v-col>
+          </v-row>
+        </v-tab-item>
+        <!-- 견적 요청 -->
+        <v-tab-item>
+          <v-row>
+            <v-col cols="12">
+              <DataTableComponent
+                :headers="purchase_detail_headers"
+                :items="purchase_detail_estimate_requested_data"
+                :item-key="purchase_detail_estimate_requested_data.product_code"
+                dense
+              >
+              </DataTableComponent>
+            </v-col>
+          </v-row>
+        </v-tab-item>
+        <!-- 견적 완료 -->
+        <v-tab-item>
+          <v-row>
+            <v-col cols="12">
+              <v-data-table
+                :headers="purchase_order_headers"
+                :items="purchase_detail_data"
+                :item-key="purchase_detail_data.product_code"
+                group-by="estimate_company"
+                dense
+              >
 
-            <template v-slot:[`group.header`]="{items, isOpen, toggle}">
-              <th  @click="toggle" colspan="7">
-                <v-icon
-                >
-                  {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-                </v-icon>
-                {{ items[0].estimate_phase }}
-              </th>
-              <th>
-                <v-icon
-                  v-if="items[0].estimate_phase === '견적 미요청'"
-                  color="primary"
-                  small
-                  @click="estiamteDialog('견적 미요청')"
-                >mdi-email</v-icon>
-                <v-icon
-                  v-else-if="items[0].estimate_phase.includes('견적 요청') === true"
-                  color="primary"
-                  small
-                  @click="estiamteDialog('견적 요청')"
-                >mdi-plus-thick</v-icon>
-                <v-icon
-                  v-else
-                  color="primary"
-                  small
-                  @click="estiamteDialog('견적 완료')"
-                >mdi-file</v-icon>
-              </th>
-            </template>
-          </v-data-table>
-        </v-col>
-      </v-row>
+                <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                  <th  @click="toggle" colspan="7">
+                    <v-icon
+                    >
+                      {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                    </v-icon>
+                    {{ items[0].estimate_company }}
+                  </th>
+                  <th>
+                    <v-icon
+                      color="primary"
+                      small
+                      @click="estiamteDialog"
+                    >mdi-file</v-icon>
+                  </th>
+                  <th>
+                    <v-btn
+                      v-if="items[0].order === ''"
+                      color="success"
+                      x-small
+                      @click="orderRequestDialog = true"
+                    >발주 요청</v-btn>
+                    <span v-else>{{ items[0].order }}</span>
+                  </th>
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
+        </v-tab-item>
+      </v-tabs-items>
     </v-container>
     </ModalDialogComponent>
 
@@ -149,7 +190,7 @@
               :step="n"
               editable
             >
-              {{ n ===  1 ? '관련 자재 선택' : '메일 발송'}}
+              {{ n ===  1 ? '관련 자재 선택' : '견적 요청'}}
             </v-stepper-step>
 
             <v-divider
@@ -167,24 +208,16 @@
           >
             <div v-if="n === 1">
               <v-row>
-                <v-col cols="12" sm="4">
-                  <v-text-field
-                    filled
-                    label="견적 업체명"
-                    hide-details
-                    dense
-                  >
-                  </v-text-field>
-                </v-col>
                 <v-col cols="12">
-                  <v-data-table
+                  <DataTableComponent
                     v-model="selected_unestimated_data"
                     :headers="purchase_detail_headers"
-                    :items="purchase_detail_data"
+                    :items="purchase_detail_unestimated_data"
+                    table-class="elevation-0"
                     item-key="product_code"
-                    dense
                     show-select
-                  ></v-data-table>
+                    dense
+                  />
                 </v-col>
               </v-row>
               <v-btn
@@ -200,7 +233,7 @@
             </div>
             <div v-if="n === 2">
               <v-card class="elevation-0">
-                <v-card-text>
+                <v-card-text class="pb-0">
                   <v-row>
                     <v-col cols="12">
                       <v-btn
@@ -218,16 +251,48 @@
                         dense
                       ></v-data-table>
                     </v-col>
+                    <v-col cols="12" v-if="tab_search === 0">
+                      <v-radio-group
+                        v-model="unestimated_request"
+                        row
+                      >
+                        <v-radio
+                          label="메일 발송"
+                          value="mailed"
+                        ></v-radio>
+                        <v-radio
+                          label="요청 완료"
+                          value="requested"
+                        ></v-radio>
+                      </v-radio-group>
+                    </v-col>
                   </v-row>
                 </v-card-text>
               </v-card>
+              <v-divider v-if="tab_search === 0"></v-divider>
+
               <MailFormComponent
+                v-if="unestimated_request === 'mailed' && tab_search === 0"
                 v-model="files"
                 title-class="d-none"
                 addCardClass="d-none"
                 mailCardClass="elevation-0"
               >
               </MailFormComponent>
+              <CardComponent
+                title-class="d-none"
+                v-if="tab_search === 1"
+                class="elevation-0"
+              >
+                <InputsFormComponent
+                  slot="cardText"
+                  dense
+                  clearable
+                  filled
+                  hide-details
+                  :inputs="estimateInfoInputs"
+                />
+              </CardComponent>
 
               <v-card class="elevation-0">
                 <v-card-text>
@@ -239,9 +304,9 @@
                   </v-btn>
                   <v-btn
                     color="success"
-                    @click="test(), unestimatedMailDialog = false"
+                    @click="unestimatedMailDialog = false"
                   >
-                    발송
+                    {{ tab_search === 0 ? '발송' : '저장' }}
                   </v-btn>
 
                   <v-btn
@@ -259,59 +324,6 @@
         </v-stepper-items>
       </v-stepper>
     </v-dialog>
-
-    <ModalDialogComponent
-      :dialog-value="estimateRequestedDialog"
-      max-width="550px"
-      title-class="display-none"
-      text-class="pb-0"
-      closeText="취소"
-      saveText="저장"
-      :persistent="true"
-      @close="estimateRequestedDialog = false"
-      @save="uploadProductInfo"
-    >
-      <CardComponent
-        elevation="0"
-        text-class="pa-0 pt-4"
-        title-class="pa-0"
-      >
-        <div slot="cardTitle">
-          <span>견적서</span>
-          <v-btn
-            x-small
-            color="primary"
-            class="ml-3"
-            @click="!show_selected_unestimated_data ? show_selected_unestimated_data = true :  show_selected_unestimated_data = false"
-          >관련 자재</v-btn>
-        </div>
-        <div slot="cardText">
-          <v-row>
-            <v-col cols="12" v-if="show_selected_unestimated_data">
-              <v-data-table
-              style="border:1px solid #c0c0c0"
-                :headers="purchase_detail_headers"
-                :items="selected_unestimated_data"
-                item-key="product_code"
-                dense
-              ></v-data-table>
-            </v-col>
-          </v-row>
-        </div>
-        <InputsFormComponent
-          slot="cardText"
-          dense
-          clearable
-          filled
-          hide-details
-          :inputs="estimateInfoInputs"
-        >
-        </InputsFormComponent>
-      </CardComponent>
-    </ModalDialogComponent>
-
-
-
     <ModalDialogComponent
       :dialog-value="estimatedDialog"
       max-width="550px"
@@ -324,10 +336,10 @@
       <CardComponent
         elevation="0"
         text-class="pa-0 pt-4"
-        title-class="pa-0"
+        title-class="pa-0 font-weight-black "
       >
         <div slot="cardTitle">
-          <span>구매 견적서</span>
+          <span>구매 견적서 : 업체명</span>
         </div>
         <div slot="cardText">
           <v-row>
@@ -350,50 +362,161 @@
       </CardComponent>
     </ModalDialogComponent>
 
-    <ModalDialogComponent
+    <!-- <ModalDialogComponent
       :dialog-value="orderRequestDialog"
-      max-width="900px"
+      max-width="90%"
       title-class="display-none"
       text-class="pb-0"
       :persistent="true"
+    > -->
+
+    <v-dialog
+      v-model="orderRequestDialog"
+      content-class="elevation-0"
+      persistent
+      max-width="90%"
     >
-      <CardComponent
-        elevation="0"
-        text-class="pa-0 pt-4"
-        title-class="pa-0"
-      >
-        <div slot="cardTitle">
-          <span>발주 요청 정보</span>
-        </div>
-        <div slot="cardText">
-          <v-row>
-            <v-col cols="12">
-              <v-chip
-                class="mr-2"
-                style="cursor:pointer"
-                v-for="(member, i) in purchase_member_info"
-                :key="i"
-                :color="member.name ? 'success' : 'default'"
-                @click="selectMemberDialog(i)"
+      <v-row>
+        <v-col cols="12" sm="6">
+          <v-stepper v-model="order_steppers">
+            <v-stepper-header>
+              <template v-for="n in order_step">
+                <v-stepper-step
+                  :key="`${n}-step`"
+                  :complete="order_steppers > n"
+                  :step="n"
+                  editable
+                >
+                  {{ n ===  1 ? '발주 기본 정보' : '발주 자재 정보'}}
+                </v-stepper-step>
+
+                <v-divider
+                  v-if="n !== order_step"
+                  :key="n"
+                ></v-divider>
+              </template>
+            </v-stepper-header>
+
+            <v-stepper-items>
+              <v-stepper-content
+                v-for="n in order_step"
+                :key="`${n}-content`"
+                :step="n"
               >
-                {{ member.type }} : {{ member.name }}
-              </v-chip>
-            </v-col>
-            <v-col cols="12">
-              <InputsFormComponent
-                slot="cardText"
-                dense
-                clearable
-                filled
-                hide-details
-                :inputs="orderRequestInfoInputs"
-              >
-              </InputsFormComponent>
-            </v-col>
-          </v-row>
-        </div>
-      </CardComponent>
-    </ModalDialogComponent>
+                <div v-if="n === 1">
+                  <v-row class="mb-3">
+                    <v-col cols="12">
+                      <v-chip
+                        class="mr-2"
+                        style="cursor:pointer"
+                        v-for="(member, i) in purchase_member_info"
+                        :key="i"
+                        :color="member.name ? 'success' : 'default'"
+                        @click="selectMemberDialog(i)"
+                      >
+                        {{ member.type }} : {{ member.name }}
+                      </v-chip>
+                    </v-col>
+                    <v-col cols="12">
+                      <InputsFormComponent
+                        slot="cardText"
+                        dense
+                        clearable
+                        filled
+                        hide-details
+                        :inputs="orderRequestInfoInputs"
+                      >
+                      </InputsFormComponent>
+                    </v-col>
+                  </v-row>
+                  <v-btn
+                    color="primary"
+                    @click="order_steppers = 2"
+                  >
+                    다음 ▶
+                  </v-btn>
+
+                  <v-btn
+                    text
+                    color="error"
+                    @click="estimateDialog = false"
+                  >
+                    취소
+                  </v-btn>
+                </div>
+                <div v-if="n === 2">
+                  <v-row>
+                    <v-col cols="12">
+                      <v-data-table
+                        :headers="order_request_headers"
+                        :items="purchase_detail_data"
+                        item-key="product_code"
+                        dense
+                      >
+                        <template v-slot:item="{ item }">
+                          <tr>
+                            <td>
+                              <v-text-field
+                                v-model="item.name"
+                                filled
+                                dense
+                                hide-details
+                                style="font-size: 13px;"
+                              ></v-text-field>
+                            </td>
+                            <td>
+                              <v-text-field
+                                v-model="item.spec"
+                                filled
+                                dense
+                                hide-details
+                                style="font-size: 13px;"
+                              ></v-text-field>
+                            </td>
+                            <td>
+                              <v-text-field
+                                v-model="item.unit_price"
+                                filled
+                                dense
+                                hide-details
+                                style="font-size: 13px;"
+                              ></v-text-field>
+                            </td>
+                            <td>{{ item.purchase_num }}</td>
+                            <td>{{ item.purchase_num * item.unit_price }}</td>
+                            <td>{{ (item.purchase_num * item.unit_price)*0.1 }}</td>
+                          </tr>
+                        </template>
+                      </v-data-table>
+                    </v-col>
+                  </v-row>
+                  <v-card class="elevation-0">
+                    <v-card-text>
+                      <v-btn
+                        color="primary"
+                      >
+                        요청
+                      </v-btn>
+                      <v-btn
+                        text
+                        color="error"
+                        @click="estimateDialog = false"
+                      >
+                        취소
+                      </v-btn>
+
+                    </v-card-text>
+                  </v-card>
+                </div>
+              </v-stepper-content>
+            </v-stepper-items>
+          </v-stepper>
+        </v-col>
+        <v-col cols="12" sm="6">
+          <iframe width="100%" style="height:450px" src="/forms/테스트용.pdf#toolbar=0&navpanes=0&scrollbar=0"></iframe>
+        </v-col>
+      </v-row>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -428,11 +551,14 @@ export default {
       dates: [],
       unestimated_steppers: 1,
       unestimated_step: 2,
+      order_steppers: 1,
+      order_step: 2,
+      tab_search: null,
+      unestimated_request:'mailed',
       orderRequestDialog: false,
       inbound_product_list_dialog: false,
       loading_dialog: false,
       unestimatedMailDialog: false,
-      estimateRequestedDialog: false,
       estimatedDialog: false,
       show_selected_unestimated_data: false,
       receivingInspectionThumbnail: '',
@@ -445,6 +571,7 @@ export default {
       searched_products:[],
       selected_unestimated_data:[],
 
+      search_tab_items: PurchaseSearchPageConfig.search_tab_items,
       purchase_member_info:PurchaseSearchPageConfig.purchase_member_info,
       login_info: PurchaseSearchPageConfig.login_info,
       searchCardInputs:PurchaseSearchPageConfig.searchCardInputs,
@@ -453,12 +580,16 @@ export default {
       setPurchaseInputs:PurchaseSearchPageConfig.setPurchaseInputs,
       purchase_headers:PurchaseSearchPageConfig.purchase_headers,
       purchase_detail_headers:PurchaseSearchPageConfig.purchase_detail_headers,
+      purchase_order_headers:PurchaseSearchPageConfig.purchase_order_headers,
+      order_request_headers:PurchaseSearchPageConfig.order_request_headers,
       bom_list_headers: PurchaseSearchPageConfig.bom_list_headers,
       bom_list_purchase_headers: PurchaseSearchPageConfig.bom_list_purchase_headers,
       bom_list_data: PurchaseSearchPageConfig.bom_list_test_data,
       bom_list_purchase_data: PurchaseSearchPageConfig.bom_list_purchase_test_data,
       purchase_data:PurchaseSearchPageConfig.test_purchase_data,
       purchase_detail_data:PurchaseSearchPageConfig.test_purchase_detail_data,
+      purchase_detail_unestimated_data:PurchaseSearchPageConfig.test_purchase_detail_unestimated_data,
+      purchase_detail_estimate_requested_data:PurchaseSearchPageConfig.test_purchase_detail_estimate_requested_data,
       // purchase_detail_data:[]
     }
   },
@@ -1718,11 +1849,9 @@ export default {
       }
       console.log('sendData :: ' + JSON.stringify(sendData))
     },
-    estiamteDialog(type){
-      if(type === '견적 미요청')
+    estiamteDialog(){
+      if(this.tab_search === 0 || this.tab_search === 1)
         this.unestimatedMailDialog = true;
-      else if(type === '견적 요청')
-        this.estimateRequestedDialog = true;
       else
         this.estimatedDialog = true;
     },
@@ -1730,7 +1859,7 @@ export default {
 }
 </script>
 
-<style lang="">
+<style>
 
 </style>
 
