@@ -308,9 +308,19 @@
             <v-row>
               <v-col cols="12" sm="12">
                 <p class="text-h6 primary--text mb-0 font-weight-bold float-left">요청 자재 선택</p>
+
+                <v-btn
+                  color="success"
+                  class="float-right"
+                  small
+                  elevation="0"
+                  @click="searchPreOdered('search')"
+                >
+                  선주문 내역
+                </v-btn>
                 <v-checkbox
                   hide-details
-                  class="float-right mt-0"
+                  class="float-right mt-0 mr-4"
                   label="필요수량 ≤ 재고수량"
                 ></v-checkbox>
                 <v-checkbox
@@ -410,7 +420,7 @@
                       class="float-left"
                       x-small
                       elevation="0"
-                      @click="pre_ordered_dialog = true"
+                      @click="searchPreOdered('select')"
                     >
                       선주문
                     </v-btn>
@@ -542,7 +552,7 @@
                     >
                       {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                     </v-icon>
-                    {{ items[0].estimate_phase }}
+                    {{ items[0].estimate_company }}
                   </th>
                 </template>
                 <template v-slot:[`item.select_purchase`] = "{ item }">
@@ -942,6 +952,20 @@ export default {
     },
     closeProductList(){
       this.design_production_info_dialog = false;
+    },
+    searchPreOdered(type){
+      let headers = this.purchase_detail_headers
+      let index = headers.findIndex(e => e.text === '선택');
+      if(type === 'search'){
+        if(index !== -1){
+          headers.splice(index, 1);
+        }
+      }else{
+        if(index === -1){
+          headers.unshift({ "text": "선택", "align": "start", "value": "select_purchase"});
+        }
+      }
+      this.pre_ordered_dialog = true;
     },
     async clickApproveData(){
 

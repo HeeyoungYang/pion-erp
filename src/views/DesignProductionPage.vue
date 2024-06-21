@@ -908,6 +908,13 @@
                               @click="dialog_bom_detail = true"
                             >mdi-magnify</v-icon>
                           </template>
+                          <template v-slot:[`item.cancle`]>
+
+                            <v-icon
+                              color="grey"
+                              small
+                            >mdi-minus-thick</v-icon>
+                          </template>
                         </v-data-table>
                       </v-col>
                     </v-row>
@@ -1199,7 +1206,13 @@
           </v-col>
           <v-col cols="12" sm="12">
 
-            <p class="font-weight-black primary--text text-h6 mb-0">TEST-01 구성 자재</p>
+            <p class="font-weight-black primary--text text-h6 mb-2">
+              TEST-01 구성 자재
+              <v-btn
+                small
+                class="ml-2"
+              >입력 행 +</v-btn>
+            </p>
 
             <v-data-table
               v-model="selected_items_for_product_data"

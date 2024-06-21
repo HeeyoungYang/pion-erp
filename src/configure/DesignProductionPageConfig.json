@@ -158,7 +158,8 @@
     { "text": "모델명", "align": "center", "value": "product_model"},
     { "text": "사양", "align": "center", "value": "product_spec"},
     { "text": "제조사", "align": "center", "value": "manufacturer"},
-    { "text": "상세/수정", "align": "center", "value":"actions"}
+    { "text": "상세/수정", "align": "center", "value":"actions"},
+    { "text": "제외", "align": "center", "value":"cancle"}
   ],
 
   "calc_cost_detail_data": [
