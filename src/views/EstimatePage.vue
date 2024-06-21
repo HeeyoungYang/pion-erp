@@ -60,7 +60,6 @@
                         :headers="search_estimate_headers"
                         :items="search_estimate_data"
                         item-key="estimate_code"
-                        deletable
                       />
                     </v-col>
                   </v-row>
@@ -250,38 +249,8 @@
                           </v-chip>
                         </v-col>
                         <v-col v-show="edit_buttons_show" cols="12" sm="6">
-                          <v-menu offset-y>
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-btn
-                                color="success"
-                                fab
-                                x-small
-                                class="float-right dont_print"
-                                elevation="0"
-                                v-bind="attrs"
-                                v-on="on"
-                                data-html2canvas-ignore="true"
-                              >
-                                <v-icon
-                                  small
-                                >mdi-content-save</v-icon>
-                              </v-btn>
-                            </template>
-                            <v-list>
-                              <v-list-item
-                                v-for="(item, index) in content_save_items"
-                                :key="index"
-                                dense
-                                @click="item.click === 'print' ? printLaborCost()
-                                        : item.click === 'excel' ? mux.Excel.downloadTable(labor_cost_headers, labor_cost_data, '노무비 산출')
-                                        : item.click === 'pdf' ? printLaborCost('노무비 산출') : ''"
-                              >
-                                <v-list-item-title>{{ item.title }}</v-list-item-title>
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
 
-                          <v-btn
+                          <!-- <v-btn
                             color="primary"
                             fab
                             x-small
@@ -293,6 +262,49 @@
                             <v-icon
                               small
                             >mdi-pencil</v-icon>
+                          </v-btn> -->
+
+                          <v-btn
+                            v-show="!edit_estimate_info"
+                            color="error"
+                            fab
+                            x-small
+                            class="float-right dont_print"
+                            elevation="0"
+                            data-html2canvas-ignore="true"
+                            @click="editEstimateInfo(true)"
+                          >
+                            <v-icon
+                              small
+                            >mdi-undo-variant</v-icon>
+                          </v-btn>
+                          <v-btn
+                            v-if="edit_estimate_info"
+                            color="primary"
+                            fab
+                            x-small
+                            class="mr-3 float-right dont_print"
+                            elevation="0"
+                            data-html2canvas-ignore="true"
+                            @click="editEstimateInfo(false)"
+                          >
+                            <v-icon
+                              small
+                            >mdi-pencil</v-icon>
+                          </v-btn>
+                          <v-btn
+                            v-if="!edit_estimate_info"
+                            color="primary"
+                            fab
+                            x-small
+                            class="mr-3 float-right dont_print"
+                            elevation="0"
+                            data-html2canvas-ignore="true"
+                            @click="surveyCostNumEditSave"
+                          >
+                            <v-icon
+                              small
+                            >mdi-check</v-icon>
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -315,21 +327,9 @@
                       </InputsFormComponent>
 
                       <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;" >첨부</p>
-                      <v-row>
-                        <v-col cols="12" sm="4">
-                          <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                          <!-- <v-img
-                            alt="thumbnail"
-                            class="shrink mr-2"
-                            contain
-                            :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                            transition="scale-transition"
-                            width="350"
-                            @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                            style="cursor: pointer;"
-                          /> -->
-                        </v-col>
+                      <v-row
+                        v-if="edit_estimate_info"
+                      >
                         <v-col cols="12" sm="4">
                           <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
                           <div style="width:100%; background-color: #ccc; min-height:300px"></div>
@@ -343,6 +343,15 @@
                             @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
                             style="cursor: pointer;"
                           /> -->
+                        </v-col>
+                        <v-col cols="12" sm="4">
+                          <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
+                            <v-chip
+                              color="grey lighten-2"
+                              class="ma-2"
+                            >
+                              도면파일명
+                            </v-chip>
                         </v-col>
                         <v-col cols="12" sm="4">
                           <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
@@ -360,6 +369,18 @@
                           </v-chip>
                         </v-col>
                       </v-row>
+                      <v-row
+                        v-else
+                      >
+                        <v-col cols="12">
+                          <InputsFormComponent
+                            dense
+                            clearable
+                            :inputs="estimateFilesInputs"
+                          >
+                          </InputsFormComponent>
+                        </v-col>
+                      </v-row>
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
@@ -368,11 +389,11 @@
                   <v-card ref="calcDetailCard">
                     <v-card-title>
                       <v-row>
-                        <v-col cols="12" sm="10">
+                        <v-col cols="12" sm="9">
                           <p class="text-h5 black--text mb-0 font-weight-black"  style="font-weight: bold;">산출내역서</p>
                         </v-col>
 
-                        <v-col v-show="edit_buttons_show" cols="12" sm="2">
+                        <v-col v-show="edit_buttons_show" cols="12" sm="3">
                           <v-menu offset-y>
                             <template v-slot:activator="{ on, attrs }">
                               <v-btn
@@ -445,6 +466,18 @@
                             <v-icon
                               small
                             >mdi-check</v-icon>
+                          </v-btn>
+
+                          <v-btn
+                            v-if="!edit_survey_cost_num_disabled"
+                            color="grey"
+                            small
+                            class="mr-3 float-right dont_print white--text"
+                            elevation="0"
+                            data-html2canvas-ignore="true"
+                            @click="this.dialog_search_product = true"
+                          >
+                            재료 수정
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -563,7 +596,7 @@
           <v-row class=" mt-5">
             <v-col cols="12" sm="5">
               <v-tabs
-                v-model="tab_search"
+                v-model="tab_write"
                 background-color="transparent"
                 class="tab_search"
               >
@@ -574,7 +607,7 @@
                   {{ sub_item }}
                 </v-tab>
               </v-tabs>
-              <v-tabs-items v-model="tab_search" class="pb-1">
+              <v-tabs-items v-model="tab_write" class="pb-1">
                 <!-- 기본 정보 -->
                 <v-tab-item>
                   <v-card>
@@ -1263,24 +1296,115 @@ export default {
     close(){
       this.member_dialog = false;
     },
+    editEstimateInfo(type){
+      this.edit_estimate_info = type;
+      this.estimateSearchCompanyInfoInputs.forEach(input => {
+        input.disabled = type;
+      });
+      this.estimateSearchDefaultInfoInputs.forEach(input => {
+        input.disabled = type;
+      });
+
+    },
+    async searchProduct(){
+      this.loading_dialog = true;
+      const product_code = this.search_complete_product_code ? this.search_complete_product_code.trim() : "";
+      const product_name = this.search_complete_product_name ? this.search_complete_product_name.trim() : "";
+      const product_capacity = this.search_product_capacity ? this.search_product_capacity.trim() : "";
+      // console.log(`${product_code} / ${product_name} / ${product_capacity}`);
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          "params": [
+              {
+                "product_table.product_code": product_code,
+                "product_table.name": product_name,
+                "product_table.spec": product_capacity
+              }
+          ],
+          "script_file_name": "rooting_완제품_검색_24_05_16_13_52_1IN.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          this.dialog_search_product_data = result['data'];
+          this.dialog_search_product_data.forEach(data =>{
+            data.product_code = data.code;
+            delete data.code;
+            data.complete_product_name = data.name;
+            delete data.name;
+            data.product_model = data.model;
+            delete data.model;
+            data.product_spec = data.spec;
+            delete data.spec;
+            data.unit_price = data.unit_price.toLocaleString();
+
+            if(data.belong_data){
+              let total_unit_price = 0;
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].cost_list = data.belong_data[b].name;
+                data.belong_data[b].cost_unit = 'SET';
+                data.belong_data[b].cost_num = data.belong_data[b].num;
+                data.belong_data[b].cost_unit_price = data.belong_data[b].unit_price;
+                total_unit_price += data.belong_data[b].unit_price * data.belong_data[b].num;
+
+                if(data.belong_data[b].belong_data){
+                  delete data.belong_data[b].belong_data;
+                }
+              }
+              data.unit_price = '₩ ' + Number(total_unit_price).toLocaleString();
+            }
+          })
+        }else{
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        // console.error(error);
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      this.loading_dialog = false;
+    },
   },
   data(){
     return{
       product_cost_dialog: false,
+      edit_estimate_info: true,
       edit_survey_cost_num_disabled: true,
       edit_buttons_show: true,
 
       tab_main: null,
       tab_search: null,
+      tab_write: null,
       tab_dialog_search_product: null,
       tab_main_items: EstimatePageConfig.tab_main_items,
       dialog_search_product_items: EstimatePageConfig.dialog_search_product_items,
       dialog_search_product: false,
       dialog_calculate_labor: false,
+      dialog_search_product_data: [],
 
       member_dialog: false,
       member_type_index:0,
       members_list:[],
+
+      labor_list:[],
+      labor_occupation_list:[],
+
+
+      search_complete_product_code: '',
+      search_complete_product_name: '',
+      search_product_capacity: '',
 
       estimate_member_info:EstimatePageConfig.estimate_member_info,
       save_estimate: EstimatePageConfig.save_estimate,
@@ -1336,8 +1460,8 @@ export default {
       write_tab_items: EstimatePageConfig.write_tab_items,
       searchCardInputs: EstimatePageConfig.searchCardInputs,
       estimateSearchDefaultInfoInputs: EstimatePageConfig.estimateSearchDefaultInfoInputs,
-      estimateWriteDefaultInfoInputs: EstimatePageConfig.estimateWriteDefaultInfoInputs,
       estimateSearchCompanyInfoInputs: EstimatePageConfig.estimateSearchCompanyInfoInputs,
+      estimateWriteDefaultInfoInputs: EstimatePageConfig.estimateWriteDefaultInfoInputs,
       estimateWriteCompanyInfoInputs: EstimatePageConfig.estimateWriteCompanyInfoInputs,
       estimateFilesInputs: EstimatePageConfig.estimateFilesInputs,
       search_estimate_data: [],
