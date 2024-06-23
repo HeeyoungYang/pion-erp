@@ -1,7 +1,7 @@
 {  
   "table_header": [
-    {"text": "ID", "align": "center", "value": "page_name"},
-    {"text": "페이지 명", "align": "center", "value": "page_alias"},
+    {"text": "페이지 명", "align": "center", "value": "page_name"},
+    {"text": "페이지 설명", "align": "center", "value": "page_alias"},
     {"text": "리소스", "align": "center", "value": "page_url"}
   ],
   
@@ -16,8 +16,8 @@
     "page_url": ""
   },
   "registPageSettingInputs":[
-    {"label":"ID", "column_name":"page_name",  "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true},
-    {"label":"페이지 명", "column_name":"page_alias",  "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true},
+    {"label":"페이지 명", "column_name":"page_name",  "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true},
+    {"label":"페이지 설명", "column_name":"page_alias",  "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true},
     {"label":"리소스", "column_name":"page_url",  "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true}
   ],
   
