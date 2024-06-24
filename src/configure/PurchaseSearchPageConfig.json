@@ -21,7 +21,7 @@
 
   "estimateInfoInputs":[
     {"label":"견적 확정 업체", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"첨부", "column_name":"files", "type":"file", "col":"12", "sm":"8", "lg":"8", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true}
+    {"label":"견적서 첨부", "column_name":"files", "type":"file", "col":"12", "sm":"8", "lg":"8", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true}
   ],
   "orderRequestInfoInputs":[
     {"label":"납기일", "type": "dateSingle", "menu":"","col":"12", "sm":"4", "lg":"4"},
@@ -32,7 +32,10 @@
     {"label":"전화", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"팩스", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"결제조건", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"계좌정보", "col":"12", "sm":"4", "lg":"4", "value": ""}
+    {"label":"계좌정보", "col":"12", "sm":"4", "lg":"4", "value": ""},    
+    {"label":"발주확인서", "column_name":"receiving_inspection", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true},
+    {"label":"사업자 등록증", "column_name":"receiving_inspection", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true},
+    {"label":"통장 사본", "column_name":"receiving_inspection", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true}
   ],
 
   "purchase_headers": [

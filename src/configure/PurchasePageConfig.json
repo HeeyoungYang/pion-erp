@@ -17,6 +17,14 @@
     {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
 
+  "purchaseInfoInputs":[
+    {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"비고", "col":"12", "sm":"4", "lg":"8", "value": ""}
+  ],
+  "estimateInfoInputs":[
+    {"label":"견적 확정 업체", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"견적서 첨부", "column_name":"files", "type":"file", "col":"12", "sm":"8", "lg":"8", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true}
+  ],
   "searchItemsCardInputs":[
     {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"원부자재", "list":["원부자재", "반제품"]},
     {"label":"분류", "type":"auto", "value":"All", "col":"12", "sm":"4", "lg":"2"},

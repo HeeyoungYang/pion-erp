@@ -87,7 +87,7 @@
           >
             <v-card-text class=" pt-3">
               <v-row>
-                <v-col cols="12" sm="12">
+                <v-col cols="12" sm="9" align-self="center">
                   <v-chip
                     class="mr-2"
                     style="cursor:pointer"
@@ -99,6 +99,25 @@
                     {{ member.type }} : {{ member.name }}
                   </v-chip>
                 </v-col>
+              </v-row>
+
+              <InputsFormComponent
+                dense
+                clearable
+                filled
+                hide-details
+                :inputs="purchaseInfoInputs"
+              >
+                <v-col cols="12" sm="1" align-self="center">
+                  <v-btn
+                   color="success"
+                  >
+                    요청
+                  </v-btn>
+                </v-col>
+              </InputsFormComponent>
+              <v-row>
+
                 <v-col
                   cols="12"
                 >
@@ -140,7 +159,7 @@
                         label="미선택"
                         color="primary"
                         hide-details
-                        class="float-left mr-3 mt-0"
+                        class="float-left mr-3 mt-0 pt-0"
                         v-model="item.estimate"
                       ></v-checkbox>
                       <v-btn
@@ -148,7 +167,7 @@
                         class="float-left"
                         x-small
                         elevation="0"
-                        @click="estimateDialog = true"
+                        @click="estiamteDialog"
                       >
                         견적서
                       </v-btn>
@@ -346,6 +365,145 @@
           </v-col>
         </v-row>
       </ModalDialogComponent>
+
+      <v-dialog
+        v-model="unestimatedMailDialog"
+        persistent
+        max-width="1000px"
+      >
+        <v-stepper v-model="unestimated_steppers">
+          <v-stepper-header>
+            <template v-for="n in unestimated_step">
+              <v-stepper-step
+                :key="`${n}-step`"
+                :complete="unestimated_steppers > n"
+                :step="n"
+                editable
+              >
+                {{ n ===  1 ? '관련 자재 선택' : '견적 등록'}}
+              </v-stepper-step>
+
+              <v-divider
+                v-if="n !== unestimated_step"
+                :key="n"
+              ></v-divider>
+            </template>
+          </v-stepper-header>
+
+          <v-stepper-items>
+            <v-stepper-content
+              v-for="n in unestimated_step"
+              :key="`${n}-content`"
+              :step="n"
+            >
+              <div v-if="n === 1">
+                <v-row>
+                  <v-col cols="12">
+                    <DataTableComponent
+                      v-model="selected_unestimated_data"
+                      :headers="bom_list_purchase_items_headers"
+                      :items="bom_list_purchase_data"
+                      table-class="elevation-0"
+                      item-key="product_code"
+                      show-select
+                      dense
+                    />
+                  </v-col>
+                </v-row>
+                <v-btn
+                  color="primary"
+                  @click="unestimated_steppers = 2"
+                >
+                  다음 ▶
+                </v-btn>
+
+                <v-btn text color="error">
+                  취소
+                </v-btn>
+              </div>
+              <div v-if="n === 2">
+                <v-card class="elevation-0">
+                  <v-card-text class="pb-0">
+                    <v-row>
+                      <v-col cols="12">
+                        <v-btn
+                          x-small
+                          color="primary"
+                          @click="!show_selected_unestimated_data ? show_selected_unestimated_data = true :  show_selected_unestimated_data = false"
+                        >관련 자재</v-btn>
+                      </v-col>
+                      <v-col cols="12" v-if="show_selected_unestimated_data">
+                        <v-data-table
+                        style="border:1px solid #c0c0c0"
+                          :headers="purchase_detail_headers"
+                          :items="selected_unestimated_data"
+                          item-key="product_code"
+                          dense
+                        ></v-data-table>
+                      </v-col>
+                      <v-col cols="12" v-if="tab_search === 0">
+                        <v-radio-group
+                          v-model="unestimated_request"
+                          row
+                        >
+                          <v-radio
+                            label="메일 발송"
+                            value="mailed"
+                          ></v-radio>
+                          <v-radio
+                            label="요청 완료"
+                            value="requested"
+                          ></v-radio>
+                        </v-radio-group>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+                <v-divider v-if="tab_search === 0"></v-divider>
+                <CardComponent
+                  title-class="d-none"
+                  class="elevation-0"
+                >
+                  <InputsFormComponent
+                    slot="cardText"
+                    dense
+                    clearable
+                    filled
+                    hide-details
+                    :inputs="estimateInfoInputs"
+                  />
+                </CardComponent>
+
+                <v-card class="elevation-0">
+                  <v-card-text>
+                    <v-btn
+                      color="primary"
+                      @click="unestimated_steppers = 1"
+                    >
+                      ◀ 이전
+                    </v-btn>
+                    <v-btn
+                      color="success"
+                      @click="unestimatedMailDialog = false"
+                    >
+                      저장
+                    </v-btn>
+
+                    <v-btn
+                      text
+                      color="error"
+                      @click="unestimatedMailDialog = false"
+                    >
+                      취소
+                    </v-btn>
+
+                  </v-card-text>
+                </v-card>
+              </div>
+            </v-stepper-content>
+          </v-stepper-items>
+        </v-stepper>
+      </v-dialog>
     </v-main>
   </div>
 </template>
@@ -382,14 +540,20 @@ export default {
       classification_list:[],
       detail_dialog: false,
       loading_dialog: false,
+      unestimatedMailDialog: false,
+      show_selected_unestimated_data: false,
       detailThumbnail: '',
       stockDetails:[],
       inboundDetails:[],
       selected_product_data:[],
+      unestimated_steppers: 1,
+      unestimated_step: 2,
       stock_detail_header:PurchasePageConfig.stock_detail_header,
       inbound_detail_header:PurchasePageConfig.inbound_detail_header,
       searchProductCardInputs:PurchasePageConfig.searchProductCardInputs,
       searchItemsCardInputs:PurchasePageConfig.searchItemsCardInputs,
+      estimateInfoInputs:PurchasePageConfig.estimateInfoInputs,
+      purchaseInfoInputs:PurchasePageConfig.purchaseInfoInputs,
       headers:PurchasePageConfig.headers,
       bom_list_purchase_product_headers:PurchasePageConfig.bom_list_purchase_product_headers,
       bom_list_purchase_items_headers:PurchasePageConfig.bom_list_purchase_items_headers,
@@ -739,6 +903,9 @@ export default {
         purchase_num: '',
         registe_type: '직접입력',
       });
+    },
+    estiamteDialog(){
+      this.unestimatedMailDialog = true;
     },
   }
 }
