@@ -257,7 +257,7 @@ export default {
 
       const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);
       if (userPosition !== 'master'){
-        memberList = memberList.filter(data => data.position !== 'master');
+        memberList = memberList.filter(data => data.position !== 'master' && !data.name.includes('TEST '));
       }else {
         this.registMemberInputs.find(x=>x.column_name === 'position').list.push('master');
       }

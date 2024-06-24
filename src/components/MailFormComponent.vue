@@ -298,8 +298,9 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
 
         const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);
         if (userPosition !== 'master'){
-          allMembers = allMembers.filter(data => data.position !== 'master');
+          allMembers = allMembers.filter(data => data.position !== 'master' && !data.name.includes('TEST '));
         }
+        allMembers = allMembers.sort((a, b) => (a.department + '-' + a.name + '-' + a.position).localeCompare(b.department + '-' + b.name + '-' + b.position));
       } catch (error) {
         console.error('send email error: 사용자 정보를 가져올 수 없습니다.');
       }

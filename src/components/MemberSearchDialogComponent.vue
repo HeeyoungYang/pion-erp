@@ -146,7 +146,7 @@ export default {
 
       const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);
       if (userPosition !== 'master'){
-        this.members = this.members.filter(data => data.position !== 'master');
+        this.members = this.members.filter(data => data.position !== 'master' && !data.name.includes('TEST '));
       }
 
       this.members = this.members.sort((a, b) => a.name.localeCompare(b.name));

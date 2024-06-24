@@ -128,7 +128,7 @@ export default {
 
       const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);
       if (userPosition !== 'master'){
-        memberList = memberList.filter(data => data.position !== 'master');
+        memberList = memberList.filter(data => data.position !== 'master' && !data.name.includes('TEST '));
       }
 
       this.members = memberList.sort((a, b) => a.name.localeCompare(b.name));
@@ -195,7 +195,7 @@ export default {
       }
       const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);
       if (userPosition !== 'master'){
-        memberList = memberList.filter(data => data.position !== 'master');
+        memberList = memberList.filter(data => data.position !== 'master' && !data.name.includes('TEST '));
       }
 
       this.members = memberList.sort((a, b) => a.name.localeCompare(b.name));
