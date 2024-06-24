@@ -6,507 +6,740 @@
     <!-- ▼ 본문 영역 -->
     <v-main>
       <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
+
       <v-row justify="center">
         <v-col
           cols="12"
           sm="11"
         >
-          <CardComponent
-            elevation="1"
-            text-class=" pt-3"
-            title-class="mb-0 font-weight-black"
-            divider-class="mb-3"
-            v-if="add_self === '자재선택'"
+          <v-tabs
+            v-model="tab_main"
+            background-color="transparent"
           >
-            <div slot="cardTitle">
-              <span>자재 선택</span>
-              <v-btn
-                small
-                outlined
-                color="primary"
-                class="mr-2 ml-4"
-                @click="addProductInboundData"
-              >
-                직접 입력형 전환
-              </v-btn>
-              <v-btn
-                small
-                outlined
-                color="primary"
-                @click="restockData"
-              >
-                재입고
-              </v-btn>
-            </div>
-            <InputsFormComponent
-              slot="cardText"
-              dense
-              clearable
-              filled
-              hide-details
-              :inputs="searchCardInputs"
-              @enter="searchProduct"
-              v-if="select_product"
+            <v-tab
+              v-for="item in tab_main_items"
+              :key="item"
             >
-              <v-col
-                cols="12"
-                sm="4"
-                lg="3"
-                align-self="center"
+              {{ item }}
+            </v-tab>
+          </v-tabs>
+          <v-tabs-items v-model="tab_main" class="pb-1">
+            <!-- 조회 탭 -->
+            <v-tab-item>
+              <CardComponent
+                elevation="1"
+                text-class=" pt-3"
+                title-class="text-body-1"
               >
-                <v-btn
-                  color="primary"
-                  class="mr-2"
-                  elevation="2"
-                  @click="searchProduct"
-                >
-                  <v-icon>mdi-magnify</v-icon>검색
-                </v-btn>
-                <v-btn
-                  color="default"
-                  elevation="2"
-                  @click="addItems"
-                >추가</v-btn>
-              </v-col>
-              <v-col cols="12">
-                <v-data-table
-                  class="elevation-1"
-                  dense
-                  v-model="selected_product_data"
-                  :headers="product_search_headers"
-                  :items="product_search_data"
-                  item-key="_code"
-                  show-select
-                  />
-              </v-col>
-            </InputsFormComponent>
-          </CardComponent>
-
-
-          <CardComponent
-            elevation="1"
-            text-class=" pt-3"
-            title-class="mb-0 font-weight-black"
-            divider-class="mb-3"
-            v-if="add_self === '재입고'"
-          >
-            <div slot="cardTitle">
-              <span>출고 승인 내역 선택</span>
-              <v-btn
-                small
-                outlined
-                class="mr-2 ml-4"
-                color="error"
-                @click="restockDataCancle"
-              >
-                재입고 취소
-              </v-btn>
-            </div>
-            <InputsFormComponent
-              slot="cardText"
-              dense
-              clearable
-              filled
-              hide-details
-              :inputs="searchShipCardInputs"
-              @enter="searchShipData"
-            >
-              <v-col
-                cols="12"
-                sm="4"
-                lg="3"
-                align-self="center"
-              >
-                <v-btn
-                  color="primary"
-                  class="mr-2"
-                  elevation="2"
-                  @click="searchShipData"
-                >
-                  <v-icon>mdi-magnify</v-icon>검색
-                </v-btn>
-                <v-btn
-                  color="default"
-                  elevation="2"
-                  @click="addItems"
-                >추가</v-btn>
-              </v-col>
-              <v-col cols="12">
-                <v-data-table
-                  class="elevation-1"
-                  dense
-                  v-model="selected_ship_data"
-                  :headers="ship_search_headers"
-                  :items="ship_search_data"
-                  item-key="table_code"
-                  show-select
-                  />
-              </v-col>
-            </InputsFormComponent>
-          </CardComponent>
-
-
-          <CardComponent
-            elevation="1"
-            card-class="mt-5"
-            text-class=" pt-3"
-            title-class="mb-0 font-weight-black"
-            divider-class="mb-3"
-          >
-            <div slot="cardTitle">
-              입고 정보 입력
-            </div>
-            <div slot="cardText">
-
-              <MemberSearchDialogComponent
-                :dialog-value="member_dialog"
-                :persistent="true"
-                @close="close"
-                @setMember = "setMember"
-                @members = "members"
-              >
-              </MemberSearchDialogComponent>
-              <v-chip
-                class="mr-2 mb-4"
-                style="cursor:pointer"
-                v-for="(member, i) in inbound_member_info"
-                :key="i"
-                :color="member.name ? 'success' : 'default'"
-                @click="selectMemberDialog(i)"
-              >
-                {{ member.type }} : {{ member.name }}
-              </v-chip>
-              <v-form ref="inboundForm">
+                <div slot="cardTitle">※ 구매 내역 입고 탭은 개발중입니다.</div>
                 <InputsFormComponent
+                  slot="cardText"
                   dense
                   clearable
                   filled
                   hide-details
-                  :inputs="add_self === '재입고' ? restockCardInfoInputs : inboundCardInfoInputs"
-                  @dateSet = "dateSetImport"
+                  :inputs="searchOrderCardInputs"
+                  @enter="searchProduct"
                 >
-                  <v-col cols="12" sm="4" lg="2" align-self="center" v-if="add_self !== '재입고'">
-                    <v-radio-group
-                      dense
-                      hide-details
-                      class="mt-0"
-                      v-model="something_wrong_radio"
-                      row
-                    >
-                      <v-radio
-                        label="이상 없음"
-                        value="이상 없음"
-                        @click="something_wrong = false"
-                      ></v-radio>
-                      <v-radio
-                        label="이상 있음"
-                        value="이상 있음"
-                        class="mr-0"
-                        @click="something_wrong = true"
-                      ></v-radio>
-                    </v-radio-group>
-                  </v-col>
-                  <v-col cols="12" sm="4" lg="4" v-if="something_wrong">
-                    <v-text-field
-                      dense
-                      hide-details
-                      filled
-                      label="사유"
-                      v-model="something_wrong_reason"
-                      :rules="[v => !!v || '사유 입력']"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="1" v-if="add_self==='재입고'" align-self="center">
+                  <v-col
+                    cols="12"
+                    sm="4"
+                    lg="3"
+                    align-self="center"
+                  >
                     <v-btn
-                      small
-                      color="success"
-                      class=" float-right"
-                      @click="restockApprovalRequest"
+                      color="primary"
+                      class="mr-2"
+                      elevation="2"
+                      @click="searchProduct"
                     >
-                      재입고 승인 요청
+                      <v-icon>mdi-magnify</v-icon>검색
                     </v-btn>
+                    <v-btn
+                      color="default"
+                      elevation="2"
+                      @click="addItems"
+                    >추가</v-btn>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-data-table
+                      class="elevation-1"
+                      dense
+                      v-model="selected_product_data"
+                      :headers="product_search_headers"
+                      :items="product_search_data"
+                      item-key="_code"
+                      show-select
+                      />
                   </v-col>
                 </InputsFormComponent>
-              </v-form>
-              <v-divider class="my-5"></v-divider>
-              <v-row>
-                <v-col cols="12" sm="2" lg="2" align-self="center">
-                  <v-autocomplete
-                    v-model="set_spot_selected"
-                    :items="spot_list"
-                    label="위치"
-                    dense
-                    clearable
-                    hide-details
-                    style="width:200px"
-                    v-if="product_inbound_data.length > 0 && add_self !== '재입고'"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col cols="12" sm="6" lg="6" align-self="center">
-                  <v-btn
-                    small
-                    color="primary"
-                    class="mr-2"
-                    @click="setSpotAtOnce"
-                    v-if="product_inbound_data.length > 0 && add_self !== '재입고'"
-                  >
-                    일괄 적용
-                  </v-btn>
-                  <v-btn
-                    small
-                    color="default"
-                    class="mr-2"
-                    @click="addProductInboundData"
-                    v-if="add_self === '직접기입'"
-                  >
-                    행 추가
-                  </v-btn>
+              </CardComponent>
 
-                </v-col>
-                <v-col cols="12" sm="4" lg="4" align-self="center"
-                    v-if="add_self !== '재입고'"
-                >
-                  <v-btn
-                    small
-                    color="success"
-                    class=" float-right"
-                    @click="inboundApprovalRequest"
+              <CardComponent
+                elevation="1"
+                card-class="mt-5"
+                text-class=" pt-3"
+                title-class="mb-0 font-weight-black"
+                divider-class="mb-3"
+              >
+                <div slot="cardTitle">
+                  입고 정보 입력
+                </div>
+                <div slot="cardText">
+
+                  <MemberSearchDialogComponent
+                    :dialog-value="member_dialog"
+                    :persistent="true"
+                    @close="close"
+                    @setMember = "setMember"
+                    @members = "members"
                   >
-                    입고 승인 요청
-                  </v-btn>
-                  <v-btn
-                    v-if="add_self === '직접기입'"
-                    small
-                    color="error"
-                    class="mr-2 float-right"
-                    @click="addProductInboundDataCancle"
+                  </MemberSearchDialogComponent>
+                  <v-chip
+                    class="mr-2 mb-4"
+                    style="cursor:pointer"
+                    v-for="(member, i) in inbound_member_info"
+                    :key="i"
+                    :color="member.name ? 'success' : 'default'"
+                    @click="selectMemberDialog(i)"
                   >
-                    직접 입력형 취소
-                  </v-btn>
-                </v-col>
-                <v-col
-                  cols="12"
-                >
-                  <v-data-table
-                    dense
-                    :headers="product_inbound_headers"
-                    :items="product_inbound_data"
-                    hide-default-footer
-                    disable-pagination
-                    item-key="_code"
-                    class="elevation-1"
-                  >
-                    <template v-slot:item="{ item, index }">
-                      <tr v-if="add_self === '자재선택' || add_self === '재입고'">
-                        <td align="center">{{ item.type }}</td>
-                        <td align="center">{{ item.classification }}</td>
-                        <td align="center">{{ item._code }}</td>
-                        <td align="center">{{ item.name }}</td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            style="max-width:150px"
-                            v-model="item.inbound_num"
-                            :oninput="!item.inbound_num ? '' : item.inbound_num = item.inbound_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
-                          >
-                          </v-text-field>
-                          <p class="my-2" v-if="add_self === '재입고'"> 출고수량 : {{ item.ship_num }}</p>
-                        </td>
-                        <td
-                          align="center"
-                          v-if="add_self === '자재선택'"
+                    {{ member.type }} : {{ member.name }}
+                  </v-chip>
+                  <v-form ref="inboundForm">
+                    <InputsFormComponent
+                      dense
+                      clearable
+                      filled
+                      hide-details
+                      :inputs="inboundCardInfoInputs"
+                      @dateSet = "dateSetImport"
+                    >
+                      <v-col cols="12" sm="4" lg="2" align-self="center">
+                        <v-radio-group
+                          dense
+                          hide-details
+                          class="mt-0"
+                          v-model="something_wrong_radio"
+                          row
                         >
-                          <v-autocomplete
-                            v-model="item.spot"
-                            :items="spot_list"
-                            dense
-                            filled
-                            hide-details
-                            style="width:150px"
-                          ></v-autocomplete>
-                        </td>
-                        <td align="center" v-if="add_self === '재입고'">{{  item.spot  }}</td>
-                        <td align="center">{{  item.spec  }}</td>
-                        <td align="center">{{  item.model }}</td>
-                        <td align="center">{{  item.manufacturer }}</td>
-                        <td align="center">{{  item.unit_price }}</td>
-                        <td align="center" style="min-width: 160px;">
-                          <v-checkbox
-                            v-if="item.type !== '원부자재'"
-                            label="미선택"
-                            color="primary"
-                            hide-details
-                            class="float-left mr-3 mt-0"
-                            v-model="item.dont_select_ship"
-                            @click="clickDontSelectShip(index)"
-                          ></v-checkbox>
-                          <v-btn
-                             v-if="item.type !== '원부자재'"
-                            color="primary"
-                            class="float-left"
-                            fab
-                            x-small
-                            elevation="0"
-                            @click="selectShipData(item, index)"
-                          >
-                            <v-icon style="cursor:pointer">mdi-magnify</v-icon>
-                          </v-btn>
+                          <v-radio
+                            label="이상 없음"
+                            value="이상 없음"
+                            @click="something_wrong = false"
+                          ></v-radio>
+                          <v-radio
+                            label="이상 있음"
+                            value="이상 있음"
+                            class="mr-0"
+                            @click="something_wrong = true"
+                          ></v-radio>
+                        </v-radio-group>
+                      </v-col>
+                      <v-col cols="12" sm="4" lg="4" v-if="something_wrong">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          label="사유"
+                          v-model="something_wrong_reason"
+                          :rules="[v => !!v || '사유 입력']"
+                        ></v-text-field>
+                      </v-col>
+                    </InputsFormComponent>
+                  </v-form>
+                  <v-divider class="my-5"></v-divider>
+                  <v-row>
+                    <v-col cols="12" sm="2" lg="2" align-self="center">
+                      <v-autocomplete
+                        v-model="set_spot_selected"
+                        :items="spot_list"
+                        label="위치"
+                        dense
+                        clearable
+                        hide-details
+                        style="width:200px"
+                        v-if="product_inbound_data.length > 0"
+                      ></v-autocomplete>
+                    </v-col>
+                    <v-col cols="12" sm="6" lg="6" align-self="center">
+                      <v-btn
+                        small
+                        color="primary"
+                        class="mr-2"
+                        @click="setSpotAtOnce"
+                        v-if="product_inbound_data.length > 0"
+                      >
+                        일괄 적용
+                      </v-btn>
+                    </v-col>
+                    <v-col cols="12" sm="4" lg="4" align-self="center">
+                      <v-btn
+                        small
+                        color="success"
+                        class=" float-right"
+                        @click="inboundApprovalRequest"
+                      >
+                        입고 승인 요청
+                      </v-btn>
+                    </v-col>
+                    <v-col
+                      cols="12"
+                    >
+                      <v-data-table
+                        dense
+                        :headers="product_inbound_headers"
+                        :items="product_inbound_data"
+                        hide-default-footer
+                        disable-pagination
+                        item-key="_code"
+                        class="elevation-1"
+                      >
+                        <template v-slot:item="{ item, index }">
+                          <tr>
+                            <td align="center">{{ item.type }}</td>
+                            <td align="center">{{ item.classification }}</td>
+                            <td align="center">{{ item._code }}</td>
+                            <td align="center">{{ item.name }}</td>
+                            <td align="center">
+                              <v-text-field
+                                dense
+                                hide-details
+                                filled
+                                style="max-width:150px"
+                                v-model="item.inbound_num"
+                                :oninput="!item.inbound_num ? '' : item.inbound_num = item.inbound_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+                              >
+                              </v-text-field>
+                            </td>
+                            <td
+                              align="center"
+                            >
+                              <v-autocomplete
+                                v-model="item.spot"
+                                :items="spot_list"
+                                dense
+                                filled
+                                hide-details
+                                style="width:150px"
+                              ></v-autocomplete>
+                            </td>
+                            <td align="center">{{  item.spec  }}</td>
+                            <td align="center">{{  item.model }}</td>
+                            <td align="center">{{  item.manufacturer }}</td>
+                            <td align="center">{{  item.unit_price }}</td>
+                            <td align="center" style="min-width: 160px;">
+                            </td>
+                            <td align="center">
+                              <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                            </td>
+                          </tr>
+                        </template>
+                      </v-data-table>
+                    </v-col>
+                  </v-row>
+                </div>
+              </CardComponent>
 
-                        </td>
-                        <td align="center">
-                          <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
-                        </td>
-                      </tr>
-                      <tr v-else-if="add_self === '직접기입'">
-                        <td align="center">
-                          <v-autocomplete
-                            v-model="item.type"
-                            :items="type_list"
-                            dense
-                            filled
-                            hide-details
-                            style="width:150px"
-                          ></v-autocomplete>
-                        </td>
-                        <td align="center">
-                          <v-autocomplete
-                            v-model="item.classification"
-                            :items="classification_list.slice(1)"
-                            dense
-                            filled
-                            hide-details
-                            style="width:150px"
-                          ></v-autocomplete>
-                        </td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            v-model="item._code"
-                            style="width:200px"
-                          >
-                          </v-text-field>
-                        </td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            v-model="item.name"
-                            style="width:150px"
-                          >
-                          </v-text-field>
-                        </td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            v-model="item.inbound_num"
-                            style="width:150px"
-                            @keyup="calcUnitPrice(item)"
-                            :oninput="!item.inbound_num ? '' : item.inbound_num = item.inbound_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
-                          >
+            </v-tab-item>
+            <v-tab-item>
+              <CardComponent
+                elevation="1"
+                text-class=" pt-3"
+                title-class="mb-0 font-weight-black"
+                divider-class="mb-3"
+                v-if="add_self === '자재선택'"
+              >
+                <div slot="cardTitle">
+                  <span>자재 선택</span>
+                  <v-btn
+                    small
+                    outlined
+                    color="primary"
+                    class="mr-2 ml-4"
+                    @click="addProductInboundData"
+                  >
+                    직접 입력형 전환
+                  </v-btn>
+                  <v-btn
+                    small
+                    outlined
+                    color="primary"
+                    @click="restockData"
+                  >
+                    재입고
+                  </v-btn>
+                </div>
+                <InputsFormComponent
+                  slot="cardText"
+                  dense
+                  clearable
+                  filled
+                  hide-details
+                  :inputs="searchCardInputs"
+                  @enter="searchProduct"
+                  v-if="select_product"
+                >
+                  <v-col
+                    cols="12"
+                    sm="4"
+                    lg="3"
+                    align-self="center"
+                  >
+                    <v-btn
+                      color="primary"
+                      class="mr-2"
+                      elevation="2"
+                      @click="searchProduct"
+                    >
+                      <v-icon>mdi-magnify</v-icon>검색
+                    </v-btn>
+                    <v-btn
+                      color="default"
+                      elevation="2"
+                      @click="addItems"
+                    >추가</v-btn>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-data-table
+                      class="elevation-1"
+                      dense
+                      v-model="selected_product_data"
+                      :headers="product_search_headers"
+                      :items="product_search_data"
+                      item-key="_code"
+                      show-select
+                      />
+                  </v-col>
+                </InputsFormComponent>
+              </CardComponent>
 
-                          </v-text-field>
-                        </td>
-                        <td align="center">
-                          <v-autocomplete
-                            v-model="item.spot"
-                            :items="spot_list"
-                            dense
-                            filled
-                            hide-details
-                            style="width:150px"
-                          ></v-autocomplete>
-                        </td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            v-model="item.spec"
-                            style="width:150px"
-                          >
-                          </v-text-field>
-                        </td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            v-model="item.model"
-                            style="width:150px"
-                          >
-                          </v-text-field>
-                        </td>
-                        <td align="center">
-                          <!-- <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            v-model="item.manufacturer"
-                            style="width:150px"
-                          > -->
-                          <v-autocomplete
-                            v-model="item.manufacturer"
-                            :items="manufacturer_list"
-                            dense
-                            hide-details
-                            filled
-                            style="width:150px"
-                          ></v-autocomplete>
 
-                          <!-- </v-text-field> -->
-                        </td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            v-model="item.unit_price"
-                            style="width:150px"
-                            :oninput="!item.unit_price ? '' : item.unit_price = item.unit_price.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
-                          >
-                          </v-text-field>
-                        </td>
-                        <td align="center" style="min-width: 160px;">
-                          <v-checkbox
-                            v-if="item.type !== '원부자재'"
-                            label="미선택"
-                            color="primary"
-                            hide-details
-                            class="float-left mr-3 mt-0"
-                            v-model="item.dont_select_ship"
-                            @click="clickDontSelectShip(index)"
-                          ></v-checkbox>
-                          <v-btn
-                             v-if="item.type !== '원부자재'"
-                            color="primary"
-                            class="float-left"
-                            fab
-                            x-small
-                            elevation="0"
-                            @click="selectShipData(item, index)"
-                          >
-                            <v-icon style="cursor:pointer">mdi-magnify</v-icon>
-                          </v-btn>
+              <CardComponent
+                elevation="1"
+                text-class=" pt-3"
+                title-class="mb-0 font-weight-black"
+                divider-class="mb-3"
+                v-if="add_self === '재입고'"
+              >
+                <div slot="cardTitle">
+                  <span>출고 승인 내역 선택</span>
+                  <v-btn
+                    small
+                    outlined
+                    class="mr-2 ml-4"
+                    color="error"
+                    @click="restockDataCancle"
+                  >
+                    재입고 취소
+                  </v-btn>
+                </div>
+                <InputsFormComponent
+                  slot="cardText"
+                  dense
+                  clearable
+                  filled
+                  hide-details
+                  :inputs="searchShipCardInputs"
+                  @enter="searchShipData"
+                >
+                  <v-col
+                    cols="12"
+                    sm="4"
+                    lg="3"
+                    align-self="center"
+                  >
+                    <v-btn
+                      color="primary"
+                      class="mr-2"
+                      elevation="2"
+                      @click="searchShipData"
+                    >
+                      <v-icon>mdi-magnify</v-icon>검색
+                    </v-btn>
+                    <v-btn
+                      color="default"
+                      elevation="2"
+                      @click="addItems"
+                    >추가</v-btn>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-data-table
+                      class="elevation-1"
+                      dense
+                      v-model="selected_ship_data"
+                      :headers="ship_search_headers"
+                      :items="ship_search_data"
+                      item-key="table_code"
+                      show-select
+                      />
+                  </v-col>
+                </InputsFormComponent>
+              </CardComponent>
 
-                          <!-- <v-icon v-if="item.type !== '원부자재'" color="default" style="cursor:pointer" @click="selectShipData(item, index)">mdi-magnify</v-icon> -->
-                        </td>
-                        <td align="center">
-                          <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
-                        </td>
-                      </tr>
-                    </template>
-                  </v-data-table>
-                </v-col>
-              </v-row>
-            </div>
-          </CardComponent>
+
+              <CardComponent
+                elevation="1"
+                card-class="mt-5"
+                text-class=" pt-3"
+                title-class="mb-0 font-weight-black"
+                divider-class="mb-3"
+              >
+                <div slot="cardTitle">
+                  입고 정보 입력
+                </div>
+                <div slot="cardText">
+
+                  <MemberSearchDialogComponent
+                    :dialog-value="member_dialog"
+                    :persistent="true"
+                    @close="close"
+                    @setMember = "setMember"
+                    @members = "members"
+                  >
+                  </MemberSearchDialogComponent>
+                  <v-chip
+                    class="mr-2 mb-4"
+                    style="cursor:pointer"
+                    v-for="(member, i) in inbound_member_info"
+                    :key="i"
+                    :color="member.name ? 'success' : 'default'"
+                    @click="selectMemberDialog(i)"
+                  >
+                    {{ member.type }} : {{ member.name }}
+                  </v-chip>
+                  <v-form ref="inboundForm">
+                    <InputsFormComponent
+                      dense
+                      clearable
+                      filled
+                      hide-details
+                      :inputs="add_self === '재입고' ? restockCardInfoInputs : inboundCardInfoInputs"
+                      @dateSet = "dateSetImport"
+                    >
+                      <v-col cols="12" sm="4" lg="2" align-self="center" v-if="add_self !== '재입고'">
+                        <v-radio-group
+                          dense
+                          hide-details
+                          class="mt-0"
+                          v-model="something_wrong_radio"
+                          row
+                        >
+                          <v-radio
+                            label="이상 없음"
+                            value="이상 없음"
+                            @click="something_wrong = false"
+                          ></v-radio>
+                          <v-radio
+                            label="이상 있음"
+                            value="이상 있음"
+                            class="mr-0"
+                            @click="something_wrong = true"
+                          ></v-radio>
+                        </v-radio-group>
+                      </v-col>
+                      <v-col cols="12" sm="4" lg="4" v-if="something_wrong">
+                        <v-text-field
+                          dense
+                          hide-details
+                          filled
+                          label="사유"
+                          v-model="something_wrong_reason"
+                          :rules="[v => !!v || '사유 입력']"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="1" v-if="add_self==='재입고'" align-self="center">
+                        <v-btn
+                          small
+                          color="success"
+                          class=" float-right"
+                          @click="restockApprovalRequest"
+                        >
+                          재입고 승인 요청
+                        </v-btn>
+                      </v-col>
+                    </InputsFormComponent>
+                  </v-form>
+                  <v-divider class="my-5"></v-divider>
+                  <v-row>
+                    <v-col cols="12" sm="2" lg="2" align-self="center">
+                      <v-autocomplete
+                        v-model="set_spot_selected"
+                        :items="spot_list"
+                        label="위치"
+                        dense
+                        clearable
+                        hide-details
+                        style="width:200px"
+                        v-if="product_inbound_data.length > 0 && add_self !== '재입고'"
+                      ></v-autocomplete>
+                    </v-col>
+                    <v-col cols="12" sm="6" lg="6" align-self="center">
+                      <v-btn
+                        small
+                        color="primary"
+                        class="mr-2"
+                        @click="setSpotAtOnce"
+                        v-if="product_inbound_data.length > 0 && add_self !== '재입고'"
+                      >
+                        일괄 적용
+                      </v-btn>
+                      <v-btn
+                        small
+                        color="default"
+                        class="mr-2"
+                        @click="addProductInboundData"
+                        v-if="add_self === '직접기입'"
+                      >
+                        행 추가
+                      </v-btn>
+
+                    </v-col>
+                    <v-col cols="12" sm="4" lg="4" align-self="center"
+                        v-if="add_self !== '재입고'"
+                    >
+                      <v-btn
+                        small
+                        color="success"
+                        class=" float-right"
+                        @click="inboundApprovalRequest"
+                      >
+                        입고 승인 요청
+                      </v-btn>
+                      <v-btn
+                        v-if="add_self === '직접기입'"
+                        small
+                        color="error"
+                        class="mr-2 float-right"
+                        @click="addProductInboundDataCancle"
+                      >
+                        직접 입력형 취소
+                      </v-btn>
+                    </v-col>
+                    <v-col
+                      cols="12"
+                    >
+                      <v-data-table
+                        dense
+                        :headers="product_inbound_headers"
+                        :items="product_inbound_data"
+                        hide-default-footer
+                        disable-pagination
+                        item-key="_code"
+                        class="elevation-1"
+                      >
+                        <template v-slot:item="{ item, index }">
+                          <tr v-if="add_self === '자재선택' || add_self === '재입고'">
+                            <td align="center">{{ item.type }}</td>
+                            <td align="center">{{ item.classification }}</td>
+                            <td align="center">{{ item._code }}</td>
+                            <td align="center">{{ item.name }}</td>
+                            <td align="center">
+                              <v-text-field
+                                dense
+                                hide-details
+                                filled
+                                style="max-width:150px"
+                                v-model="item.inbound_num"
+                                :oninput="!item.inbound_num ? '' : item.inbound_num = item.inbound_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+                              >
+                              </v-text-field>
+                              <p class="my-2" v-if="add_self === '재입고'"> 출고수량 : {{ item.ship_num }}</p>
+                            </td>
+                            <td
+                              align="center"
+                              v-if="add_self === '자재선택'"
+                            >
+                              <v-autocomplete
+                                v-model="item.spot"
+                                :items="spot_list"
+                                dense
+                                filled
+                                hide-details
+                                style="width:150px"
+                              ></v-autocomplete>
+                            </td>
+                            <td align="center" v-if="add_self === '재입고'">{{  item.spot  }}</td>
+                            <td align="center">{{  item.spec  }}</td>
+                            <td align="center">{{  item.model }}</td>
+                            <td align="center">{{  item.manufacturer }}</td>
+                            <td align="center">{{  item.unit_price }}</td>
+                            <td align="center" style="min-width: 160px;">
+                              <v-checkbox
+                                v-if="item.type !== '원부자재'"
+                                label="미선택"
+                                color="primary"
+                                hide-details
+                                class="float-left mr-3 mt-0"
+                                v-model="item.dont_select_ship"
+                                @click="clickDontSelectShip(index)"
+                              ></v-checkbox>
+                              <v-btn
+                                v-if="item.type !== '원부자재'"
+                                color="primary"
+                                class="float-left"
+                                fab
+                                x-small
+                                elevation="0"
+                                @click="selectShipData(item, index)"
+                              >
+                                <v-icon style="cursor:pointer">mdi-magnify</v-icon>
+                              </v-btn>
+
+                            </td>
+                            <td align="center">
+                              <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                            </td>
+                          </tr>
+                          <tr v-else-if="add_self === '직접기입'">
+                            <td align="center">
+                              <v-autocomplete
+                                v-model="item.type"
+                                :items="type_list"
+                                dense
+                                filled
+                                hide-details
+                                style="width:150px"
+                              ></v-autocomplete>
+                            </td>
+                            <td align="center">
+                              <v-autocomplete
+                                v-model="item.classification"
+                                :items="classification_list.slice(1)"
+                                dense
+                                filled
+                                hide-details
+                                style="width:150px"
+                              ></v-autocomplete>
+                            </td>
+                            <td align="center">
+                              <v-text-field
+                                dense
+                                hide-details
+                                filled
+                                v-model="item._code"
+                                style="width:200px"
+                              >
+                              </v-text-field>
+                            </td>
+                            <td align="center">
+                              <v-text-field
+                                dense
+                                hide-details
+                                filled
+                                v-model="item.name"
+                                style="width:150px"
+                              >
+                              </v-text-field>
+                            </td>
+                            <td align="center">
+                              <v-text-field
+                                dense
+                                hide-details
+                                filled
+                                v-model="item.inbound_num"
+                                style="width:150px"
+                                @keyup="calcUnitPrice(item)"
+                                :oninput="!item.inbound_num ? '' : item.inbound_num = item.inbound_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+                              >
+
+                              </v-text-field>
+                            </td>
+                            <td align="center">
+                              <v-autocomplete
+                                v-model="item.spot"
+                                :items="spot_list"
+                                dense
+                                filled
+                                hide-details
+                                style="width:150px"
+                              ></v-autocomplete>
+                            </td>
+                            <td align="center">
+                              <v-text-field
+                                dense
+                                hide-details
+                                filled
+                                v-model="item.spec"
+                                style="width:150px"
+                              >
+                              </v-text-field>
+                            </td>
+                            <td align="center">
+                              <v-text-field
+                                dense
+                                hide-details
+                                filled
+                                v-model="item.model"
+                                style="width:150px"
+                              >
+                              </v-text-field>
+                            </td>
+                            <td align="center">
+                              <!-- <v-text-field
+                                dense
+                                hide-details
+                                filled
+                                v-model="item.manufacturer"
+                                style="width:150px"
+                              > -->
+                              <v-autocomplete
+                                v-model="item.manufacturer"
+                                :items="manufacturer_list"
+                                dense
+                                hide-details
+                                filled
+                                style="width:150px"
+                              ></v-autocomplete>
+
+                              <!-- </v-text-field> -->
+                            </td>
+                            <td align="center">
+                              <v-text-field
+                                dense
+                                hide-details
+                                filled
+                                v-model="item.unit_price"
+                                style="width:150px"
+                                :oninput="!item.unit_price ? '' : item.unit_price = item.unit_price.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+                              >
+                              </v-text-field>
+                            </td>
+                            <td align="center" style="min-width: 160px;">
+                              <v-checkbox
+                                v-if="item.type !== '원부자재'"
+                                label="미선택"
+                                color="primary"
+                                hide-details
+                                class="float-left mr-3 mt-0"
+                                v-model="item.dont_select_ship"
+                                @click="clickDontSelectShip(index)"
+                              ></v-checkbox>
+                              <v-btn
+                                v-if="item.type !== '원부자재'"
+                                color="primary"
+                                class="float-left"
+                                fab
+                                x-small
+                                elevation="0"
+                                @click="selectShipData(item, index)"
+                              >
+                                <v-icon style="cursor:pointer">mdi-magnify</v-icon>
+                              </v-btn>
+
+                              <!-- <v-icon v-if="item.type !== '원부자재'" color="default" style="cursor:pointer" @click="selectShipData(item, index)">mdi-magnify</v-icon> -->
+                            </td>
+                            <td align="center">
+                              <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                            </td>
+                          </tr>
+                        </template>
+                      </v-data-table>
+                    </v-col>
+                  </v-row>
+                </div>
+              </CardComponent>
+            </v-tab-item>
+          </v-tabs-items>
         </v-col>
       </v-row>
 
@@ -654,6 +887,9 @@ export default {
               },
   data(){
     return{
+      tab_main: null,
+      tab_main_items: InboundRegisterPageConfig.tab_main_items,
+
       login_id:'',
       stock_more_0: false,
       member_dialog: false,
@@ -685,6 +921,7 @@ export default {
       inbound_member_info:InboundRegisterPageConfig.inbound_member_info,
       inbound_confirmation_data: InboundRegisterPageConfig.inbound_confirmation_data,
       searchCardInputs:InboundRegisterPageConfig.searchCardInputs,
+      searchOrderCardInputs:InboundRegisterPageConfig.searchOrderCardInputs,
       searchShipCardInputs:InboundRegisterPageConfig.searchShipCardInputs,
       inboundCardInfoInputs:InboundRegisterPageConfig.inboundCardInfoInputs,
       restockCardInfoInputs:InboundRegisterPageConfig.restockCardInfoInputs,
