@@ -19,7 +19,7 @@
 
   "purchaseInfoInputs":[
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"비고", "col":"12", "sm":"4", "lg":"8", "value": ""}
+    {"label":"비고", "col":"12", "sm":"4", "lg":"7", "value": ""}
   ],
   "estimateInfoInputs":[
     {"label":"견적 확정 업체", "col":"12", "sm":"4", "lg":"4", "value": ""},
@@ -71,7 +71,7 @@
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "필요수량", "align": "start", "value": "item_num"},
     { "text": "재고", "align": "start", "value": "stock_num"},
-    { "text": "견적/선주문", "align": "start", "value": "estimate"},
+    { "text": "견적", "align": "start", "value": "estimate"},
     { "text": "제외", "align": "start", "value": "cancle"}
   ],
   "setPurchaseInputs":[
@@ -90,6 +90,22 @@
     {"type": "구매담당자", "name": "", "user_id": "", "email": ""}
   ],
 
+  "bom_list_purchase_items_test_data":[
+    {
+      "type":"원부자재",
+      "classification":"전력변환기",
+      "product_code":"TEST-01-001",
+      "name":"제품명A",
+      "model":"모델명A",
+      "spec":"사양A",
+      "manufacturer":"제조사A",
+      "unit_price":"10",
+      "purchase_num":"3",
+      "stock_num":"3",
+      "purchase_estimate":"",
+      "data_type": "selected"
+    }
+  ],
   
   "bom_list_purchase_test_data":[
     {

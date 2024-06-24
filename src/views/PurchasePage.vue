@@ -12,7 +12,6 @@
           sm="11"
         >
           <CardComponent
-            v-if="add_data_type !== '직접입력'"
             elevation="1"
             text-class=" pt-3"
             title-class="mb-0 font-weight-black"
@@ -29,14 +28,6 @@
                 @click="itemSelect"
               >
                 개별 자재 선택
-              </v-btn>
-              <v-btn
-                small
-                outlined
-                color="primary"
-                @click="itemWrite"
-              >
-                직접 입력
               </v-btn>
             </div>
             <InputsFormComponent
@@ -108,8 +99,15 @@
                 hide-details
                 :inputs="purchaseInfoInputs"
               >
-                <v-col cols="12" sm="1" align-self="center">
+                <v-col cols="12" sm="2" align-self="center">
                   <v-btn
+                    v-if="add_data_type === '개별자재'"
+                    small
+                    class="mr-2"
+                    @click="addItemSetting"
+                  >입력 행 +</v-btn>
+                  <v-btn
+                    small
                    color="success"
                   >
                     요청
@@ -121,196 +119,210 @@
                 <v-col
                   cols="12"
                 >
-                <v-data-table
-                  v-if="add_data_type === '완제품자재'"
+                  <v-data-table
+                    v-if="add_data_type === '완제품자재'"
                     :headers="bom_list_purchase_items_headers"
                     :items="bom_list_purchase_data"
-                  group-by="product_code"
-                  item-key="item_code"
-                  dense
-                >
-                  <template v-slot:[`group.header`]="{items, isOpen, toggle}">
-                    <th colspan="12">
-                      <v-icon @click="toggle"
-                        >{{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-                      </v-icon>
-                      {{ items[0].product_code }}
-                    </th>
-                    <th>
+                    group-by="product_code"
+                    item-key="item_code"
+                    dense
+                  >
+                    <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                      <th colspan="12">
+                        <v-icon @click="toggle"
+                          >{{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                        </v-icon>
+                        {{ items[0].product_code }}
+                      </th>
+                      <th>
+                        <v-icon
+                          color="grey"
+                          small
+                          @click="deleteItem(items[0].product_code)"
+                        >mdi-minus-thick</v-icon>
+                      </th>
+                    </template>
+                    <template v-slot:[`item.purchase_num`] = "{ item }">
+                      <v-text-field
+                        dense
+                        hide-details
+                        v-model="item.purchase_num"
+                        style="width:100px;font-size: 0.775rem !important;"
+                        filled
+                      ></v-text-field>
+                    </template>
+                    <template v-slot:[`item.estimate`] = "{ item }">
+                      <div  style="min-width: 160px;">
+                        <v-checkbox
+                          label="미선택"
+                          color="primary"
+                          hide-details
+                          class="float-left mr-3 mt-0 pt-0"
+                          v-model="item.estimate"
+                        ></v-checkbox>
+                        <v-btn
+                          color="primary"
+                          class="float-left"
+                          x-small
+                          elevation="0"
+                          @click="estiamteDialog"
+                        >
+                          견적서
+                        </v-btn>
+                      </div>
+                    </template>
+                    <template v-slot:[`item.cancle`] = "{ index }">
                       <v-icon
                         color="grey"
                         small
-                        @click="deleteItem(items[0].product_code)"
+                        @click="deleteItem(index)"
                       >mdi-minus-thick</v-icon>
-                    </th>
-                  </template>
-                  <template v-slot:[`item.purchase_num`] = "{ item }">
-                    <v-text-field
-                      dense
-                      hide-details
-                      v-model="item.purchase_num"
-                      style="width:100px;font-size: 0.775rem !important;"
-                      filled
-                    ></v-text-field>
-                  </template>
-                  <template v-slot:[`item.estimate`] = "{ item }">
-                    <div  style="min-width: 160px;">
-                      <v-checkbox
-                        label="미선택"
-                        color="primary"
-                        hide-details
-                        class="float-left mr-3 mt-0 pt-0"
-                        v-model="item.estimate"
-                      ></v-checkbox>
-                      <v-btn
-                        color="primary"
-                        class="float-left"
-                        x-small
-                        elevation="0"
-                        @click="estiamteDialog"
-                      >
-                        견적서
-                      </v-btn>
-                    </div>
-                  </template>
-                  <template v-slot:[`item.cancle`] = "{ index }">
-                    <v-icon
-                      color="grey"
-                      small
-                      @click="deleteItem(index)"
-                    >mdi-minus-thick</v-icon>
-                  </template>
-                </v-data-table>
+                    </template>
+                  </v-data-table>
 
                   <v-data-table
-                    v-else
+                    v-if="add_data_type !== '완제품자재'"
                     dense
                     :headers="bom_list_purchase_items_headers"
-                    :items="bom_list_purchase_data"
+                    :items="bom_list_purchase_items_data"
                     hide-default-footer
                     disable-pagination
                     item-key="product_code"
                     class="elevation-1"
                   >
-                    <template v-slot:item="{ item, index }">
-                      <tr v-if="add_data_type === '개별자재'">
-                        <td align="center">{{ item.type }}</td>
-                        <td align="center">{{ item.classification }}</td>
-                        <td align="center">{{ item.product_code }}</td>
-                        <td align="center">{{ item.name }}</td>
-                        <td align="center">{{  item.model }}</td>
-                        <td align="center">{{  item.spec  }}</td>
-                        <td align="center">{{  item.manufacturer }}</td>
-                        <td align="center">{{  item.unit_price }}</td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            style="max-width:150px"
-                            v-model="item.purchase_num"
-                            :oninput="!item.purchase_num ? '' : item.purchase_num = item.purchase_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
-                          >
-                          </v-text-field>
-                        </td>
-                        <td align="center">{{  item.stock_num }}</td>
-                        <td align="center">
-                          <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
-                        </td>
-                      </tr>
-                      <tr v-else-if="add_data_type === '직접입력'">
+                    <template v-slot:item="{ item }">
+                      <tr>
                         <td align="center">
                           <v-autocomplete
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             v-model="item.type"
                             :items="type_list"
                             dense
                             filled
                             hide-details
-                            style="width:150px"
                           ></v-autocomplete>
+                          {{ item.data_type === 'selected' ? item.type : '' }}
                         </td>
                         <td align="center">
                           <v-autocomplete
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             v-model="item.classification"
                             :items="classification_list.slice(1)"
                             dense
                             filled
                             hide-details
-                            style="width:150px"
                           ></v-autocomplete>
+                          {{ item.data_type === 'selected' ? item.classification : '' }}
                         </td>
                         <td align="center">
                           <v-text-field
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.product_code"
+                          >
+                          </v-text-field>
+                          {{ item.data_type === 'selected' ? item.product_code : '' }}
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             dense
                             hide-details
                             filled
                             v-model="item.name"
-                            style="width:150px"
                           >
                           </v-text-field>
+                          {{ item.data_type === 'selected' ? item.name : '' }}
                         </td>
                         <td align="center">
                           <v-text-field
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             dense
                             hide-details
                             filled
                             v-model="item.model"
-                            style="width:150px"
                           >
                           </v-text-field>
+                          {{ item.data_type === 'selected' ? item.model : '' }}
                         </td>
                         <td align="center">
                           <v-text-field
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             dense
                             hide-details
                             filled
                             v-model="item.spec"
-                            style="width:150px"
                           >
                           </v-text-field>
+                          {{ item.data_type === 'selected' ? item.spec : '' }}
                         </td>
                         <td align="center">
                           <v-autocomplete
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             v-model="item.manufacturer"
                             :items="manufacturer_list"
                             dense
                             hide-details
                             filled
-                            style="width:150px"
                           ></v-autocomplete>
+                          {{ item.data_type === 'selected' ? item.manufacturer : '' }}
                         </td>
                         <td align="center">
                           <v-text-field
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             dense
                             hide-details
                             filled
                             v-model="item.unit_price"
-                            style="width:150px"
                             :oninput="!item.unit_price ? '' : item.unit_price = item.unit_price.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                           >
                           </v-text-field>
+                          {{ item.data_type === 'selected' ? item.unit_price : '' }}
                         </td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            v-model="item.product_code"
-                            style="width:200px"
-                          >
-                          </v-text-field>
-                        </td>
+                        <td align="center"></td>
+
+                        <td align="center">{{ item.stock_num }}</td>
                         <td align="center">
                           <v-text-field
                             dense
                             hide-details
                             filled
                             v-model="item.purchase_num"
-                            style="width:150px"
+                            style="width:150px; font-size: 12px;"
                             @keyup="calcUnitPrice(item)"
                             :oninput="!item.purchase_num ? '' : item.purchase_num = item.purchase_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                           >
                           </v-text-field>
+                        </td>
+                        <td align="center">
+                          <div  style="min-width: 160px;">
+                            <v-checkbox
+                              label="미선택"
+                              color="primary"
+                              hide-details
+                              class="float-left mr-3 mt-0 pt-0"
+                              v-model="item.estimate"
+                            ></v-checkbox>
+                            <v-btn
+                              color="primary"
+                              class="float-left"
+                              x-small
+                              elevation="0"
+                              @click="estiamteDialog"
+                            >
+                              견적서
+                            </v-btn>
+                          </div>
                         </td>
                         <td align="center">
                           <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
@@ -559,6 +571,7 @@ export default {
       bom_list_purchase_items_headers:PurchasePageConfig.bom_list_purchase_items_headers,
 
       bom_list_purchase_data:PurchasePageConfig.bom_list_purchase_test_data,
+      bom_list_purchase_items_data:PurchasePageConfig.bom_list_purchase_items_test_data,
       purchase_member_info:PurchasePageConfig.purchase_member_info,
       setPurchaseInputs:PurchasePageConfig.setPurchaseInputs,
       product_data:[],
@@ -876,37 +889,28 @@ export default {
       }
       this.add_data_type = '개별자재';
     },
-    async itemWrite(){
-      this.selected_product_data = [];
-      this.product_data = [];
-      if(this.add_data_type == '완제품자재'){
-        const confirm = await mux.Util.showConfirm('직접 입력형으로 전환되며, \n위에서 선택한 자재는 선택 해제됩니다. ', '전환 확인');
-        if (!confirm){
-          return;
-        }
-        this.bom_list_purchase_data = [];
-      }
-      // if(this.product_inbound_headers.length !== 12){
-      //   this.product_inbound_headers.splice(this.product_inbound_headers.length-1, 0, { "text": "출하선택", "align": "center", "value": "ship_select"})
-      // }
-
-      this.add_data_type = '직접입력';
-      this.bom_list_purchase_data.push({
-        type:'',
-        classification:'',
-        product_code: '',
-        name: '',
-        model: '',
-        spec: '',
-        manufacturer: '',
-        unit_price: '',
-        purchase_num: '',
-        registe_type: '직접입력',
-      });
-    },
     estiamteDialog(){
       this.unestimatedMailDialog = true;
     },
+    addItemSetting(){
+      this.bom_list_purchase_items_data.push(
+        {
+          "type":"",
+          "classification":"",
+          "item_code":"",
+          "name":"",
+          "model":"",
+          "spec":"",
+          "manufacturer":"",
+          "unit_price":"",
+          "purchase_num": "",
+          "item_num": "",
+          "stock_num":"",
+          "estimate":"",
+          "data_type": "added"
+        }
+      )
+    }
   }
 }
 </script>
