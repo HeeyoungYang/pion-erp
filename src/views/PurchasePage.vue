@@ -12,7 +12,6 @@
           sm="11"
         >
           <CardComponent
-            v-if="add_data_type !== '직접입력'"
             elevation="1"
             text-class=" pt-3"
             title-class="mb-0 font-weight-black"
@@ -29,14 +28,6 @@
                 @click="itemSelect"
               >
                 개별 자재 선택
-              </v-btn>
-              <v-btn
-                small
-                outlined
-                color="primary"
-                @click="itemWrite"
-              >
-                직접 입력
               </v-btn>
             </div>
             <InputsFormComponent
@@ -87,7 +78,7 @@
           >
             <v-card-text class=" pt-3">
               <v-row>
-                <v-col cols="12" sm="12">
+                <v-col cols="12" sm="9" align-self="center">
                   <v-chip
                     class="mr-2"
                     style="cursor:pointer"
@@ -99,199 +90,239 @@
                     {{ member.type }} : {{ member.name }}
                   </v-chip>
                 </v-col>
+              </v-row>
+
+              <InputsFormComponent
+                dense
+                clearable
+                filled
+                hide-details
+                :inputs="purchaseInfoInputs"
+              >
+                <v-col cols="12" sm="2" align-self="center">
+                  <v-btn
+                    v-if="add_data_type === '개별자재'"
+                    small
+                    class="mr-2"
+                    @click="addItemSetting"
+                  >입력 행 +</v-btn>
+                  <v-btn
+                    small
+                   color="success"
+                  >
+                    요청
+                  </v-btn>
+                </v-col>
+              </InputsFormComponent>
+              <v-row>
+
                 <v-col
                   cols="12"
                 >
-                <v-data-table
-                  v-if="add_data_type === '완제품자재'"
+                  <v-data-table
+                    v-if="add_data_type === '완제품자재'"
                     :headers="bom_list_purchase_items_headers"
                     :items="bom_list_purchase_data"
-                  group-by="product_code"
-                  item-key="item_code"
-                  dense
-                >
-                  <template v-slot:[`group.header`]="{items, isOpen, toggle}">
-                    <th colspan="12">
-                      <v-icon @click="toggle"
-                        >{{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-                      </v-icon>
-                      {{ items[0].product_code }}
-                    </th>
-                    <th>
+                    group-by="product_code"
+                    item-key="item_code"
+                    dense
+                  >
+                    <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                      <th colspan="12">
+                        <v-icon @click="toggle"
+                          >{{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                        </v-icon>
+                        {{ items[0].product_code }}
+                      </th>
+                      <th>
+                        <v-icon
+                          color="grey"
+                          small
+                          @click="deleteItem(items[0].product_code)"
+                        >mdi-minus-thick</v-icon>
+                      </th>
+                    </template>
+                    <template v-slot:[`item.purchase_num`] = "{ item }">
+                      <v-text-field
+                        dense
+                        hide-details
+                        v-model="item.purchase_num"
+                        style="width:100px;font-size: 0.775rem !important;"
+                        filled
+                      ></v-text-field>
+                    </template>
+                    <template v-slot:[`item.estimate`] = "{ item }">
+                      <div  style="min-width: 160px;">
+                        <v-checkbox
+                          label="미선택"
+                          color="primary"
+                          hide-details
+                          class="float-left mr-3 mt-0 pt-0"
+                          v-model="item.estimate"
+                        ></v-checkbox>
+                        <v-btn
+                          color="primary"
+                          class="float-left"
+                          x-small
+                          elevation="0"
+                          @click="estiamteDialog"
+                        >
+                          견적서
+                        </v-btn>
+                      </div>
+                    </template>
+                    <template v-slot:[`item.cancle`] = "{ index }">
                       <v-icon
                         color="grey"
                         small
-                        @click="deleteItem(items[0].product_code)"
+                        @click="deleteItem(index)"
                       >mdi-minus-thick</v-icon>
-                    </th>
-                  </template>
-                  <template v-slot:[`item.purchase_num`] = "{ item }">
-                    <v-text-field
-                      dense
-                      hide-details
-                      v-model="item.purchase_num"
-                      style="width:100px;font-size: 0.775rem !important;"
-                      filled
-                    ></v-text-field>
-                  </template>
-                  <template v-slot:[`item.estimate`] = "{ item }">
-                    <div  style="min-width: 160px;">
-                      <v-checkbox
-                        label="미선택"
-                        color="primary"
-                        hide-details
-                        class="float-left mr-3 mt-0"
-                        v-model="item.estimate"
-                      ></v-checkbox>
-                      <v-btn
-                        color="primary"
-                        class="float-left"
-                        x-small
-                        elevation="0"
-                        @click="estimateDialog = true"
-                      >
-                        견적서
-                      </v-btn>
-                    </div>
-                  </template>
-                  <template v-slot:[`item.cancle`] = "{ index }">
-                    <v-icon
-                      color="grey"
-                      small
-                      @click="deleteItem(index)"
-                    >mdi-minus-thick</v-icon>
-                  </template>
-                </v-data-table>
+                    </template>
+                  </v-data-table>
 
                   <v-data-table
-                    v-else
+                    v-if="add_data_type !== '완제품자재'"
                     dense
                     :headers="bom_list_purchase_items_headers"
-                    :items="bom_list_purchase_data"
+                    :items="bom_list_purchase_items_data"
                     hide-default-footer
                     disable-pagination
                     item-key="product_code"
                     class="elevation-1"
                   >
-                    <template v-slot:item="{ item, index }">
-                      <tr v-if="add_data_type === '개별자재'">
-                        <td align="center">{{ item.type }}</td>
-                        <td align="center">{{ item.classification }}</td>
-                        <td align="center">{{ item.product_code }}</td>
-                        <td align="center">{{ item.name }}</td>
-                        <td align="center">{{  item.model }}</td>
-                        <td align="center">{{  item.spec  }}</td>
-                        <td align="center">{{  item.manufacturer }}</td>
-                        <td align="center">{{  item.unit_price }}</td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            style="max-width:150px"
-                            v-model="item.purchase_num"
-                            :oninput="!item.purchase_num ? '' : item.purchase_num = item.purchase_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
-                          >
-                          </v-text-field>
-                        </td>
-                        <td align="center">{{  item.stock_num }}</td>
-                        <td align="center">
-                          <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
-                        </td>
-                      </tr>
-                      <tr v-else-if="add_data_type === '직접입력'">
+                    <template v-slot:item="{ item }">
+                      <tr>
                         <td align="center">
                           <v-autocomplete
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             v-model="item.type"
                             :items="type_list"
                             dense
                             filled
                             hide-details
-                            style="width:150px"
                           ></v-autocomplete>
+                          {{ item.data_type === 'selected' ? item.type : '' }}
                         </td>
                         <td align="center">
                           <v-autocomplete
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             v-model="item.classification"
                             :items="classification_list.slice(1)"
                             dense
                             filled
                             hide-details
-                            style="width:150px"
                           ></v-autocomplete>
+                          {{ item.data_type === 'selected' ? item.classification : '' }}
                         </td>
                         <td align="center">
                           <v-text-field
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
+                            dense
+                            hide-details
+                            filled
+                            v-model="item.product_code"
+                          >
+                          </v-text-field>
+                          {{ item.data_type === 'selected' ? item.product_code : '' }}
+                        </td>
+                        <td align="center">
+                          <v-text-field
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             dense
                             hide-details
                             filled
                             v-model="item.name"
-                            style="width:150px"
                           >
                           </v-text-field>
+                          {{ item.data_type === 'selected' ? item.name : '' }}
                         </td>
                         <td align="center">
                           <v-text-field
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             dense
                             hide-details
                             filled
                             v-model="item.model"
-                            style="width:150px"
                           >
                           </v-text-field>
+                          {{ item.data_type === 'selected' ? item.model : '' }}
                         </td>
                         <td align="center">
                           <v-text-field
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             dense
                             hide-details
                             filled
                             v-model="item.spec"
-                            style="width:150px"
                           >
                           </v-text-field>
+                          {{ item.data_type === 'selected' ? item.spec : '' }}
                         </td>
                         <td align="center">
                           <v-autocomplete
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             v-model="item.manufacturer"
                             :items="manufacturer_list"
                             dense
                             hide-details
                             filled
-                            style="width:150px"
                           ></v-autocomplete>
+                          {{ item.data_type === 'selected' ? item.manufacturer : '' }}
                         </td>
                         <td align="center">
                           <v-text-field
+                            v-if="item.data_type === 'added'"
+                            style="width:150px; font-size: 12px;"
                             dense
                             hide-details
                             filled
                             v-model="item.unit_price"
-                            style="width:150px"
                             :oninput="!item.unit_price ? '' : item.unit_price = item.unit_price.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                           >
                           </v-text-field>
+                          {{ item.data_type === 'selected' ? item.unit_price : '' }}
                         </td>
-                        <td align="center">
-                          <v-text-field
-                            dense
-                            hide-details
-                            filled
-                            v-model="item.product_code"
-                            style="width:200px"
-                          >
-                          </v-text-field>
-                        </td>
+                        <td align="center"></td>
+
+                        <td align="center">{{ item.stock_num }}</td>
                         <td align="center">
                           <v-text-field
                             dense
                             hide-details
                             filled
                             v-model="item.purchase_num"
-                            style="width:150px"
+                            style="width:150px; font-size: 12px;"
                             @keyup="calcUnitPrice(item)"
                             :oninput="!item.purchase_num ? '' : item.purchase_num = item.purchase_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                           >
                           </v-text-field>
+                        </td>
+                        <td align="center">
+                          <div  style="min-width: 160px;">
+                            <v-checkbox
+                              label="미선택"
+                              color="primary"
+                              hide-details
+                              class="float-left mr-3 mt-0 pt-0"
+                              v-model="item.estimate"
+                            ></v-checkbox>
+                            <v-btn
+                              color="primary"
+                              class="float-left"
+                              x-small
+                              elevation="0"
+                              @click="estiamteDialog"
+                            >
+                              견적서
+                            </v-btn>
+                          </div>
                         </td>
                         <td align="center">
                           <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
@@ -346,6 +377,145 @@
           </v-col>
         </v-row>
       </ModalDialogComponent>
+
+      <v-dialog
+        v-model="unestimatedMailDialog"
+        persistent
+        max-width="1000px"
+      >
+        <v-stepper v-model="unestimated_steppers">
+          <v-stepper-header>
+            <template v-for="n in unestimated_step">
+              <v-stepper-step
+                :key="`${n}-step`"
+                :complete="unestimated_steppers > n"
+                :step="n"
+                editable
+              >
+                {{ n ===  1 ? '관련 자재 선택' : '견적 등록'}}
+              </v-stepper-step>
+
+              <v-divider
+                v-if="n !== unestimated_step"
+                :key="n"
+              ></v-divider>
+            </template>
+          </v-stepper-header>
+
+          <v-stepper-items>
+            <v-stepper-content
+              v-for="n in unestimated_step"
+              :key="`${n}-content`"
+              :step="n"
+            >
+              <div v-if="n === 1">
+                <v-row>
+                  <v-col cols="12">
+                    <DataTableComponent
+                      v-model="selected_unestimated_data"
+                      :headers="bom_list_purchase_items_headers"
+                      :items="bom_list_purchase_data"
+                      table-class="elevation-0"
+                      item-key="product_code"
+                      show-select
+                      dense
+                    />
+                  </v-col>
+                </v-row>
+                <v-btn
+                  color="primary"
+                  @click="unestimated_steppers = 2"
+                >
+                  다음 ▶
+                </v-btn>
+
+                <v-btn text color="error">
+                  취소
+                </v-btn>
+              </div>
+              <div v-if="n === 2">
+                <v-card class="elevation-0">
+                  <v-card-text class="pb-0">
+                    <v-row>
+                      <v-col cols="12">
+                        <v-btn
+                          x-small
+                          color="primary"
+                          @click="!show_selected_unestimated_data ? show_selected_unestimated_data = true :  show_selected_unestimated_data = false"
+                        >관련 자재</v-btn>
+                      </v-col>
+                      <v-col cols="12" v-if="show_selected_unestimated_data">
+                        <v-data-table
+                        style="border:1px solid #c0c0c0"
+                          :headers="purchase_detail_headers"
+                          :items="selected_unestimated_data"
+                          item-key="product_code"
+                          dense
+                        ></v-data-table>
+                      </v-col>
+                      <v-col cols="12" v-if="tab_search === 0">
+                        <v-radio-group
+                          v-model="unestimated_request"
+                          row
+                        >
+                          <v-radio
+                            label="메일 발송"
+                            value="mailed"
+                          ></v-radio>
+                          <v-radio
+                            label="요청 완료"
+                            value="requested"
+                          ></v-radio>
+                        </v-radio-group>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+                <v-divider v-if="tab_search === 0"></v-divider>
+                <CardComponent
+                  title-class="d-none"
+                  class="elevation-0"
+                >
+                  <InputsFormComponent
+                    slot="cardText"
+                    dense
+                    clearable
+                    filled
+                    hide-details
+                    :inputs="estimateInfoInputs"
+                  />
+                </CardComponent>
+
+                <v-card class="elevation-0">
+                  <v-card-text>
+                    <v-btn
+                      color="primary"
+                      @click="unestimated_steppers = 1"
+                    >
+                      ◀ 이전
+                    </v-btn>
+                    <v-btn
+                      color="success"
+                      @click="unestimatedMailDialog = false"
+                    >
+                      저장
+                    </v-btn>
+
+                    <v-btn
+                      text
+                      color="error"
+                      @click="unestimatedMailDialog = false"
+                    >
+                      취소
+                    </v-btn>
+
+                  </v-card-text>
+                </v-card>
+              </div>
+            </v-stepper-content>
+          </v-stepper-items>
+        </v-stepper>
+      </v-dialog>
     </v-main>
   </div>
 </template>
@@ -382,19 +552,26 @@ export default {
       classification_list:[],
       detail_dialog: false,
       loading_dialog: false,
+      unestimatedMailDialog: false,
+      show_selected_unestimated_data: false,
       detailThumbnail: '',
       stockDetails:[],
       inboundDetails:[],
       selected_product_data:[],
+      unestimated_steppers: 1,
+      unestimated_step: 2,
       stock_detail_header:PurchasePageConfig.stock_detail_header,
       inbound_detail_header:PurchasePageConfig.inbound_detail_header,
       searchProductCardInputs:PurchasePageConfig.searchProductCardInputs,
       searchItemsCardInputs:PurchasePageConfig.searchItemsCardInputs,
+      estimateInfoInputs:PurchasePageConfig.estimateInfoInputs,
+      purchaseInfoInputs:PurchasePageConfig.purchaseInfoInputs,
       headers:PurchasePageConfig.headers,
       bom_list_purchase_product_headers:PurchasePageConfig.bom_list_purchase_product_headers,
       bom_list_purchase_items_headers:PurchasePageConfig.bom_list_purchase_items_headers,
 
       bom_list_purchase_data:PurchasePageConfig.bom_list_purchase_test_data,
+      bom_list_purchase_items_data:PurchasePageConfig.bom_list_purchase_items_test_data,
       purchase_member_info:PurchasePageConfig.purchase_member_info,
       setPurchaseInputs:PurchasePageConfig.setPurchaseInputs,
       product_data:[],
@@ -712,34 +889,28 @@ export default {
       }
       this.add_data_type = '개별자재';
     },
-    async itemWrite(){
-      this.selected_product_data = [];
-      this.product_data = [];
-      if(this.add_data_type == '완제품자재'){
-        const confirm = await mux.Util.showConfirm('직접 입력형으로 전환되며, \n위에서 선택한 자재는 선택 해제됩니다. ', '전환 확인');
-        if (!confirm){
-          return;
-        }
-        this.bom_list_purchase_data = [];
-      }
-      // if(this.product_inbound_headers.length !== 12){
-      //   this.product_inbound_headers.splice(this.product_inbound_headers.length-1, 0, { "text": "출하선택", "align": "center", "value": "ship_select"})
-      // }
-
-      this.add_data_type = '직접입력';
-      this.bom_list_purchase_data.push({
-        type:'',
-        classification:'',
-        product_code: '',
-        name: '',
-        model: '',
-        spec: '',
-        manufacturer: '',
-        unit_price: '',
-        purchase_num: '',
-        registe_type: '직접입력',
-      });
+    estiamteDialog(){
+      this.unestimatedMailDialog = true;
     },
+    addItemSetting(){
+      this.bom_list_purchase_items_data.push(
+        {
+          "type":"",
+          "classification":"",
+          "item_code":"",
+          "name":"",
+          "model":"",
+          "spec":"",
+          "manufacturer":"",
+          "unit_price":"",
+          "purchase_num": "",
+          "item_num": "",
+          "stock_num":"",
+          "estimate":"",
+          "data_type": "added"
+        }
+      )
+    }
   }
 }
 </script>

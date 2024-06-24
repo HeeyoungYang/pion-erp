@@ -190,7 +190,7 @@
               :step="n"
               editable
             >
-              {{ n ===  1 ? '관련 자재 선택' : '견적 요청'}}
+              {{ n ===  1 ? '관련 자재 선택' : (tab_search === 0 ? '견적 요청' : '견적 등록')}}
             </v-stepper-step>
 
             <v-divider
@@ -227,7 +227,8 @@
                 다음 ▶
               </v-btn>
 
-              <v-btn text color="error">
+              <v-btn text color="error"
+              @click="unestimatedMailDialog=false">
                 취소
               </v-btn>
             </div>
@@ -426,23 +427,25 @@
                         hide-details
                         :inputs="orderRequestInfoInputs"
                       >
+                        <v-col cols="12" sm="4" align-self="center">
+                          <v-btn
+                            color="primary"
+                            @click="order_steppers = 2"
+                          >
+                            다음 ▶
+                          </v-btn>
+
+                          <v-btn
+                            text
+                            color="error"
+                            @click="orderRequestDialog = false"
+                          >
+                            취소
+                          </v-btn>
+                        </v-col>
                       </InputsFormComponent>
                     </v-col>
                   </v-row>
-                  <v-btn
-                    color="primary"
-                    @click="order_steppers = 2"
-                  >
-                    다음 ▶
-                  </v-btn>
-
-                  <v-btn
-                    text
-                    color="error"
-                    @click="estimateDialog = false"
-                  >
-                    취소
-                  </v-btn>
                 </div>
                 <div v-if="n === 2">
                   <v-row>
@@ -494,13 +497,14 @@
                     <v-card-text>
                       <v-btn
                         color="primary"
+                        @click="orderRequestDialog = false"
                       >
                         요청
                       </v-btn>
                       <v-btn
                         text
                         color="error"
-                        @click="estimateDialog = false"
+                        @click="orderRequestDialog = false"
                       >
                         취소
                       </v-btn>

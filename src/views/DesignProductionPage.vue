@@ -1211,16 +1211,119 @@
               <v-btn
                 small
                 class="ml-2"
+                @click="addItemSetting"
               >입력 행 +</v-btn>
             </p>
 
             <v-data-table
               v-model="selected_items_for_product_data"
               :headers="product_item_setting_headers"
-              :items="search_items_for_product_data"
+              :items="setting_item_data"
               item-key="_code"
               dense
-            ></v-data-table>
+              disable-sort
+            >
+              <template v-slot:item = "{ item }">
+                <tr>
+                  <td class="text-center">
+                    <v-text-field
+                      v-if="item.data_type === 'added'"
+                      v-model="item.type"
+                      dense
+                      hide-details
+                      filled
+                      style="width:200px; font-size:12px">
+                    </v-text-field>
+                    {{ item.data_type === 'selected' ? item.type : '' }}
+                  </td>
+                  <td class="text-center">
+                    <v-text-field
+                      v-if="item.data_type === 'added'"
+                      v-model="item.classification"
+                      dense
+                      hide-details
+                      filled
+                      style="width:200px; font-size:12px">
+                    </v-text-field>
+                    {{ item.data_type === 'selected' ? item.classification : '' }}
+                  </td>
+                  <td class="text-center">
+                    <v-text-field
+                      v-if="item.data_type === 'added'"
+                      v-model="item.product_code"
+                      dense
+                      hide-details
+                      filled
+                      style="width:200px; font-size:12px">
+                    </v-text-field>
+                    {{ item.data_type === 'selected' ? item.product_code : '' }}
+                  </td>
+                  <td class="text-center">
+                    <v-text-field
+                      v-if="item.data_type === 'added'"
+                      v-model="item.name"
+                      dense
+                      hide-details
+                      filled
+                      style="width:200px; font-size:12px">
+                    </v-text-field>
+                    {{ item.data_type === 'selected' ? item.name : '' }}
+                  </td>
+                  <td class="text-center">
+                    <v-text-field
+                      v-if="item.data_type === 'added'"
+                      v-model="item.model"
+                      dense
+                      hide-details
+                      filled
+                      style="width:200px; font-size:12px">
+                    </v-text-field>
+                    {{ item.data_type === 'selected' ? item.model : '' }}
+                  </td>
+                  <td class="text-center">
+                    <v-text-field
+                      v-if="item.data_type === 'added'"
+                      v-model="item.spec"
+                      dense
+                      hide-details
+                      filled
+                      style="width:200px; font-size:12px">
+                    </v-text-field>
+                    {{ item.data_type === 'selected' ? item.spec : '' }}
+                  </td>
+                  <td class="text-center">
+                    <v-text-field
+                      v-if="item.data_type === 'added'"
+                      v-model="item.manufacturer"
+                      dense
+                      hide-details
+                      filled
+                      style="width:200px; font-size:12px">
+                    </v-text-field>
+                    {{ item.data_type === 'selected' ? item.manufacturer : '' }}
+                  </td>
+                  <td class="text-center">
+                    <v-text-field
+                      v-if="item.data_type === 'added'"
+                      v-model="item.unit_price"
+                      dense
+                      hide-details
+                      filled
+                      style="width:200px; font-size:12px">
+                    </v-text-field>
+                    {{ item.data_type === 'selected' ? item.unit_price : '' }}
+                  </td>
+                  <td class="text-center">
+                    <v-icon
+                      color="grey"
+                      small
+                    >
+                      mdi-minus-thick
+                    </v-icon>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
           </v-col>
         </v-row>
       </v-container>
@@ -1548,6 +1651,21 @@ export default {
     closEstimateSearch(){
       this.estimate_dialog = false;
     },
+    addItemSetting(){
+      this.setting_item_data.push(
+        {
+          "type":"",
+          "classification":"",
+          "product_code":"",
+          "name":"",
+          "model":"",
+          "spec":"",
+          "manufacturer":"",
+          "unit_price":"",
+          "data_type": "added"
+        }
+      )
+    }
   },
   data(){
     return{
@@ -1577,6 +1695,7 @@ export default {
       dialog_search_product_data: DesignProductionPageConfig.dialog_search_product_test_data,
       product_search_item_headers: DesignProductionPageConfig.product_search_item_headers,
       product_item_setting_headers: DesignProductionPageConfig.product_item_setting_headers,
+      setting_item_data: DesignProductionPageConfig.setting_item_test_data,
 
       construction_materials_data: JSON.parse(JSON.stringify(DesignProductionPageConfig.construction_materials_data)),
       calc_cost_detail_data: JSON.parse(JSON.stringify(DesignProductionPageConfig.calc_cost_detail_data)),

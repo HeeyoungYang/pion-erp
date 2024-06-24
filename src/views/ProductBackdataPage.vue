@@ -589,7 +589,7 @@
                                   style="width:200px"
                                 ></v-autocomplete>
                               </v-col>
-                              <v-col cols="12" sm="6">
+                              <v-col cols="12" sm="2">
                                 <v-btn
                                   small
                                   color="grey"
@@ -605,6 +605,39 @@
                                   @click="writeModuleItemsData"
                                 >
                                   행 추가
+                                </v-btn>
+                              </v-col>
+                              <v-col cols="12" sm="2"
+                                  v-if="moduleItemExcel"
+                                >
+                                <v-file-input
+                                  small-chips
+                                  dense
+                                  hide-details
+                                  label="엑셀"
+                                  prepend-icon=""
+                                  append-icon="mdi-paperclip"
+                                  accept=".xlsx, .xls"
+                                  @change="loadExcelFile($event, $refs.excelFileInput)"
+                                ></v-file-input>
+                              </v-col>
+                              <v-col cols="12" sm="3">
+
+                                <v-btn
+                                  v-if="moduleItemExcel"
+                                  href="/forms/반제품_부자재_직접기입_엑셀양식.xlsx" download
+                                  small
+                                  color="default"
+                                >
+                                  엑셀 양식
+                                </v-btn>
+                                <v-btn
+                                  small
+                                  color="default"
+                                  class="ml-2"
+                                  @click="moduleItemExcelLoad"
+                                >
+                                  {{ moduleItemExcel ? '불러오기 닫기' : '엑셀 불러오기'}}
                                 </v-btn>
                               </v-col>
                             </v-row>
@@ -767,7 +800,7 @@
                                       </td>
                                       <td align="center">{{  !item.num ? 0 : Number(item.num.replace(/,/g,'') * item.unit_price.replace(/,/g,'')).toLocaleString() }}</td>
                                       <td align="center">
-                                        <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                                        <v-icon small color="default" style="cursor:pointer" @click="deleteDataRow(index)">mdi-minus-thick</v-icon>
                                       </td>
                                     </tr>
                                   </template>
@@ -1346,6 +1379,7 @@ export default {
       registProductSpotInputs:[],
       set_material_search: false,
       set_material_write: false,
+      moduleItemExcel: false,
       product_set_items_data:[],
       selected_items_for_product_data: [],
       searchProductCardInputs:ProductBackDataPageConfig.searchProductCardInputs,
@@ -4132,17 +4166,64 @@ export default {
         this.selected_items_for_product_data = [];
       }
     },
-
+    deleteDataRow(idx){
+      let data = this.module_set_material_data;
+      data.splice(idx, 1);
+      for(let i=0; i < data.length; i++){
+        let code = data[i].item_code.slice(0, -3);
+        data[i].item_code = code  + ('00' + (i + 1)).slice(-3);
+      }
+    },
+    moduleItemExcelLoad(){
+      if(this.moduleItemExcel){
+        this.moduleItemExcel = false
+      }else{
+        this.moduleItemExcel = true
+      }
+    },
     async loadExcelFile(file, self) {
       if(file){
         const result = await mux.Util.checkTypeExcel(file, self);
         if (result === false) {
           return;
         }
-        const headers = this.material_excel_headers; // 헤더 정보
-        const items = this.material_excel_upload_data; // 테이블 내용 정보
-        mux.Excel.open(file, headers, items);
+        let headers;
+        let items;
+        let parentCode;
+        if(this.tab_main === 0){
+          headers = this.material_excel_headers; // 헤더 정보
+          items = this.material_excel_upload_data; // 테이블 내용 정보
+          parentCode = false
+        }else if(this.tab_main === 1){
+          let origin_headers = this.module_set_material_headers; // 헤더 정보
+          headers = origin_headers.slice(0, origin_headers.length-2);
+          items = this.module_set_material_data; // 테이블 내용 정보
+          parentCode = (this.registModuleInputs[1].value !=='' ? this.registModuleInputs[1].value : '반제품 관리코드 미기입')
+        }
+        mux.Excel.open(file, headers, items, parentCode);
       }
+      console.log(this.module_set_material_data)
+    },
+    setModuleItemCodes(){
+      if(this.tab_main === 1){
+          let origin_code;
+          for(let o=0; o<this.registModuleInputs.length; o++){
+            let inputs = this.registModuleInputs[o];
+            if(inputs.column_name == 'item_code'){
+              if(inputs.value !== '' && inputs.value !== undefined){
+                origin_code = inputs.value;
+              }else {
+                origin_code = '반제품 관리코드 미기입'
+              }
+            }
+          }
+          for(let i=0; i<this.module_set_material_data.length; i++){
+            this.module_set_material_data[i].item_code = origin_code + '-' + ('00' + (i + 1)).slice(-3);
+          }
+          // items.forEach((data, index) => {
+          //   data.item_code = origin_code + '-' + ('00' + (index + 1)).slice(-3);
+          // })
+        }
     },
     calcUnitPrice(){
       let data;

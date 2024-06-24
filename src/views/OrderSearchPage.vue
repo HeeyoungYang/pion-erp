@@ -207,6 +207,14 @@
             >
               {{ idx }}차 송금 확인증
             </v-chip>
+            <v-btn
+              color="success"
+              small
+              elevation="0"
+              @click="completeOrder"
+            >
+              구매 완료
+            </v-btn>
           </v-col>
         </v-col>
       </v-row>
@@ -1667,6 +1675,14 @@ export default {
           )
         }
       }
+    },
+    async completeOrder(){
+      mux.Util.showAlert('송금 확인증을 1차 이상 등록해주세요.', '확인');
+      const confirm = await mux.Util.showConfirm('송금 확인증이 1(혹은 2)차만 등록되었습니다. 구매 완료하시겠습니까?', '구매 완료 확인');
+      if (!confirm){
+        return;
+      }
+      mux.Util.showAlert('구매 완료 처리되었습니다.', '완료', 3000);
     }
   },
 }

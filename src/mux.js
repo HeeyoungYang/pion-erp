@@ -402,7 +402,7 @@ mux.Server = {
       }
     });
   },
-  
+
   /**
    * 파일 업로드
    * @param {Object} reqObj
@@ -1126,11 +1126,11 @@ mux.Util = {
           const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
           const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
           previewPopup.document.write(previewContent);
-  
+
           // 포커스를 설정하고 1초 뒤에 프린트 도구 시작
           setTimeout(async() => {
             previewPopup.focus();
-  
+
             // PDF 생성 옵션 설정
             const options = {
               // margin: [15, 0, 15, 0], // top, right, bottom, left 마진 여백
@@ -1150,12 +1150,12 @@ mux.Util = {
               // jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' }
               jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
             };
-  
+
             // HTML을 PDF로 변환하여 다운로드
             const pdfBlob = await html2pdf().set(options).from(previewPopup.document.body).output('blob');
             const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
             resolve(file);
-  
+
             // 프린트 도구가 닫히면 팝업도 닫기
             setTimeout(() => {
               previewPopup.close();
@@ -2402,6 +2402,7 @@ mux.Excel = {
    * @param {File} file - 업로드할 엑셀 파일
    * @param {Array} headers - 테이블 헤더 정보 배열
    * @param {Array} items - 테이블 내용 정보 배열
+   * @param {String} parentCode - item의 관리코드를 자동 조합하기 위한 부모 관리코드
    * @example
    * <input type="file" @change="handleFileUpload" />
    * <table ref="myTable">
@@ -2416,7 +2417,7 @@ mux.Excel = {
    *   }
    * }
    */
-  open(file, headers, items) {
+  open(file, headers, items, parentCode) {
     const self = this;
     try {
       const reader = new FileReader();
@@ -2446,7 +2447,7 @@ mux.Excel = {
           }
         }
 
-        self.updateTableData(headers, items, shrinkedJsonData);
+        self.updateTableData(headers, items, shrinkedJsonData, parentCode);
 
       };
 
@@ -2487,7 +2488,7 @@ mux.Excel = {
           const sheetName = workbook.SheetNames[0]; // 첫 번째 시트를 사용한다고 가정
           const worksheet = workbook.Sheets[sheetName];
           const excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
-          self.updateTableData(headers, items, excelData);
+          self.updateTableData(headers, items, excelData, false);
         };
         reader.readAsArrayBuffer(this.files[0]);
       };
@@ -2530,8 +2531,9 @@ mux.Excel = {
    * @param {Array} headers - 테이블 헤더 정보 배열
    * @param {Array} items - 테이블 내용 정보 배열
    * @param {Array} jsonData - 엑셀에서 읽어온 데이터 배열
+   * @param {String} parentCode - item의 관리코드를 자동 조합하기 위한 부모 관리코드
    */
-  updateTableData(headers, items, jsonData) {
+  updateTableData(headers, items, jsonData, parentCode) {
     let arrExcelColIndex = [];
     headers.forEach(h => {
       const index = jsonData[0].findIndex(colName => colName === h.text);
@@ -2541,7 +2543,7 @@ mux.Excel = {
     });
 
     // 테이블 내용 업데이트
-    items.splice(0, items.length, ...jsonData.slice(1).map((row) => {
+    items.splice(0, items.length, ...jsonData.slice(1).map((row, idx) => {
       const newRow = {};
       headers.forEach((header, index) => {
         if (header.type && header.type === 'number'){
@@ -2551,7 +2553,16 @@ mux.Excel = {
             newRow[header.value] = row[arrExcelColIndex[index]];
           }
         }else {
-          newRow[header.value] = row[arrExcelColIndex[index]];
+          if(parentCode !== false){
+            if(header.text === '관리코드'){
+              newRow[header.value] = parentCode + '-' + ('00' + (idx + 1)).slice(-3);
+            }else{
+              newRow[header.value] = row[arrExcelColIndex[index]];
+            }
+            newRow['directly_written'] = 1;
+          }else{
+            newRow[header.value] = row[arrExcelColIndex[index]];
+          }
         }
       });
       return newRow;
