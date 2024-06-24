@@ -767,7 +767,7 @@
                                       </td>
                                       <td align="center">{{  !item.num ? 0 : Number(item.num.replace(/,/g,'') * item.unit_price.replace(/,/g,'')).toLocaleString() }}</td>
                                       <td align="center">
-                                        <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                                        <v-icon small color="default" style="cursor:pointer" @click="deleteDataRow(index)">mdi-minus-thick</v-icon>
                                       </td>
                                     </tr>
                                   </template>
@@ -4130,6 +4130,14 @@ export default {
       }else if(type == 'product'){
         this.product_set_items_data = [];
         this.selected_items_for_product_data = [];
+      }
+    },
+    deleteDataRow(idx){
+      let data = this.module_set_material_data;
+      data.splice(idx, 1);
+      for(let i=0; i < data.length; i++){
+        let code = data[i].item_code.slice(0, -3);
+        data[i].item_code = code  + ('00' + (i + 1)).slice(-3);
       }
     },
 
