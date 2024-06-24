@@ -360,29 +360,32 @@
       persistent
       max-width="1000px"
     >
-      <MailFormComponent
-        v-model="mailData"
-        addCardClass="d-none"
-        addSystemFiles="estimate"
-      >
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            text
-            @click="mailDialog = false"
-          >
-            취소
-          </v-btn>
-          <v-btn
-            color="blue darken-1"
-            text
-            @click="test(), mailDialog = false"
-          >
-            발송
-          </v-btn>
-        </v-card-actions>
-      </MailFormComponent>
+      <v-form ref="mailForm">
+        <MailFormComponent
+          ref="mailFormComponent"
+          v-model="mailData"
+          addCardClass="d-none"
+          addSystemFiles="estimate"
+        >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="mailDialog = false"
+            >
+              취소
+            </v-btn>
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="test()"
+            >
+              발송
+            </v-btn>
+          </v-card-actions>
+        </MailFormComponent>
+      </v-form>
     </v-dialog>
   </div>
 </template>
@@ -481,10 +484,7 @@ export default {
         // let result = await mux.Server.get({
         //   path: '/api/user/',
         // });
-        if (prevURL !== window.location.href) return;
-        // console.log('result :>> ', result);
-        // this.login_info.name = (result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value).trim();
-        // this.login_info.email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
+
         this.login_info.name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.login_info.email = this.$cookies.get(this.$configJson.cookies.email.key);
         this.login_info.id = this.$cookies.get(this.$configJson.cookies.id.key);
@@ -545,6 +545,10 @@ export default {
       this.mailDialog = true;
     },
     async test(){
+      await this.$refs.mailFormComponent.dispatchEnterKeyToAllCombobox();
+      const validate = this.$refs.mailForm.validate();
+      if (!validate) return;
+      
       mux.Util.showLoading();
       let sendData = JSON.parse(JSON.stringify(this.mailData));
       sendData.path = '/api/send_email_extention/';
@@ -553,15 +557,6 @@ export default {
         const file = this.mailData.files[i];
         sendData.files.push(file);
       }
-      sendData.to = sendData.to.trim();
-      sendData.to = sendData.to.split(/,|\/|\s/); // 콤마, 슬래시, 공백으로 구분
-      sendData.to = sendData.to.filter(x => x !== '');
-      sendData.cc = sendData.cc.trim();
-      sendData.cc = sendData.cc.split(/,|\/|\s/); // 콤마, 슬래시, 공백으로 구분
-      sendData.cc = sendData.cc.filter(x => x !== '');
-      sendData.bcc = sendData.bcc.trim();
-      sendData.bcc = sendData.bcc.split(/,|\/|\s/); // 콤마, 슬래시, 공백으로 구분
-      sendData.bcc = sendData.bcc.filter(x => x !== '');
 
       let estimateFile = null;
       // 견적서 PDF 파일 생성

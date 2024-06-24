@@ -206,7 +206,7 @@ mux.Server = {
    * 필수 key: path, to, subject, content
    * 선택 key: cc, bcc, files : [{folder,file}], attachment: [folder, fileName], timeout, ...
    */
-  async sendEmail(reqObj) {
+  async sendEmail(reqObj, enableMemberSelect = true, customToMembers = [], customCcMembers = [], customBccMembers = []) {
     return new Promise(async (resolve, reject) => {
       try {
         if (!reqObj.path) {
@@ -220,11 +220,65 @@ mux.Server = {
         if (!reqObj.files) {
           reqObj.files = [];
         }
+
+        let allMembers = [];
+        if (enableMemberSelect && (customToMembers.length === 0 || customCcMembers.length === 0 || customBccMembers.length === 0)){
+          try {
+            const result = await mux.Server.get({path:'/api/admin/users/'});
+            if (result.code == 0){
+              allMembers = result.data.Users.map(data => {
+                let user = {};
+                user.user_id = data.Username;
+                user.name = (data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '');
+                user.email = data.Attributes.find(x=>x.Name === 'email') ? data.Attributes.find(x=>x.Name === 'email').Value : '';
+                user.phone_number = data.Attributes.find(x=>x.Name === 'phone_number') ? mux.Number.formatPhoneNumber(data.Attributes.find(x=>x.Name === 'phone_number').Value) : '';
+                user.office_phone_number = data.Attributes.find(x=>x.Name === 'custom:office_phone_number') ? mux.Number.formatTelNumber(data.Attributes.find(x=>x.Name === 'custom:office_phone_number').Value) : '';
+                user.office_internal_number = data.Attributes.find(x=>x.Name === 'custom:internal_number') ? data.Attributes.find(x=>x.Name === 'custom:internal_number').Value : '';
+                user.position = data.Attributes.find(x=>x.Name === 'custom:position') ? data.Attributes.find(x=>x.Name === 'custom:position').Value : '';
+                user.department = data.Attributes.find(x=>x.Name === 'custom:department') ? data.Attributes.find(x=>x.Name === 'custom:department').Value : '';
+                return user;
+              });
+              
+            }else {
+              console.error('send email error: 사용자 정보를 가져올 수 없습니다.');
+            }
+
+            const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);
+            if (userPosition !== 'master'){
+              allMembers = allMembers.filter(data => data.position !== 'master');
+            }
+          } catch (error) {
+            console.error('send email error: 사용자 정보를 가져올 수 없습니다.');
+          }
+        }
         reqObj['to_addrs'] = [];
         for (let i = 0; i < reqObj.to.length; i++) {
           // const to = reqObj.to[i];
           // reqObj['to_'+i] = to;
-          reqObj['to_addrs'].push(reqObj.to[i]);
+          if (reqObj.to[i].includes('@')){
+            reqObj['to_addrs'].push(reqObj.to[i]);
+          }else {
+            if (!enableMemberSelect) {
+              reject('send email error: 수신자 이메일 주소가 올바르지 않습니다.');
+              return;
+            }
+            let targetMember;
+            if (customToMembers.length > 0){
+              targetMember = customToMembers.find(member => member.department + '-' + member.name + '-' + member.position === reqObj.to[i]);
+            }else {
+              targetMember = allMembers.find(member => member.department + '-' + member.name + '-' + member.position === reqObj.to[i]);
+            }
+            if (targetMember) {
+              if (targetMember.email){
+                reqObj['to_addrs'].push(targetMember.email);
+              }else {
+                reject('send email error: 저장된 멤버의 이메일 주소가 없습니다.');
+              }
+            }else {
+              reject('send email error: 수신자 이메일 주소가 올바르지 않습니다.');
+              return;
+            }
+          }
         }
         delete reqObj.to;
 
@@ -233,7 +287,30 @@ mux.Server = {
           for (let i = 0; i < reqObj.cc.length; i++) {
             // const cc = reqObj.cc[i];
             // reqObj['cc_'+i] = cc;
-            reqObj['cc_addrs'].push(reqObj.cc[i]);
+            if (reqObj.cc[i].includes('@')){
+              reqObj['cc_addrs'].push(reqObj.cc[i]);
+            }else {
+              if (!enableMemberSelect) {
+                reject('send email error: 수신자 이메일 주소가 올바르지 않습니다.');
+                return;
+              }
+              let targetMember;
+              if (customCcMembers.length > 0){
+                targetMember = customCcMembers.find(member => member.department + '-' + member.name + '-' + member.position === reqObj.cc[i]);
+              }else {
+                targetMember = allMembers.find(member => member.department + '-' + member.name + '-' + member.position === reqObj.cc[i]);
+              }
+              if (targetMember) {
+                if (targetMember.email){
+                  reqObj['cc_addrs'].push(targetMember.email);
+                }else {
+                  reject('send email error: 저장된 멤버의 이메일 주소가 없습니다.');
+                }
+              }else {
+                reject('send email error: 수신자 이메일 주소가 올바르지 않습니다.');
+                return;
+              }
+            }
           }
           delete reqObj.cc;
         }
@@ -243,7 +320,30 @@ mux.Server = {
           for (let i = 0; i < reqObj.bcc.length; i++) {
             // const bcc = reqObj.bcc[i];
             // reqObj['bcc_'+i] = bcc;
-            reqObj['bcc_addrs'].push(reqObj.bcc[i]);
+            if (reqObj.bcc[i].includes('@')){
+              reqObj['bcc_addrs'].push(reqObj.bcc[i]);
+            }else {
+              if (!enableMemberSelect) {
+                reject('send email error: 수신자 이메일 주소가 올바르지 않습니다.');
+                return;
+              }
+              let targetMember;
+              if (customBccMembers.length > 0){
+                targetMember = customBccMembers.find(member => member.department + '-' + member.name + '-' + member.position === reqObj.bcc[i]);
+              }else {
+                targetMember = allMembers.find(member => member.department + '-' + member.name + '-' + member.position === reqObj.bcc[i]);
+              }
+              if (targetMember) {
+                if (targetMember.email){
+                  reqObj['bcc_addrs'].push(targetMember.email);
+                }else {
+                  reject('send email error: 저장된 멤버의 이메일 주소가 없습니다.');
+                }
+              }else {
+                reject('send email error: 수신자 이메일 주소가 올바르지 않습니다.');
+                return;
+              }
+            }
           }
           delete reqObj.bcc;
         }

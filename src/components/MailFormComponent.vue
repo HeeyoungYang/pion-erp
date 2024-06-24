@@ -12,31 +12,50 @@
       <v-card-text>
         <v-row class="py-3">
           <v-col cols="12">
-              <v-text-field
-                label="받는 사람"
-                required
-                v-model="mailData.to"
-                dense
-                hide-details
-              ></v-text-field>
+            <v-combobox
+              ref="toCombobox"
+              label="받는 사람"
+              required
+              v-model="mailData.to"
+              :items="toOptions"
+              :rules="[toValidationRule]"
+              @keyup="onKeyup"
+              @keydown="onKeydown"
+              dense
+              hide-selected
+              multiple
+              small-chips
+              ></v-combobox>
             </v-col>
             <v-col cols="12">
-              <v-text-field
+              <v-combobox
+                ref="ccCombobox"
                 label="참조"
                 v-model="mailData.cc"
+                :items="ccOptions"
+                :rules="[ccValidationRule]"
+                @keyup="onKeyup"
+                @keydown="onKeydown"
                 dense
-                hide-details
-                required
-              ></v-text-field>
+                hide-selected
+                multiple
+                small-chips
+                ></v-combobox>
             </v-col>
             <v-col cols="12">
-              <v-text-field
+              <v-combobox
+                ref="bccCombobox"
                 label="숨은 참조"
                 v-model="mailData.bcc"
+                :items="bccOptions"
+                :rules="[bccValidationRule]"
+                @keyup="onKeyup"
+                @keydown="onKeydown"
                 dense
-                hide-details
-                required
-              ></v-text-field>
+                hide-selected
+                multiple
+                small-chips
+                ></v-combobox>
             </v-col>
         </v-row>
       </v-card-text>
@@ -151,6 +170,7 @@
 </template>
 
 <script>
+import mux from '@/mux';
 
 /**
  * @file MailFormComponent.vue
@@ -161,6 +181,13 @@
  * @property {String} [titleClass] - v-card-title 클래스(default:'')
  * @property {String} [mailCardClass] - mail card 영역 관련 클래스(default:'')
  * @property {String} [addCardClass] - mail card 상단 card 영역 관련 클래스(default:'')
+ * @property {Array} [toItems] - 받는 사람 목록(default:[])
+ * @property {Array} [ccItems] - 참조 목록(default:[])
+ * @property {Array} [bccItems] - 숨은 참조 목록(default:[])
+ * @property {Boolean} [disableAllMembers] - 모든 멤버 사용 금지 여부(default:false)
+ * @property {Boolean} [disableToAllMembers] - 받는 사람 모든 멤버 사용 금지 여부(default:false)
+ * @property {Boolean} [disableCcAllMembers] - 참조 모든 멤버 사용 금지 여부(default:false)
+ * @property {Boolean} [disableBccAllMembers] - 숨은 참조 모든 멤버 사용 금지 여부(default:false)
  *
  */
 export default {
@@ -169,6 +196,34 @@ export default {
     titleClass: String,
     mailCardClass: String,
     addCardClass: String,
+    toItems: {
+      type: Array,
+      default: () => []
+    },
+    ccItems: {
+      type: Array,
+      default: () => []
+    },
+    bccItems: {
+      type: Array,
+      default: () => []
+    },
+    disableAllMembers: {
+      type: Boolean,
+      default: false
+    },
+    disableToAllMembers: {
+      type: Boolean,
+      default: false
+    },
+    disableCcAllMembers: {
+      type: Boolean,
+      default: false
+    },
+    disableBccAllMembers: {
+      type: Boolean,
+      default: false
+    },
     value: {
       type: Object,
       default: () => {
@@ -216,11 +271,112 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
       }
     }
   },
-  created() {
+  async created() {
     this.mailData = this.value
+    
+    if (!this.disableAllMembers || !this.disableToAllMembers || !this.disableCcAllMembers || !this.disableBccAllMembers) {
+      let allMembers = [];
+      try {
+        const result = await mux.Server.get({path:'/api/admin/users/'});
+        if (result.code == 0){
+          allMembers = result.data.Users.map(data => {
+            let user = {};
+            user.user_id = data.Username;
+            user.name = (data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '');
+            user.email = data.Attributes.find(x=>x.Name === 'email') ? data.Attributes.find(x=>x.Name === 'email').Value : '';
+            user.phone_number = data.Attributes.find(x=>x.Name === 'phone_number') ? mux.Number.formatPhoneNumber(data.Attributes.find(x=>x.Name === 'phone_number').Value) : '';
+            user.office_phone_number = data.Attributes.find(x=>x.Name === 'custom:office_phone_number') ? mux.Number.formatTelNumber(data.Attributes.find(x=>x.Name === 'custom:office_phone_number').Value) : '';
+            user.office_internal_number = data.Attributes.find(x=>x.Name === 'custom:internal_number') ? data.Attributes.find(x=>x.Name === 'custom:internal_number').Value : '';
+            user.position = data.Attributes.find(x=>x.Name === 'custom:position') ? data.Attributes.find(x=>x.Name === 'custom:position').Value : '';
+            user.department = data.Attributes.find(x=>x.Name === 'custom:department') ? data.Attributes.find(x=>x.Name === 'custom:department').Value : '';
+            return user;
+          });
+          
+        }else {
+          console.error('send email error: 사용자 정보를 가져올 수 없습니다.');
+        }
+
+        const userPosition = this.$cookies.get(this.$configJson.cookies.position.key);
+        if (userPosition !== 'master'){
+          allMembers = allMembers.filter(data => data.position !== 'master');
+        }
+      } catch (error) {
+        console.error('send email error: 사용자 정보를 가져올 수 없습니다.');
+      }
+      
+      if (allMembers.length === 0) {
+        console.error('send email error: 사용자 정보가 없습니다.');
+      }else {
+
+        if (this.toItems.length === 0 && (!this.disableAllMembers && !this.disableToAllMembers)) {
+          this.toOptions = allMembers.map(member => member.department + '-' + member.name + '-' + member.position);
+        }
+        if (this.ccItems.length === 0 && (!this.disableAllMembers && !this.disableCcAllMembers)) {
+          this.ccOptions = allMembers.map(member => member.department + '-' + member.name + '-' + member.position);
+        }
+        if (this.bccItems.length === 0 && (!this.disableAllMembers && !this.disableBccAllMembers)) {
+          this.bccOptions = allMembers.map(member => member.department + '-' + member.name + '-' + member.position);
+        }
+
+      }
+    }
   },
   methods: {
+    onKeydown(event) {
+      const delimiters = [',', '/', ' '];
+      if (delimiters.includes(event.key)) {
+        event.preventDefault();
+      }
+    },
+    onKeyup(event) {
+      const delimiters = [',', '/', ' '];
+      const inputEl = event.target;
 
+      if (delimiters.includes(event.key)) {
+
+        event.preventDefault();
+
+        const enterEvent = new KeyboardEvent('keydown', {
+          bubbles: true,
+          cancelable: true,
+          key: 'Enter',
+          code: 'Enter',
+          keyCode: 13,
+          charCode: 13,
+          which: 13
+        });
+
+        inputEl.dispatchEvent(enterEvent);
+
+        // for (let i = 0; i < this.mailData[key].length; i++) {
+        //   for (let j = 0; j < delimiters.length; j++) {
+        //     const delimiter = delimiters[j];
+        //     this.mailData[key][i] = this.mailData[key][i].replaceAll(delimiter, '');
+        //   }
+        // }
+      }
+    },
+    
+    dispatchEnterKeyToAllCombobox() {
+      return new Promise((resolve) => {
+        const enterEvent = new KeyboardEvent('keydown', {
+          bubbles: true,
+          cancelable: true,
+          key: 'Enter',
+          code: 'Enter',
+          keyCode: 13,
+          charCode: 13,
+          which: 13
+        });
+        const toCombobox = this.$refs.toCombobox.$el.querySelector('input');
+        toCombobox.dispatchEvent(enterEvent);
+        const ccCombobox = this.$refs.ccCombobox.$el.querySelector('input');
+        ccCombobox.dispatchEvent(enterEvent);
+        const bccCombobox = this.$refs.bccCombobox.$el.querySelector('input');
+        bccCombobox.dispatchEvent(enterEvent);
+        resolve();
+      });
+    }
   },
   watch: {
     value: {
@@ -234,6 +390,24 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
         this.$emit('input', val)
       },
       deep: true
+    },
+    toItems: {
+      handler: function (val) {
+        this.toOptions = val;
+      },
+      deep: true
+    },
+    ccItems: {
+      handler: function (val) {
+        this.ccOptions = val;
+      },
+      deep: true
+    },
+    bccItems: {
+      handler: function (val) {
+        this.bccOptions = val;
+      },
+      deep: true
     }
   },
   components: {
@@ -241,6 +415,22 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
   data(){
     return{
       mailData: {},
+      toOptions: this.toItems,
+      ccOptions: this.ccItems,
+      bccOptions: this.bccItems,
+      emailRegex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      toValidationRule: value => {
+        if (!value) return true;
+        return value.every(val => this.toOptions.includes(val) || this.emailRegex.test(val)) || '멤버를 선택하거나 이메일 주소를 입력해주세요.';
+      },
+      ccValidationRule: value => {
+        if (!value) return true;
+        return value.every(val => this.ccOptions.includes(val) || this.emailRegex.test(val)) || '멤버를 선택하거나 이메일 주소를 입력해주세요.';
+      },
+      bccValidationRule: value => {
+        if (!value) return true;
+        return value.every(val => this.bccOptions.includes(val) || this.emailRegex.test(val)) || '멤버를 선택하거나 이메일 주소를 입력해주세요.';
+      },
     }
   },
 }
