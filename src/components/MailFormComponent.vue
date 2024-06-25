@@ -141,6 +141,33 @@
             <vue-editor v-model="mailData.content" :editor-toolbar="customToolbar" id="email_editor"/>
           </v-col>
           <v-col cols="12">
+            <div>
+              <div class="pa-7" style="border:1px solid #ccc; height: 200px; overflow-x: scroll;">
+                <p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px"><strong>{{ loginInfo.name }}
+                파이온 일렉트릭㈜ {{ loginInfo.department }} {{ loginInfo.position }} / Pion Electric Co., Ltd.</strong></p>
+                <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;">Home page : www.pionelectric.com<br>
+                E-mail: {{ loginInfo.email }}      C/P: +82(0){{ loginInfo.phone_number.slice(1) }}<br>
+                Tel: +82(0){{ loginInfo.office_phone_number.slice(1) }}    Fax: +82(0)505-300-4179<br><br>
+
+                본사: (03722) 서울특별시 서대문구 연세로 50 연세대학교 공학원 116호<br>
+                Head office: #116, Engineering Research Park, Yonsei University, 50, Yonsei-ro, Seodaemun-gu, Seoul, 03722, Republic of KOREA<br><br>
+                광명 사무소: (14348) 경기도 광명시 일직로 72  A-1818호<br>
+                Gwangmyeong office: #A-1818, 72, Iljik-ro, Gwangmyeong-si, Gyeonggi-do, Republic of KOREA 14348<br><br>
+                광주 공장: (47580) 광주광역시 광산구 연산동 1247<br>
+                Gwangju factory: 1247 Yeonsan-dong, Gwangsan-gu, Gwangju, Republic of KOREA 47580<br><br>
+                보령 공장: (33448) 충청남도 보령시 주교면 관창공단길 266<br>
+                Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheongnam-do, Republic of KOREA 33448<br><br>
+                </p>
+                <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;"><strong>제품 및 서비스</strong><br>
+                ∙ 고자기장 기반의 산업용 운용기기 (Development of Operating Device for Industrial Applications based on High Magnetic Field)<br>
+                ∙ 광기기 기반의 전력전자 응용기기 (Development of Power Electronics Application Device based on Optical Device)<br>
+                ∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)<br>
+                ∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)<br>
+                ∙ 전기공사면허</p>
+              </div>
+            </div>
+          </v-col>
+          <v-col cols="12">
             <v-file-input
 
               v-model="mailData.files"
@@ -179,6 +206,7 @@ import mux from '@/mux';
  * @typedef {Object} props
  * @property {String} [addSystemFiles] - 첨부파일 체크박스 사용 여부 및 종류 (default:false)
  * @property {String} [titleClass] - v-card-title 클래스(default:'')
+ * @property {String} [loginInfo] - v-card-title 클래스(default:'')
  * @property {String} [mailCardClass] - mail card 영역 관련 클래스(default:'')
  * @property {String} [addCardClass] - mail card 상단 card 영역 관련 클래스(default:'')
  * @property {Array} [toItems] - 받는 사람 목록(default:[])
@@ -196,6 +224,7 @@ export default {
     titleClass: String,
     mailCardClass: String,
     addCardClass: String,
+    loginInfo: String,
     toItems: {
       type: Array,
       default: () => []
@@ -240,31 +269,29 @@ export default {
           etc: false,
           business_license: false,
           content:
-        `
+          `<div>
+            <p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px"><strong>윤준수
+            파이온 일렉트릭㈜ 기획관리부 대리 / Pion Electric Co., Ltd. Administration Department Staff</strong></p>
+            <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;">Home page : www.pionelectric.com<br>
+            E-mail: yjs@pionelectric.com      C/P: +82(0)10-8939-4179<br>
+            Tel: +82(0)70-5096-4179    Fax: +82(0)505-300-4179<br>
 
-
-
-<p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px"><strong>윤준수
-파이온 일렉트릭㈜ 기획관리부 대리 / Pion Electric Co., Ltd. Administration Department Staff</strong></p>
-<p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;">Home page : www.pionelectric.com
-E-mail: yjs@pionelectric.com      C/P: +82(0)10-8939-4179
-Tel: +82(0)70-5096-4179    Fax: +82(0)505-300-4179
-
-본사: (03722) 서울특별시 서대문구 연세로 50 연세대학교 공학원 116호
-Head office: #116, Engineering Research Park, Yonsei University, 50, Yonsei-ro, Seodaemun-gu, Seoul, 03722, Republic of KOREA
-광명 사무소: (14348) 경기도 광명시 일직로 72  A-1818호
-Gwangmyeong office: #A-1818, 72, Iljik-ro, Gwangmyeong-si, Gyeonggi-do, Republic of KOREA 14348
-광주 공장: (47580) 광주광역시 광산구 연산동 1247
-Gwangju factory: 1247 Yeonsan-dong, Gwangsan-gu, Gwangju, Republic of KOREA 47580
-보령 공장: (33448) 충청남도 보령시 주교면 관창공단길 266
-Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheongnam-do, Republic of KOREA 33448
-</p>
-<p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;"><strong>제품 및 서비스</strong>
-∙ 고자기장 기반의 산업용 운용기기 (Development of Operating Device for Industrial Applications based on High Magnetic Field)
-∙ 광기기 기반의 전력전자 응용기기 (Development of Power Electronics Application Device based on Optical Device)
-∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)
-∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)
-∙ 전기공사면허</p>`,
+            본사: (03722) 서울특별시 서대문구 연세로 50 연세대학교 공학원 116호<br>
+            Head office: #116, Engineering Research Park, Yonsei University, 50, Yonsei-ro, Seodaemun-gu, Seoul, 03722, Republic of KOREA<br>
+            광명 사무소: (14348) 경기도 광명시 일직로 72  A-1818호<br>
+            Gwangmyeong office: #A-1818, 72, Iljik-ro, Gwangmyeong-si, Gyeonggi-do, Republic of KOREA 14348<br>
+            광주 공장: (47580) 광주광역시 광산구 연산동 1247<br>
+            Gwangju factory: 1247 Yeonsan-dong, Gwangsan-gu, Gwangju, Republic of KOREA 47580<br>
+            보령 공장: (33448) 충청남도 보령시 주교면 관창공단길 266<br>
+            Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheongnam-do, Republic of KOREA 33448<br>
+            </p>
+            <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;"><strong>제품 및 서비스</strong><br>
+            ∙ 고자기장 기반의 산업용 운용기기 (Development of Operating Device for Industrial Applications based on High Magnetic Field)<br>
+            ∙ 광기기 기반의 전력전자 응용기기 (Development of Power Electronics Application Device based on Optical Device)<br>
+            ∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)<br>
+            ∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)<br>
+            ∙ 전기공사면허</p>
+          </div>`,
           files: []
 
         }
@@ -273,7 +300,7 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
   },
   async created() {
     this.mailData = this.value
-    
+
     if (!this.disableAllMembers || !this.disableToAllMembers || !this.disableCcAllMembers || !this.disableBccAllMembers) {
       let allMembers = [];
       try {
@@ -291,7 +318,7 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
             user.department = data.Attributes.find(x=>x.Name === 'custom:department') ? data.Attributes.find(x=>x.Name === 'custom:department').Value : '';
             return user;
           });
-          
+
         }else {
           console.error('send email error: 사용자 정보를 가져올 수 없습니다.');
         }
@@ -304,7 +331,7 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
       } catch (error) {
         console.error('send email error: 사용자 정보를 가져올 수 없습니다.');
       }
-      
+
       if (allMembers.length === 0) {
         console.error('send email error: 사용자 정보가 없습니다.');
       }else {
@@ -357,7 +384,7 @@ Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheo
         // }
       }
     },
-    
+
     dispatchEnterKeyToAllCombobox() {
       return new Promise((resolve) => {
         const enterEvent = new KeyboardEvent('keydown', {
