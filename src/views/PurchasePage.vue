@@ -37,7 +37,7 @@
               filled
               hide-details
               :inputs="add_data_type === '완제품자재' ? searchProductCardInputs : searchItemsCardInputs"
-              @enter="searchButton"
+              @enter="searchProduct"
             >
               <v-col
                 cols="6"
@@ -48,7 +48,7 @@
                 <v-btn
                   color="primary"
                   elevation="2"
-                  @click="searchButton"
+                  @click="searchProduct"
                 >
                   <v-icon>mdi-magnify</v-icon>검색
                 </v-btn>
@@ -60,13 +60,14 @@
                 <DataTableComponent
                   :headers="headers"
                   :items="product_data"
-                  :item-key="product_data._code"
+                  item-key="item_code"
+                  children-key="belong_data"
                   dense
-                  stockNumInfo
-                  stockPriceInfo
-                  show-item-details
-                  @itemDetials="detailInfoItem"
-                  show-select
+                  tableClass="elevation-0"
+                  addToTable
+                  addBelongToTable
+                  @addDataToTable="addProductData"
+                  @addBelongToTable="addBelongData"
                 />
               </v-col>
             </InputsFormComponent>
@@ -79,6 +80,14 @@
             <v-card-text class=" pt-3">
               <v-row>
                 <v-col cols="12" sm="9" align-self="center">
+                  <MemberSearchDialogComponent
+                    :dialog-value="member_dialog"
+                    :persistent="true"
+                    @close="close"
+                    @setMember = "setMember"
+                    @members = "members"
+                  >
+                  </MemberSearchDialogComponent>
                   <v-chip
                     class="mr-2"
                     style="cursor:pointer"
@@ -138,7 +147,7 @@
                         <v-icon
                           color="grey"
                           small
-                          @click="deleteItem(items[0].product_code)"
+                          @click="cancleItem(items[0].product_code, false)"
                         >mdi-minus-thick</v-icon>
                       </th>
                     </template>
@@ -171,11 +180,11 @@
                         </v-btn>
                       </div>
                     </template>
-                    <template v-slot:[`item.cancle`] = "{ index }">
+                    <template v-slot:[`item.cancle`] = "{ item }">
                       <v-icon
                         color="grey"
                         small
-                        @click="deleteItem(index)"
+                        @click="cancleItem(item.product_code, item.item_code)"
                       >mdi-minus-thick</v-icon>
                     </template>
                   </v-data-table>
@@ -526,6 +535,7 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import LoadingModalComponent from "@/components/LoadingModalComponent";
+import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent";
 import PurchasePageConfig from "@/configure/PurchasePageConfig.json";
 import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
@@ -543,23 +553,27 @@ export default {
                 InputsFormComponent,
                 ModalDialogComponent,
                 LoadingModalComponent,
+                MemberSearchDialogComponent,
               },
   data(){
     return{
       mux: mux,
+      unestimated_steppers: 1,
+      unestimated_step: 2,
       add_data_type: '완제품자재',
-      manufacturer_list:[],
-      classification_list:[],
       detail_dialog: false,
       loading_dialog: false,
+      member_dialog: false,
       unestimatedMailDialog: false,
       show_selected_unestimated_data: false,
+      member_type_index:0,
       detailThumbnail: '',
+      manufacturer_list:[],
+      classification_list:[],
       stockDetails:[],
       inboundDetails:[],
       selected_product_data:[],
-      unestimated_steppers: 1,
-      unestimated_step: 2,
+      members_list:[],
       stock_detail_header:PurchasePageConfig.stock_detail_header,
       inbound_detail_header:PurchasePageConfig.inbound_detail_header,
       searchProductCardInputs:PurchasePageConfig.searchProductCardInputs,
@@ -570,7 +584,8 @@ export default {
       bom_list_purchase_product_headers:PurchasePageConfig.bom_list_purchase_product_headers,
       bom_list_purchase_items_headers:PurchasePageConfig.bom_list_purchase_items_headers,
 
-      bom_list_purchase_data:PurchasePageConfig.bom_list_purchase_test_data,
+      // bom_list_purchase_data:PurchasePageConfig.bom_list_purchase_test_data,
+      bom_list_purchase_data:[],
       bom_list_purchase_items_data:PurchasePageConfig.bom_list_purchase_items_test_data,
       purchase_member_info:PurchasePageConfig.purchase_member_info,
       setPurchaseInputs:PurchasePageConfig.setPurchaseInputs,
@@ -614,6 +629,18 @@ export default {
         mux.Util.showAlert(error);
       }
 
+
+      try {
+        if (prevURL !== window.location.href) return;
+        this.purchase_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+        this.purchase_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
+        this.purchase_member_info[0].user_id =  this.$cookies.get(this.$configJson.cookies.id.key);
+        this.login_id =  this.$cookies.get(this.$configJson.cookies.id.key);
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.showAlert(error);
+      }
+
       mux.List.addProductBasicInfoLists(this.searchItemsCardInputs, this.classification_list, this.manufacturer_list, true);
       this.searchProductCardInputs = JSON.parse(JSON.stringify(this.searchProductCardInputs));
       this.searchItemsCardInputs = JSON.parse(JSON.stringify(this.searchItemsCardInputs));
@@ -624,6 +651,177 @@ export default {
       // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
+    },
+
+    close(){
+      this.member_dialog = false;
+    },
+    selectMemberDialog(idx){
+      this.member_type_index = idx
+      this.member_dialog = true;
+    },
+    setMember(item){
+      this.purchase_member_info[this.member_type_index].name = item.name.trim()
+      this.purchase_member_info[this.member_type_index].user_id = item.user_id
+      this.close();
+    },
+    members(data){
+      this.members_list=data;
+    },
+    async searchProduct() {
+      this.loading_dialog = true;
+
+      let searchProductCode = this.searchProductCardInputs.find(x=>x.label === '제품코드').value;
+      if (!searchProductCode)
+        searchProductCode = '%';
+      let searchName = this.searchProductCardInputs.find(x=>x.label === '제품명').value;
+      if (searchName)
+        searchName = searchName.trim();
+      let searchSpec = this.searchProductCardInputs.find(x=>x.label === '사양').value;
+      if (searchSpec)
+        searchSpec = searchSpec.trim();
+
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          "params": [
+              {
+                "product_table.name": searchName ? searchName : "",
+                "product_table.product_code": searchProductCode ? searchProductCode : "",
+                "product_table.spec": searchSpec ? searchSpec : ""
+              }
+          ],
+          "script_file_name": "rooting_완제품_검색_24_05_16_13_52_1IN.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          if(result['data'].length === 0){
+            mux.Util.showAlert('검색 결과가 없습니다.');
+          }
+          this.product_data = result['data'];
+          this.product_data.forEach(data =>{
+            data.item_code = data.code;
+            delete data.code;
+            let stock_calc = 0;
+            if (data.spot_stock){
+              for(let d=0; d<data.spot_stock.length; d++){
+                if (typeof data.spot_stock[d].stock_num === 'number'){
+                  stock_calc += data.spot_stock[d].stock_num;
+                }
+              }
+            }
+            data.total_stock = stock_calc
+
+            if(data.belong_data){
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].item_code = data.belong_data[b].code;
+                data.belong_data[b].used_num = data.total_stock * data.belong_data[b].num
+                delete data.belong_data[b].code;
+
+                let belong_stock_calc = 0;
+                if (data.belong_data[b].spot_stock){
+                  let spot_stock = data.belong_data[b].spot_stock;
+                  for(let d=0; d<spot_stock.length; d++){
+                    if (typeof spot_stock[d].stock_num === 'number'){
+                      belong_stock_calc += spot_stock[d].stock_num;
+                    }
+                  }
+                }
+                data.belong_data[b].total_stock = belong_stock_calc
+                data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
+              }
+              console.log(JSON.stringify(data.belong_data) )
+              data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
+            }
+
+
+            if (typeof data.unit_price === 'number'){
+              data.item_price = data.unit_price * data.total_stock
+              let total_unit_price = 0;
+              if(data.belong_data){
+                for(let b=0; b<data.belong_data.length; b++){
+                  total_unit_price += (data.belong_data[b].unit_price).replace(/,/g,'').replace(/₩ /g,'') * data.belong_data[b].num;
+                }
+                data.total_stock_price = '₩ '+ Number(data.total_stock * total_unit_price).toLocaleString();
+                data.unit_price = '₩ '+ Number(total_unit_price).toLocaleString()
+              }else{
+                data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+              }
+            }else {
+              data.item_price = 0;
+            }
+
+
+            // data.belong_data.push({
+            //   item_code: '총 재료비',
+            //   unit_price: '',
+            //   total_stock: 0,
+            //   stock_price: '',
+            //   num_price: data.unit_price
+            // })
+          })
+        }else{
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        // console.error(error);
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      this.loading_dialog = false;
+      // this.product_data = ProductSearchPageConfig.test_product_data;
+    },
+    addProductData(item){
+      if(item.belong_data){
+        item.belong_data.forEach(data => {
+          data.product_code = item.item_code;
+        })
+        this.bom_list_purchase_data = this.bom_list_purchase_data.filter(param => param.product_code != item.item_code);
+        this.bom_list_purchase_data.push(...item.belong_data);
+      }
+    },
+    addBelongData(item, idx){
+      if(this.bom_list_purchase_data.length === 0){
+        item.belong_data[idx].product_code = item.item_code;
+        this.bom_list_purchase_data.push(item.belong_data[idx]);
+      }else{
+        let add_data = {};
+        for(let i=0; i<this.bom_list_purchase_data.length; i++){
+          if(this.bom_list_purchase_data[i].product_code === item.item_code && this.bom_list_purchase_data[i].item_code === item.belong_data[idx].item_code){
+            mux.Util.showAlert('이미 추가된 제품입니다.');
+            return;
+          }else{
+            item.belong_data[idx].product_code = item.item_code;
+            add_data=item.belong_data[idx];
+          }
+        }
+        this.bom_list_purchase_data.push(add_data);
+      }
+
+      // this.bom_list_purchase_data.push(item);
+    },
+    cancleItem(product_code, item_code){
+      if(item_code === false){
+        this.bom_list_purchase_data = this.bom_list_purchase_data.filter(param => param.product_code != product_code);
+      }else{
+        this.bom_list_purchase_data.forEach((data, index) => {
+          if(data.product_code === product_code && data.item_code === item_code){
+            this.bom_list_purchase_data.splice(index, 1);
+          }
+        })
+      }
     },
     async detailInfoItem(item){
       const prevURL = window.location.href;

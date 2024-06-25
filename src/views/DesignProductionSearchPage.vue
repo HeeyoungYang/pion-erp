@@ -338,6 +338,7 @@
                   dense
                   tableClass="elevation-0"
                   addToTable
+                  addBelongToTable
                   @addDataToTable="addShipData"
                 />
               </v-col>

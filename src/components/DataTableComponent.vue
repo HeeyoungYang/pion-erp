@@ -683,8 +683,8 @@
             <template v-if="childrenKey" v-slot:expanded-item = "{ index, item, select, isSelected }">
               <tr v-for="(data,idx) in item[childrenKey]" :key="index+'_'+idx" style="background-color: #efefef;" v-show="expanded.includes(item)">
 
-                <td v-if="addToTable || exceptFromTable" align="center">
-                  <v-btn v-if="addToTable" @click="addData(item)" :disabled="checkAddToTableDisalbed(item)" x-small color="default">추가</v-btn>
+                <td v-if="addBelongToTable || exceptFromTable" align="center">
+                  <v-btn v-if="addBelongToTable" @click="addBelongData(item, idx)" :disabled="checkAddToTableDisalbed(item)" x-small color="default">추가</v-btn>
                   <v-btn v-if="exceptFromTable" @click="exceptData(index)" x-small color="grey" class="white--text">제외</v-btn>
                 </td>
                 <td v-if="showSelect && !showSelectChildren"></td>
@@ -836,6 +836,7 @@
  * @property {Boolean} [notEditableBelong] - 편집 및 삭제 컬럼 여부(default:false)
  * @property {Boolean} [showPhoto] - 자재 사진 노출 여부(default:false)
  * @property {String} [addToTable] - 추가버튼 노출 여부(default:false)
+ * @property {String} [addBelongToTable] - 추가버튼 노출 여부(default:false)
  * @property {String} [exceptFromTable] - 제외버튼 노출 여부(default:false)
  * @property {String} [approval] - 승인 노출 여부(default:undefined)
  * @property {String} [reshipment] - 재출하 버튼 여부(default:false)
@@ -904,6 +905,7 @@ export default {
     notEditableBelong: Boolean,
     showPhoto: Boolean,
     addToTable: Boolean,
+    addBelongToTable: Boolean,
     exceptFromTable: Boolean,
     approval: String,
     reshipment: Boolean,
@@ -985,7 +987,7 @@ export default {
     if (this.reshipment){
       this.addedHeaders.push({ text: '', align: 'center', value: 'reshipment', sortable: false });
     }
-    if (this.addToTable || this.exceptFromTable){
+    if (this.addToTable || this.exceptFromTable || this.addBelongToTable){
       this.addedHeaders.unshift({ text: '', align: 'center', value: 'addToTable', sortable: false });
     }
     if (this.approval){
@@ -1079,6 +1081,9 @@ export default {
     },
     addData(item){
       this.$emit("addDataToTable", item);
+    },
+    addBelongData(item, idx){
+      this.$emit("addBelongToTable", item, idx);
     },
     exceptData(index){
       this.$emit("exceptDataToTable", index);
