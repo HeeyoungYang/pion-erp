@@ -238,7 +238,7 @@ mux.Server = {
                 user.department = data.Attributes.find(x=>x.Name === 'custom:department') ? data.Attributes.find(x=>x.Name === 'custom:department').Value : '';
                 return user;
               });
-              
+
             }else {
               console.error('send email error: 사용자 정보를 가져올 수 없습니다.');
             }
@@ -380,7 +380,10 @@ mux.Server = {
 
         Object.keys(reqObj).forEach(key => {
           if (key !== 'files' && key !== 'path' && key !== 'timeout'){
-            formData.append(key, JSON.stringify(reqObj[key]));
+            if (typeof reqObj[key] !== 'string'){
+              reqObj[key] = JSON.stringify(reqObj[key]);
+            }
+            formData.append(key, reqObj[key]);
           }
         });
 
@@ -460,7 +463,10 @@ mux.Server = {
 
         Object.keys(reqObj).forEach(key => {
           if (key !== 'files' && key !== 'file' && key !== 'folder' && key !== 'path' && key !== 'prefix' && key !== 'timeout'){
-            formData.append(key, JSON.stringify(reqObj[key]));
+            if (typeof reqObj[key] !== 'string'){
+              reqObj[key] = JSON.stringify(reqObj[key]);
+            }
+            formData.append(key, reqObj[key]);
           }
         });
 
