@@ -41,7 +41,6 @@
   "purchase_headers": [
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
     { "text": "요청일", "align": "start", "value": "created_time"},
-    { "text": "발주일", "align": "start", "value": "ordered_time"},
     { "text": "구매 견적", "align": "start", "value": "purchase_estimate"}
   ],
 

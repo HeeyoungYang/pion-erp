@@ -22,8 +22,8 @@
     {"label":"비고", "col":"12", "sm":"4", "lg":"7", "value": ""}
   ],
   "estimateInfoInputs":[
-    {"label":"견적 확정 업체", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"견적서 첨부", "column_name":"files", "type":"file", "col":"12", "sm":"8", "lg":"8", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true}
+    {"label":"견적 확정 업체", "column_name":"purchase_estimate_company", "col":"12", "sm":"4", "lg":"4", "value": "", "rule_set":true},
+    {"label":"견적서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"8", "lg":"8", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true}
   ],
   "searchItemsCardInputs":[
     {"label":"종류", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"원부자재", "list":["원부자재", "반제품"]},
@@ -46,18 +46,32 @@
     { "text": "필요수량", "align": "start", "value": "num"},
     { "text": "재고", "align": "start", "value": "total_stock"}
   ],
+  "item_headers": [
+    { "text": "종류", "align": "start", "value": "type" },
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "item_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "재고", "align": "start", "value": "total_stock"}
+  ],
 
   "bom_list_purchase_product_headers": [
+    { "text": "종류", "align": "start", "value": "type"},
     { "text": "분류", "align": "start", "value": "classification"},
-    { "text": "관리코드", "align": "start", "value": "product_code"},
+    { "text": "관리코드", "align": "start", "value": "item_code"},
     { "text": "제품명", "align": "start", "value": "name"},
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "단가", "align": "start", "value": "unit_price"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
-    { "text": "필요수량", "align": "start", "value": "item_num"},
-    { "text": "재고", "align": "start", "value": "stock_num"}
+    { "text": "필요수량", "align": "start", "value": "num"},
+    { "text": "재고", "align": "start", "value": "total_stock"},
+    { "text": "금액", "align": "start", "value": "purchase_price"},
+    { "text": "견적", "align": "start", "value": "estimate"},
+    { "text": "제외", "align": "start", "value": "cancle"}
   ],
 
   "bom_list_purchase_items_headers": [
@@ -70,10 +84,31 @@
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "단가", "align": "start", "value": "unit_price"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
-    { "text": "필요수량", "align": "start", "value": "num"},
     { "text": "재고", "align": "start", "value": "total_stock"},
+    { "text": "금액", "align": "start", "value": "purchase_price"},
     { "text": "견적", "align": "start", "value": "estimate"},
     { "text": "제외", "align": "start", "value": "cancle"}
+  ],
+
+  "selected_unestimated_product_headers": [
+    { "text": "완제품 코드", "align": "start", "value": "product_code"},
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "item_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"}
+  ],
+
+  "selected_unestimated_item_headers": [
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "item_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"}
   ],
   "setPurchaseInputs":[
     {"label":"견적서 첨부", "type":"file", "col":"12", "sm":"4", "lg":"3"},
