@@ -382,7 +382,7 @@ import CheckPagePermission from "@/common_js/CheckPagePermission";
 import mux from "@/mux";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=InboundSearchPage')],
+  mixins: [CheckPagePermission('/api/check_page_permission?page_name=ObtainOrderSearchPage')],
   mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
   },

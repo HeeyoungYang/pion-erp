@@ -352,7 +352,7 @@ import CostTableComponent from "@/components/CostTableComponent";
 import mux from "@/mux";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=EstimateSearchPage')],
+  mixins: [CheckPagePermission('/api/check_page_permission?page_name=ObtainProgressPage')],
   mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
   },

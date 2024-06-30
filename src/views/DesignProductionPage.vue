@@ -1609,7 +1609,7 @@ import EstimateSearchDialogComponent from "@/components/EstimateSearchDialogComp
 import mux from "@/mux";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=EstimateSearchPage')],
+  mixins: [CheckPagePermission('/api/check_page_permission?page_name=DesginProductPage')],
   mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
   },
