@@ -978,7 +978,7 @@ export default {
 
           data.purchase_estimate_check = false;
           data.purchase_estimate_company = '';
-          data.purchase_estimate_file = '';
+          data.purchase_estimate_file_name = '';
           data.purchase_estimate_thumbnail = '';
         })
         this.bom_list_purchase_data = this.bom_list_purchase_data.filter(param => param.product_code != item.item_code);
@@ -991,7 +991,7 @@ export default {
         item.belong_data[idx].purchase_price = '';
         item.belong_data[idx].purchase_estimate_check = false;
         item.belong_data[idx].purchase_estimate_company = '';
-        item.belong_data[idx].purchase_estimate_file = '';
+        item.belong_data[idx].purchase_estimate_file_name = '';
         item.belong_data[idx].purchase_estimate_thumbnail = '';
         this.bom_list_purchase_data.push(item.belong_data[idx]);
       }else{
@@ -1005,7 +1005,7 @@ export default {
             item.belong_data[idx].purchase_price = '';
             item.belong_data[idx].purchase_estimate_check = false;
             item.belong_data[idx].purchase_estimate_company = '';
-            item.belong_data[idx].purchase_estimate_file = '';
+            item.belong_data[idx].purchase_estimate_file_name = '';
             item.belong_data[idx].purchase_estimate_thumbnail = '';
             add_data=item.belong_data[idx];
           }
@@ -1052,7 +1052,7 @@ export default {
                 return;
               }
             bom_data[i].purchase_estimate_company = '';
-            bom_data[i].purchase_estimate_file = '';
+            bom_data[i].purchase_estimate_file_name = '';
             bom_data[i].purchase_estimate_thumbnail = '';
           }
         }
@@ -1125,7 +1125,8 @@ export default {
           for(let i=0; i<product_data.length; i++){
             if(selected[item_check] === product_data[i][item_check]){
               product_data[i].purchase_estimate_company = estimate_company;
-              product_data[i].purchase_estimate_file = estimate_file_name;
+              product_data[i].purchase_estimate_file_value = estimate_file_value;
+              product_data[i].purchase_estimate_file_name = estimate_file_name;
               product_data[i].purchase_estimate_thumbnail = estimate_file_thumbnail;
               product_data[i].purchase_estimate_thumbnail_img = estimate_thumbnail_img;
             }
@@ -1254,6 +1255,8 @@ export default {
         }
 
         let bom_data_insert = [];
+
+        let files_unique=[];
         bom_data.forEach(bom => {
           if(this.add_data_type === '완제품자재'){
             bom_data_insert.push({
@@ -1275,7 +1278,7 @@ export default {
                   "purchase_num" : bom.purchase_num.replace(/,/g,''),
                   "purchase_estimate_phase" : bom.purchase_estimate_company === '' ? '견적필요' : '견적완료',
                   "purchase_estimate_company" : bom.purchase_estimate_company,
-                  "purchase_estimate_file" : bom.purchase_estimate_file,
+                  "purchase_estimate_file" : bom.purchase_estimate_file_name,
                   "purchase_estimate_thumbnail" : bom.purchase_estimate_thumbnail,
                 },
                 "select_where": {"code": code, "product_code": bom.product_code, "item_code": bom.item_code},
@@ -1300,29 +1303,56 @@ export default {
                   "purchase_num" : bom.purchase_num.replace(/,/g,''),
                   "purchase_estimate_phase" : bom.purchase_estimate_company === '' ? '견적필요' : '견적완료',
                   "purchase_estimate_company" : bom.purchase_estimate_company,
-                  "purchase_estimate_file" : bom.purchase_estimate_file,
+                  "purchase_estimate_file" : bom.purchase_estimate_file_name,
                   "purchase_estimate_thumbnail" : bom.purchase_estimate_thumbnail,
                 },
                 "select_where": {"code": code, "product_code": bom.product_code, "item_code": bom.item_code},
                 "rollback": "yes"
             });
           }
+          if(bom.purchase_estimate_file_value){
+            files_unique.push({
+              folder: 'purchase/purchase_estimate',
+              file: bom.purchase_estimate_file_value,
+              name: bom.purchase_estimate_file_name
+            });
+          }
         })
         sendData["purchase_product_table-insert"] = bom_data_insert;
 
+        let set = new Set(files_unique);
+        sendData.files = [...set];
+
+        sendData.path = '/api/multipart_rest_api/';
+        sendData.prefix = code + '_';
+        // if (this.inbound_confirmation_data.receiving_inspection) {
+        //   sendData.files.push({
+        //     folder: 'inbound/receiving_inspection',
+        //     file: this.receiving_inspection_value,
+        //     name: this.inbound_confirmation_data.receiving_inspection
+        //   });
+        // }
+        // if (this.inbound_confirmation_data.inspection_report) {
+        //   sendData.files.push({
+        //     folder: 'inbound/inspection_report',
+        //     file: this.inspection_report_value,
+        //     name: this.inbound_confirmation_data.inspection_report
+        //   });
+        // }
+
         const prevURL = window.location.href;
           try {
-            let result = await mux.Server.post({
-              path: '/api/common_rest_api/',
-              params: sendData
-            });
-            // let result = await mux.Server.uploadFile(sendData);
+            // let result = await mux.Server.post({
+            //   path: '/api/common_rest_api/',
+            //   params: sendData
+            // });
+            let result = await mux.Server.uploadFile(sendData);
             if (prevURL !== window.location.href) return;
 
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result.data['code'] == 0){
               mux.Util.showAlert('구매 요청이 완료되었습니다', '요청 완료', 3000);
 
               //메일 알림 관련
@@ -1430,7 +1460,7 @@ export default {
           data.purchase_price = '';
           data.purchase_estimate_check = false;
           data.purchase_estimate_company = '';
-          data.purchase_estimate_file = '';
+          data.purchase_estimate_file_name = '';
           data.purchase_estimate_thumbnail = '';
           data.data_type = 'selected'
           set_item.push(data);
@@ -1462,7 +1492,7 @@ export default {
           "data_type": "added",
           "purchase_estimate_check":false,
           "purchase_estimate_company" :"",
-          "purchase_estimate_file" :"",
+          "purchase_estimate_file_name" :"",
           "purchase_estimate_thumbnail" :""
         }
       )
