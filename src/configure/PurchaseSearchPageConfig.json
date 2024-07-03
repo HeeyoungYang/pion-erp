@@ -5,10 +5,9 @@
   "searchCardInputs":[
     {"label":"승인", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All","미확인", "미승인", "승인", "반려"]},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"구매 업체명", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"견적 업체명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"계산일", "type":"dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"3"}
+    {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
   "setPurchaseInputs":[
     {"label":"견적서 첨부", "type":"file", "col":"12", "sm":"4", "lg":"4"},

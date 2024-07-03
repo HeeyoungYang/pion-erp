@@ -696,7 +696,7 @@ export default {
               try {
                 let sendEmailAlam = await mux.Server.post({
                   path: '/api/send_email/',
-                  mailTo: mailTo,
+                  to_addrs: mailTo,
                   subject: "출고 " + phase + " 요청 알림",
                   content: content
                 });

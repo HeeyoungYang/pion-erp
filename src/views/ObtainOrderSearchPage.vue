@@ -1102,7 +1102,7 @@ export default {
           try {
             let sendEmailAlam = await mux.Server.post({
               path: '/api/send_email/',
-              mailTo: mailTo,
+              to_addrs: mailTo,
               subject: "입고 " + phase + " 처리 알림",
               content: content
             });
@@ -1394,7 +1394,7 @@ export default {
           try {
             let sendEmailAlam = await mux.Server.post({
               path: '/api/send_email/',
-              mailTo: mailTo,
+              to_addrs: mailTo,
               subject: "입고 " + phase + " 처리 알림",
               content: content
             });
@@ -1634,7 +1634,7 @@ export default {
           try {
             let sendEmailAlam = await mux.Server.post({
               path: '/api/send_email/',
-              mailTo: mailTo,
+              to_addrs: mailTo,
               subject: "입고 " + phase + " 알림",
               content: content
             });

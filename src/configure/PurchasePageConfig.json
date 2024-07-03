@@ -1,16 +1,7 @@
 
 { 
-  "stock_detail_header":[
-    { "text": "위치", "align": "center", "value": "spot" },
-    { "text": "수량", "align": "center", "value": "stock_num" },
-    { "text": "상태", "align": "center", "value": "conditions" }
-  ],
-  "inbound_detail_header":[
-    { "text": "위치", "align": "center", "value": "spot"},
-    { "text": "수량", "align": "center", "value": "inbound_num" },
-    { "text": "입고일자", "align": "center", "value": "inbound_date"}
-  ],
-
+  "type_list":["원부자재", "반제품"],
+  
   "searchProductCardInputs":[
     {"label":"제품코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
@@ -110,15 +101,6 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "제조사", "align": "start", "value": "manufacturer"}
   ],
-  "setPurchaseInputs":[
-    {"label":"견적서 첨부", "type":"file", "col":"12", "sm":"4", "lg":"3"},
-    {"label":"담당자", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"연락처", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"email", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"결제조건", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"리드타임", "col":"12", "sm":"4", "lg":"3", "value": ""}
-  ],
-
 
   "purchase_member_info":[
     {"type": "확인", "name": "", "user_id": "", "email": ""},

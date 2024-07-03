@@ -21,6 +21,7 @@
             <div slot="cardTitle">
               <span>{{ add_data_type === '완제품자재' ? '완제품 자재' : '개별 자재'}} 선택</span>
               <v-btn
+                v-if="add_data_type === '완제품자재'"
                 small
                 outlined
                 color="primary"
@@ -28,6 +29,16 @@
                 @click="itemSelect"
               >
                 개별 자재 선택
+              </v-btn>
+              <v-btn
+                v-if="add_data_type === '개별자재'"
+                small
+                outlined
+                color="primary"
+                class="mr-2 ml-4"
+                @click="itemSelect"
+              >
+                완제품 자재 선택
               </v-btn>
             </div>
             <InputsFormComponent
@@ -204,7 +215,39 @@
                         >
                           견적서
                         </v-btn>
-                        <p v-if="item.purchase_estimate_company !== ''" class="primary--text mb-0 float-left">{{ item.purchase_estimate_company }}</p>
+
+
+                        <v-menu
+                          v-if="item.purchase_estimate_company !== ''"
+                          open-on-hover
+                          top
+                          offset-y
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-chip
+                              v-bind="attrs"
+                              v-on="on"
+                              small
+                              class="primary--text mb-0 float-left"
+                            >{{ item.purchase_estimate_company }}
+                            </v-chip>
+                          </template>
+
+                          <v-list>
+                            <v-list-item>
+                              <v-list-item-content>
+                                <v-img
+                                  alt="thumbnail"
+                                  class="shrink mr-2"
+                                  contain
+                                  :src="item.purchase_estimate_thumbnail_img"
+                                  transition="scale-transition"
+                                  width="600"
+                                />
+                              </v-list-item-content>
+                            </v-list-item>
+                          </v-list>
+                        </v-menu>
                       </div>
                     </template>
                     <template v-slot:[`item.cancle`] = "{ item }">
@@ -223,12 +266,13 @@
                     :items="bom_list_purchase_items_data"
                     hide-default-footer
                     disable-pagination
-                    item-key="product_code"
+                    item-key="item_code"
                     class="elevation-1"
                   >
-                    <template v-slot:item="{ item, index }">
+                    <template v-slot:item="{ item }">
                       <tr>
                         <td align="center">
+                          {{ item.data_type === 'selected' ? item.type : '' }}
                           <v-autocomplete
                             v-if="item.data_type === 'added'"
                             style="width:150px; font-size: 12px;"
@@ -238,9 +282,9 @@
                             filled
                             hide-details
                           ></v-autocomplete>
-                          {{ item.data_type === 'selected' ? item.type : '' }}
                         </td>
                         <td align="center">
+                          {{ item.data_type === 'selected' ? item.classification : '' }}
                           <v-autocomplete
                             v-if="item.data_type === 'added'"
                             style="width:150px; font-size: 12px;"
@@ -250,21 +294,12 @@
                             filled
                             hide-details
                           ></v-autocomplete>
-                          {{ item.data_type === 'selected' ? item.classification : '' }}
                         </td>
                         <td align="center">
-                          <v-text-field
-                            v-if="item.data_type === 'added'"
-                            style="width:150px; font-size: 12px;"
-                            dense
-                            hide-details
-                            filled
-                            v-model="item.product_code"
-                          >
-                          </v-text-field>
-                          {{ item.data_type === 'selected' ? item.item_code : '' }}
+                          {{ item.item_code }}
                         </td>
                         <td align="center">
+                          {{ item.data_type === 'selected' ? item.name : '' }}
                           <v-text-field
                             v-if="item.data_type === 'added'"
                             style="width:150px; font-size: 12px;"
@@ -274,9 +309,9 @@
                             v-model="item.name"
                           >
                           </v-text-field>
-                          {{ item.data_type === 'selected' ? item.name : '' }}
                         </td>
                         <td align="center">
+                          {{ item.data_type === 'selected' ? item.model : '' }}
                           <v-text-field
                             v-if="item.data_type === 'added'"
                             style="width:150px; font-size: 12px;"
@@ -286,9 +321,9 @@
                             v-model="item.model"
                           >
                           </v-text-field>
-                          {{ item.data_type === 'selected' ? item.model : '' }}
                         </td>
                         <td align="center">
+                          {{ item.data_type === 'selected' ? item.spec : '' }}
                           <v-text-field
                             v-if="item.data_type === 'added'"
                             style="width:150px; font-size: 12px;"
@@ -298,9 +333,9 @@
                             v-model="item.spec"
                           >
                           </v-text-field>
-                          {{ item.data_type === 'selected' ? item.spec : '' }}
                         </td>
                         <td align="center">
+                          {{ item.data_type === 'selected' ? item.manufacturer : '' }}
                           <v-autocomplete
                             v-if="item.data_type === 'added'"
                             style="width:150px; font-size: 12px;"
@@ -310,9 +345,9 @@
                             hide-details
                             filled
                           ></v-autocomplete>
-                          {{ item.data_type === 'selected' ? item.manufacturer : '' }}
                         </td>
                         <td align="center">
+                          {{ item.data_type === 'selected' ? item.unit_price : '' }}
                           <v-text-field
                             v-if="item.data_type === 'added'"
                             style="width:150px; font-size: 12px;"
@@ -323,7 +358,6 @@
                             :oninput="!item.unit_price ? '' : item.unit_price = item.unit_price.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                           >
                           </v-text-field>
-                          {{ item.data_type === 'selected' ? item.unit_price : '' }}
                         </td>
                         <td align="center">
                           <v-text-field
@@ -356,11 +390,46 @@
                             >
                               견적서
                             </v-btn>
-                            <p v-if="item.purchase_estimate_company !== ''" class="primary--text mb-0 float-left">{{ item.purchase_estimate_company }}</p>
+                            <v-menu
+                              v-if="item.purchase_estimate_company !== ''"
+                              open-on-hover
+                              top
+                              offset-y
+                            >
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-chip
+                                  v-bind="attrs"
+                                  v-on="on"
+                                  small
+                                  class="primary--text mb-0 float-left"
+                                >{{ item.purchase_estimate_company }}
+                                </v-chip>
+                              </template>
+
+                              <v-list>
+                                <v-list-item>
+                                  <v-list-item-content>
+                                    <v-img
+                                      alt="thumbnail"
+                                      class="shrink mr-2"
+                                      contain
+                                      :src="item.purchase_estimate_thumbnail_img"
+                                      transition="scale-transition"
+                                      width="600"
+                                    />
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list>
+                            </v-menu>
                           </div>
                         </td>
                         <td align="center">
-                          <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                          <v-icon
+                            color="grey"
+                            small
+                            @click="cancleItem(false, item.item_code)"
+                          >mdi-minus-thick
+                          </v-icon>
                         </td>
                       </tr>
                     </template>
@@ -371,47 +440,6 @@
           </v-card>
         </v-col>
       </v-row>
-      <ModalDialogComponent
-      :dialog-value="detail_dialog"
-      max-width="50%"
-      title-class="display-none"
-      :dialog-transition="'slide-x-transition'"
-      :dialog-custom="'custom-dialog elevation-0 white'"
-      :card-elevation="'0'"
-      @close="closeDetail"
-      >
-        <v-row>
-          <v-col cols="12" sm="4">
-            <p class="text-h6 font-weight-bold primary--text">사진</p>
-            <v-card class="pa-1 mt-5" color="grey lighten-3">
-              <v-img
-                alt="thumbnail"
-                class="shrink mr-2"
-                contain
-                :src="mux.Util.imageBinary(detailThumbnail)"
-                transition="scale-transition"
-                width="350"
-              />
-            </v-card>
-          </v-col>
-          <v-col cols="12" sm="4">
-            <p class="text-h6 font-weight-bold primary--text">재고 정보</p>
-            <DataTableComponent
-              :headers="stock_detail_header"
-              :items="stockDetails"
-              dense
-            />
-          </v-col>
-          <v-col cols="12" sm="4">
-            <p class="text-h6 font-weight-bold primary--text">입고 정보</p>
-            <DataTableComponent
-              :headers="inbound_detail_header"
-              :items="inboundDetails"
-              dense
-            />
-          </v-col>
-        </v-row>
-      </ModalDialogComponent>
 
       <v-dialog
         v-model="unestimatedMailDialog"
@@ -466,7 +494,7 @@
 
                 <v-btn
                   text color="error"
-                  @click="unestimatedMailDialog = false"
+                  @click="close"
                 >
                   취소
                 </v-btn>
@@ -531,7 +559,7 @@
                     <v-btn
                       text
                       color="error"
-                      @click="unestimatedMailDialog = false"
+                      @click="close"
                     >
                       취소
                     </v-btn>
@@ -551,7 +579,6 @@ import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
-import ModalDialogComponent from "@/components/ModalDialogComponent";
 import LoadingModalComponent from "@/components/LoadingModalComponent";
 import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent";
 import PurchasePageConfig from "@/configure/PurchasePageConfig.json";
@@ -569,33 +596,34 @@ export default {
                 DataTableComponent,
                 CardComponent,
                 InputsFormComponent,
-                ModalDialogComponent,
                 LoadingModalComponent,
                 MemberSearchDialogComponent,
               },
   data(){
     return{
       mux: mux,
+      member_type_index:0,
       unestimated_steppers: 1,
       unestimated_step: 2,
       add_data_type: '완제품자재',
-      detail_dialog: false,
+
       loading_dialog: false,
       member_dialog: false,
       unestimatedMailDialog: false,
       show_selected_unestimated_data: false,
-      member_type_index:0,
-      detailThumbnail: '',
+
       manufacturer_list:[],
       classification_list:[],
-      stockDetails:[],
-      inboundDetails:[],
-      selected_product_data:[],
       bom_list_need_estiamte_data:[],
       selected_unestimated_data:[],
       members_list:[],
-      stock_detail_header:PurchasePageConfig.stock_detail_header,
-      inbound_detail_header:PurchasePageConfig.inbound_detail_header,
+      selected_unestimated_headers:[],
+      bom_list_purchase_data:[],
+      bom_list_purchase_items_data:[],
+      product_data:[],
+      selected_item_data:[],
+
+      type_list:PurchasePageConfig.type_list,
       searchProductCardInputs:PurchasePageConfig.searchProductCardInputs,
       searchItemsCardInputs:PurchasePageConfig.searchItemsCardInputs,
       estimateInfoInputs:PurchasePageConfig.estimateInfoInputs,
@@ -604,14 +632,7 @@ export default {
       item_headers: PurchasePageConfig.item_headers,
       bom_list_purchase_product_headers:PurchasePageConfig.bom_list_purchase_product_headers,
       bom_list_purchase_items_headers:PurchasePageConfig.bom_list_purchase_items_headers,
-      selected_unestimated_headers:[],
-      bom_list_purchase_data:[],
-      bom_list_purchase_items_data:[],
       purchase_member_info:PurchasePageConfig.purchase_member_info,
-      setPurchaseInputs:PurchasePageConfig.setPurchaseInputs,
-      product_data:[],
-      selected_item_data:[],
-      // product_data:PurchasePageConfig.test_product_data,
     }
   },
 
@@ -620,9 +641,6 @@ export default {
   },
 
   watch: {
-    detail_dialog (val) {
-      val || this.closeDetail()
-    },
   },
 
   created () {
@@ -630,8 +648,6 @@ export default {
   },
   methods: {
     async initialize () {
-      // this.manufacturer_list = PurchasePageConfig.test_manufacturer_list;
-      // this.classification_list = PurchasePageConfig.test_classification_list;
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.getPionBasicInfo();
@@ -680,6 +696,12 @@ export default {
       this.member_dialog = false;
       this.unestimatedMailDialog = false;
       this.unestimated_steppers = 1;
+      this.estimateInfoInputs.forEach(input => {
+        input.value = '';
+        if(input.type === 'file'){
+          input.value.name = '';
+        }
+      });
     },
     selectMemberDialog(idx){
       this.member_type_index = idx
@@ -785,14 +807,6 @@ export default {
                 data.item_price = 0;
               }
 
-
-              // data.belong_data.push({
-              //   item_code: '총 재료비',
-              //   unit_price: '',
-              //   total_stock: 0,
-              //   stock_price: '',
-              //   num_price: data.unit_price
-              // })
             })
           }else{
             if (prevURL !== window.location.href) return;
@@ -1002,6 +1016,8 @@ export default {
     cancleItem(product_code, item_code){
       if(item_code === false){
         this.bom_list_purchase_data = this.bom_list_purchase_data.filter(param => param.product_code != product_code);
+      }else if(product_code === false){
+        this.bom_list_purchase_items_data = this.bom_list_purchase_items_data.filter(param => param.item_code != item_code);
       }else{
         this.bom_list_purchase_data.forEach((data, index) => {
           if(data.product_code === product_code && data.item_code === item_code){
@@ -1101,8 +1117,9 @@ export default {
         let estimate_company = estimate_info.find(x=>x.column_name === 'purchase_estimate_company').value
         let estimate_file_value = estimate_info.find(x=>x.column_name === 'purchase_estimate_file').value;
         let estimate_file_name = estimate_file_value.name;
-        const getPdfThumbnail = await mux.Util.getPdfThumbnail(estimate_file_value, 1, false, 1000, 1000);
+        const getPdfThumbnail = await mux.Util.getPdfThumbnail(estimate_file_value, 1, false);
         let estimate_file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+        let estimate_thumbnail_img = mux.Util.imageBinary(estimate_file_thumbnail);
 
         selected_data.forEach(selected => {
           for(let i=0; i<product_data.length; i++){
@@ -1110,32 +1127,45 @@ export default {
               product_data[i].purchase_estimate_company = estimate_company;
               product_data[i].purchase_estimate_file = estimate_file_name;
               product_data[i].purchase_estimate_thumbnail = estimate_file_thumbnail;
+              product_data[i].purchase_estimate_thumbnail_img = estimate_thumbnail_img;
             }
           }
         })
+        product_data.push();
         this.close()
       }
     },
 
     async itemSelect(){
-      this.selected_product_data = [];
-      this.product_data = [];
       if(this.add_data_type == '완제품자재'){
-        const confirm = await mux.Util.showConfirm('개별 자재 선택으로 전환되며, \n위에서 선택한 자재는 선택 해제됩니다. ', '전환 확인');
+        const confirm = await mux.Util.showConfirm('개별 자재 선택으로 전환되며, \n작성하던 내용은 초기화됩니다. ', '전환 확인');
         if (!confirm){
           return;
         }
         this.bom_list_purchase_data = [];
+        this.add_data_type = '개별자재';
+      }else{
+        const confirm = await mux.Util.showConfirm('완제품 자재 선택으로 전환되며, \n작성하던 내용은 초기화됩니다. ', '전환 확인');
+        if (!confirm){
+          return;
+        }
+        this.bom_list_purchase_items_data = [];
+        this.add_data_type = '완제품자재';
       }
-      this.add_data_type = '개별자재';
+      this.product_data = [];
     },
 
     async purchaseApprovalRequest(){
       const currDate = new Date();
+      let bom_data;
+      if(this.add_data_type === '완제품자재'){
+        bom_data = this.bom_list_purchase_data;
+      } else{
+        bom_data = this.bom_list_purchase_items_data;
+      }
 
       let confirmation_data = {};
       let member_input = this.purchase_member_info;
-      let bom_data = this.bom_list_purchase_data;
       let success = true;
 
       let code = 'PE-' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
@@ -1173,6 +1203,10 @@ export default {
       for(let b=0; b<bom_data.length; b++){
         if(!bom_data[b].purchase_num  || bom_data[b].purchase_num === '' || bom_data[b].purchase_num === 0){
           mux.Util.showAlert('구매 요청 수량 0이상 필수 입력');
+          return success = false;
+        }
+        if(bom_data[b].type === '' || bom_data[b].classification === '' || bom_data[b].name === ''){
+          mux.Util.showAlert('종류, 분류, 제품명 필수 입력');
           return success = false;
         }
         if(!bom_data[b].purchase_estimate_check && bom_data[b].purchase_estimate_company === ''){
@@ -1221,31 +1255,58 @@ export default {
 
         let bom_data_insert = [];
         bom_data.forEach(bom => {
-          bom_data_insert.push({
-            "user_info": {
-                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                "role": "creater"
-              },
-              "data":{
-                "code" : code,
-                "type" : bom.type,
-                "classification" : bom.classification,
-                "product_code" : bom.product_code,
-                "item_code" : bom.item_code,
-                "name" : bom.name,
-                "model" : bom.model,
-                "spec" : bom.spec,
-                "manufacturer" : bom.manufacturer,
-                "unit_price" : bom.unit_price.replace(/,/g,'').replace(/₩ /g,''),
-                "purchase_num" : bom.purchase_num.replace(/,/g,''),
-                "purchase_estimate_phase" : bom.purchase_estimate_company === '' ? '견적필요' : '견적완료',
-                "purchase_estimate_company" : bom.purchase_estimate_company,
-                "purchase_estimate_file" : bom.purchase_estimate_file,
-                "purchase_estimate_thumbnail" : bom.purchase_estimate_thumbnail,
-              },
-              "select_where": {"code": code, "product_code": bom.product_code, "item_code": bom.item_code},
-              "rollback": "yes"
-          });
+          if(this.add_data_type === '완제품자재'){
+            bom_data_insert.push({
+              "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "code" : code,
+                  "type" : bom.type,
+                  "classification" : bom.classification,
+                  "product_code" : bom.product_code,
+                  "item_code" : bom.item_code,
+                  "name" : bom.name,
+                  "model" : bom.model,
+                  "spec" : bom.spec,
+                  "manufacturer" : bom.manufacturer,
+                  "unit_price" : bom.unit_price.replace(/,/g,'').replace(/₩ /g,''),
+                  "purchase_num" : bom.purchase_num.replace(/,/g,''),
+                  "purchase_estimate_phase" : bom.purchase_estimate_company === '' ? '견적필요' : '견적완료',
+                  "purchase_estimate_company" : bom.purchase_estimate_company,
+                  "purchase_estimate_file" : bom.purchase_estimate_file,
+                  "purchase_estimate_thumbnail" : bom.purchase_estimate_thumbnail,
+                },
+                "select_where": {"code": code, "product_code": bom.product_code, "item_code": bom.item_code},
+                "rollback": "yes"
+            });
+          }else{
+            bom_data_insert.push({
+              "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "code" : code,
+                  "type" : bom.type,
+                  "classification" : bom.classification,
+                  "item_code" : bom.data_type === 'selected' ? bom.item_code : mux.Date.format(currDate, 'yyyyMMdd-HH:mm:ss.fff') + '-' + bom.item_code,
+                  "name" : bom.name,
+                  "model" : bom.model,
+                  "spec" : bom.spec,
+                  "manufacturer" : bom.manufacturer,
+                  "unit_price" : bom.data_type === 'selected' ? bom.unit_price.replace(/,/g,'').replace(/₩ /g,'') : (bom.unit_price === '' ? 0 : bom.unit_price.replace(/,/g,'')),
+                  "purchase_num" : bom.purchase_num.replace(/,/g,''),
+                  "purchase_estimate_phase" : bom.purchase_estimate_company === '' ? '견적필요' : '견적완료',
+                  "purchase_estimate_company" : bom.purchase_estimate_company,
+                  "purchase_estimate_file" : bom.purchase_estimate_file,
+                  "purchase_estimate_thumbnail" : bom.purchase_estimate_thumbnail,
+                },
+                "select_where": {"code": code, "product_code": bom.product_code, "item_code": bom.item_code},
+                "rollback": "yes"
+            });
+          }
         })
         sendData["purchase_product_table-insert"] = bom_data_insert;
 
@@ -1262,8 +1323,77 @@ export default {
               result = JSON.parse(result);
             }
             if(result['code'] == 0){
-              // console.log('result :>> ', result);
               mux.Util.showAlert('구매 요청이 완료되었습니다', '요청 완료', 3000);
+
+              //메일 알림 관련
+              let mailTo = [];
+              let phase;
+              if(confirmation_data.approval_phase === '미확인'){
+                mailTo.push(confirmation_data.checker_id);
+                phase = '확인'
+              }else if(confirmation_data.approval_phase === '미승인'){
+                mailTo.push(confirmation_data.approver_id);
+                phase = '승인'
+              }
+
+              // 메일 본문 내용
+              let content=`
+                <html>
+                  <body>
+                    <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                      <h2 style="text-align: center; color:#13428a">구매 ${phase} 요청 알림</h2>
+                      <table style="width: 100%;border-spacing: 10px 10px;">
+                        <tr>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.project_code}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">비고</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.note}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.checker}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
+                        </tr>
+                      </table>
+                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${confirmation_data.project_code}">
+                        <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                          확인하기
+                        </p>
+                      </a>
+                    </div>
+                  </body>
+                </html>
+              `;
+              try {
+                let sendEmailAlam = await mux.Server.post({
+                  path: '/api/send_email/',
+                  to_addrs: mailTo,
+                  subject: "구매 " + phase + " 요청 알림",
+                  content: content
+                });
+                if (prevURL !== window.location.href) return;
+                if(sendEmailAlam['code'] == 0){
+                  console.log(sendEmailAlam['message']);
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  mux.Util.showAlert(sendEmailAlam['failed_info']);
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
+                else
+                  mux.Util.showAlert(error);
+              }
             } else {
               if (prevURL !== window.location.href) return;
               mux.Util.showAlert(result['failed_info']);
@@ -1308,271 +1438,18 @@ export default {
         this.selected_item_data = [];
       }
     },
-
-
-
-
-    ///////////////////////////////////////////////////////////
-
-
-    async detailInfoItem(item){
-      const prevURL = window.location.href;
-      try {
-        this.loading_dialog = true;
-        let params;
-        let script_file_name;
-        let script_file_path;
-        if (item.type === '완제품'){
-          params = [
-            {
-              "product_table.product_code": item._code
-            }
-          ];
-          script_file_name = "rooting_product_thumbname_검색_24_05_09_12_05_UP0.json";
-          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\product_thumbname_검색_24_05_09_12_06_FHY";
-        }else if (item.type === '반제품'){
-          params = [
-            {
-              "module_table.module_code": item._code
-            }
-          ];
-          script_file_name = "rooting_module_thumbnail_검색_24_05_09_12_09_X4X.json";
-          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\module_thumbnail_검색_24_05_09_12_10_4PG";
-        }else {
-          params = [
-            {
-              "material_table.material_code": item._code
-            }
-          ];
-          script_file_name = "rooting_material_thumbnail_검색_24_05_09_12_12_AHK.json";
-          script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\material_thumbnail_검색_24_05_09_12_13_SAK";
-        }
-        // 제품의 썸네일
-        let result = await mux.Server.post({
-          path: '/api/common_rest_api/',
-          params: params,
-          "script_file_name": script_file_name,
-          "script_file_path": script_file_path
-        });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        if(result['code'] == 0){
-          let thumbnail = '';
-          if (result['data'].length > 0){
-            thumbnail = result['data'][0].thumbnail;
-          }
-          this.detailThumbnail = thumbnail;
-
-          // 제품의 입고 정보
-          let result2 = await mux.Server.post({
-            path: '/api/common_rest_api/',
-            params: [
-              {
-                "inbound_product_table.product_code": item._code,
-                "inbound_confirmation_table.approval_phase": "승인"
-              }
-            ],
-            "script_file_name": "rooting_입고_상세_검색_24_05_22_10_53_9P7.json",
-            "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_상세_검색_24_05_22_10_54_7AL"
-          });
-          if (prevURL !== window.location.href) return;
-
-          if (typeof result2 === 'string'){
-            result2 = JSON.parse(result2);
-          }
-          if(result2['code'] == 0){
-            let inbounds = [];
-            if (result2['data'].length > 0){
-              inbounds = result2['data'];
-            }
-            this.inboundDetails = inbounds;
-
-            this.detail_dialog = true;
-            this.stockDetails = item.spot_stock ? JSON.parse(JSON.stringify(item.spot_stock)) : [];
-            this.stockDetails.forEach(data => {
-              data.stock_num = Number(data.stock_num).toLocaleString();
-            });
-            this.loading_dialog = false;
-          } else {
-            this.loading_dialog = false;
-            mux.Util.showAlert(result2['failed_info']);
-          }
-        } else {
-          this.loading_dialog = false;
-          mux.Util.showAlert(result['failed_info']);
-        }
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
-      }
-    },
-    closeDetail () {
-      this.detail_dialog = false
-    },
-    async searchButton() {
-
-      this.loading_dialog = true;
-
-      let searchType = this.searchCardInputs.find(x=>x.label === '종류').value;
-      if (searchType === 'All')
-        searchType = '%';
-      let searchClassification = this.searchCardInputs.find(x=>x.label === '분류').value;
-      if (searchClassification === 'All')
-        searchClassification = '%';
-      let searchConditions = this.searchCardInputs.find(x=>x.label === '상태').value;
-      if (searchConditions === 'All')
-        searchConditions = '%';
-      let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
-      if (searchProductCode)
-      searchProductCode = searchProductCode.trim();
-
-      let searchProductName = this.searchCardInputs.find(x=>x.label === '제품명').value;
-      if (searchProductName)
-      searchProductName = searchProductName.trim();
-
-      let searchModelName = this.searchCardInputs.find(x=>x.label === '모델명').value;
-      if (searchModelName)
-      searchModelName = searchModelName.trim();
-
-      let searchProductSpec = this.searchCardInputs.find(x=>x.label === '사양').value;
-      if (searchProductSpec)
-      searchProductSpec = searchProductSpec.trim();
-
-      let searchManufacturer = this.searchCardInputs.find(x=>x.label === '제조사').value;
-      if (searchManufacturer)
-      searchManufacturer = searchManufacturer.trim();
-
-      let searchStockMoreZero = '';
-
-      const prevURL = window.location.href;
-      try {
-        let result = await mux.Server.post({
-          path: '/api/common_rest_api/',
-          params: [
-            {
-              "product_table.classification": searchClassification ? searchClassification : "",
-              "product_table.manufacturer": searchManufacturer ? searchManufacturer : "",
-              "product_table.model": searchModelName ? searchModelName : "",
-              "product_table.name": searchProductName ? searchProductName : "",
-              "product_table.product_code": searchProductCode ? searchProductCode : "",
-              "product_table.spec": searchProductSpec ? searchProductSpec : "",
-              "product_table.type": searchType ? searchType : "",
-
-              "module_table.classification": searchClassification ? searchClassification : "",
-              "module_table.manufacturer": searchManufacturer ? searchManufacturer : "",
-              "module_table.model": searchModelName ? searchModelName : "",
-              "module_table.name": searchProductName ? searchProductName : "",
-              "module_table.module_code": searchProductCode ? searchProductCode : "",
-              "module_table.spec": searchProductSpec ? searchProductSpec : "",
-              "module_table.type": searchType ? searchType : "",
-
-              "material_table.classification": searchClassification ? searchClassification : "",
-              "material_table.manufacturer": searchManufacturer ? searchManufacturer : "",
-              "material_table.model": searchModelName ? searchModelName : "",
-              "material_table.name": searchProductName ? searchProductName : "",
-              "material_table.material_code": searchProductCode ? searchProductCode : "",
-              "material_table.spec": searchProductSpec ? searchProductSpec : "",
-              "material_table.type": searchType ? searchType : "",
-              "material_table.directly_written": 0,
-
-              "stock_table.conditions": searchConditions ? searchConditions : "",
-              "stock_table.stock_num": searchStockMoreZero
-            }
-          ],
-          "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
-          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
-        });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        if(result['code'] == 0){
-
-          result = result['data'].map(a => {
-            if (!a.stock_num){
-              a.stock_price = 0;
-            }else {
-              a.stock_price = Math.round(a.unit_price * a.stock_num)
-            }
-            return a;
-          });
-
-          if(result.length === 0){
-            mux.Util.showAlert('검색 결과가 없습니다.');
-          }
-
-          let product_data_arr = [];
-          // result.forEach(data => {
-          //   let isExist = false;
-          //   if (!this.stock_more_0 || (data.stock_num && data.stock_num > 0)){
-          //     for (let i = 0; i < product_data_arr.length; i++) {
-          //       if (product_data_arr[i]._code === data._code) {
-          //         if (data.stock_num){
-          //           if (product_data_arr[i].spot_stock !== undefined){
-          //             product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
-          //           }else {
-          //             product_data_arr[i].spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
-          //           }
-          //         }
-          //         isExist = true;
-          //         break;
-          //       }
-          //     }
-          //     if (!isExist) {
-          //       if (data.stock_num){
-          //         data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
-          //       }
-          //       product_data_arr.push(data);
-          //     }
-          //   }
-          // });
-          this.product_data = product_data_arr;
-          // this.product_data = PurchasePageConfig.test_product_data;
-
-          this.product_data.forEach(data =>{
-            let stock_calc = 0;
-            if (data.spot_stock){
-              for(let d=0; d<data.spot_stock.length; d++){
-                if (typeof data.spot_stock[d].stock_num === 'number'){
-                  stock_calc += data.spot_stock[d].stock_num;
-                }
-              }
-            }
-            data.total_stock = stock_calc
-            if (typeof data.unit_price === 'number'){
-              data.item_price = data.unit_price * data.total_stock
-              data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
-            }else {
-              data.item_price = 0;
-            }
-          })
-        } else {
-          mux.Util.showAlert(result['failed_info']);
-        }
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
-      }
-      this.loading_dialog = false;
-    },
     addItemSetting(){
+      let added=0;
+      for(let i=0; i<this.bom_list_purchase_items_data.length; i++){
+        if(this.bom_list_purchase_items_data[i].data_type === 'added'){
+          added ++;
+        }
+      }
       this.bom_list_purchase_items_data.push(
         {
           "type":"",
           "classification":"",
-          "item_code":"",
+          "item_code": '임시코드-'+ ('00' + (added + 1)).slice(-3),
           "name":"",
           "model":"",
           "spec":"",
@@ -1582,10 +1459,19 @@ export default {
           "item_num": "",
           "stock_num":"",
           "estimate":"",
-          "data_type": "added"
+          "data_type": "added",
+          "purchase_estimate_check":false,
+          "purchase_estimate_company" :"",
+          "purchase_estimate_file" :"",
+          "purchase_estimate_thumbnail" :""
         }
       )
-    }
+    },
+
+    showEstiamteSet(item){
+      console.log(mux.Util.imageBinary(item.purchase_estimate_thumbnail));
+    },
+
   }
 }
 </script>
