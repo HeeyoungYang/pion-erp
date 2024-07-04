@@ -1649,29 +1649,41 @@ export default {
       this.calc_cost_detail_data_direct_labor.belong_data = [];
       // 조회 - 간접 노무비 적용
       this.calc_cost_detail_data_indirect_labor.cost_unit_price = 0;
+      this.calc_cost_detail_data_indirect_labor.cost_num = 1;
       // 조회 - 고용보험료 적용
       this.calc_cost_detail_data_employment_insurance.cost_unit_price = 0;
+      this.calc_cost_detail_data_employment_insurance.cost_num = 1;
       // 조회 - 공구손료 적용
       this.calc_cost_detail_data_tool_rent_fee.cost_unit_price = 0;
+      this.calc_cost_detail_data_tool_rent_fee.cost_num = 1;
       // 조회 - 여비교통 통신비 적용
       this.calc_cost_detail_data_transportation_fee.cost_unit_price = 0;
+      this.calc_cost_detail_data_transportation_fee.cost_num = 1;
       // 조회 - 산재보험료 적용
       this.calc_cost_detail_data_industrial_accident.cost_unit_price = 0;
+      this.calc_cost_detail_data_industrial_accident.cost_num = 1;
       // 조회 - 세금과공과 적용
       this.calc_cost_detail_data_taxes_dues.cost_unit_price = 0;
+      this.calc_cost_detail_data_taxes_dues.cost_num = 1;
       // 조회 - 복리후생비 적용
       this.calc_cost_detail_data_welfare_benefits.cost_unit_price = 0;
+      this.calc_cost_detail_data_welfare_benefits.cost_num = 1;
       // 조회 - 퇴직공제 부금비 적용
       this.calc_cost_detail_data_retirement.cost_unit_price = 0;
+      this.calc_cost_detail_data_retirement.cost_num = 1;
       // 조회 - 소모품비 적용
       this.calc_cost_detail_data_expendables.cost_unit_price = 0;
+      this.calc_cost_detail_data_expendables.cost_num = 1;
       // 조회 - 산업안전보건관리비 적용
       this.calc_cost_detail_data_industrial_safety.cost_unit_price = 0;
+      this.calc_cost_detail_data_industrial_safety.cost_num = 1;
 
       // 조회 - 일반관리비 적용
       this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = 0;
+      this.calc_cost_detail_data_normal_maintenance_fee.cost_num = 1;
       // 조회 - 이윤 적용
       this.calc_cost_detail_data_profite.cost_unit_price = 0;
+      this.calc_cost_detail_data_profite.cost_num = 1;
 
       this.calc_cost_detail_data_indirect_labor.belong_data[0].cost_list = '';
       this.calc_cost_detail_data_employment_insurance.belong_data[0].cost_list = '';

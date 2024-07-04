@@ -148,7 +148,7 @@
           :class="grandChildTrClass ? grandChildTrClass : ''"
           :style="grandChildTrStyle ? grandChildTrStyle : ''"
           :key="'surveycost_'+index+'_'+idx+'_'+inIdx"
-          v-show="!hideChildren && !hideGrandChildren || (showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx))">
+          v-show="!hideChildren && !hideGrandChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index) && showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx))">
           <td>{{ innerBelongItem.cost_no }}</td>
           <td style="padding-left:40px;" :colspan="innerBelongItem.cost_list_colspan">
             {{ innerBelongItem.cost_list }}
