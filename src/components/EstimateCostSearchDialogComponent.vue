@@ -20,7 +20,7 @@
         >
           <v-col
             cols="12"
-            sm="7"
+            sm="3"
             align-self="center"
           >
             <v-btn
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import ProductCostSearchDialogConfig from "@/configure/ProductCostSearchDialogConfig.json";
+import EstimateCostSearchDialogConfig from "@/configure/EstimateCostSearchDialogConfig.json";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 // import mux from "@/mux";
 // import DataTableComponent from "@/components/DataTableComponent";
@@ -109,7 +109,7 @@ export default {
       thisfunc: this.thisfunc,
       eventAdded: false,
       headers:[],
-      searchCardInputs: ProductCostSearchDialogConfig.searchCardInputs
+      searchCardInputs: EstimateCostSearchDialogConfig.searchCardInputs
     };
   },
   watch: {
@@ -122,8 +122,8 @@ export default {
   },
   methods: {
     async initialize () {
-      this.headers = ProductCostSearchDialogConfig.table_header;
-      this.members = ProductCostSearchDialogConfig.test_members
+      this.headers = EstimateCostSearchDialogConfig.table_header;
+      this.members = EstimateCostSearchDialogConfig.test_members
       // let memberList = [];
 
     },

@@ -78,6 +78,7 @@
                         :headers="search_estimate_headers"
                         :items="search_estimate_data"
                         item-key="estimate_code"
+                        @clickTr="clickSearchedTr"
                       />
                     </v-col>
                   </v-row>
@@ -680,7 +681,23 @@
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
-                          <p class="text-h5 black--text mb-0 font-weight-black"  style="font-weight: bold;">산출내역서</p>
+                          <p class="text-h5 black--text mb-0 font-weight-black float-left "  style="font-weight: bold;">
+                            산출내역서
+                          </p>
+                          <v-radio-group
+                            v-model="estimate_type"
+                            class="mt-0 float-left ml-3"
+                            row
+                          >
+                            <v-radio
+                              label="재료"
+                              value="재료비"
+                            ></v-radio>
+                            <v-radio
+                              label="기술"
+                              value="기술료"
+                            ></v-radio>
+                          </v-radio-group>
                         </v-col>
                       </v-row>
 
@@ -724,6 +741,15 @@
                       @click="product_cost_dialog = true"
                     >
                       원가 불러오기
+                    </v-btn>
+                    <v-btn
+                      color="grey lighten-4"
+                      small
+                      class="mr-4 float-right"
+                      elevation="1"
+                      @click="estimate_cost_dialog = true"
+                    >
+                      견적 불러오기
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -1007,6 +1033,7 @@
                     elevation="1"
                     class=" float-right"
                     color="default"
+                    @click="addDatas"
                   >
                     행 추가
                   </v-btn>
@@ -1063,6 +1090,102 @@
               </v-row>
             </v-tab-item>
           </v-tabs-items>
+        </v-container>
+      </ModalDialogComponent>
+
+    <!-- 기술료 작성 Modal -->
+    <ModalDialogComponent
+        :dialog-value="dialog_payment"
+        max-width="1000px"
+        title-class=" "
+        :dialog-transition="'slide-x-transition'"
+        :dialog-custom="'custom-dialog elevation-0 white'"
+        :card-elevation="'0'"
+        :persistent="true"
+      >
+        <v-container>
+          <!-- 모달 내용 구성 -->
+          <v-row>
+            <v-col cols="12" sm="12">
+              <v-btn
+                fab
+                color="blue-grey darken-1"
+                x-small
+                class="float-right white--text"
+                elevation="1"
+                @click="dialog_payment=false"
+              >
+                <v-icon> mdi-close-thick </v-icon>
+              </v-btn>
+              <v-btn
+                color="primary"
+                fab
+                x-small
+                elevation="1"
+                class="float-right mr-2"
+              >
+                <v-icon small>mdi-content-save</v-icon>
+              </v-btn>
+              <v-btn
+                small
+                elevation="1"
+                class=" float-right mr-2"
+                color="default"
+                @click="addDatas"
+              >
+                행 추가
+              </v-btn>
+            </v-col>
+            <v-col cols="12" sm="12">
+              <v-data-table
+                dense
+                :headers="construction_materials_headers"
+                :items="construction_materials_data"
+                hide-default-footer
+                disable-pagination
+                item-key="construction_materials"
+                class="elevation-1"
+              >
+                <template v-slot:item>
+                  <tr>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        style="width:200px"
+                      >
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        style="width:200px"
+                      >
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        style="width:200px"
+                      >
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      0000
+                    </td>
+                    <td align="center">
+                      <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                    </td>
+                  </tr>
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
         </v-container>
       </ModalDialogComponent>
 
@@ -1223,9 +1346,15 @@
       <ProductCostSearchDialogComponent
         :dialog-value="product_cost_dialog"
         :persistent="true"
-        @close="closeProductCostSearch"
+        @close="closeCostSearchDialog"
       >
       </ProductCostSearchDialogComponent>
+      <EstimateCostSearchDialogComponent
+        :dialog-value="estimate_cost_dialog"
+        :persistent="true"
+        @close="closeCostSearchDialog"
+      >
+      </EstimateCostSearchDialogComponent>
   </div>
 </template>
 <script>
@@ -1239,6 +1368,7 @@ import CostTableComponent from "@/components/CostTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent";
 import ProductCostSearchDialogComponent from "@/components/ProductCostSearchDialogComponent.vue";
+import EstimateCostSearchDialogComponent from "@/components/EstimateCostSearchDialogComponent.vue";
 
 import mux from "@/mux";
 
@@ -1256,13 +1386,53 @@ export default {
                 CostTableComponent,
                 ModalDialogComponent,
                 ProductCostSearchDialogComponent,
+                EstimateCostSearchDialogComponent,
               },
 
   created () {
     this.initialize()
     this.members()
   },
+  watch:{
+    estimate_type(newValue){
+      this.calc_cost_detail_data2.shift();
+      this.calc_cost_detail_data.shift();
+      let payment = {"cost_list": "기술료", "cost_list_colspan": 4, "belong_data": []};
+      let material =  {
+            "cost_list": "재료비",
+            "cost_list_colspan": 4,
+            "belong_data": [
+              {
+                "cost_list": "가. 재료",
+                "cost_list_colspan": 4,
+                "belong_data": []
+              },
+              {
+                "cost_list": "나. 공사 자재",
+                "cost_list_colspan": 4,
+                "belong_data": []
+              }
+            ]
+          };
 
+      if(newValue === '기술료'){
+        this.calc_cost_detail_data2.unshift(payment);
+        this.calc_cost_detail_data.unshift(payment);
+      }else{
+        this.calc_cost_detail_data2.unshift(material);
+        this.calc_cost_detail_data.unshift(material);
+      }
+      this.calc_cost_detail_data2.map(x => {
+        if (x.cost_list === '재료비' || x.cost_list === '기술료') {
+          x.costListBtn = {
+            text: '작성',
+            click: ()=>{x.cost_list === '재료비' ? this.dialog_search_product = true : this.dialog_payment = true}
+          }
+        }
+        return x;
+      })
+    }
+  },
   methods:{
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -1295,8 +1465,9 @@ export default {
       // mux.Server.uploadFile({path: '/', folder:'somefolder', file: this.files[0]});
       mux.Server.uploadFile({path: '/', folder:'somefolder', files: this.files});
     },
-    closeProductCostSearch(){
+    closeCostSearchDialog(){
       this.product_cost_dialog = false;
+      this.estimate_cost_dialog = false;
     },
     selectMemberDialog(idx){
       this.member_type_index = idx
@@ -1393,10 +1564,61 @@ export default {
       }
       this.loading_dialog = false;
     },
+    addDatas(){
+      this.construction_materials_data.push(
+        {
+          construction_materials: '',
+          construction_materials_num: '',
+          construction_materials_unit_price: ''
+        }
+      )
+    },
+    clickSearchedTr(item) {
+
+      //item.type이 기술료인지 재료비인지 판단하여 양식 변경
+      this.calc_cost_detail_data2.shift();
+      this.calc_cost_detail_data.shift();
+      let payment = {"cost_list": "기술료", "cost_list_colspan": 4, "belong_data": []};
+      let material =  {
+            "cost_list": "재료비",
+            "cost_list_colspan": 4,
+            "belong_data": [
+              {
+                "cost_list": "가. 재료",
+                "cost_list_colspan": 4,
+                "belong_data": []
+              },
+              {
+                "cost_list": "나. 공사 자재",
+                "cost_list_colspan": 4,
+                "belong_data": []
+              }
+            ]
+          };
+
+      if(item.estiamte_type === '기술료'){
+        this.calc_cost_detail_data2.unshift(payment);
+        this.calc_cost_detail_data.unshift(payment);
+      }else{
+        this.calc_cost_detail_data2.unshift(material);
+        this.calc_cost_detail_data.unshift(material);
+      }
+      this.calc_cost_detail_data2.map(x => {
+        if (x.cost_list === '재료비' || x.cost_list === '기술료') {
+          x.costListBtn = {
+            text: '작성',
+            click: ()=>{x.cost_list === '재료비' ? this.dialog_search_product = true : this.dialog_payment = true}
+          }
+        }
+        return x;
+      })
+
+    }
   },
   data(){
     return{
       product_cost_dialog: false,
+      estimate_cost_dialog: false,
       edit_estimate_info: true,
       edit_survey_cost_num_disabled: true,
       edit_buttons_show: true,
@@ -1409,6 +1631,7 @@ export default {
       dialog_search_product_items: EstimatePageConfig.dialog_search_product_items,
       dialog_search_product: false,
       dialog_calculate_labor: false,
+      dialog_payment: false,
       dialog_search_product_data: [],
 
       member_dialog: false,
@@ -1418,7 +1641,7 @@ export default {
       labor_list:[],
       labor_occupation_list:[],
 
-
+      estimate_type: '재료비',
       search_complete_product_code: '',
       search_complete_product_name: '',
       search_product_capacity: '',

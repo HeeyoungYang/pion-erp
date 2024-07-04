@@ -13,5 +13,8 @@
       "given_name": "양희영",
       "cost_total_amount": "11,000,000"
     }
+  ],
+  "searchCardInputs":[
+    {"label":"제품명", "col":"12", "sm":"5", "lg":"5"}
   ]
 }
