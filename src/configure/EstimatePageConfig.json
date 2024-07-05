@@ -31,9 +31,9 @@
     {"label":"발행일", "type": "dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"8"}
   ],
   "estimateSearchDefaultInfoInputs":[    
-    {"label":"발행일", "type": "dateSingle", "menu":"","col":"12", "sm":"4", "lg":"4", "disabled":true},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4", "disabled":true},
-    {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4", "disabled":true}
+    {"label":"발행일", "type": "dateSingle", "menu":"","col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
+    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
+    {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true}
   ],
   "estimateSearchDefaultInfoInputs2":[
     {"label":"납기", "type": "dateSingle", "menu":"" , "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
@@ -42,27 +42,27 @@
     {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": "", "disabled":true}
   ],
   "estimateWriteDefaultInfoInputs":[    
-    {"label":"발행일", "type": "dateSingle","col":"12", "sm":"4", "lg":"4"},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4"},
-    {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4"}
+    {"label":"발행일", "type": "dateSingle", "menu": "", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": ""}
   ],
   "estimateWriteDefaultInfoInputs2":[
-    {"label":"납기", "type": "dateSingle" , "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"납기", "type": "dateSingle", "menu": "", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"용역명", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"용역기간", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": ""}
   ],
   "estimateSearchCompanyInfoInputs":[
-    {"label":"업체명", "col":"12", "sm":"4", "lg":"6", "disabled":true},
-    {"label":"담당자", "col":"12", "sm":"4", "lg":"6", "disabled":true},
-    {"label":"담당자 E-mail", "col":"12", "sm":"4", "lg":"6", "disabled":true},
-    {"label":"담당자 연락처", "col":"12", "sm":"4", "lg":"6", "disabled":true}
+    {"label":"업체명", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true},
+    {"label":"담당자", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true},
+    {"label":"담당자 E-mail", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true},
+    {"label":"담당자 연락처", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true}
   ],
   "estimateWriteCompanyInfoInputs":[
-    {"label":"업체명", "col":"12", "sm":"4", "lg":"6"},
-    {"label":"담당자", "col":"12", "sm":"4", "lg":"6"},
-    {"label":"담당자 E-mail", "col":"12", "sm":"4", "lg":"6"},
-    {"label":"담당자 연락처", "col":"12", "sm":"4", "lg":"6"}
+    {"label":"업체명", "col":"12", "sm":"4", "lg":"6", "value": ""},
+    {"label":"담당자", "col":"12", "sm":"4", "lg":"6", "value": ""},
+    {"label":"담당자 E-mail", "col":"12", "sm":"4", "lg":"6", "value": ""},
+    {"label":"담당자 연락처", "col":"12", "sm":"4", "lg":"6", "value": ""}
   ],
   "estimateFilesInputs":[
     {"label":"도면", "column_name":"blueprint", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},

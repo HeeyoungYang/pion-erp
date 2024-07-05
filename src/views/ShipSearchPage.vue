@@ -173,7 +173,7 @@
               clearable
               filled
               hide-details
-              @dateSet = "dateSetImport"
+              @dateChanged = "dateChangedImport"
               :inputs="reshipmentCardInfoInputs">
               <v-col cols="12" sm="1" align-self="center">
                 <v-btn
@@ -1600,7 +1600,7 @@ export default {
 
       }
     },
-    dateSetImport(item){
+    dateChangedImport(item){
       this.ship_date_set = item
     },
   },

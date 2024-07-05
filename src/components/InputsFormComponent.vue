@@ -109,7 +109,7 @@
       >
         <template v-slot:activator="{ on, attrs }">
           <v-text-field
-            v-model="dateSet"
+            v-model="dateSingleText"
             :dense="dense"
             :rules="input.rules"
             :disabled="input.disabled"
@@ -124,7 +124,7 @@
           ></v-text-field>
         </template>
         <v-date-picker
-          v-model="dateSet"
+          v-model="dateSingleText"
           @input="input.menu = false"
         ></v-date-picker>
       </v-menu>
@@ -220,20 +220,40 @@ export default {
     smallChips: Boolean
   },
   computed:{
-    dateRangeText () {
-      return this.inputs.find(x=>x.type === 'dateRange').value.sort().join(' ~ ');
+      dateRangeText () {
+        return this.inputs.find(x=>x.type === 'dateRange').value.sort().join(' ~ ');
+      },
+      dateSingleText: {
+        get() {
+          if (this.inputs.find(x=>x.type === 'dateSingle').value) {
+            return this.inputs.find(x=>x.type === 'dateSingle').value;
+          }else {
+            return (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10);
+          }
+        },
+        set(value) {
+          if (this.inputs.find(x => x.type === 'dateSingle')) {
+            this.inputs.find(x => x.type === 'dateSingle').value = value;
+          }
+        }
+      },
     },
-  },
   data() {
     return {
       mux: mux,
-      dateSet: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
       dates:[]
     };
   },
   watch: {
-    dateSet(){
-      this.$emit('dateSet', this.dateSet);
+    inputs: {
+      handler: function (val) {
+        if (val.find(x=>x.type === 'dateSingle').value.length > 0) {
+          this.$emit('dateChanged', val.find(x=>x.type === 'dateSingle').value);
+        }else if (val.find(x=>x.type === 'dateRange').value.length > 0) {
+          this.$emit('dateRangeChanged', val.find(x=>x.type === 'dateRange').value);
+        }
+      },
+      deep: true
     }
   },
   methods: {

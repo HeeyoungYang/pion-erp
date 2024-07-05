@@ -112,7 +112,7 @@
                       filled
                       hide-details
                       :inputs="inboundCardInfoInputs"
-                      @dateSet = "dateSetImport"
+                      @dateChanged = "dateChangedImport"
                     >
                       <v-col cols="12" sm="4" lg="2" align-self="center">
                         <v-radio-group
@@ -414,7 +414,7 @@
                       filled
                       hide-details
                       :inputs="add_self === '재입고' ? restockCardInfoInputs : inboundCardInfoInputs"
-                      @dateSet = "dateSetImport"
+                      @dateChanged = "dateChangedImport"
                     >
                       <v-col cols="12" sm="4" lg="2" align-self="center" v-if="add_self !== '재입고'">
                         <v-radio-group
@@ -1995,7 +1995,7 @@ export default {
     members(data){
       this.members_list=data;
     },
-    dateSetImport(item){
+    dateChangedImport(item){
       this.inbound_date_set = item
     },
     close(){

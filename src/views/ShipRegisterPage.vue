@@ -102,7 +102,7 @@
                   filled
                   hide-details
                   :inputs="shipCardInputs"
-                  @dateSet = "dateSetImport"
+                  @dateChanged = "dateChangedImport"
                 >
                 </InputsFormComponent>
               </v-form>
@@ -733,7 +733,7 @@ export default {
         }
       }
     },
-    dateSetImport(item){
+    dateChangedImport(item){
       this.ship_date_set = item
     },
     close(){

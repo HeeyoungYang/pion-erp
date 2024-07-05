@@ -662,7 +662,7 @@
                         dense
                         clearable
                         :inputs="estimateWriteDefaultInfoInputs"
-                        @dateSet="(date) => writeIssueDate = date"
+                        @dateChanged="(date) => writeIssueDate = date"
                       >
                       </InputsFormComponent>
                       <InputsFormComponent
@@ -1698,6 +1698,18 @@ export default {
     calc_cost_detail_data_industrial_safety(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('산업안전보건관리비'))},
     calc_cost_detail_data_normal_maintenance_fee(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='일반관리비')},
     calc_cost_detail_data_profite(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='이윤')},
+    
+    input_issue_date() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '발행일') },
+    input_inhouse_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '사내 입찰번호') },
+    input_company_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '기업별 입찰번호') },
+    input_due_date() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '납기') },
+    input_service_name() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '용역명') },
+    input_service_period() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '용역기간') },
+    input_remark() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '특이사항') },
+    input_company_name() { return this.estimateSearchCompanyInfoInputs.find(x=>x.label === '업체명') },
+    input_company_manager() { return this.estimateSearchCompanyInfoInputs.find(x=>x.label === '담당자') },
+    input_company_manager_email() { return this.estimateSearchCompanyInfoInputs.find(x=>x.label === '담당자 E-mail') },
+    input_company_manager_phone() { return this.estimateSearchCompanyInfoInputs.find(x=>x.label === '담당자 연락처') },
 
     total_product_cost2(){
       if (!this.calc_cost_detail_data_product_cost2.belong_data || this.calc_cost_detail_data_product_cost2.belong_data.length === 0) return 0;
@@ -2200,6 +2212,18 @@ export default {
       this.calc_cost_detail_data_industrial_safety.belong_data[0].cost_list = ' - ' + this.clickedProductCost.industrial_safety_formula;
       this.calc_cost_detail_data_normal_maintenance_fee.belong_data[0].cost_list = ' - ' + this.clickedProductCost.normal_maintenance_fee_formula;
       this.calc_cost_detail_data_profite.belong_data[0].cost_list = ' - ' + this.clickedProductCost.profite_formula;
+
+      this.input_issue_date.value = this.clickedProductCost.issue_date;
+      this.input_inhouse_bid_number.value = this.clickedProductCost.inhouse_bid_number;
+      this.input_company_bid_number.value = this.clickedProductCost.company_bid_number;
+      this.input_due_date.value = this.clickedProductCost.due_date;
+      this.input_service_name.value = this.clickedProductCost.service_name;
+      this.input_service_period.value = this.clickedProductCost.service_period;
+      this.input_remark.value = this.clickedProductCost.remark;
+      this.input_company_name.value = this.clickedProductCost.company_name;
+      this.input_company_manager.value = this.clickedProductCost.company_manager;
+      this.input_company_manager_email.value = this.clickedProductCost.company_manager_email;
+      this.input_company_manager_phone.value = this.clickedProductCost.company_manager_phone;
     },
     deleteItem () {
       this.dialogDelete = true;
