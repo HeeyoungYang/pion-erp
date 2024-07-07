@@ -7,10 +7,10 @@
     "조회", "작성"
   ],
   "search_tab_items": [
-    "수주서", "기본 정보", "산출내역서", "노무비 산출"
+    "수주서", "수주 확인서", "기본 정보", "산출내역서", "노무비 산출"
   ],
   "write_tab_items": [
-    "수주서", "산출내역서"
+    "수주 정보", "산출내역서"
   ],
   "dialog_search_product_items": [
     "제품 불러오기", "공사 자재"
@@ -35,6 +35,7 @@
     {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": "", "disabled":true}
   ],
   "obtainWriteDefaultInfoInputs":[    
+    {"label":"수주서", "column_name":"approval", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
     {"label":"발행일", "col":"12", "sm":"4", "lg":"4"},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4"},
     {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4"},
@@ -44,7 +45,7 @@
     {"label":"프로젝트/용역 명", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"프로젝트/용역 기간", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"유효기간", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": ""}
+    {"label":"특이사항", "col":"12", "sm":"4", "lg":"8", "value": ""}
   ],
   "obtainSearchCompanyInfoInputs":[
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "disabled":true},
@@ -330,15 +331,26 @@
 
   ],
 
-
   "test_estimate_data":[
     {
       "created_time" : "2024-05-29", 
       "given_name": "양희영",
       "company_name": "업체A",
+      "project_code": "AAAA-01",
       "inhouse_bid_number": "TEST-01",
       "company_bid_number": "TEST-02",
-      "cost_total_amount": "1,234,567"      
+      "cost_total_amount": "1,234,567",
+      "estiamte_type": "재료비"      
+    },
+    {
+      "created_time" : "2024-05-29", 
+      "given_name": "양희영",
+      "company_name": "업체B",
+      "project_code": "BBBB-01",
+      "inhouse_bid_number": "TEST-03",
+      "company_bid_number": "TEST-04",
+      "cost_total_amount": "1,234,567",
+      "estiamte_type": "기술료"      
     }
   ]
 }

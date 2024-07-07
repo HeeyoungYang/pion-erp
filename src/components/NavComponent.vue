@@ -181,7 +181,7 @@
         <v-list-group
           v-if="designProductionPagesInfo.length > 0"
           :value="designProductionMenu"
-          prepend-icon="mdi-cogs"
+          prepend-icon="mdi-message-cog"
         >
           <template v-slot:activator>
             <v-list-item-title>설계 관리</v-list-item-title>
@@ -213,6 +213,30 @@
 
           <v-list-item
               v-for="([title, icon, to], i) in purchasePagesInfo"
+              :key="i"
+              link
+              :to="to"
+              class="pl-6"
+          >
+            <v-list-item-title v-text="title"></v-list-item-title>
+
+            <v-list-item-icon>
+              <v-icon v-text="icon"></v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
+
+        <v-list-group
+          v-if="completionPagesInfo.length > 0"
+          :value="completionMenu"
+          prepend-icon="mdi-check-decagram"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>준공 관리</v-list-item-title>
+          </template>
+
+          <v-list-item
+              v-for="([title, icon, to], i) in completionPagesInfo"
               :key="i"
               link
               :to="to"
@@ -408,6 +432,10 @@ import mux from '@/mux';
         ['구매 요청 현황', '', '/purchase-search', ['master', '매니저']],
         ['발주 현황', '', '/order-search', ['master', '매니저']],
       ],
+      completionPages: [
+        ['준공', '', '/completion-request', ['master', '매니저']],
+        ['준공 현황', '', '/completion-search', ['master', '매니저']],
+      ],
       // estimatePages: [
       //   ['견적 작성', '', '/home'],
       //   ['견적 조회', '', '/estimate-search'],
@@ -497,6 +525,24 @@ import mux from '@/mux';
           }
         });
         return purchasePagesInfo;
+      },
+      completionPagesInfo() {
+        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
+        let completionPagesInfo = [];
+        this.completionPages.forEach(data => {
+          if (data[data.length-1].length === 0){
+            completionPagesInfo.push(data);
+          } else {
+            data[data.length-1].forEach(permission => {
+              if (permissionArr.includes(permission)){
+                completionPagesInfo.push(data);
+              }
+            });
+          }
+        });
+        return completionPagesInfo;
       },
       inboundPagesInfo() {
         const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음

@@ -759,7 +759,7 @@ export default {
   data(){
     return{
       mux: mux,
-      versions:['1차 수정', '2차 수정', '3차 수정'],
+      versions:['수주 원본', '1차 수주 설계', '2차 수주 설계', '3차 수주 설계'],
       dates: [],
       estimate_steppers: 1,
       estimated_step: 2,

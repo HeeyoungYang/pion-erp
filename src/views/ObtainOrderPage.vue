@@ -60,7 +60,7 @@
                         :headers="search_estimate_headers"
                         :items="search_estimate_data"
                         item-key="estimate_code"
-                        deletable
+                        @clickTr="clickSearchedTr"
                       />
                     </v-col>
                   </v-row>
@@ -81,6 +81,15 @@
                 </v-tab>
               </v-tabs>
               <v-tabs-items v-model="tab_search" class="pb-1">
+                <v-tab-item>
+                  <v-card ref="calcCostCard">
+                    <v-card-text>
+                      <div style="width:100%; background-color: #ccc; min-height:700px">
+                        ※ 수주서 PDF 미리보기 영역
+                      </div>
+                    </v-card-text>
+                  </v-card>
+                </v-tab-item>
                 <!-- 원가 계산서 -->
                 <v-tab-item>
                   <v-card ref="calcCostCard">
@@ -121,7 +130,7 @@
                         style="background: #efefef;"
                       >
                         <v-col align-self="center" cols="12" sm="10">
-                          <p style="font-weight: bold; font-size: 30px;" class="mb-0">수주서
+                          <p style="font-weight: bold; font-size: 30px;" class="mb-0">수주 확인서
                           </p>
                         </v-col>
                         <v-col align-self="center" cols="12" sm="2">
@@ -677,7 +686,23 @@
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
-                          <p class="text-h5 black--text mb-0 font-weight-black"  style="font-weight: bold;">산출내역서</p>
+                          <p class="text-h5 black--text mb-0 font-weight-black float-left"  style="font-weight: bold;">
+                            산출내역서
+                          </p>
+                          <v-radio-group
+                            v-model="estimate_type"
+                            class="mt-0 float-left ml-3"
+                            row
+                          >
+                            <v-radio
+                              label="재료"
+                              value="재료비"
+                            ></v-radio>
+                            <v-radio
+                              label="기술"
+                              value="기술료"
+                            ></v-radio>
+                          </v-radio-group>
                         </v-col>
                       </v-row>
 
@@ -730,7 +755,7 @@
                     style="background: #efefef;"
                   >
                     <v-col align-self="center" cols="12" sm="10">
-                      <p style="font-weight: bold; font-size: 30px;" class="mb-0">수주서
+                      <p style="font-weight: bold; font-size: 30px;" class="mb-0">수주서 확인서
                       </p>
                     </v-col>
                     <v-col align-self="center" cols="12" sm="2">
@@ -1004,6 +1029,7 @@
                     elevation="1"
                     class=" float-right"
                     color="default"
+                    @click="addDatas"
                   >
                     행 추가
                   </v-btn>
@@ -1217,6 +1243,102 @@
           </v-row>
         </v-container>
       </ModalDialogComponent>
+
+      <!-- 기술료 작성 Modal -->
+      <ModalDialogComponent
+        :dialog-value="dialog_payment"
+        max-width="1000px"
+        title-class=" "
+        :dialog-transition="'slide-x-transition'"
+        :dialog-custom="'custom-dialog elevation-0 white'"
+        :card-elevation="'0'"
+        :persistent="true"
+      >
+        <v-container>
+          <!-- 모달 내용 구성 -->
+          <v-row>
+            <v-col cols="12" sm="12">
+              <v-btn
+                fab
+                color="blue-grey darken-1"
+                x-small
+                class="float-right white--text"
+                elevation="1"
+                @click="dialog_payment=false"
+              >
+                <v-icon> mdi-close-thick </v-icon>
+              </v-btn>
+              <v-btn
+                color="primary"
+                fab
+                x-small
+                elevation="1"
+                class="float-right mr-2"
+              >
+                <v-icon small>mdi-content-save</v-icon>
+              </v-btn>
+              <v-btn
+                small
+                elevation="1"
+                class=" float-right mr-2"
+                color="default"
+                @click="addDatas"
+              >
+                행 추가
+              </v-btn>
+            </v-col>
+            <v-col cols="12" sm="12">
+              <v-data-table
+                dense
+                :headers="construction_materials_headers"
+                :items="construction_materials_data"
+                hide-default-footer
+                disable-pagination
+                item-key="construction_materials"
+                class="elevation-1"
+              >
+                <template v-slot:item>
+                  <tr>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        style="width:200px"
+                      >
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        style="width:200px"
+                      >
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      <v-text-field
+                        dense
+                        hide-details
+                        filled
+                        style="width:200px"
+                      >
+                      </v-text-field>
+                    </td>
+                    <td align="center">
+                      0000
+                    </td>
+                    <td align="center">
+                      <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
+                    </td>
+                  </tr>
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
+        </v-container>
+      </ModalDialogComponent>
       <EstimateSearchDialogComponent
         :dialog-value="estimate_dialog"
         :persistent="true"
@@ -1258,6 +1380,46 @@ export default {
     this.initialize()
   },
 
+  watch:{
+    estimate_type(newValue){
+      this.calc_cost_detail_data2.shift();
+      this.calc_cost_detail_data.shift();
+      let payment = {"cost_list": "기술료", "cost_list_colspan": 4, "belong_data": []};
+      let material =  {
+            "cost_list": "재료비",
+            "cost_list_colspan": 4,
+            "belong_data": [
+              {
+                "cost_list": "가. 재료",
+                "cost_list_colspan": 4,
+                "belong_data": []
+              },
+              {
+                "cost_list": "나. 공사 자재",
+                "cost_list_colspan": 4,
+                "belong_data": []
+              }
+            ]
+          };
+
+      if(newValue === '기술료'){
+        this.calc_cost_detail_data2.unshift(payment);
+        this.calc_cost_detail_data.unshift(payment);
+      }else{
+        this.calc_cost_detail_data2.unshift(material);
+        this.calc_cost_detail_data.unshift(material);
+      }
+      this.calc_cost_detail_data2.map(x => {
+        if (x.cost_list === '재료비' || x.cost_list === '기술료') {
+          x.costListBtn = {
+            text: '작성',
+            click: ()=>{x.cost_list === '재료비' ? this.dialog_search_product = true : this.dialog_payment = true}
+          }
+        }
+        return x;
+      })
+    }
+  },
   methods:{
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -1377,10 +1539,62 @@ export default {
       }
       this.loading_dialog = false;
     },
+    addDatas(){
+      this.construction_materials_data.push(
+        {
+          construction_materials: '',
+          construction_materials_num: '',
+          construction_materials_unit_price: ''
+        }
+      )
+    },
+
+    clickSearchedTr(item) {
+    //item.type이 기술료인지 재료비인지 판단하여 양식 변경
+    this.calc_cost_detail_data2.shift();
+    this.calc_cost_detail_data.shift();
+    let payment = {"cost_list": "기술료", "cost_list_colspan": 4, "belong_data": []};
+    let material =  {
+          "cost_list": "재료비",
+          "cost_list_colspan": 4,
+          "belong_data": [
+            {
+              "cost_list": "가. 재료",
+              "cost_list_colspan": 4,
+              "belong_data": []
+            },
+            {
+              "cost_list": "나. 공사 자재",
+              "cost_list_colspan": 4,
+              "belong_data": []
+            }
+          ]
+        };
+
+    if(item.estiamte_type === '기술료'){
+      this.calc_cost_detail_data2.unshift(payment);
+      this.calc_cost_detail_data.unshift(payment);
+    }else{
+      this.calc_cost_detail_data2.unshift(material);
+      this.calc_cost_detail_data.unshift(material);
+    }
+    this.calc_cost_detail_data2.map(x => {
+      if (x.cost_list === '재료비' || x.cost_list === '기술료') {
+        x.costListBtn = {
+          text: '작성',
+          click: ()=>{x.cost_list === '재료비' ? this.dialog_search_product = true : this.dialog_payment = true}
+        }
+      }
+      return x;
+    })
+
+    }
   },
   data(){
     return{
       type_obtain: '프로젝트',
+      estimate_type: '재료비',
+      dialog_payment: false,
       estimate_dialog: false,
       member_dialog: false,
       edit_survey_cost_num_disabled: true,

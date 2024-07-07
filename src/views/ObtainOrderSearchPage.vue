@@ -104,7 +104,17 @@
         </v-tab>
       </v-tabs>
       <v-tabs-items v-model="tab_search" class="pb-1">
-        <!-- 원가 계산서 -->
+        <!-- 수주서 미리보기 -->
+        <v-tab-item>
+          <v-card ref="calcCostCard">
+            <v-card-text>
+              <div style="width:100%; background-color: #ccc; min-height:700px">
+                ※ 수주서 PDF 미리보기 영역
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-tab-item>
+        <!-- 수주 확인서 -->
         <v-tab-item>
           <v-card ref="calcCostCard" style="border: 1px solid #ccc;">
             <v-card-title>
@@ -400,7 +410,7 @@ export default {
     return{
       mux: mux,
       dates: [],
-      versions:['1차 수정', '2차 수정', '3차 수정'],
+      versions:['수주 원본', '1차 수주 설계', '2차 수주 설계', '3차 수주 설계'],
       inbound_product_list_dialog: false,
       loading_dialog: false,
       tab_search: null,
