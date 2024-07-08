@@ -371,12 +371,7 @@
                         </v-col>
                         <v-col cols="12" sm="4">
                           <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-                            <v-chip
-                              color="grey lighten-2"
-                              class="ma-2"
-                            >
-                              도면파일명
-                            </v-chip>
+                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
                         </v-col>
                         <v-col cols="12" sm="4">
                           <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
@@ -1698,7 +1693,7 @@ export default {
     calc_cost_detail_data_industrial_safety(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('산업안전보건관리비'))},
     calc_cost_detail_data_normal_maintenance_fee(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='일반관리비')},
     calc_cost_detail_data_profite(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='이윤')},
-    
+
     input_issue_date() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '발행일') },
     input_inhouse_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '사내 입찰번호') },
     input_company_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '기업별 입찰번호') },
@@ -1887,7 +1882,7 @@ export default {
         // }else{
         //   mux.Util.showAlert(result['failed_info']);
         // }
-        
+
         // this.search_estimate_data = EstimatePageConfig.test_estimate_data;
       } catch (error) {
         if (prevURL !== window.location.href) return;

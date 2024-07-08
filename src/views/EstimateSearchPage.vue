@@ -95,7 +95,7 @@
       <v-tabs-items v-model="tab_search" class="pb-1">
         <!-- 원가 계산서 -->
         <v-tab-item>
-          <v-card ref="calcCostCard" style="border: 1px solid #ccc; overflow-x: auto">
+          <v-card ref="calcCostCard" style="border: 1px solid #ccc; overflow-x: auto" elevation="0">
             <v-row style="max-width: 868.5px;" class="dont_print" data-html2canvas-ignore="true">
               <v-col align-self="center" cols="12" sm="12" class="dont_print" data-html2canvas-ignore="true">
                 <v-checkbox
@@ -309,12 +309,7 @@
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-                <v-chip
-                  color="grey lighten-2"
-                  class="ma-2"
-                >
-                  도면파일명
-                </v-chip>
+              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
@@ -335,7 +330,7 @@
         </v-tab-item>
         <!-- 산출내역서 -->
         <v-tab-item>
-          <v-card ref="calcDetailCard">
+          <v-card ref="calcDetailCard" style="border: 1px solid #ccc;" elevation="0">
             <v-card-title>
               <v-menu offset-y>
                 <template v-slot:activator="{ on, attrs }">
@@ -386,7 +381,7 @@
 
         <!-- 노무비 산출 -->
         <v-tab-item>
-          <v-card ref="calcLaborCard">
+          <v-card ref="calcLaborCard" style="border: 1px solid #ccc;" elevation="0">
             <v-card-title>
               <v-menu offset-y>
                 <template v-slot:activator="{ on, attrs }">

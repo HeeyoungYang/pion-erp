@@ -35,7 +35,6 @@
     {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": "", "disabled":true}
   ],
   "obtainWriteDefaultInfoInputs":[    
-    {"label":"수주서", "column_name":"approval", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
     {"label":"발행일", "col":"12", "sm":"4", "lg":"4"},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4"},
     {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4"},
@@ -45,7 +44,7 @@
     {"label":"프로젝트/용역 명", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"프로젝트/용역 기간", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"유효기간", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"특이사항", "col":"12", "sm":"4", "lg":"8", "value": ""}
+    {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": ""}
   ],
   "obtainSearchCompanyInfoInputs":[
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "disabled":true},
@@ -60,7 +59,7 @@
   "obtainFilesInputs":[
     {"label":"도면", "column_name":"blueprint", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
     {"label":"승인서", "column_name":"approval", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
-    {"label":"수주확인서", "column_name":"confirmation", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"수주서", "column_name":"confirmation", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
     {"label":"기타", "column_name":"files", "type":"file", "col":"12", "sm":"6", "lg":"6", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true}
   ],
   "search_estimate_headers":[

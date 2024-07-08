@@ -326,6 +326,10 @@
                         v-if="edit_obtain_info"
                       >
                         <v-col cols="12" sm="4">
+                          <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
+                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        </v-col>
+                        <v-col cols="12" sm="4">
                           <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
                           <div style="width:100%; background-color: #ccc; min-height:300px"></div>
                           <!-- <v-img
@@ -340,29 +344,6 @@
                           /> -->
                         </v-col>
                         <v-col cols="12" sm="4">
-                          <p class="font-weight-bold primary--text mb-0">▼ 수주 확인서</p>
-                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                          <!-- <v-img
-                            alt="thumbnail"
-                            class="shrink mr-2"
-                            contain
-                            :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                            transition="scale-transition"
-                            width="350"
-                            @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                            style="cursor: pointer;"
-                          /> -->
-                        </v-col>
-                        <v-col cols="12" sm="4">
-                          <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-                          <v-chip
-                            color="grey lighten-2"
-                            class="ma-2"
-                          >
-                            도면 파일 명
-                          </v-chip>
-                        </v-col>
-                        <v-col cols="12" sm="12">
                           <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
                           <v-chip
                             color="grey lighten-2"
