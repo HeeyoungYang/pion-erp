@@ -357,36 +357,47 @@
                       >
                         <v-col cols="12" sm="4">
                           <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
-                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                          <!-- <v-img
+                          <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+                          <v-img
+                            v-if="clickedProductCost.approval_file"
                             alt="thumbnail"
                             class="shrink mr-2"
                             contain
-                            :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                            :src="mux.Util.imageBinary(clickedProductCost.approval_thumbnail)"
                             transition="scale-transition"
                             width="350"
-                            @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                            @click="download('estimate/approval', clickedProductCost.approval_file, clickedProductCost.cost_calc_code+'_')"
                             style="cursor: pointer;"
-                          /> -->
+                          />
                         </v-col>
                         <v-col cols="12" sm="4">
                           <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-                          <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                          <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+                          <v-img
+                            v-if="clickedProductCost.blueprint_file"
+                            alt="thumbnail"
+                            class="shrink mr-2"
+                            contain
+                            :src="mux.Util.imageBinary(clickedProductCost.blueprint_thumbnail)"
+                            transition="scale-transition"
+                            width="350"
+                            @click="download('estimate/approval', clickedProductCost.blueprint_file, clickedProductCost.cost_calc_code+'_')"
+                            style="cursor: pointer;"
+                          />  
                         </v-col>
                         <v-col cols="12" sm="4">
                           <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
-                          <v-chip
-                            color="grey lighten-2"
-                            class="ma-2"
-                          >
-                            기타첨부파일.pdf
-                          </v-chip>
-                          <v-chip
-                            color="grey lighten-2"
-                            class="ma-2"
-                          >
-                            기타첨부파일2.xlsx
-                          </v-chip>
+                          <div v-if="clickedProductCost.etc_files">
+                            <v-chip
+                              v-for="(file, i) in clickedProductCost.etc_files.split('/')"
+                              :key="i"
+                              color="grey lighten-2"
+                              class="ma-2"
+                              @click="download('estimate/etc', clickedProductCost.etc_files, clickedProductCost.cost_calc_code+'_')"
+                            >
+                              {{ file }}
+                            </v-chip>
+                          </div>
                         </v-col>
                       </v-row>
                       <v-row
@@ -1895,6 +1906,15 @@ export default {
 
       mux.Util.hideLoading();
     },
+    async download(foldername, filename, prefix) {
+      mux.Util.showLoading();
+      try {
+        await mux.Server.downloadFile(foldername, filename, prefix);
+      } catch (error) {
+        mux.Util.showAlert(error);
+      }
+      mux.Util.hideLoading();
+    },
     test(){
       // console.log('test');
       // mux.Server.uploadFile({path: '/', folder:'somefolder', file: this.files[0]});
@@ -2353,6 +2373,18 @@ export default {
       this.calc_cost_detail_data_industrial_safety.belong_data[0].cost_list = '';
       this.calc_cost_detail_data_normal_maintenance_fee.belong_data[0].cost_list = '';
       this.calc_cost_detail_data_profite.belong_data[0].cost_list = '';
+
+      this.input_issue_date.value = '';
+      this.input_inhouse_bid_number.value = '';
+      this.input_company_bid_number.value = '';
+      this.input_due_date.value = '';
+      this.input_service_name.value = '';
+      this.input_service_period.value = '';
+      this.input_remark.value = '';
+      this.input_company_name.value = '';
+      this.input_company_manager.value = '';
+      this.input_company_manager_email.value = '';
+      this.input_company_manager_phone.value = '';
 
       this.edit_survey_cost_num_disabled = true;
       this.edit_buttons_show = false;
