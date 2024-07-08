@@ -2,6 +2,10 @@
   "search_tab_items": [
     "견적서", "산출내역서", "노무비 산출"
   ],
+  "save_estimates": [
+    {"title":"출력", "click":"print"},
+    {"title":"PDF", "click":"pdf"}
+  ],
   "searchCardInputs":[
     {"label":"승인", "type":"auto", "col":"12", "sm":"4", "lg":"2", "value":"All", "list":["All","미확인", "미승인", "승인", "반려"]},
     {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"2", "value": ""},

@@ -105,6 +105,7 @@
                   hide-details
                   class="float-left mr-3 dont_print"
                   data-html2canvas-ignore="true"
+                  @click="estimateCheckbox('labor_cost', '노무비')"
                 ></v-checkbox>
                 <v-checkbox
                   v-model="estimate_checkbox.expense"
@@ -113,6 +114,7 @@
                   hide-details
                   class="float-left mr-3 dont_print"
                   data-html2canvas-ignore="true"
+                  @click="estimateCheckbox('expense', '경비')"
                 ></v-checkbox>
                 <v-checkbox
                   v-model="estimate_checkbox.general_management"
@@ -121,6 +123,7 @@
                   hide-details
                   class="float-left mr-3 dont_print"
                   data-html2canvas-ignore="true"
+                  @click="estimateCheckbox('general_management', '일반관리비')"
                 ></v-checkbox>
                 <v-checkbox
                   v-model="estimate_checkbox.profit"
@@ -129,6 +132,7 @@
                   hide-details
                   class="float-left dont_print"
                   data-html2canvas-ignore="true"
+                  @click="estimateCheckbox('profit', '이윤')"
                 ></v-checkbox>
                 <v-btn
                   color="primary"
@@ -136,11 +140,41 @@
                   fab
                   x-small
                   @click="sendEstiamteMail"
-                  class="mb-3 float-right dont_print"
+                  class="mb-3 ml-3 float-right dont_print"
                   data-html2canvas-ignore="true"
                 >
                   <v-icon >mdi-email</v-icon>
                 </v-btn>
+                <v-menu offset-y>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      color="success"
+                      fab
+                      x-small
+                      class="float-right dont_print"
+                      elevation="0"
+                      v-bind="attrs"
+                      v-on="on"
+                      data-html2canvas-ignore="true"
+                    >
+                      <v-icon
+                        small
+                      >mdi-content-save</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item
+                      v-for="(item, index) in save_estimates"
+                      :key="index"
+                      dense
+                      @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                              : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                    >
+                      <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+
               </v-col>
             </v-row>
             <v-card-title style="max-width: 868.5px;">
@@ -302,6 +336,37 @@
         <!-- 산출내역서 -->
         <v-tab-item>
           <v-card ref="calcDetailCard">
+            <v-card-title>
+              <v-menu offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    color="success"
+                    fab
+                    x-small
+                    class="dont_print"
+                    elevation="0"
+                    v-bind="attrs"
+                    v-on="on"
+                    data-html2canvas-ignore="true"
+                  >
+                    <v-icon
+                      small
+                    >mdi-content-save</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item
+                    v-for="(item, index) in save_estimates"
+                    :key="index"
+                    dense
+                    @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                            : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                  >
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-card-title>
             <v-card-text>
               <v-form ref="surveyCostForm">
                 <CostTableComponent
@@ -322,6 +387,37 @@
         <!-- 노무비 산출 -->
         <v-tab-item>
           <v-card ref="calcLaborCard">
+            <v-card-title>
+              <v-menu offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    color="success"
+                    fab
+                    x-small
+                    class="float-right dont_print"
+                    elevation="0"
+                    v-bind="attrs"
+                    v-on="on"
+                    data-html2canvas-ignore="true"
+                  >
+                    <v-icon
+                      small
+                    >mdi-content-save</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item
+                    v-for="(item, index) in save_estimates"
+                    :key="index"
+                    dense
+                    @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                            : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                  >
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-card-title>
             <v-card-text>
               <v-data-table
                 dense
@@ -425,7 +521,6 @@ export default {
       estimate_product_list_dialog: false,
       loading_dialog: false,
       mailDialog: false,
-      defaultMailData: EstimateSearchPageConfig.default_mail_data,
       tab_search: null,
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
@@ -443,6 +538,8 @@ export default {
 
       searched_products:[],
 
+      save_estimates: EstimateSearchPageConfig.save_estimates,
+      defaultMailData: EstimateSearchPageConfig.default_mail_data,
       login_info: EstimateSearchPageConfig.login_info,
       searchCardInputs:EstimateSearchPageConfig.searchCardInputs,
       estimate_approve_headers:EstimateSearchPageConfig.estimate_approve_headers,
@@ -672,7 +769,13 @@ export default {
         mux.Util.showAlert(error);
       }
       mux.Util.hideLoading();
-    }
+    },
+    estimateCheckbox(type, name){
+      if(!this.estimate_checkbox[type]){
+        mux.Util.showConfirm('재료비에 ' + name + '을(를) 포함하시겠습니까?', '금액 확인');
+
+      }
+    },
   },
 }
 </script>
