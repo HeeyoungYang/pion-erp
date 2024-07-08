@@ -121,7 +121,7 @@
                         style="background: #efefef;"
                       >
                         <v-col align-self="center" cols="12" sm="10">
-                          <p style="font-weight: bold; font-size: 30px;" class="mb-0">수주서
+                          <p style="font-weight: bold; font-size: 30px;" class="mb-0">수주 확인서
                           </p>
                         </v-col>
                         <v-col align-self="center" cols="12" sm="2">
@@ -969,7 +969,7 @@
                       elevation="1"
                       @click="estimate_dialog = true"
                     >
-                      수주서 불러오기
+                    수주 확인서 불러오기
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -979,7 +979,7 @@
                     style="background: #efefef;"
                   >
                     <v-col align-self="center" cols="12" sm="10">
-                      <p style="font-weight: bold; font-size: 30px;" class="mb-0">수주서
+                      <p style="font-weight: bold; font-size: 30px;" class="mb-0">수주 확인서
                       </p>
                     </v-col>
                     <v-col align-self="center" cols="12" sm="2">

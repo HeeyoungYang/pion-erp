@@ -58,7 +58,7 @@
           >
           <v-ro slot="cardTitle">
             <v-chip class="font-weight-bold mr-4" color="primary">
-              준공 완료
+              생산 완료
             </v-chip>
             <v-btn
               color="grey lighten-2"

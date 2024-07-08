@@ -232,7 +232,7 @@
           prepend-icon="mdi-check-decagram"
         >
           <template v-slot:activator>
-            <v-list-item-title>준공 관리</v-list-item-title>
+            <v-list-item-title>생산 관리</v-list-item-title>
           </template>
 
           <v-list-item
@@ -419,8 +419,8 @@ import mux from '@/mux';
         ['견적서 현황', '', '/estimate-search', ['master', '매니저']],
       ],
       obtainOrderPages: [
-        ['수주서', '', '/obtain-order', ['master', '매니저']],
-        ['수주서 현황', '', '/obtain-order-search', ['master', '매니저']],
+        ['수주서 및 확인서', '', '/obtain-order', ['master', '매니저']],
+        ['수주 현황', '', '/obtain-order-search', ['master', '매니저']],
         ['진행 사항', '', '/obtain-progress', ['master', '매니저']],
       ],
       designProductionPages: [
@@ -433,8 +433,8 @@ import mux from '@/mux';
         ['발주 현황', '', '/order-search', ['master', '매니저']],
       ],
       completionPages: [
-        ['준공', '', '/completion-request', ['master', '매니저']],
-        ['준공 현황', '', '/completion-search', ['master', '매니저']],
+        ['생산', '', '/completion-request', ['master', '매니저']],
+        ['생산 현황', '', '/completion-search', ['master', '매니저']],
       ],
       // estimatePages: [
       //   ['견적 작성', '', '/home'],

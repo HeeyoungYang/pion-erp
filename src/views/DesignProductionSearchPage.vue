@@ -85,7 +85,7 @@
           <v-combobox
             label="version"
             filled
-            value="3차 수정"
+            value="3차 수주 설계"
             :items="versions"
           ></v-combobox>
         </v-col>
@@ -112,7 +112,7 @@
                 style="background: #efefef;"
               >
                 <v-col align-self="center" cols="12" sm="10">
-                  <p style="font-weight: bold; font-size: 30px;" class="mb-0">수주서
+                  <p style="font-weight: bold; font-size: 30px;" class="mb-0">수주 확인서
                   </p>
                 </v-col>
                 <v-col align-self="center" cols="12" sm="2">

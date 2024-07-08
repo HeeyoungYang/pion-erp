@@ -1,6 +1,6 @@
 { 
   "search_tab_items": [
-    "수주서", "BOM LIST", "산출내역서", "노무비 산출"
+    "수주 확인서", "BOM LIST", "산출내역서", "노무비 산출"
   ],
   "searchCardInputs":[
     {"label":"승인", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All","미확인", "미승인", "승인", "반려"]},
