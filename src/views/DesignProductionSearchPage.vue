@@ -307,29 +307,6 @@
           <v-card ref="calcCostCard" style="border: 1px solid #ccc;" class="pa-4 elevation-0">
             <v-row>
               <v-col cols="12" sm="12">
-                <p class="text-h6 primary--text mb-0 font-weight-bold float-left">요청 자재 선택</p>
-
-                <v-btn
-                  color="success"
-                  class="float-right"
-                  small
-                  elevation="0"
-                  @click="searchPreOdered('search')"
-                >
-                  선주문 내역
-                </v-btn>
-                <v-checkbox
-                  hide-details
-                  class="float-right mt-0 mr-4"
-                  label="필요수량 ≤ 재고수량"
-                ></v-checkbox>
-                <v-checkbox
-                  hide-details
-                  class="float-right mt-0 mr-4"
-                  label="필요수량 > 재고수량"
-                ></v-checkbox>
-              </v-col>
-              <v-col cols="12" sm="12">
                 <DataTableComponent
                   :headers="bom_list_headers"
                   :items="bom_list_data"
@@ -337,106 +314,14 @@
                   children-key="belong_data"
                   dense
                   tableClass="elevation-0"
-                  addToTable
-                  addBelongToTable
-                  @addDataToTable="addShipData"
                 />
               </v-col>
             </v-row>
-            <v-row>
-              <v-col cols="12" sm="12" >
-                <p class="mt-6 mb-0">
-                  <span class="text-h6 primary--text float-left font-weight-bold">구매 요청</span>
-                  <v-btn
-                    small
-                    color="success"
-                    class="ml-4"
-                  >요청</v-btn>
-                </p>
-              </v-col>
-              <v-col cols="12" sm="12">
-                <v-chip
-                  class="mr-2"
-                  style="cursor:pointer"
-                  v-for="(member, i) in purchase_member_info"
-                  :key="i"
-                  :color="member.name ? 'success' : 'default'"
-                  @click="selectMemberDialog(i)"
-                >
-                  {{ member.type }} : {{ member.name }}
-                </v-chip>
-              </v-col>
-              <v-col cols="12" sm="12">
-                <v-data-table
-                  :headers="bom_list_purchase_headers"
-                  :items="bom_list_purchase_data"
-                  group-by="product_code"
-                  item-key="item_code"
-                  dense
-                >
-                <template v-slot:[`group.header`]="{items, isOpen, toggle}">
-                  <th colspan="12">
-                    <v-icon @click="toggle"
-                      >{{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-                    </v-icon>
-                    {{ items[0].product_code }}
-                  </th>
-                  <th>
-                    <v-icon
-                      color="grey"
-                      small
-                      @click="deleteItem(items[0].product_code)"
-                    >mdi-minus-thick</v-icon>
-                  </th>
-                </template>
-                <template v-slot:[`item.purchase_num`] = "{ item }">
-                  <v-text-field
-                    dense
-                    hide-details
-                    v-model="item.purchase_num"
-                    style="width:100px;font-size: 0.775rem !important;"
-                    filled
-                  ></v-text-field>
-                </template>
-                <template v-slot:[`item.estimate`] = "{ item }">
-                  <div  style="min-width: 160px;">
-                    <v-checkbox
-                      label="미선택"
-                      color="primary"
-                      hide-details
-                      class="float-left mr-3 mt-0"
-                      v-model="item.estimate"
-                    ></v-checkbox>
-                    <v-btn
-                      color="primary"
-                      class="float-left"
-                      x-small
-                      elevation="0"
-                      @click="estimateDialog = true"
-                    >
-                      견적서
-                    </v-btn>
-                    <v-btn
-                      color="success"
-                      class="float-left"
-                      x-small
-                      elevation="0"
-                      @click="searchPreOdered('select')"
-                    >
-                      선주문
-                    </v-btn>
-                  </div>
-                </template>
-                <template v-slot:[`item.cancle`] = "{ index }">
-                  <v-icon
-                    color="grey"
-                    small
-                    @click="deleteItem(index)"
-                  >mdi-minus-thick</v-icon>
-                </template>
-                </v-data-table>
-              </v-col>
-            </v-row>
+          </v-card>
+        </v-tab-item>
+        <!-- 구매요청내역 -->
+        <v-tab-item>
+          <v-card style="border: 1px solid #ccc;" class="pa-4 elevation-0">
           </v-card>
         </v-tab-item>
         <!-- 산출내역서 -->
@@ -788,7 +673,6 @@ export default {
       inbound_product_list_headers:DesignProductionSearchPageConfig.inbound_product_list_headers,
       // inbound_approve_data:[],
       bom_list_headers: DesignProductionSearchPageConfig.bom_list_headers,
-      purchase_detail_headers: DesignProductionSearchPageConfig.purchase_detail_headers,
       bom_list_purchase_headers: DesignProductionSearchPageConfig.bom_list_purchase_headers,
       bom_list_data: DesignProductionSearchPageConfig.bom_list_test_data,
       bom_list_purchase_data: DesignProductionSearchPageConfig.bom_list_purchase_test_data,
@@ -797,7 +681,11 @@ export default {
       labor_cost_headers: DesignProductionSearchPageConfig.labor_cost_headers,
       calc_cost_detail_data: JSON.parse(JSON.stringify(DesignProductionSearchPageConfig.calc_cost_detail_data)),
       inbound_approve_data:DesignProductionSearchPageConfig.test_inbound_approve_data,
+
+
+      purchase_detail_headers: DesignProductionSearchPageConfig.purchase_detail_headers,
       purchase_detail_data:DesignProductionSearchPageConfig.test_purchase_detail_data
+
     }
   },
 
@@ -953,20 +841,6 @@ export default {
     },
     closeProductList(){
       this.design_production_info_dialog = false;
-    },
-    searchPreOdered(type){
-      let headers = this.purchase_detail_headers
-      let index = headers.findIndex(e => e.text === '선택');
-      if(type === 'search'){
-        if(index !== -1){
-          headers.splice(index, 1);
-        }
-      }else{
-        if(index === -1){
-          headers.unshift({ "text": "선택", "align": "start", "value": "select_purchase"});
-        }
-      }
-      this.pre_ordered_dialog = true;
     },
     async clickApproveData(){
 

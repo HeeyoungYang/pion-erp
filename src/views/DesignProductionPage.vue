@@ -524,6 +524,11 @@
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
+                <!-- 구매요청내역 -->
+                <v-tab-item>
+                  <v-card>
+                  </v-card>
+                </v-tab-item>
                 <!-- 산출내역서 -->
                 <v-tab-item>
                   <v-card ref="calcDetailCard">
@@ -722,24 +727,34 @@
         <!-- 작성 탭 -->
         <v-tab-item>
           <v-row class=" mt-5">
-            <v-col cols="12" sm="5">
-              <v-tabs
-                v-model="tab_search"
-                background-color="transparent"
-                class="tab_search"
-              >
-                <v-tab
-                  v-for="sub_item in write_tab_items"
-                  :key="sub_item"
-                >
-                  {{ sub_item }}
-                </v-tab>
-              </v-tabs>
-              <v-tabs-items v-model="tab_search" class="pb-1">
-                <!-- 기본 정보 -->
-                <v-tab-item>
-                  <v-card>
-                    <v-card-text>
+            <v-col cols="12" :sm="production_steppers !== 3 ? 5 : 12">
+              <v-stepper v-model="production_steppers">
+                <v-stepper-header>
+                  <template v-for="n in production_step">
+                    <v-stepper-step
+                      :key="`${n}-step`"
+                      :complete="production_steppers > n"
+                      :step="n"
+                    >
+                      <!-- {{ n ===  1 ? '관련 자재 선택' : '견적 정보 입력'}} -->
+                      {{ write_tab_items[n-1] }}
+                    </v-stepper-step>
+
+                    <v-divider
+                      v-if="n !== production_step"
+                      :key="n"
+                    ></v-divider>
+                  </template>
+                </v-stepper-header>
+
+                <v-stepper-items>
+                  <v-stepper-content
+                    v-for="n in production_step"
+                    :key="`${n}-content`"
+                    :step="n"
+                  >
+                  <!-- 설계 정보 입력 -->
+                    <div v-if="n === 1">
                       <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >설계 정보</p>
                       <InputsFormComponent
                         dense
@@ -791,147 +806,262 @@
                       >
 
                       </InputsFormComponent>
-                    </v-card-text>
-                  </v-card>
-                </v-tab-item>
+                      <v-btn
+                        small
+                        color="success"
+                        class="mt-5 elevation-0"
+                        @click="production_steppers = 2"
+                      >
+                        다음 ▶
+                      </v-btn>
+                    </div>
+                  <!-- BOM LIST 작성 -->
+                    <div v-if="n === 2">
 
-                <v-tab-item>
-                  <v-card ref="calcDetailCard">
-                    <v-row class="mt-3">
-                      <v-col
-                        cols="12"
-                        sm="12"
+                      <span class="font-weight-black primary--text text-h6 mr-2">완제품 조회</span>
+                      <v-btn
+                        x-small
+                        @click="!bom_product_search ? bom_product_search = true : bom_product_search = false"
                       >
-                        <p class="font-weight-black primary--text text-h6 mb-0">완제품 조회</p>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="4"
-                        lg="3"
+                        {{ !bom_product_search ? '펼치기' : '접기' }}
+                      </v-btn>
+
+                      <InputsFormComponent
+                        dense
+                        clearable
+                        hide-details
+                        filled
+                        :inputs="bomProductSearchInputs"
+                        v-if="bom_product_search"
+                        class="mt-3"
                       >
-                        <v-text-field
-                          v-model="search_complete_product_code"
-                          dense
-                          clearable
-                          filled
-                          hide-details
-                          label="제품코드"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="4"
-                        lg="3"
-                      >
-                        <v-text-field
-                          v-model="search_complete_product_name"
-                          dense
-                          clearable
-                          filled
-                          hide-details
-                          label="제품명"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="4"
-                        lg="3"
-                      >
-                        <v-text-field
-                          v-model="search_product_capacity"
-                          dense
-                          clearable
-                          filled
-                          hide-details
-                          label="용량"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="6"
-                        sm="4"
-                        lg="3"
-                        align-self="center"
-                      >
-                        <v-btn
-                          color="primary"
-                          elevation="2"
-                          @click="searchProduct"
+                        <v-col
+                          cols="6"
+                          sm="4"
+                          lg="3"
+                          align-self="center"
                         >
-                          <v-icon>mdi-magnify</v-icon>검색
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12">
-                        <v-data-table
-                          dense
-                          :headers="dialog_search_product_headers"
-                          :items="dialog_search_product_data"
-                          item-key="product_code"
-                          class="elevation-1"
-                        >
-                          <template v-slot:[`item.actions`]="{ item }">
-                            <v-btn
-                              color="success"
-                              x-small
-                              class="ml-3"
-                              elevation="0"
-                              @click="addCostList(item)"
-                            >선택
-                            </v-btn>
+                          <v-btn
+                            color="primary"
+                            elevation="2"
+                            small
+                            @click="searchProduct"
+                          >
+                            <v-icon>mdi-magnify</v-icon>검색
+                          </v-btn>
+                        </v-col>
+                        <v-col cols="12">
+                          <v-data-table
+                            dense
+                            :headers="dialog_search_product_headers"
+                            :items="dialog_search_product_data"
+                            item-key="product_code"
+                            class="elevation-1"
+                          >
+                            <template v-slot:[`item.actions`]="{ item }">
+                              <v-btn
+                                color="success"
+                                x-small
+                                class="ml-3"
+                                elevation="0"
+                                @click="addCostList(item)"
+                              >선택
+                              </v-btn>
+                            </template>
+                          </v-data-table>
+                        </v-col>
+                      </InputsFormComponent>
+                      <v-divider class="my-7"></v-divider>
+
+                      <p class="font-weight-black primary--text text-h6 mb-0">선택 구성</p>
+                      <v-data-table
+                        dense
+                        :headers="dialog_product_details_headers"
+                        :items="dialog_search_product_data"
+                        item-key="product_code"
+                        class="elevation-1"
+                      >
+                        <template v-slot:[`item.actions`]>
+
+                          <v-icon
+                            @click="dialog_bom_detail = true"
+                          >mdi-magnify</v-icon>
+                        </template>
+                        <template v-slot:[`item.cancle`]>
+
+                          <v-icon
+                            color="grey"
+                            small
+                          >mdi-minus-thick</v-icon>
+                        </template>
+                      </v-data-table>
+                      <v-btn
+                        small
+                        color="grey lighten-2"
+                        class="mt-5 mr-2 elevation-0"
+                        @click="production_steppers = 1"
+                      >
+                        ◀ 이전
+                      </v-btn>
+                      <v-btn
+                        small
+                        color="success"
+                        class="mt-5 elevation-0"
+                        @click="production_steppers = 3"
+                      >
+                        다음 ▶
+                      </v-btn>
+                    </div>
+                  <!-- 구매 요청 작성 -->
+                    <div  v-if="n === 3" >
+                      <v-row>
+                        <v-col cols="12" sm="12">
+                          <p class="text-h6 primary--text mb-0 font-weight-bold float-left mr-2">추가 선택</p>
+                          <v-btn
+                            color="success"
+                            class="float-right"
+                            small
+                            elevation="0"
+                            @click="searchPreOdered('search')"
+                          >
+                            선주문 내역
+                          </v-btn>
+                        </v-col>
+                        <v-col cols="12" sm="12">
+                          <v-checkbox
+                            hide-details
+                            class="mt-0 mr-4 float-left"
+                            label="필요수량 > 재고수량"
+                          ></v-checkbox>
+                          <v-checkbox
+                            hide-details
+                            class="mt-0 mr-4 float-left"
+                            label="필요수량 ≤ 재고수량"
+                          ></v-checkbox>
+                        </v-col>
+                        <v-col cols="12" sm="12">
+                          <DataTableComponent
+                            :headers="bom_list_headers"
+                            :items="bom_list_data"
+                            item-key="product_code"
+                            children-key="belong_data"
+                            dense
+                            tableClass="elevation-0"
+                            addToTable
+                            addBelongToTable
+                            @addDataToTable="addShipData"
+                          />
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="12" sm="12" >
+                          <p class="mt-6 mb-0">
+                            <span class="text-h6 primary--text float-left font-weight-bold">구매 요청</span>
+                          </p>
+                        </v-col>
+                        <v-col cols="12" sm="12">
+                          <v-chip
+                            class="mr-2"
+                            style="cursor:pointer"
+                            v-for="(member, i) in purchase_member_info"
+                            :key="i"
+                            :color="member.name ? 'success' : 'default'"
+                            @click="selectMemberDialog(i)"
+                          >
+                            {{ member.type }} : {{ member.name }}
+                          </v-chip>
+                        </v-col>
+                        <v-col cols="12" sm="12">
+                          <v-data-table
+                            :headers="bom_list_purchase_headers"
+                            :items="bom_list_purchase_data"
+                            group-by="product_code"
+                            item-key="item_code"
+                            dense
+                          >
+                          <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                            <th colspan="12">
+                              <v-icon @click="toggle"
+                                >{{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                              </v-icon>
+                              {{ items[0].product_code }}
+                            </th>
+                            <th>
+                              <v-icon
+                                color="grey"
+                                small
+                                @click="deleteItem(items[0].product_code)"
+                              >mdi-minus-thick</v-icon>
+                            </th>
                           </template>
-                        </v-data-table>
-                      </v-col>
-                    </v-row>
-
-
-                    <v-row>
-                      <v-col
-                        cols="12"
-                        sm="12"
-                        class="mt-6"
-                      >
-                        <span class="font-weight-black primary--text text-h6 mb-0">선택 구성</span>
-                        <v-btn small class="ml-3 float-right" color="success">산출내역서 적용</v-btn>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-data-table
-                          dense
-                          :headers="dialog_product_details_headers"
-                          :items="dialog_search_product_data"
-                          item-key="product_code"
-                          class="elevation-1"
-                        >
-                          <template v-slot:[`item.actions`]>
-
-                            <v-icon
-                              @click="dialog_bom_detail = true"
-                            >mdi-magnify</v-icon>
+                          <template v-slot:[`item.purchase_num`] = "{ item }">
+                            <v-text-field
+                              dense
+                              hide-details
+                              v-model="item.purchase_num"
+                              style="width:100px;font-size: 0.775rem !important;"
+                              filled
+                            ></v-text-field>
                           </template>
-                          <template v-slot:[`item.cancle`]>
-
+                          <template v-slot:[`item.estimate`] = "{ item }">
+                            <div  style="max-width: 160px;">
+                              <v-checkbox
+                                label="미선택"
+                                color="primary"
+                                hide-details
+                                class="float-left mr-3 mt-0"
+                                v-model="item.estimate"
+                              ></v-checkbox>
+                              <v-btn
+                                color="primary"
+                                class="float-left"
+                                x-small
+                                elevation="0"
+                                @click="estimateDialog = true"
+                              >
+                                견적서
+                              </v-btn>
+                              <v-btn
+                                color="success"
+                                class="float-left"
+                                x-small
+                                elevation="0"
+                                @click="searchPreOdered('select')"
+                              >
+                                선주문
+                              </v-btn>
+                            </div>
+                          </template>
+                          <template v-slot:[`item.cancle`] = "{ index }">
                             <v-icon
                               color="grey"
                               small
+                              @click="deleteItem(index)"
                             >mdi-minus-thick</v-icon>
                           </template>
-                        </v-data-table>
-                      </v-col>
-                    </v-row>
-                  </v-card>
-                </v-tab-item>
-                <!-- 산출내역서 -->
-                <v-tab-item>
-                  <v-card ref="calcDetailCard">
-                    <v-card-title>
-                      <v-row>
-                        <v-col cols="12" sm="10">
-                          <p class="text-h5 black--text mb-0 font-weight-black"  style="font-weight: bold;">산출내역서</p>
+                          </v-data-table>
                         </v-col>
                       </v-row>
-
-                    </v-card-title>
-                    <v-card-text>
+                      <v-btn
+                        small
+                        color="grey lighten-2"
+                        class="mt-5 mr-2 elevation-0"
+                        @click="production_steppers = 2"
+                      >
+                        ◀ 이전
+                      </v-btn>
+                      <v-btn
+                        small
+                        color="success"
+                        class="mt-5 elevation-0"
+                        @click="production_steppers = 4"
+                      >
+                        다음 ▶
+                      </v-btn>
+                    </div>
+                  <!-- 산출내역서 작성 -->
+                    <div  v-if="n === 4" >
+                      <p class="text-h5 black--text mb-0 font-weight-black"  style="font-weight: bold;">산출내역서</p>
                       <v-form ref="surveyCostForm">
                         <CostTableComponent
                           :headers="survey_cost_headers"
@@ -944,24 +1074,31 @@
                         >
                         </CostTableComponent>
                       </v-form>
-                    </v-card-text>
-                  </v-card>
-                </v-tab-item>
-              </v-tabs-items>
+                      <v-btn
+                        small
+                        color="grey lighten-2"
+                        class="mt-5 mr-2 elevation-0"
+                        @click="production_steppers = 3"
+                      >
+                        ◀ 이전
+                      </v-btn>
+                      <v-btn
+                        small
+                        color="success"
+                        class="mt-5 elevation-0"
+                        @click="save()"
+                      >
+                        저장
+                      </v-btn>
+                    </div>
+                  </v-stepper-content>
+                </v-stepper-items>
+              </v-stepper>
             </v-col>
-            <v-col cols="12" sm="7">
+            <v-col cols="12" sm="7" v-if="production_steppers !== 3">
               <v-card style="position: fixed; max-width:920px">
                 <v-row>
                   <v-col cols="12" sm="12">
-                    <v-btn
-                      color="primary"
-                      small
-                      class="float-right"
-                      elevation="1"
-                      @click="save()"
-                    >
-                      저장
-                    </v-btn>
                     <v-btn
                       color="grey lighten-4"
                       small
@@ -1588,6 +1725,209 @@
           </v-row>
         </v-container>
       </ModalDialogComponent>
+
+      <ModalDialogComponent
+        :dialog-value="pre_ordered_dialog"
+        max-width="900px"
+        title-class="display-none"
+        text-class="pb-0"
+        closeText="닫기"
+        :persistent="true"
+        @close="pre_ordered_dialog = false"
+      >
+        <CardComponent
+          elevation="0"
+          text-class="pa-0 pt-4"
+          title-class="pa-0"
+        >
+          <div slot="cardTitle">
+            <span>주문 내역</span>
+          </div>
+          <div slot="cardText">
+            <v-row>
+              <v-col cols="12">
+                <InputsFormComponent
+                  dense
+                  clearable
+                  filled
+                  hide-details
+                  :inputs="searchPurchaseInputs"
+                >
+                <v-col
+                  cols="12"
+                  sm="4"
+                  lg="3"
+                  align-self="center"
+                >
+                  <v-btn
+                    color="primary"
+                    elevation="2"
+                  >
+                    <v-icon>mdi-magnify</v-icon>검색
+                  </v-btn>
+                </v-col>
+                </InputsFormComponent>
+              </v-col>
+              <v-col cols="12">
+                <v-data-table
+                  :headers="purchase_detail_headers"
+                  :items="purchase_detail_data"
+                  :item-key="purchase_detail_data.product_code"
+                  group-by="estimate_company"
+                  dense
+                >
+
+                  <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                    <th  @click="toggle" colspan="10">
+                      <v-icon
+                      >
+                        {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                      </v-icon>
+                      {{ items[0].estimate_company }}
+                    </th>
+                  </template>
+                  <template v-slot:[`item.select_purchase`] = "{ item }">
+                    <v-btn
+                      color="success"
+                      x-small
+                      elevation="0"
+                      @click="selectPurchase(item)"
+                    >
+                      선택
+                    </v-btn>
+                  </template>
+                </v-data-table>
+              </v-col>
+            </v-row>
+          </div>
+        </CardComponent>
+      </ModalDialogComponent>
+      <v-dialog
+        v-model="estimateDialog"
+        persistent
+        max-width="1000px"
+      >
+        <v-stepper v-model="estimate_steppers">
+          <v-stepper-header>
+            <template v-for="n in estimated_step">
+              <v-stepper-step
+                :key="`${n}-step`"
+                :complete="estimate_steppers > n"
+                :step="n"
+                editable
+              >
+                {{ n ===  1 ? '관련 자재 선택' : '견적 정보 입력'}}
+              </v-stepper-step>
+
+              <v-divider
+                v-if="n !== estimated_step"
+                :key="n"
+              ></v-divider>
+            </template>
+          </v-stepper-header>
+
+          <v-stepper-items>
+            <v-stepper-content
+              v-for="n in estimated_step"
+              :key="`${n}-content`"
+              :step="n"
+            >
+              <div v-if="n === 1">
+                <v-row>
+                  <v-col cols="12">
+                    <v-data-table
+                      v-model="selected_estimate_data"
+                      :headers="bom_list_headers"
+                      :items="bom_list_purchase_data"
+                      item-key="product_code"
+                      dense
+                      show-select
+                    ></v-data-table>
+                  </v-col>
+                </v-row>
+                <v-btn
+                  color="primary"
+                  @click="estimate_steppers = 2"
+                >
+                  다음 ▶
+                </v-btn>
+
+                <v-btn
+                  text
+                  color="error"
+                  @click="estimateDialog = false"
+                >
+                  취소
+                </v-btn>
+              </div>
+              <div v-if="n === 2">
+                <v-card class="elevation-0">
+                  <v-card-text>
+                    <v-row>
+                      <v-col cols="12">
+                        <v-btn
+                          x-small
+                          color="primary"
+                          @click="!show_selected_estimate_data ? show_selected_estimate_data = true :  show_selected_estimate_data = false"
+                        >관련 자재</v-btn>
+                      </v-col>
+                      <v-col cols="12" v-if="show_selected_estimate_data">
+                        <v-data-table
+                        style="border:1px solid #c0c0c0"
+                          :headers="bom_list_headers"
+                          :items="selected_estimate_data"
+                          item-key="product_code"
+                          dense
+                        ></v-data-table>
+                      </v-col>
+                    </v-row>
+
+                    <v-row>
+                      <v-col cols="12" sm="12">
+                        <InputsFormComponent
+                          dense
+                          clearable
+                          filled
+                          hide-details
+                          :inputs="setPurchaseInputs"
+                        >
+                          <v-col cols="12" sm="4">
+                            <v-btn
+                              color="success"
+                              @click="test(), estimateDialog = false"
+                            >
+                              저장
+                            </v-btn>
+                          </v-col>
+                        </InputsFormComponent>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+                <v-card class="elevation-0">
+                  <v-card-text>
+                    <v-btn
+                      color="primary"
+                      @click="estimate_steppers = 1"
+                    >
+                      ◀ 이전
+                    </v-btn>
+                    <v-btn
+                      text
+                      color="error"
+                      @click="estimateDialog = false"
+                    >
+                      취소
+                    </v-btn>
+
+                  </v-card-text>
+                </v-card>
+              </div>
+            </v-stepper-content>
+          </v-stepper-items>
+        </v-stepper>
+      </v-dialog>
+
       <EstimateSearchDialogComponent
         :dialog-value="estimate_dialog"
         :persistent="true"
@@ -1665,10 +2005,30 @@ export default {
           "data_type": "added"
         }
       )
-    }
+    },
+
+    searchPreOdered(type){
+      let headers = this.purchase_detail_headers
+      let index = headers.findIndex(e => e.text === '선택');
+      if(type === 'search'){
+        if(index !== -1){
+          headers.splice(index, 1);
+        }
+      }else{
+        if(index === -1){
+          headers.unshift({ "text": "선택", "align": "start", "value": "select_purchase"});
+        }
+      }
+      this.pre_ordered_dialog = true;
+    },
   },
   data(){
     return{
+      production_steppers: 1,
+      production_step: 4,
+      estimate_steppers: 1,
+      estimated_step: 2,
+
       estimate_dialog: false,
       edit_survey_cost_num_disabled: true,
       edit_buttons_show: true,
@@ -1682,6 +2042,10 @@ export default {
       dialog_bom_detail: false,
       dialog_calculate_labor: false,
       blueprint_inputs_show: false,
+      bom_product_search: false,
+      pre_ordered_dialog: false,
+      estimateDialog: false,
+      show_selected_estimate_data: false,
 
       save_costs: DesignProductionPageConfig.save_costs,
       search_estimate_headers: DesignProductionPageConfig.search_estimate_headers,
@@ -1691,11 +2055,17 @@ export default {
       dialog_product_details_headers: DesignProductionPageConfig.dialog_product_details_headers,
       dialog_search_product_headers: DesignProductionPageConfig.dialog_search_product_headers,
       construction_materials_headers: DesignProductionPageConfig.construction_materials_headers,
+      purchase_detail_headers: DesignProductionPageConfig.purchase_detail_headers,
+      bom_list_headers: DesignProductionPageConfig.bom_list_headers,
+      bom_list_purchase_headers: DesignProductionPageConfig.bom_list_purchase_headers,
 
       dialog_search_product_data: DesignProductionPageConfig.dialog_search_product_test_data,
       product_search_item_headers: DesignProductionPageConfig.product_search_item_headers,
       product_item_setting_headers: DesignProductionPageConfig.product_item_setting_headers,
       setting_item_data: DesignProductionPageConfig.setting_item_test_data,
+      purchase_detail_data: DesignProductionPageConfig.test_purchase_detail_data,
+      bom_list_data: DesignProductionPageConfig.bom_list_test_data,
+      bom_list_purchase_data: DesignProductionPageConfig.bom_list_purchase_test_data,
 
       construction_materials_data: JSON.parse(JSON.stringify(DesignProductionPageConfig.construction_materials_data)),
       calc_cost_detail_data: JSON.parse(JSON.stringify(DesignProductionPageConfig.calc_cost_detail_data)),
@@ -1742,6 +2112,9 @@ export default {
       estimateCompanyInfoInputs: DesignProductionPageConfig.estimateCompanyInfoInputs,
       estimateFilesInputs: DesignProductionPageConfig.estimateFilesInputs,
       blueprintDetailInputs: DesignProductionPageConfig.blueprintDetailInputs,
+      bomProductSearchInputs: DesignProductionPageConfig.bomProductSearchInputs,
+      searchPurchaseInputs: DesignProductionPageConfig.searchPurchaseInputs,
+      setPurchaseInputs: DesignProductionPageConfig.setPurchaseInputs,
       search_estimate_data: [],
     }
   },
