@@ -67,68 +67,17 @@
     { "text": "필요수량", "align": "start", "value": "item_num"},
     { "text": "재고", "align": "start", "value": "stock_num"}
   ],
-  "bom_list_purchase_headers": [
-    { "text": "종류", "align": "start", "value": "type"},
-    { "text": "분류", "align": "start", "value": "classification"},
-    { "text": "관리코드", "align": "start", "value": "item_code"},
-    { "text": "제품명", "align": "start", "value": "name"},
-    { "text": "모델명", "align": "start", "value": "model"},
-    { "text": "사양", "align": "start", "value": "spec"},
-    { "text": "제조사", "align": "start", "value": "manufacturer"},
-    { "text": "단가", "align": "start", "value": "unit_price"},
-    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
-    { "text": "필요수량", "align": "start", "value": "item_num"},
-    { "text": "재고", "align": "start", "value": "stock_num"},
-    { "text": "견적/선주문", "align": "start", "value": "estimate"},
-    { "text": "제외", "align": "start", "value": "cancle"}
-  ],
   "purchase_detail_headers": [
-    { "text": "선택", "align": "start", "value": "select_purchase"},
-    { "text": "구매요청일", "align": "start", "value": "created_time"},
-    { "text": "발주일", "align": "start", "value": "ordered_time"},
     { "text": "종류", "align": "start", "value": "type"},
     { "text": "분류", "align": "start", "value": "classification"},
     { "text": "관리코드", "align": "start", "value": "product_code"},
     { "text": "제품명", "align": "start", "value": "name"},
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
-    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"}
-  ],
-
-  "purchase_member_info":[
-    {"type": "확인", "name": "", "user_id": "", "email": ""},
-    {"type": "승인", "name": "", "user_id": "", "email": ""},
-    {"type": "구매담당자", "name": "", "user_id": "", "email": ""}
-  ],
-  "bom_list_purchase_test_data":[
-    {
-      "type":"원부자재",
-      "classification":"GFM",
-      "product_code":"완제품AA",
-      "item_code":"원부자재BB",
-      "name":"원부자재B",
-      "model":"MODEL-002",
-      "spec":"SPEC-002",
-      "manufacturer":"PIONELECTRIC",
-      "unit_price":"10",
-      "item_num":"3",
-      "purchase_num":"3",
-      "stock_num":"0"
-    },
-    {
-      "type":"반제품",
-      "classification":"GFM",
-      "product_code":"완제품AA",
-      "item_code":"반제품CC",
-      "name":"반제품C",
-      "model":"MODEL-003",
-      "spec":"SPEC-003",
-      "manufacturer":"PIONELECTRIC",
-      "unit_price":"70",
-      "item_num":"1",
-      "purchase_num":"0",
-      "stock_num":"1"
-    }
+    { "text": "필요 수량", "align": "start", "value": ""},
+    { "text": "사용 가능 수량", "align": "start", "value": ""},
+    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
+    { "text": "견적서", "align": "start", "value": ""}
   ],
   "bom_list_test_data":[
     { 

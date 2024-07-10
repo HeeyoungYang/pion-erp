@@ -224,6 +224,19 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"}
   ],
+  
+  "purchase_requested_headers": [
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "product_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "필요 수량", "align": "start", "value": ""},
+    { "text": "사용 가능 수량", "align": "start", "value": ""},
+    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
+    { "text": "견적서", "align": "start", "value": ""}
+  ],
   "calc_cost_detail_data": [
     {
       "cost_list": "재료비",
