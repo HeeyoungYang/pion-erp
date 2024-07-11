@@ -379,7 +379,7 @@
 import mux from '@/mux';
 
   export default {
-    props: ['userMenu', 'productMenu', 'inboundMenu', 'shipMenu', 'estimateMenu', 'backDataMenu', 'salesMenu', 'obtainOrderMenu', 'designProductionMenu', 'purchaseMenu'],
+    props: ['userMenu', 'productMenu', 'inboundMenu', 'shipMenu', 'estimateMenu', 'backDataMenu', 'salesMenu', 'obtainOrderMenu', 'designProductionMenu', 'purchaseMenu', 'completionMenu'],
     data: () => ({
       drawer: null,
       menuList: [

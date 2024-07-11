@@ -72,7 +72,7 @@
     </v-main>
 
     <ModalDialogComponent
-      :dialog-value="inbound_product_list_dialog"
+      :dialog-value="order_detail_dialog"
       max-width="50%"
       title-class=" "
       :dialog-transition="'slide-x-transition'"
@@ -411,7 +411,7 @@ export default {
       billNum:3,
       dates: [],
       orderPurchase: false,
-      inbound_product_list_dialog: false,
+      order_detail_dialog: false,
       loading_dialog: false,
       mailDialog: false,
       uploadFilesDialog: false,
@@ -455,7 +455,7 @@ export default {
     },
   },
   watch:{
-    inbound_product_list_dialog(val){
+    order_detail_dialog(val){
       val || this.closeProductList()
       this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
     },
@@ -593,7 +593,7 @@ export default {
       this.loading_dialog = false;
     },
     closeProductList(){
-      this.inbound_product_list_dialog = false;
+      this.order_detail_dialog = false;
     },
     async clickApproveData(){
 
@@ -666,7 +666,7 @@ export default {
       //   else
       //     mux.Util.showAlert(error);
       // }
-      this.inbound_product_list_dialog = true;
+      this.order_detail_dialog = true;
     },
 
     async searchItemStock(data){
