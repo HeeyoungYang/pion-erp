@@ -87,13 +87,13 @@
         class="tab_search"
       >
         <v-btn
-          v-if="tab_search === 0 || tab_search === 1"
+          v-if="tab_search === 0"
           color="success"
           small
           style="position: absolute;right: 0px;"
           @click="estiamteDialog"
         >
-          {{ tab_search === 0 ? '견적 요청' : (tab_search === 1 ? '견적 등록' : '') }}
+          견적 요청
         </v-btn>
         <v-tab
           v-for="sub_item in search_tab_items"
@@ -103,14 +103,14 @@
         </v-tab>
       </v-tabs>
       <v-tabs-items v-model="tab_search" class="pb-1">
-        <!-- 견적 필요 -->
+        <!-- 요청 내역 -->
         <v-tab-item>
           <v-row>
             <v-col cols="12">
               <DataTableComponent
                 :headers="purchase_detail_headers"
-                :items="purchase_detail_unestimated_data"
-                :item-key="purchase_detail_unestimated_data.product_code"
+                :items="purchase_detail_data"
+                :item-key="purchase_detail_data.product_code"
                 dense
               >
               </DataTableComponent>
@@ -118,7 +118,7 @@
           </v-row>
         </v-tab-item>
         <!-- 견적 요청 -->
-        <v-tab-item>
+        <!-- <v-tab-item>
           <v-row>
             <v-col cols="12">
               <DataTableComponent
@@ -130,7 +130,7 @@
               </DataTableComponent>
             </v-col>
           </v-row>
-        </v-tab-item>
+        </v-tab-item> -->
         <!-- 견적 완료 -->
         <v-tab-item>
           <v-row>
@@ -153,9 +153,10 @@
                   </th>
                   <th>
                     <v-icon
+                      v-if="items[0].estimate_company !== '*견적서 미등록'"
                       color="primary"
                       small
-                      @click="estiamteDialog"
+                      @click="estiamteDialog('add_estimate', items[0].order)"
                     >mdi-file</v-icon>
                   </th>
                   <th>
@@ -167,6 +168,16 @@
                     >발주 요청</v-btn>
                     <span v-else>{{ items[0].order }}</span>
                   </th>
+                </template>
+                <template v-slot:[`item.purchase_estimate`] = "{ item }">
+                  <td>
+                    <v-icon
+                      v-if="item.estimate_company === '*견적서 미등록'"
+                      color="default"
+                      small
+                      @click="estiamteDialog"
+                    >mdi-file</v-icon>
+                  </td>
                 </template>
               </v-data-table>
             </v-col>
@@ -212,7 +223,7 @@
                   <DataTableComponent
                     v-model="selected_unestimated_data"
                     :headers="purchase_detail_headers"
-                    :items="purchase_detail_unestimated_data"
+                    :items="purchase_detail_data.filter(data => data.estimate_company === '*견적서 미등록')"
                     table-class="elevation-0"
                     item-key="product_code"
                     show-select
@@ -327,7 +338,7 @@
     </v-dialog>
     <ModalDialogComponent
       :dialog-value="estimatedDialog"
-      max-width="550px"
+      max-width="600px"
       title-class="display-none"
       text-class="pb-0"
       closeText="닫기"
@@ -340,23 +351,62 @@
         title-class="pa-0 font-weight-black "
       >
         <div slot="cardTitle">
-          <span>구매 견적서 : 업체명</span>
+          <span>{{ !edit_purchase_estimate ? '업체명AA 견적' : '견적서 수정' }}</span>
+          <v-btn
+            v-if="!edit_purchase_estimate && check_editable_purchase_estimate"
+            color="primary"
+            fab
+            x-small
+            class="ml-3"
+            elevation="0"
+            @click="edit_purchase_estimate = true"
+          >
+            <v-icon
+              small
+            >mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn
+            v-if="edit_purchase_estimate && check_editable_purchase_estimate"
+            color="primary"
+            fab
+            x-small
+            class="ml-3"
+            elevation="0"
+            @click="edit_purchase_estimate = false"
+          >
+            <v-icon
+              small
+            >mdi-check</v-icon>
+          </v-btn>
+          <v-btn
+            v-if="edit_purchase_estimate && check_editable_purchase_estimate"
+            color="error"
+            fab
+            x-small
+            class="ml-3"
+            elevation="0"
+            @click="edit_purchase_estimate = false"
+          >
+            <v-icon
+              small
+            >mdi-undo-variant</v-icon>
+          </v-btn>
         </div>
         <div slot="cardText">
-          <v-row>
-            <v-col cols="12" v-if="show_selected_unestimated_data">
-              <v-data-table
-              style="border:1px solid #c0c0c0"
-                :headers="purchase_detail_headers"
-                :items="selected_unestimated_data"
-                item-key="product_code"
-                dense
-              ></v-data-table>
-            </v-col>
-          </v-row>
-          <v-row>
+          <v-row v-if="!edit_purchase_estimate">
             <v-col cols="12">
               <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+            </v-col>
+          </v-row>
+          <v-row v-else>
+            <v-col cols="12">
+              <InputsFormComponent
+                dense
+                clearable
+                filled
+                hide-details
+                :inputs="estimateInfoInputs"
+              />
             </v-col>
           </v-row>
         </div>
@@ -565,6 +615,8 @@ export default {
       unestimatedMailDialog: false,
       estimatedDialog: false,
       show_selected_unestimated_data: false,
+      edit_purchase_estimate: false,
+      check_editable_purchase_estimate: false,
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
 
@@ -1853,11 +1905,22 @@ export default {
       }
       console.log('sendData :: ' + JSON.stringify(sendData))
     },
-    estiamteDialog(){
-      if(this.tab_search === 0 || this.tab_search === 1)
+    estiamteDialog(type, order){
+      if(this.tab_search === 0){
         this.unestimatedMailDialog = true;
-      else
-        this.estimatedDialog = true;
+      }
+      else{
+        if(type === 'add_estimate'){
+          this.estimatedDialog = true;
+          if(order !== ""){
+            this.check_editable_purchase_estimate = false;
+          }else{
+            this.check_editable_purchase_estimate = true;
+          }
+        }else{
+          this.unestimatedMailDialog = true;
+        }
+      }
     },
   },
 }
