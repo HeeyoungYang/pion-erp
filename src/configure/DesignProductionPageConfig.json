@@ -23,6 +23,12 @@
     {"label":"발행일", "type": "dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"8"}
   ],
 
+
+  "approval_member_info":[
+    {"type": "확인", "name": "", "user_id": "", "email": ""},
+    {"type": "승인", "name": "", "user_id": "", "email": ""}
+  ],
+
   "bomProductSearchInputs":[
     {"label":"제품코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
@@ -107,9 +113,9 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "단가", "align": "start", "value": "unit_price"},
-    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "필요수량", "align": "start", "value": "item_num"},
-    { "text": "재고", "align": "start", "value": "stock_num"},
+    { "text": "사용 가능 수량", "align": "start", "value": "stock_num"},
+    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "견적/선주문", "align": "start", "value": "estimate"},
     { "text": "제외", "align": "start", "value": "cancle"}
   ],

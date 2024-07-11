@@ -411,27 +411,11 @@
                       <v-row>
                         <v-col cols="12">
                           <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >첨부 수정</p>
-                          <v-btn
-                            v-if="!blueprint_inputs_show"
-                            @click="blueprint_inputs_show = true"
-                            class="mb-3"
-                            x-small
-                            color="primary"
-                          >상세 도면 첨부</v-btn>
                           <InputsFormComponent
                             dense
                             clearable
                             :inputs="blueprintDetailInputs"
-                            v-if="blueprint_inputs_show"
                           >
-                          <v-col cols="12" sm="4">
-                            <v-btn
-                              @click="blueprint_inputs_show = false"
-                              class="mb-3 white--text"
-                              x-small
-                              color="grey"
-                            >상세 도면 닫기</v-btn>
-                          </v-col>
                           </InputsFormComponent>
                         </v-col>
                       </v-row>
@@ -774,6 +758,16 @@
                   >
                   <!-- 설계 정보 입력 -->
                     <div v-if="n === 1">
+                      <v-chip
+                        class="mr-2 mb-3"
+                        style="cursor:pointer"
+                        v-for="(member, i) in approval_member_info"
+                        :key="i"
+                        :color="member.name ? 'success' : 'default'"
+                        @click="selectMemberDialog(i)"
+                      >
+                        {{ member.type }} : {{ member.name }}
+                      </v-chip>
                       <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >설계 정보</p>
                       <InputsFormComponent
                         dense
@@ -972,23 +966,21 @@
                           />
                         </v-col>
                       </v-row>
+                      <v-divider class="my-6"></v-divider>
                       <v-row>
                         <v-col cols="12" sm="12" >
-                          <p class="mt-6 mb-0">
-                            <span class="text-h6 primary--text float-left font-weight-bold">구매 요청</span>
+                          <p class="mb-5">
+                            <span class="text-h6 primary--text font-weight-bold">구매 요청</span>
                           </p>
-                        </v-col>
-                        <v-col cols="12" sm="12">
-                          <v-chip
-                            class="mr-2"
-                            style="cursor:pointer"
-                            v-for="(member, i) in purchase_member_info"
-                            :key="i"
-                            :color="member.name ? 'success' : 'default'"
-                            @click="selectMemberDialog(i)"
-                          >
-                            {{ member.type }} : {{ member.name }}
-                          </v-chip>
+                          <v-autocomplete
+                            v-model="select_purchase_manager"
+                            :items="purchasers"
+                            label="구매 담당자"
+                            dense
+                            clearable
+                            hide-details
+                            style="width:200px"
+                          ></v-autocomplete>
                         </v-col>
                         <v-col cols="12" sm="12">
                           <v-data-table
@@ -1812,29 +1804,24 @@
               />
             </v-col>
           </v-row>
+          <v-divider class="my-6"></v-divider>
           <v-row>
-            <!-- <v-col cols="12" sm="12" >
-              <p class="mt-6 mb-0">
-                <span class="text-h6 primary--text float-left font-weight-bold">구매 요청</span>
-              </p>
-            </v-col> -->
             <v-col
               cols="12"
             ><span class="font-weight-black primary--text text-h6 mr-4">구매 요청 내역 수정</span>
             </v-col>
             <v-col cols="12" sm="12">
-              <v-chip
-                class="mr-2"
-                style="cursor:pointer"
-                v-for="(member, i) in purchase_member_info"
-                :key="i"
-                :color="member.name ? 'success' : 'default'"
-                @click="selectMemberDialog(i)"
-              >
-                {{ member.type }} : {{ member.name }}
-              </v-chip>
-            </v-col>
-            <v-col cols="12" sm="12">
+              <v-autocomplete
+                v-model="select_purchase_manager"
+                :items="purchasers"
+                label="구매 담당자"
+                dense
+                clearable
+                filled
+                class="mb-4"
+                hide-details
+                style="width:200px"
+              ></v-autocomplete>
               <v-data-table
                 :headers="bom_list_purchase_headers"
                 :items="bom_list_purchase_data"
@@ -2115,6 +2102,15 @@
         @close="closEstimateSearch"
       >
       </EstimateSearchDialogComponent>
+
+      <MemberSearchDialogComponent
+        :dialog-value="member_dialog"
+        :persistent="true"
+        @close="close"
+        @setMember = "setMember"
+        @members = "members"
+      >
+      </MemberSearchDialogComponent>
   </div>
 </template>
 <script>
@@ -2126,6 +2122,7 @@ import DesignProductionPageConfig from "@/configure/DesignProductionPageConfig.j
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import CostTableComponent from "@/components/CostTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
+import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent";
 import EstimateSearchDialogComponent from "@/components/EstimateSearchDialogComponent";
 import mux from "@/mux";
 
@@ -2142,6 +2139,7 @@ export default {
                 CostTableComponent,
                 ModalDialogComponent,
                 EstimateSearchDialogComponent,
+                MemberSearchDialogComponent,
               },
 
   created () {
@@ -2156,8 +2154,42 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    initialize(){
-      // this.search_estimate_data = DesignProductionPageConfig.test_estimate_data
+    async initialize(){
+      const prevURL = window.location.href;
+      try {
+        if (prevURL !== window.location.href) return;
+        this.approval_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+        this.approval_member_info[0].email = this.$cookies.get(this.$configJson.cookies.email.key);
+        this.approval_member_info[0].id = this.$cookies.get(this.$configJson.cookies.id.key);
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.showAlert(error);
+      }
+
+      // 구매담당자 리스트업 (설계 > 작성 > 구매요청 step > 구매담당자 선택을 위함)
+      try {
+        const result = await mux.Server.get({path:'/api/admin/users/'});
+        if (prevURL !== window.location.href) return;
+        if (result.code == 0){
+          result.data.Users.map(data => {
+            if(data.Attributes.find(x=>x.Name === 'custom:department').Value === '기획관리부'){
+              this.purchasers.push((data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '') + '(' + data.Username + ')');
+            }
+          });
+
+        }else {
+          this.loading_dialog = false;
+          mux.Util.showAlert(result.message);
+          return;
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        mux.Util.showAlert(error);
+        return;
+      }
+
+
     },
     async searchButton(){
       this.loading_dialog = true;
@@ -2188,6 +2220,22 @@ export default {
       )
     },
 
+    selectMemberDialog(idx){
+      this.member_type_index = idx
+      this.member_dialog = true;
+    },
+    setMember(item){
+      this.approval_member_info[this.member_type_index].name = item.name.trim()
+      this.approval_member_info[this.member_type_index].user_id = item.user_id
+      this.close();
+    },
+    members(data){
+      this.members_list=data;
+    },
+    close(){
+      this.member_dialog = false;
+    },
+
     searchPreOdered(type){
       let headers = this.purchase_detail_headers
       let index = headers.findIndex(e => e.text === '선택');
@@ -2205,6 +2253,8 @@ export default {
   },
   data(){
     return{
+      purchasers: [],
+      select_purchase_manager: '',
       production_steppers: 1,
       production_step: 4,
       estimate_steppers: 1,
@@ -2230,7 +2280,12 @@ export default {
       estimateDialog: false,
       show_selected_estimate_data: false,
       edit_production_files: false,
+      member_dialog: false,
+      member_type_index:0,
+      members_list:[],
 
+
+      approval_member_info: DesignProductionPageConfig.approval_member_info,
       save_costs: DesignProductionPageConfig.save_costs,
       search_estimate_headers: DesignProductionPageConfig.search_estimate_headers,
       survey_cost_headers: DesignProductionPageConfig.survey_cost_headers,
