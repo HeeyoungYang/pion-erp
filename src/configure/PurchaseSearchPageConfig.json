@@ -172,6 +172,21 @@
       ]
     }
   ],
+  "default_mail_data": {
+    "to": "",
+    "cc": "",
+    "bcc": "",
+    "subject": "",
+    "estimate": false,
+    "specification": false,
+    "blueprint": false,
+    "approval": false,
+    "etc": false,
+    "business_license": false,
+    "content": "",
+    "files": []
+
+  },
   
   "login_info": {
     "user_id" : "",

@@ -70,6 +70,21 @@
     { "text": "재고", "align": "start", "value": "stock_num"}
   ],
 
+  "default_mail_data": {
+    "to": "",
+    "cc": "",
+    "bcc": "",
+    "subject": "",
+    "estimate": false,
+    "specification": false,
+    "blueprint": false,
+    "approval": false,
+    "etc": false,
+    "business_license": false,
+    "content": "",
+    "files": []
+
+  },
   "purchase_member_info":[
     {"type": "확인", "name": "", "user_id": "", "email": ""},
     {"type": "승인", "name": "", "user_id": "", "email": ""},

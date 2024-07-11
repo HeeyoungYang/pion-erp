@@ -282,15 +282,44 @@
                 </v-card-text>
               </v-card>
               <v-divider v-if="tab_search === 0"></v-divider>
-
-              <MailFormComponent
+              <!-- <MailFormComponent
                 v-if="unestimated_request === 'mailed' && tab_search === 0"
-                v-model="files"
+                v-model="mailData"
                 title-class="d-none"
                 addCardClass="d-none"
                 mailCardClass="elevation-0"
               >
-              </MailFormComponent>
+              </MailFormComponent> -->
+              <v-form
+                ref="mailForm"
+                v-if="unestimated_request === 'mailed' && tab_search === 0"
+              >
+                <MailFormComponent
+                  ref="mailFormComponent"
+                  v-model="mailData"
+                  addCardClass="d-none"
+                  addSystemFiles="purchase"
+                  :loginInfo="login_info"
+                >
+                  <!-- <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="mailDialog = false"
+                    >
+                      취소
+                    </v-btn>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="test()"
+                    >
+                      발송
+                    </v-btn>
+                  </v-card-actions> -->
+                </MailFormComponent>
+              </v-form>
               <CardComponent
                 title-class="d-none"
                 v-if="tab_search === 1"
@@ -627,6 +656,7 @@ export default {
       searched_products:[],
       selected_unestimated_data:[],
 
+      defaultMailData: PurchaseSearchPageConfig.default_mail_data,
       search_tab_items: PurchaseSearchPageConfig.search_tab_items,
       purchase_member_info:PurchaseSearchPageConfig.purchase_member_info,
       login_info: PurchaseSearchPageConfig.login_info,
@@ -658,12 +688,14 @@ export default {
   watch:{
     inbound_product_list_dialog(val){
       val || this.closeProductList()
+      this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
     },
     unestimated_step(val){
       if (this.unestimated_steppers > val) {
         this.unestimated_steppers = val
       }
-    }
+    },
+
   },
   created () {
     this.initialize()
@@ -692,12 +724,13 @@ export default {
         //   path: '/api/user/',
         // });
         if (prevURL !== window.location.href) return;
-        // console.log('result :>> ', result);
-        // this.login_info.name = (result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value).trim();
-        // this.login_info.email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
         this.login_info.name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.login_info.email = this.$cookies.get(this.$configJson.cookies.email.key);
         this.login_info.id = this.$cookies.get(this.$configJson.cookies.id.key);
+        this.login_info.position = this.$cookies.get(this.$configJson.cookies.position.key);
+        this.login_info.department = this.$cookies.get(this.$configJson.cookies.department.key);
+        this.login_info.office_phone_number = this.$cookies.get(this.$configJson.cookies.office_phone_number.key);
+        this.login_info.phone_number = this.$cookies.get(this.$configJson.cookies.phone_number.key);
         console.log(this.login_info)
       } catch (error) {
         if (prevURL !== window.location.href) return;

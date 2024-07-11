@@ -226,7 +226,7 @@
       persistent
       max-width="1000px"
     >
-      <MailFormComponent
+      <!-- <MailFormComponent
         v-model="files"
         addSystemFiles="order"
         addCardClass="d-none"
@@ -248,7 +248,35 @@
             발송
           </v-btn>
         </v-card-actions>
-      </MailFormComponent>
+      </MailFormComponent> -->
+
+      <v-form ref="mailForm">
+        <MailFormComponent
+          ref="mailFormComponent"
+          v-model="mailData"
+          addCardClass="d-none"
+          addSystemFiles="order"
+          :loginInfo="this.login_info"
+        >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="mailDialog = false"
+            >
+              취소
+            </v-btn>
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="test()"
+            >
+              발송
+            </v-btn>
+          </v-card-actions>
+        </MailFormComponent>
+      </v-form>
     </v-dialog>
 
     <ModalDialogComponent
@@ -416,7 +444,8 @@ export default {
       survey_cost_headers: OrderSearchPageConfig.survey_cost_headers,
       labor_cost_headers: OrderSearchPageConfig.labor_cost_headers,
       calc_cost_detail_data: JSON.parse(JSON.stringify(OrderSearchPageConfig.calc_cost_detail_data)),
-      inbound_approve_data:OrderSearchPageConfig.test_inbound_approve_data
+      inbound_approve_data:OrderSearchPageConfig.test_inbound_approve_data,
+      defaultMailData: OrderSearchPageConfig.default_mail_data,
     }
   },
 
@@ -428,6 +457,7 @@ export default {
   watch:{
     inbound_product_list_dialog(val){
       val || this.closeProductList()
+      this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
     },
   },
   created () {
@@ -443,17 +473,14 @@ export default {
     async initialize () {
       const prevURL = window.location.href;
       try {
-        // console.log('사용자 계정 정보 가졍오기');
-        // let result = await mux.Server.get({
-        //   path: '/api/user/',
-        // });
         if (prevURL !== window.location.href) return;
-        // console.log('result :>> ', result);
-        // this.login_info.name = (result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value).trim();
-        // this.login_info.email = result.data.UserAttributes.find(attr => attr.Name === 'email').Value;
         this.login_info.name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.login_info.email = this.$cookies.get(this.$configJson.cookies.email.key);
         this.login_info.id = this.$cookies.get(this.$configJson.cookies.id.key);
+        this.login_info.position = this.$cookies.get(this.$configJson.cookies.position.key);
+        this.login_info.department = this.$cookies.get(this.$configJson.cookies.department.key);
+        this.login_info.office_phone_number = this.$cookies.get(this.$configJson.cookies.office_phone_number.key);
+        this.login_info.phone_number = this.$cookies.get(this.$configJson.cookies.phone_number.key);
         console.log(this.login_info)
       } catch (error) {
         if (prevURL !== window.location.href) return;
