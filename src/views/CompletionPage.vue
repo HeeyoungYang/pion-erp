@@ -56,111 +56,147 @@
             elevation="1"
             text-class=" pt-3"
           >
-          <v-ro slot="cardTitle">
-            <v-chip class="font-weight-bold mr-4" color="primary">
-              생산 완료
-            </v-chip>
-            <v-btn
-              color="grey lighten-2"
-              fab
-              x-small
-              elevation="0"
-              data-html2canvas-ignore="true"
-            >
-              <v-icon
-                small
-              >mdi-pencil</v-icon>
-            </v-btn>
-          </v-ro>
-          <div slot="cardText">
-            <v-row>
-              <v-col cols="12" sm="4">
-                <p class="font-weight-bold primary--text mb-0">▼ 자체시험</p>
-                <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                <!-- <v-img
-                  alt="thumbnail"
-                  class="shrink mr-2"
-                  contain
-                  :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                  transition="scale-transition"
-                  width="350"
-                  @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                  style="cursor: pointer;"
-                /> -->
-              </v-col>
-              <v-col cols="12" sm="4">
-                <p class="font-weight-bold primary--text mb-0">▼ 공장시험</p>
-                <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                <!-- <v-img
-                  alt="thumbnail"
-                  class="shrink mr-2"
-                  contain
-                  :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                  transition="scale-transition"
-                  width="350"
-                  @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                  style="cursor: pointer;"
-                /> -->
-              </v-col>
-              <v-col cols="12" sm="4">
-                <p class="font-weight-bold primary--text mb-0">▼ 현장시험</p>
-                <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                <!-- <v-img
-                  alt="thumbnail"
-                  class="shrink mr-2"
-                  contain
-                  :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                  transition="scale-transition"
-                  width="350"
-                  @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                  style="cursor: pointer;"
-                /> -->
-              </v-col>
-              <v-col cols="12" sm="4">
-                <p class="font-weight-bold primary--text mb-0">▼ 시운전</p>
-                <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                <!-- <v-img
-                  alt="thumbnail"
-                  class="shrink mr-2"
-                  contain
-                  :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                  transition="scale-transition"
-                  width="350"
-                  @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                  style="cursor: pointer;"
-                /> -->
-              </v-col>
-              <v-col cols="12" sm="4">
-                <p class="font-weight-bold primary--text mb-0">▼ 전자세금계산서</p>
-                <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                <!-- <v-img
-                  alt="thumbnail"
-                  class="shrink mr-2"
-                  contain
-                  :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                  transition="scale-transition"
-                  width="350"
-                  @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                  style="cursor: pointer;"
-                /> -->
-              </v-col>
-              <v-col cols="12" sm="4">
-                <p class="font-weight-bold primary--text mb-0">▼ 하자보증증권 </p>
-                <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                <!-- <v-img
-                  alt="thumbnail"
-                  class="shrink mr-2"
-                  contain
-                  :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                  transition="scale-transition"
-                  width="350"
-                  @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                  style="cursor: pointer;"
-                /> -->
-              </v-col>
-
+            <v-row slot="cardTitle">
+              <v-chip
+                v-if="!edit_data"
+                class="font-weight-bold mr-4"
+                color="primary"
+              >
+                생산 완료
+              </v-chip>
+              <v-btn
+                v-if="!edit_data"
+                color="grey lighten-2"
+                fab
+                x-small
+                elevation="0"
+                @click="edit_data = true"
+              >
+                <v-icon
+                  small
+                >mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn
+                v-else
+                color="grey lighten-2"
+                fab
+                x-small
+                elevation="0"
+                @click="edit_data = false"
+              >
+                <v-icon
+                  small
+                >mdi-check</v-icon>
+              </v-btn>
             </v-row>
-          </div>
+            <div slot="cardText"
+              v-if="!edit_data"
+            >
+              <v-row>
+                <v-col cols="12" sm="4">
+                  <p class="font-weight-bold primary--text mb-0">▼ 자체시험</p>
+                  <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                  <!-- <v-img
+                    alt="thumbnail"
+                    class="shrink mr-2"
+                    contain
+                    :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                    transition="scale-transition"
+                    width="350"
+                    @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                    style="cursor: pointer;"
+                  /> -->
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <p class="font-weight-bold primary--text mb-0">▼ 공장시험</p>
+                  <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                  <!-- <v-img
+                    alt="thumbnail"
+                    class="shrink mr-2"
+                    contain
+                    :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                    transition="scale-transition"
+                    width="350"
+                    @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                    style="cursor: pointer;"
+                  /> -->
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <p class="font-weight-bold primary--text mb-0">▼ 현장시험</p>
+                  <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                  <!-- <v-img
+                    alt="thumbnail"
+                    class="shrink mr-2"
+                    contain
+                    :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                    transition="scale-transition"
+                    width="350"
+                    @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                    style="cursor: pointer;"
+                  /> -->
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <p class="font-weight-bold primary--text mb-0">▼ 시운전</p>
+                  <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                  <!-- <v-img
+                    alt="thumbnail"
+                    class="shrink mr-2"
+                    contain
+                    :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                    transition="scale-transition"
+                    width="350"
+                    @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                    style="cursor: pointer;"
+                  /> -->
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <p class="font-weight-bold primary--text mb-0">▼ 전자세금계산서</p>
+                  <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                  <!-- <v-img
+                    alt="thumbnail"
+                    class="shrink mr-2"
+                    contain
+                    :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                    transition="scale-transition"
+                    width="350"
+                    @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                    style="cursor: pointer;"
+                  /> -->
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <p class="font-weight-bold primary--text mb-0">▼ 하자보증증권 </p>
+                  <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                  <!-- <v-img
+                    alt="thumbnail"
+                    class="shrink mr-2"
+                    contain
+                    :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                    transition="scale-transition"
+                    width="350"
+                    @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                    style="cursor: pointer;"
+                  /> -->
+                </v-col>
+
+              </v-row>
+            </div>
+            <div slot="cardText"
+              v-else
+            >
+              <v-checkbox
+                hide-details
+                class="my-2"
+                label="생산 완료"
+              ></v-checkbox>
+
+              <InputsFormComponent
+                dense
+                clearable
+                filled
+                hide-details
+                :inputs="editDataInputs"
+              />
+            </div>
           </CardComponent>
 
         </v-col>
@@ -206,8 +242,9 @@ export default {
   },
   data(){
     return{
-
+      edit_data : false,
       searchCardInputs: CompletionPageConfig.searchCardInputs,
+      editDataInputs: CompletionPageConfig.editDataInputs,
       search_estimate_headers: CompletionPageConfig.search_estimate_headers,
     }
   }

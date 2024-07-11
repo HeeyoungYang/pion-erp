@@ -5,6 +5,14 @@
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4"},
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "value": ""}
   ],
+  "editDataInputs":[
+    {"label":"자체시험 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
+    {"label":"자체시험 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
+    {"label":"현장시험 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
+    {"label":"시운전 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
+    {"label":"전자세금계산서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
+    {"label":"전자세금계산서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"}
+  ],
   "search_estimate_headers":[
     { "text": "작성자", "align": "start", "value": "given_name"},
     { "text": "업체명", "align": "start", "value": "company_name"},
