@@ -65,10 +65,21 @@
                 :key="sub_item"
               >
                 {{ sub_item }}
+                <span class="ml-2 error--text">●</span>
               </v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab_progress" class="pb-1">
               <!-- 수주서 -->
+              <v-tab-item>
+                <v-card ref="calcCostCard">
+                  <v-card-text>
+                    <div style="width:100%; background-color: #ccc; min-height:700px">
+                      ※ 수주서 PDF 미리보기 영역
+                    </div>
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+              <!-- 수주 확인서 -->
               <v-tab-item>
                 <v-card class="elevation-0">
                   <div style="text-align: right;">
@@ -223,6 +234,16 @@
               <v-tab-item>
                 <v-card class="elevation-0">
                   <v-card-text>
+                    <v-row>
+                      <v-col cols="12" sm="5">
+                        <v-combobox
+                          label="version"
+                          filled
+                          value="3차 수주 설계"
+                          :items="versions"
+                        ></v-combobox>
+                      </v-col>
+                    </v-row>
                     <v-row class="mt-3">
                       <v-col cols="12" sm="12">
                         <p class="font-weight-bold primary--text mb-0">BOM List</p>
@@ -238,70 +259,112 @@
                           @addDataToTable="addShipData"
                         />
                       </v-col>
-                      <v-col cols="12" sm="4">
-                        <p class="font-weight-bold primary--text mb-0">승인도서</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                        <!-- <v-img
-                          alt="thumbnail"
-                          class="shrink mr-2"
-                          contain
-                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                          transition="scale-transition"
-                          width="350"
-                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                          style="cursor: pointer;"
-                        /> -->
-                      </v-col>
-                      <v-col cols="12" sm="4">
-                        <p class="font-weight-bold primary--text mb-0">제작사양서</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                        <!-- <v-img
-                          alt="thumbnail"
-                          class="shrink mr-2"
-                          contain
-                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                          transition="scale-transition"
-                          width="350"
-                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                          style="cursor: pointer;"
-                        /> -->
-                      </v-col>
+                    </v-row>
 
+                    <v-row class="mt-4">
                       <v-col cols="12" sm="4">
-                        <p class="font-weight-bold primary--text mb-0">상세 도면</p>
-                        <v-chip
-                          color="grey lighten-2"
-                          class="ma-2"
-                        >
-                          배치도
-                        </v-chip>
-                        <v-chip
-                          color="grey lighten-2"
-                          class="ma-2"
-                        >
-                          구조도
-                        </v-chip>
-                        <v-chip
-                          color="grey lighten-2"
-                          class="ma-2"
-                        >
-                          단선도
-                        </v-chip>
-                        <v-chip
-                          color="grey lighten-2"
-                          class="ma-2"
-                        >
-                          삼선도
-                        </v-chip>
-                        <v-chip
-                          color="grey lighten-2"
-                          class="ma-2"
-                        >
-                          회로도
-                        </v-chip>
+                        <p class="font-weight-bold primary--text mb-0">▼ 배치도</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <!-- <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                          style="cursor: pointer;"
+                        /> -->
                       </v-col>
                       <v-col cols="12" sm="4">
-                        <p class="font-weight-bold primary--text mb-0">기타</p>
+                        <p class="font-weight-bold primary--text mb-0">▼ 구조도</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <!-- <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                          style="cursor: pointer;"
+                        /> -->
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 단선도</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <!-- <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                          style="cursor: pointer;"
+                        /> -->
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 삼선도</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <!-- <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                          style="cursor: pointer;"
+                        /> -->
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 회로도</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <!-- <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                          style="cursor: pointer;"
+                        /> -->
+                      </v-col>
+                    </v-row>
+                    <v-divider class="mt-7"></v-divider>
+                    <v-row class="mt-3">
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 승인도서</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <!-- <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                          style="cursor: pointer;"
+                        /> -->
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 제작사양서</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <!-- <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                          style="cursor: pointer;"
+                        /> -->
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 기타</p>
                         <v-chip
                           color="grey lighten-2"
                           class="ma-2"
@@ -393,8 +456,7 @@ export default {
   data(){
     return{
       tab_progress: null,
-      dialog_search_product: false,
-      dialog_calculate_labor: false,
+      versions:['수주 원본', '1차 수주 설계', '2차 수주 설계', '3차 수주 설계'],
 
       save_costs: ObtainProgressPageConfig.save_costs,
       search_estimate_headers: ObtainProgressPageConfig.search_estimate_headers,
@@ -402,20 +464,10 @@ export default {
       bom_list_headers: ObtainProgressPageConfig.bom_list_headers,
       survey_cost_headers: ObtainProgressPageConfig.survey_cost_headers,
       dialog_search_product_headers: ObtainProgressPageConfig.dialog_search_product_headers,
-      construction_materials_headers: ObtainProgressPageConfig.construction_materials_headers,
-
       calc_cost_detail_data: JSON.parse(JSON.stringify(ObtainProgressPageConfig.calc_cost_detail_data)),
 
-      labor_cost_data: [],
-      merged_labor_cost_data: [],
-
-
       progress_tab_items: ObtainProgressPageConfig.progress_tab_items,
-      write_tab_items: ObtainProgressPageConfig.write_tab_items,
       searchCardInputs: ObtainProgressPageConfig.searchCardInputs,
-      estimateDefaultInfoInputs: ObtainProgressPageConfig.estimateDefaultInfoInputs,
-      estimateCompanyInfoInputs: ObtainProgressPageConfig.estimateCompanyInfoInputs,
-      estimateFilesInputs: ObtainProgressPageConfig.estimateFilesInputs,
       search_estimate_data: [],
     }
   },

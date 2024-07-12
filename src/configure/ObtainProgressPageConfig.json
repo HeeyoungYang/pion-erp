@@ -4,14 +4,14 @@
     {"title":"PDF", "click":"pdf"}
   ],
   "progress_tab_items": [
-    "수주서", "설계", "구매/발주"
+    "수주서", "수주 확인서", "설계", "구매/발주"
   ],
   "searchCardInputs":[
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4"}
   ],
   
   "search_estimate_headers":[
-    { "text": "발행일", "align": "start", "value": "created_time"},
+    { "text": "납기일", "align": "start", "value": "created_time"},
     { "text": "작성자", "align": "start", "value": "given_name"},
     { "text": "업체명", "align": "start", "value": "company_name"},
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
@@ -43,7 +43,8 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "구매 현황", "align": "start", "value": "purchase_estimate"},  
-    { "text": "발주 현황", "align": "start", "value": "purchase_estimate"}
+    { "text": "발주 현황", "align": "start", "value": "purchase_estimate"},  
+    { "text": "입고 현황", "align": "start", "value": "purchase_estimate"}
   ],
   "bom_list_headers": [
     { "text": "종류", "align": "start", "value": "type"},
