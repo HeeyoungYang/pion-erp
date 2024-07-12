@@ -57,9 +57,9 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "단가", "align": "start", "value": "unit_price"},
-    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "필요수량", "align": "start", "value": "num"},
-    { "text": "재고", "align": "start", "value": "total_stock"},
+    { "text": "사용 가능 수량", "align": "start", "value": "total_stock"},
+    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "금액", "align": "start", "value": "purchase_price"},
     { "text": "견적", "align": "start", "value": "estimate"},
     { "text": "제외", "align": "start", "value": "cancle"}
@@ -74,8 +74,8 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "단가", "align": "start", "value": "unit_price"},
+    { "text": "사용 가능 수량", "align": "start", "value": "total_stock"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
-    { "text": "재고", "align": "start", "value": "total_stock"},
     { "text": "금액", "align": "start", "value": "purchase_price"},
     { "text": "견적", "align": "start", "value": "estimate"},
     { "text": "제외", "align": "start", "value": "cancle"}
