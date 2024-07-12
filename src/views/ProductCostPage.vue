@@ -37,6 +37,7 @@
                       filled
                       hide-details
                       label="제품명"
+                      @keyup.enter="search"
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -539,6 +540,7 @@
                 filled
                 hide-details
                 label="제품코드"
+                @keyup.enter="searchProduct"
               ></v-text-field>
             </v-col>
             <v-col
@@ -553,6 +555,7 @@
                 filled
                 hide-details
                 label="제품명"
+                @keyup.enter="searchProduct"
               ></v-text-field>
             </v-col>
             <v-col
@@ -567,6 +570,7 @@
                 filled
                 hide-details
                 label="용량"
+                @keyup.enter="searchProduct"
               ></v-text-field>
             </v-col>
             <v-col
