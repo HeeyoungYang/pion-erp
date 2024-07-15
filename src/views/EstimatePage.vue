@@ -383,7 +383,7 @@
                             width="350"
                             @click="download('estimate/approval', clickedProductCost.blueprint_file, clickedProductCost.cost_calc_code+'_')"
                             style="cursor: pointer;"
-                          />  
+                          />
                         </v-col>
                         <v-col cols="12" sm="4">
                           <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>

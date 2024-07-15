@@ -99,6 +99,15 @@
             <v-row style="max-width: 868.5px;" class="dont_print" data-html2canvas-ignore="true">
               <v-col align-self="center" cols="12" sm="12" class="dont_print" data-html2canvas-ignore="true">
                 <v-checkbox
+                  v-model="estimate_checkbox.product"
+                  label="재료비 세부"
+                  color="primary"
+                  hide-details
+                  class="float-left mr-3 dont_print"
+                  data-html2canvas-ignore="true"
+                  @click="estimateCheckbox('product', '재료비')"
+                ></v-checkbox>
+                <v-checkbox
                   v-model="estimate_checkbox.labor_cost"
                   label="노무비"
                   color="primary"
@@ -521,6 +530,7 @@ export default {
       inspectionReportThumbnail: '',
       email_sign:'',
       estimate_checkbox:{
+        product:true,
         labor_cost:true,
         expense:true,
         general_management:true,
@@ -766,9 +776,11 @@ export default {
       mux.Util.hideLoading();
     },
     estimateCheckbox(type, name){
-      if(!this.estimate_checkbox[type]){
-        mux.Util.showConfirm('재료비에 ' + name + '을(를) 포함하시겠습니까?', '금액 확인');
-
+      if(name !== '재료비' && !this.estimate_checkbox[type]){
+        const confirm = mux.Util.showConfirm('재료비에 ' + name + '을(를) 포함하시겠습니까?', '금액 확인');
+        if (!confirm){
+          return
+        }
       }
     },
   },

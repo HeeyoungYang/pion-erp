@@ -52,8 +52,8 @@
               >
                 <v-card-text class=" pt-3">
                   <DataTableComponent
-                    :headers="inbound_approve_headers"
-                    :items="inbound_approve_data"
+                    :headers="obtain_approve_headers"
+                    :items="obtain_approve_data"
                     item-key="product_code"
                     approval="inbound"
                     dense
@@ -422,6 +422,141 @@
             </v-card-text>
           </v-card>
         </v-tab-item>
+        <!-- 생산 의뢰서 -->
+        <v-tab-item>
+          <v-card style="border: 1px solid #ccc;" elevation="0">
+
+            <v-btn
+              color="primary"
+              elevation="0"
+              fab
+              x-small
+              @click="sendEstiamteMail"
+              class="mr-3 dont_print"
+              data-html2canvas-ignore="true"
+            >
+              <v-icon >mdi-email</v-icon>
+            </v-btn>
+            <v-menu offset-y>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  color="success"
+                  fab
+                  x-small
+                  class="dont_print"
+                  elevation="0"
+                  v-bind="attrs"
+                  v-on="on"
+                  data-html2canvas-ignore="true"
+                >
+                  <v-icon
+                    small
+                  >mdi-content-save</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="(item, index) in save_confirmation"
+                  :key="index"
+                  dense
+                  @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                          : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                >
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            <v-card-title>
+              <v-row
+                class="px-3"
+                style="background: #efefef;"
+              >
+                <v-col align-self="center" cols="12" sm="10">
+                  <p style="font-weight: bold; font-size: 30px;" class="mb-0">생산 의뢰서
+                  </p>
+                </v-col>
+                <v-col align-self="center" cols="12" sm="2">
+                  <v-img
+                    alt="Pionelectric Logo"
+                    class="float-right"
+                    contain
+                    src="../assets/img/pion_logo.png"
+                    transition="scale-transition"
+                    width="140"
+                    style="margin-top:10px"
+                  />
+                </v-col>
+              </v-row>
+            </v-card-title>
+            <v-card-text>
+              <v-row class="mt-5" justify="space-between">
+                <v-col cols="12" sm="12" class="pb-0">
+                  <p class="mb-0 font-weight-bold">설계 담당자 : </p>
+                </v-col>
+                <v-col align-self="center" cols="12" sm="6" class="pb-0">
+                  <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
+                    <tr class="text-body-1">
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업체명</td>
+                      <td class="estimate_info" style="border-bottom: 0px;">업체A</td>
+                    </tr>
+                    <tr class="text-body-1">
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업체 담당자</td>
+                      <td class="estimate_info" style="border-bottom: 0px;"></td>
+                    </tr>
+                    <tr class="text-body-1">
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트 코드</td>
+                      <td class="estimate_info" style="border-bottom: 0px;">PROJECT-001</td>
+                    </tr>
+                    <tr class="text-body-1">
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트 명</td>
+                      <td class="estimate_info" style="border-bottom: 0px;"></td>
+                    </tr>
+                    <tr>
+                      <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">프로젝트 기간</td>
+                      <td class="estimate_info"></td>
+                    </tr>
+                  </table>
+                </v-col>
+                <v-col align-self="center" cols="12" sm="6" class="pb-0">
+                  <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
+                    <tr>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">사내 입찰번호</td>
+                      <td class="estimate_info" style="border-bottom: 0px;">INHOUSE-001</td>
+                    </tr>
+                    <tr>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">기업 입찰번호</td>
+                      <td class="estimate_info" style="border-bottom: 0px;">COMPANY-001</td>
+                    </tr>
+                    <tr>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">납기일</td>
+                      <td class="estimate_info" style="border-bottom: 0px;"></td>
+                    </tr>
+                    <tr>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">인도조건</td>
+                      <td class="estimate_info" style="border-bottom: 0px;"></td>
+                    </tr>
+                    <tr>
+                      <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">특이사항</td>
+                      <td class="estimate_info"></td>
+                    </tr>
+                  </table>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="12">
+                  <v-data-table
+                    dense
+                    :headers="production_request_headers"
+                    :items="production_request_data"
+                    hide-default-footer
+                    disable-pagination
+                    disable-sort
+                  ></v-data-table>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-tab-item>
       </v-tabs-items>
     </ModalDialogComponent>
 
@@ -504,14 +639,16 @@ export default {
       save_confirmation: ObtainOrderSearchPageConfig.save_confirmation,
       login_info: ObtainOrderSearchPageConfig.login_info,
       searchCardInputs:ObtainOrderSearchPageConfig.searchCardInputs,
-      inbound_approve_headers:ObtainOrderSearchPageConfig.inbound_approve_headers,
+      obtain_approve_headers:ObtainOrderSearchPageConfig.obtain_approve_headers,
+      production_request_headers: ObtainOrderSearchPageConfig.production_request_headers,
       inbound_product_list_headers:ObtainOrderSearchPageConfig.inbound_product_list_headers,
-      // inbound_approve_data:[],
+      // obtain_approve_data:[],
       survey_cost_headers: ObtainOrderSearchPageConfig.survey_cost_headers,
       search_tab_items: ObtainOrderSearchPageConfig.search_tab_items,
       labor_cost_headers: ObtainOrderSearchPageConfig.labor_cost_headers,
       calc_cost_detail_data: JSON.parse(JSON.stringify(ObtainOrderSearchPageConfig.calc_cost_detail_data)),
-      inbound_approve_data:ObtainOrderSearchPageConfig.test_inbound_approve_data
+      obtain_approve_data:ObtainOrderSearchPageConfig.test_obtain_approve_data,
+      production_request_data : [],
     }
   },
 
@@ -645,7 +782,7 @@ export default {
             }
 
           })
-          this.inbound_approve_data  = result.data.reverse();
+          this.obtain_approve_data  = result.data.reverse();
         }else{
           mux.Util.showAlert(result['failed_info']);
         }
@@ -657,7 +794,7 @@ export default {
         else
           mux.Util.showAlert(error);
       }
-      // this.inbound_approve_data = ObtainOrderSearchPageConfig.test_inbound_approve_data
+      // this.obtain_approve_data = ObtainOrderSearchPageConfig.test_obtain_approve_data
       this.loading_dialog = false;
     },
     closeProductList(){

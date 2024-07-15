@@ -77,16 +77,23 @@
                 >mdi-pencil</v-icon>
               </v-btn>
               <v-btn
-                v-else
+                v-if="edit_data"
                 color="grey lighten-2"
-                fab
-                x-small
+                class="mr-2"
+                small
                 elevation="0"
                 @click="edit_data = false"
               >
-                <v-icon
-                  small
-                >mdi-check</v-icon>
+                진행사항 저장
+              </v-btn>
+              <v-btn
+                v-if="edit_data"
+                color="primary"
+                small
+                elevation="0"
+                @click="edit_data = false"
+              >
+                승인 요청
               </v-btn>
             </v-row>
             <div slot="cardText"

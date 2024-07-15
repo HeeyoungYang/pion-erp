@@ -82,12 +82,22 @@
       @close="closeProductList"
     >
       <v-container>
-        <v-chip
-          class="font-weight-bold mb-4"
-          color="primary"
-        >
-          생산 완료
-        </v-chip>
+        <v-row class="mb-4">
+          <v-col cols="12" sm="412">
+            <v-chip
+              class="font-weight-bold mr-3"
+              color="primary"
+            >
+              생산 완료
+            </v-chip>
+            <v-btn
+              small
+              color="success"
+            >
+              입고 승인 요청
+            </v-btn>
+          </v-col>
+        </v-row>
         <v-row>
           <v-col cols="12" sm="4">
             <p class="font-weight-bold primary--text mb-0">▼ 자체시험</p>

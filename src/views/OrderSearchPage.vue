@@ -41,32 +41,55 @@
             </InputsFormComponent>
           </CardComponent>
 
-          <v-row>
-            <v-col
-              cols="12"
-              sm="12"
-            >
-              <v-card
+          <div>
+            <ExpansionPanelComponent
+              :data="order_approve_data"
+              @headerStockApply="headerStockApply"
               elevation="1"
               class="mt-5"
-              >
-                <v-card-text class=" pt-3">
-                  <DataTableComponent
-                    :headers="order_data_headers"
-                    :items="inbound_approve_data"
-                    item-key="product_code"
-                    approval="inbound"
-                    dense
-                    :loginId="login_info.id"
-                    @clickTr="clickApproveData"
-                    @setApprovalPhase="setApprovalPhase"
-                    @cancleApprove="cancleApprove"
-                    @setCanclePhase="setCanclePhase"
-                  />
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
+              multiple>
+
+              <template v-slot:header="{ data }">
+                <p
+                  class=" mb-0"
+                  item-align-center
+                >
+                  <span class="text-h6 font-weight-black">{{ data.project_code }}</span>
+                </p>
+              </template>
+              <template v-slot:content="{ data }">
+                <v-divider class="mb-4"></v-divider>
+                <v-row>
+                  <v-col
+                    cols="12"
+                  >
+                    <v-btn
+                      small
+                      color="default"
+                      class="mr-2"
+                    >일괄 승인</v-btn>
+
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <DataTableComponent
+                      :headers="order_data_headers"
+                      :items="data.belong_data"
+                      :item-key="data.belong_data.order_company"
+                      approval="inbound"
+                      dense
+                      :loginId="login_info.id"
+                      @clickTr="clickApproveData"
+                      @setApprovalPhase="setApprovalPhase"
+                      @cancleApprove="cancleApprove"
+                      @setCanclePhase="setCanclePhase"
+                    />
+                  </v-col>
+                </v-row>
+              </template>
+            </ExpansionPanelComponent>
+          </div>
         </v-col>
       </v-row>
     </v-main>
@@ -386,6 +409,7 @@ import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import orderPurchaseComponent from "@/components/orderPurchaseComponent.vue";
 import MailFormComponent from "@/components/MailFormComponent.vue";
+import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
 import OrderSearchPageConfig from "@/configure/OrderSearchPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import mux from "@/mux";
@@ -404,6 +428,7 @@ export default {
                 LoadingModalComponent,
                 orderPurchaseComponent,
                 MailFormComponent,
+                ExpansionPanelComponent,
               },
   data(){
     return{
@@ -436,7 +461,7 @@ export default {
       order_data_headers:OrderSearchPageConfig.order_data_headers,
       orderCompanyFiles:OrderSearchPageConfig.orderCompanyFiles,
       inbound_product_list_headers:OrderSearchPageConfig.inbound_product_list_headers,
-      // inbound_approve_data:[],
+      // order_approve_data:[],
       bom_list_headers: OrderSearchPageConfig.bom_list_headers,
       bom_list_purchase_headers: OrderSearchPageConfig.bom_list_purchase_headers,
       bom_list_data: OrderSearchPageConfig.bom_list_test_data,
@@ -444,7 +469,7 @@ export default {
       survey_cost_headers: OrderSearchPageConfig.survey_cost_headers,
       labor_cost_headers: OrderSearchPageConfig.labor_cost_headers,
       calc_cost_detail_data: JSON.parse(JSON.stringify(OrderSearchPageConfig.calc_cost_detail_data)),
-      inbound_approve_data:OrderSearchPageConfig.test_inbound_approve_data,
+      order_approve_data:OrderSearchPageConfig.test_order_approve_data,
       defaultMailData: OrderSearchPageConfig.default_mail_data,
     }
   },
@@ -577,7 +602,7 @@ export default {
             }
 
           })
-          this.inbound_approve_data  = result.data.reverse();
+          this.order_approve_data  = result.data.reverse();
         }else{
           mux.Util.showAlert(result['failed_info']);
         }
@@ -589,7 +614,7 @@ export default {
         else
           mux.Util.showAlert(error);
       }
-      // this.inbound_approve_data = OrderSearchPageConfig.test_inbound_approve_data
+      // this.order_approve_data = OrderSearchPageConfig.test_inbound_approve_data
       this.loading_dialog = false;
     },
     closeProductList(){
