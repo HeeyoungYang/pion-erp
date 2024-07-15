@@ -247,9 +247,9 @@ export default {
   watch: {
     inputs: {
       handler: function (val) {
-        if (val.find(x=>x.type === 'dateSingle').value.length > 0) {
+        if (val.find(x=>x.type === 'dateSingle') && val.find(x=>x.type === 'dateSingle').value.length > 0) {
           this.$emit('dateChanged', val.find(x=>x.type === 'dateSingle').value);
-        }else if (val.find(x=>x.type === 'dateRange').value.length > 0) {
+        }else if (val.find(x=>x.type === 'dateRange') && val.find(x=>x.type === 'dateRange').value.length > 0) {
           this.$emit('dateRangeChanged', val.find(x=>x.type === 'dateRange').value);
         }
       },

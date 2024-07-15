@@ -13,7 +13,11 @@
       <tr :class="trClass ? trClass : ''" :style="trStyle ? trStyle : ''">
         <td>{{ index+1 }}</td>
         <td :colspan="!hideChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index)) ? item.cost_list_colspan : ''">
-          {{ item.cost_list }}
+          {{ item.cost_list_sub ? '' : item.cost_list }}
+          <strong v-if="item.cost_list_sub">{{ item.cost_list }}</strong>
+          <br v-if="item.cost_list_sub">
+          <v-text-field v-if="item.cost_list_sub && !costNumEditDisabled && !preventEditable && item.cost_list_sub_editable" v-model="item.cost_list_sub" dense style="max-width: 200px;"></v-text-field>
+          {{ item.cost_list_sub && !costNumEditDisabled && !preventEditable && item.cost_list_sub_editable ? '' : item.cost_list_sub ? item.cost_list_sub : '' }}
           <v-btn v-if="!preventButton && item.costListBtn"
             :color="item.costListBtn.color ? item.costListBtn.color : 'primary'"
             x-small
@@ -41,7 +45,7 @@
           <v-text-field v-if="!preventEditable && item.cost_num_editable"
             dense
             style="max-width: 50px;"
-            :rules="item.allow_edit_decimal_point ? profiteMaintenanceFeeNumRules : expensesNumRules"
+            :rules="item.allow_integer ? integerRules : item.allow_one_or_greater ? integerOneOrGreaterRules : item.allow_edit_decimal_point ? profiteMaintenanceFeeNumRules : expensesNumRules"
             :disabled="costNumEditDisabled"
             type="number"
             v-model="item.cost_num"
@@ -60,13 +64,23 @@
           }}
         </td>
         <td v-if="!item.cost_list_colspan || item.cost_list_colspan < 4 || (hideChildren && (!showChildsParentIndexArr || !showChildsParentIndexArr.includes(index)))">
-          {{ mux.Number.withComma(item.cost_unit_price ? item.cost_unit_price : item.cost_total ? item.cost_total :
-            (item.belong_data ? (item.belong_data.reduce((prev, cur)=>{
-              return (prev += cur.cost_total ? cur.cost_total : cur.cost_num * cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price :
-              cur.belong_data ? cur.belong_data.reduce((prevB, curB)=>{
-                return (prevB += curB.cost_total ? curB.cost_total : curB.cost_num && curB.cost_unit_price ? curB.cost_num * curB.cost_unit_price : 0);
-              }, 0) : 0 );
-            }, 0)) : 0)
+          <v-text-field v-if="!costNumEditDisabled && !preventEditable && item.cost_unit_price_editable"
+            dense
+            style="max-width: 100px;"
+            :rules="integerRules"
+            :disabled="costNumEditDisabled"
+            type="number"
+            v-model="item.cost_unit_price"
+          ></v-text-field>
+          {{ 
+            !costNumEditDisabled && !preventEditable && item.cost_unit_price_editable ? ''
+            : mux.Number.withComma(item.cost_unit_price ? item.cost_unit_price : item.cost_total ? item.cost_total :
+              (item.belong_data ? (item.belong_data.reduce((prev, cur)=>{
+                return (prev += cur.cost_total ? cur.cost_total : cur.cost_num * cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price :
+                cur.belong_data ? cur.belong_data.reduce((prevB, curB)=>{
+                  return (prevB += curB.cost_total ? curB.cost_total : curB.cost_num && curB.cost_unit_price ? curB.cost_num * curB.cost_unit_price : 0);
+                }, 0) : 0 );
+              }, 0)) : 0)
           ) }}
         </td>
         <td v-if="!item.cost_list_colspan || item.cost_list_colspan < 5 || (hideChildren && (!showChildsParentIndexArr || !showChildsParentIndexArr.includes(index)))">
@@ -85,9 +99,24 @@
           :style="childTrStyle ? childTrStyle : ''"
           :key="'surveycost_'+index+'_'+idx"
           v-show="!hideChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index))">
-          <td>{{ innerItem.cost_no }}</td>
+          <td>
+            <v-btn v-if="!preventEditable && innerItem.deletable_row"
+              :color="innerItem.deleteRowBtn.color ? innerItem.deleteRowBtn.color : 'danger'"
+              x-small
+              :class="'dont_print ' + (innerItem.deleteRowBtn.class ? innerItem.deleteRowBtn.class : 'ml-3')"
+              data-html2canvas-ignore="true"
+              :elevation="innerItem.deleteRowBtn.elevation ? innerItem.deleteRowBtn.elevation : '0'"
+              @click="innerItem.deleteRowBtn.click ? innerItem.deleteRowBtn.click : item.belong_data.splice(idx, 1)"
+            >{{ innerItem.deleteRowBtn.text ? innerItem.deleteRowBtn.text : '-' }}
+            </v-btn>
+            {{ preventEditable || !innerItem.deletable_row ? innerItem.cost_no : '' }}
+          </td>
           <td :colspan="!hideChildren && !hideGrandChildren || (showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx)) ? innerItem.cost_list_colspan : ''">
-            {{ innerItem.cost_list }}
+            {{ innerItem.cost_list_sub ? '' : innerItem.cost_list }}
+            <strong v-if="innerItem.cost_list_sub">{{ innerItem.cost_list }}</strong>
+            <br v-if="innerItem.cost_list_sub">
+            <v-text-field v-if="innerItem.cost_list_sub && !costNumEditDisabled && !preventEditable && innerItem.cost_list_sub_editable" v-model="innerItem.cost_list_sub" dense style="max-width: 200px;"></v-text-field>
+            {{ innerItem.cost_list_sub && !costNumEditDisabled && !preventEditable && innerItem.cost_list_sub_editable ? '' : innerItem.cost_list_sub ? innerItem.cost_list_sub : '' }}
             <v-btn v-if="!preventButton && innerItem.costListBtn"
               :color="innerItem.costListBtn.color ? innerItem.costListBtn.color : 'primary'"
               x-small
@@ -115,7 +144,7 @@
             <v-text-field v-if="!preventEditable && innerItem.cost_num_editable"
               dense
               style="max-width: 50px;"
-              :rules="innerItem.allow_edit_decimal_point ? profinnerItemaintenanceFeeNumRules : expensesNumRules"
+              :rules="innerItem.allow_integer ? integerRules : innerItem.allow_one_or_greater ? integerOneOrGreaterRules : innerItem.allow_edit_decimal_point ? profiteMaintenanceFeeNumRules : expensesNumRules"
               :disabled="costNumEditDisabled"
               type="number"
               v-model="innerItem.cost_num"
@@ -133,11 +162,23 @@
                     : 0)
             }}
           </td>
-          <td v-if="!innerItem.cost_list_colspan || innerItem.cost_list_colspan < 4 || (hideGrandChildren && (!showGrandChildsParentIndexArr || !showGrandChildsParentIndexArr.includes(index)))">{{ mux.Number.withComma(innerItem.cost_unit_price ? innerItem.cost_unit_price : innerItem.cost_num * innerItem.cost_unit_price ? innerItem.cost_num * innerItem.cost_unit_price :
-            innerItem.belong_data ? innerItem.belong_data.reduce((prev, cur)=>{
-              return (prev += cur.cost_total ? cur.cost_total : cur.cost_num && cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price : 0);
-            }, 0) : 0
-          ) }}</td>
+          <td v-if="!innerItem.cost_list_colspan || innerItem.cost_list_colspan < 4 || (hideGrandChildren && (!showGrandChildsParentIndexArr || !showGrandChildsParentIndexArr.includes(index)))">
+            <v-text-field v-if="!costNumEditDisabled && !preventEditable && innerItem.cost_unit_price_editable"
+              dense
+              style="max-width: 100px;"
+              :rules="integerRules"
+              :disabled="costNumEditDisabled"
+              type="number"
+              v-model="innerItem.cost_unit_price"
+            ></v-text-field>
+            {{ 
+              !costNumEditDisabled && !preventEditable && innerItem.cost_unit_price_editable ? ''
+                : mux.Number.withComma(innerItem.cost_unit_price ? innerItem.cost_unit_price : innerItem.cost_num * innerItem.cost_unit_price ? innerItem.cost_num * innerItem.cost_unit_price :
+                innerItem.belong_data ? innerItem.belong_data.reduce((prev, cur)=>{
+                  return (prev += cur.cost_total ? cur.cost_total : cur.cost_num && cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price : 0);
+                }, 0) : 0
+              ) 
+            }}</td>
           <td v-if="!innerItem.cost_list_colspan || innerItem.cost_list_colspan < 5 || (hideGrandChildren && (!showGrandChildsParentIndexArr || !showGrandChildsParentIndexArr.includes(index)))">{{ mux.Number.withComma(Math.round(innerItem.cost_total ? innerItem.cost_total : innerItem.cost_num * innerItem.cost_unit_price ? innerItem.cost_num * innerItem.cost_unit_price :
             innerItem.belong_data ? innerItem.belong_data.reduce((prev, cur)=>{
               return (prev += cur.cost_total ? cur.cost_total : cur.cost_num && cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price : 0);
@@ -149,9 +190,24 @@
           :style="grandChildTrStyle ? grandChildTrStyle : ''"
           :key="'surveycost_'+index+'_'+idx+'_'+inIdx"
           v-show="!hideChildren && !hideGrandChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index) && showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx))">
-          <td>{{ innerBelongItem.cost_no }}</td>
+          <td>
+            <v-btn v-if="!preventEditable && innerBelongItem.deletable_row"
+              :color="innerBelongItem.deleteRowBtn.color ? innerBelongItem.deleteRowBtn.color : 'danger'"
+              x-small
+              :class="'dont_print ' + (innerBelongItem.deleteRowBtn.class ? innerBelongItem.deleteRowBtn.class : 'ml-3')"
+              data-html2canvas-ignore="true"
+              :elevation="innerBelongItem.deleteRowBtn.elevation ? innerBelongItem.deleteRowBtn.elevation : '0'"
+              @click="innerBelongItem.deleteRowBtn.click ? innerBelongItem.deleteRowBtn.click : innerItem.belong_data.splice(inIdx, 1)"
+            >{{ innerBelongItem.deleteRowBtn.text ? innerBelongItem.deleteRowBtn.text : '-' }}
+            </v-btn>
+            {{ preventEditable || !innerBelongItem.deletable_row ? innerBelongItem.cost_no : '' }}
+          </td>
           <td style="padding-left:40px;" :colspan="innerBelongItem.cost_list_colspan">
-            {{ innerBelongItem.cost_list }}
+            {{ innerBelongItem.cost_list_sub ? '' : innerBelongItem.cost_list }}
+            <strong v-if="innerBelongItem.cost_list_sub">{{ innerBelongItem.cost_list }}</strong>
+            <br v-if="innerBelongItem.cost_list_sub">
+            <v-text-field v-if="innerBelongItem.cost_list_sub && !costNumEditDisabled && !preventEditable && innerBelongItem.cost_list_sub_editable" v-model="innerBelongItem.cost_list_sub" dense style="max-width: 200px;"></v-text-field>
+            {{ innerBelongItem.cost_list_sub && !costNumEditDisabled && !preventEditable && innerBelongItem.cost_list_sub_editable ? '' : innerBelongItem.cost_list_sub ? innerBelongItem.cost_list_sub : '' }}
             <v-btn v-if="!preventButton && innerBelongItem.costListBtn"
               :color="innerBelongItem.costListBtn.color ? innerBelongItem.costListBtn.color : 'primary'"
               x-small
@@ -167,14 +223,27 @@
             <v-text-field v-if="!preventEditable && innerBelongItem.cost_num_editable"
               dense
               style="max-width: 50px;"
-              :rules="innerBelongItem.allow_edit_decimal_point ? profiteMaintenanceFeeNumRules : expensesNumRules"
+              :rules="innerBelongItem.allow_integer ? integerRules : innerBelongItem.allow_one_or_greater ? integerOneOrGreaterRules : innerBelongItem.allow_edit_decimal_point ? profiteMaintenanceFeeNumRules : expensesNumRules"
               :disabled="costNumEditDisabled"
               type="number"
               v-model="innerBelongItem.cost_num"
             ></v-text-field>
             {{ !preventEditable && innerBelongItem.cost_num_editable ? '' : innerBelongItem.cost_num }}
           </td>
-          <td v-if="!innerBelongItem.cost_list_colspan || innerBelongItem.cost_list_colspan < 4">{{ mux.Number.withComma(innerBelongItem.cost_unit_price) }}</td>
+          <td v-if="!innerBelongItem.cost_list_colspan || innerBelongItem.cost_list_colspan < 4">
+            <v-text-field v-if="!costNumEditDisabled && !preventEditable && innerBelongItem.cost_unit_price_editable"
+              dense
+              style="max-width: 100px;"
+              :rules="integerRules"
+              :disabled="costNumEditDisabled"
+              type="number"
+              v-model="innerBelongItem.cost_unit_price"
+            ></v-text-field>
+            {{ 
+              !costNumEditDisabled && !preventEditable && innerBelongItem.cost_unit_price_editable ? ''
+              : mux.Number.withComma(innerBelongItem.cost_unit_price) 
+            }}
+          </td>
           <td v-if="!innerBelongItem.cost_list_colspan || innerBelongItem.cost_list_colspan < 5">{{ mux.Number.withComma(Math.round(innerBelongItem.cost_total ? innerBelongItem.cost_total : innerBelongItem.cost_num && innerBelongItem.cost_unit_price ? innerBelongItem.cost_num * innerBelongItem.cost_unit_price : '')) }}</td>
         </tr>
       </template>
@@ -285,6 +354,15 @@ export default {
         v => v<=1  || '0 또는 1',
         v => v>=0  || '0 또는 1',
         v => !!((v || v==0) && /^(?=.{1,1}$)/.test(v) ) || '0 또는 1',
+      ],
+      integerOneOrGreaterRules: [
+        v => (!!v) || '1 이상의 정수',
+        v => Number.isInteger(Number(v)) || '1 이상의 정수',
+        v => v>=1 || '1 이상의 정수',
+      ],
+      integerRules: [
+        v => (!!v) || '정수',
+        v => Number.isInteger(Number(v)) || '정수',
       ],
     };
   }
