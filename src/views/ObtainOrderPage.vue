@@ -635,6 +635,10 @@
                           label="용역"
                           value="용역"
                         ></v-radio>
+                        <v-radio
+                          label="재고용"
+                          value="재고용"
+                        ></v-radio>
                       </v-radio-group>
                       <InputsFormComponent
                         dense
@@ -720,6 +724,16 @@
                       저장
                     </v-btn>
                     <v-btn
+                      v-if="type_obtain === '재고용'"
+                      color="yellow lighten-4"
+                      small
+                      class="mr-4 float-right"
+                      elevation="1"
+                      @click="product_cost_dialog = true"
+                    >
+                      원가 불러오기
+                    </v-btn>
+                    <v-btn
                       color="grey lighten-4"
                       small
                       class="mr-4 float-right"
@@ -765,11 +779,11 @@
                           <td class="estimate_info" style="border-bottom: 0px;">2024-05-29</td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">{{ type_obtain }}명</td>
+                          <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">{{ type_obtain === '용역' ? type_obtain : '프로젝트' }}명</td>
                           <td class="estimate_info" style="border-bottom: 0px;"></td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">{{ type_obtain }}기간</td>
+                          <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">{{ type_obtain === '용역' ? type_obtain : '프로젝트' }}기간</td>
                           <td class="estimate_info" style="border-bottom: 0px;"></td>
                         </tr>
                         <tr>
@@ -1320,12 +1334,18 @@
           </v-row>
         </v-container>
       </ModalDialogComponent>
-      <EstimateSearchDialogComponent
+    <EstimateSearchDialogComponent
         :dialog-value="estimate_dialog"
         :persistent="true"
         @close="closEstimateSearch"
       >
       </EstimateSearchDialogComponent>
+      <ProductCostSearchDialogComponent
+        :dialog-value="product_cost_dialog"
+        :persistent="true"
+        @close="closEstimateSearch"
+      >
+      </ProductCostSearchDialogComponent>
   </div>
 </template>
 <script>
@@ -1338,6 +1358,7 @@ import CheckPagePermission from "@/common_js/CheckPagePermission";
 import CostTableComponent from "@/components/CostTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import EstimateSearchDialogComponent from "@/components/EstimateSearchDialogComponent";
+import ProductCostSearchDialogComponent from "@/components/ProductCostSearchDialogComponent";
 import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent";
 import mux from "@/mux";
 
@@ -1354,6 +1375,7 @@ export default {
                 CostTableComponent,
                 ModalDialogComponent,
                 EstimateSearchDialogComponent,
+                ProductCostSearchDialogComponent,
                 MemberSearchDialogComponent,
               },
 
@@ -1435,6 +1457,7 @@ export default {
     },
     closEstimateSearch(){
       this.estimate_dialog = false;
+      this.product_cost_dialog = false;
     },
     selectMemberDialog(idx){
       this.member_type_index = idx
@@ -1577,6 +1600,7 @@ export default {
       estimate_type: '재료비',
       dialog_payment: false,
       estimate_dialog: false,
+      product_cost_dialog: false,
       member_dialog: false,
       edit_survey_cost_num_disabled: true,
       edit_buttons_show: true,

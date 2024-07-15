@@ -1117,7 +1117,7 @@
                       elevation="1"
                       @click="estimate_dialog = true"
                     >
-                    수주 확인서 불러오기
+                    생산 의뢰 내역
                     </v-btn>
                   </v-col>
                 </v-row>

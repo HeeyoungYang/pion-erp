@@ -41,32 +41,29 @@
             </InputsFormComponent>
           </CardComponent>
 
-          <v-row>
-            <v-col
-              cols="12"
-              sm="12"
+          <CardComponent
+            elevation="1"
+            card-class="mt-5"
+            text-class="pt-3"
+            title-class="d-none"
+          >
+            <div
+              slot="cardText"
             >
-              <v-card
-              elevation="1"
-              class="mt-5"
-              >
-                <v-card-text class=" pt-3">
-                  <DataTableComponent
-                    :headers="purchase_headers"
-                    :items="purchase_data"
-                    item-key="product_code"
-                    approval="inbound"
-                    dense
-                    :loginId="login_info.id"
-                    @clickTr="clickApproveData"
-                    @setApprovalPhase="setApprovalPhase"
-                    @cancleApprove="cancleApprove"
-                    @setCanclePhase="setCanclePhase"
-                  />
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
+              <DataTableComponent
+                :headers="purchase_headers"
+                :items="purchase_data"
+                item-key="product_code"
+                approval="inbound"
+                dense
+                :loginId="login_info.id"
+                @clickTr="clickApproveData"
+                @setApprovalPhase="setApprovalPhase"
+                @cancleApprove="cancleApprove"
+                @setCanclePhase="setCanclePhase"
+              />
+            </div>
+          </CardComponent>
         </v-col>
       </v-row>
     </v-main>
@@ -87,7 +84,7 @@
         class="tab_search"
       >
         <v-btn
-          v-if="tab_search === 0"
+          v-if="tab_search === 0 && show_request_estimate_button"
           color="success"
           small
           style="position: absolute;right: 0px;"
@@ -117,20 +114,6 @@
             </v-col>
           </v-row>
         </v-tab-item>
-        <!-- 견적 요청 -->
-        <!-- <v-tab-item>
-          <v-row>
-            <v-col cols="12">
-              <DataTableComponent
-                :headers="purchase_detail_headers"
-                :items="purchase_detail_estimate_requested_data"
-                :item-key="purchase_detail_estimate_requested_data.product_code"
-                dense
-              >
-              </DataTableComponent>
-            </v-col>
-          </v-row>
-        </v-tab-item> -->
         <!-- 견적 완료 -->
         <v-tab-item>
           <v-row>
@@ -161,10 +144,10 @@
                   </th>
                   <th>
                     <v-btn
-                      v-if="items[0].order === ''"
+                      v-if="items[0].order === '' && items[0].estimate_company !== '*견적서 미등록'"
                       color="success"
                       x-small
-                      @click="orderRequestDialog = true"
+                      @click="orderRequest(items)"
                     >발주 요청</v-btn>
                     <span v-else>{{ items[0].order }}</span>
                   </th>
@@ -201,7 +184,7 @@
               :step="n"
               editable
             >
-              {{ n ===  1 ? '관련 자재 선택' : (tab_search === 0 ? '견적 요청' : '견적 등록')}}
+              {{ n ===  1 ? '관련 자재 선택' : (n ===  2 ? '구매 요청 내역 확인' : (tab_search === 0 ? '견적 요청' : '견적 등록'))}}
             </v-stepper-step>
 
             <v-divider
@@ -239,11 +222,35 @@
               </v-btn>
 
               <v-btn text color="error"
-              @click="unestimatedMailDialog=false">
+              @click="closeUnestiamtedDialog">
                 취소
               </v-btn>
             </div>
             <div v-if="n === 2">
+              <v-row>
+                <v-col cols="12">
+                  <DataTableComponent
+                    :headers="selected_unestimated_headers"
+                    :items="selected_unestimated_data"
+                    table-class="elevation-0"
+                    item-key="product_code"
+                    dense
+                  />
+                </v-col>
+              </v-row>
+              <v-btn
+                color="primary"
+                @click="unestimated_steppers = 2"
+              >
+                다음 ▶
+              </v-btn>
+
+              <v-btn text color="error"
+              @click="closeUnestiamtedDialog">
+                취소
+              </v-btn>
+            </div>
+            <div v-if="n === 3">
               <v-card class="elevation-0">
                 <v-card-text class="pb-0">
                   <v-row>
@@ -353,7 +360,7 @@
                   <v-btn
                     text
                     color="error"
-                    @click="unestimatedMailDialog = false"
+                    @click="closeUnestiamtedDialog"
                   >
                     취소
                   </v-btn>
@@ -531,12 +538,23 @@
                     <v-col cols="12">
                       <v-data-table
                         :headers="order_request_headers"
-                        :items="purchase_detail_data"
+                        :items="order_request_data"
                         item-key="product_code"
                         dense
                       >
                         <template v-slot:item="{ item }">
                           <tr>
+                            <td>
+                              <v-icon
+                                color="error"
+                                class="mr-2"
+                                x-small
+                                style="background: #ffedb4; border-radius: 50px; padding: 4px; cursor: pointer;"
+                              >
+                                mdi-exclamation-thick
+                              </v-icon>
+                              {{ item.product_code }}
+                            </td>
                             <td>
                               <v-text-field
                                 v-model="item.name"
@@ -564,6 +582,15 @@
                                 style="font-size: 13px;"
                               ></v-text-field>
                             </td>
+                            <!-- <td>
+                              <v-text-field
+                                v-model="item.purchase_num"
+                                filled
+                                dense
+                                hide-details
+                                style="font-size: 13px;"
+                              ></v-text-field>
+                            </td> -->
                             <td>{{ item.purchase_num }}</td>
                             <td>{{ item.purchase_num * item.unit_price }}</td>
                             <td>{{ (item.purchase_num * item.unit_price)*0.1 }}</td>
@@ -633,11 +660,12 @@ export default {
       mux: mux,
       dates: [],
       unestimated_steppers: 1,
-      unestimated_step: 2,
+      unestimated_step: 3,
       order_steppers: 1,
       order_step: 2,
       tab_search: null,
       unestimated_request:'mailed',
+      show_request_estimate_button: false,
       orderRequestDialog: false,
       inbound_product_list_dialog: false,
       loading_dialog: false,
@@ -656,6 +684,8 @@ export default {
       searched_products:[],
       selected_unestimated_data:[],
 
+      order_request_data:[],
+
       defaultMailData: PurchaseSearchPageConfig.default_mail_data,
       search_tab_items: PurchaseSearchPageConfig.search_tab_items,
       purchase_member_info:PurchaseSearchPageConfig.purchase_member_info,
@@ -666,6 +696,7 @@ export default {
       setPurchaseInputs:PurchaseSearchPageConfig.setPurchaseInputs,
       purchase_headers:PurchaseSearchPageConfig.purchase_headers,
       purchase_detail_headers:PurchaseSearchPageConfig.purchase_detail_headers,
+      selected_unestimated_headers:PurchaseSearchPageConfig.selected_unestimated_headers,
       purchase_order_headers:PurchaseSearchPageConfig.purchase_order_headers,
       order_request_headers:PurchaseSearchPageConfig.order_request_headers,
       bom_list_headers: PurchaseSearchPageConfig.bom_list_headers,
@@ -673,10 +704,7 @@ export default {
       bom_list_data: PurchaseSearchPageConfig.bom_list_test_data,
       bom_list_purchase_data: PurchaseSearchPageConfig.bom_list_purchase_test_data,
       purchase_data:PurchaseSearchPageConfig.test_purchase_data,
-      purchase_detail_data:PurchaseSearchPageConfig.test_purchase_detail_data,
-      purchase_detail_unestimated_data:PurchaseSearchPageConfig.test_purchase_detail_unestimated_data,
-      purchase_detail_estimate_requested_data:PurchaseSearchPageConfig.test_purchase_detail_estimate_requested_data,
-      // purchase_detail_data:[]
+      purchase_detail_data:[]
     }
   },
 
@@ -847,77 +875,27 @@ export default {
     closeProductList(){
       this.inbound_product_list_dialog = false;
     },
-    async clickApproveData(){
-
-      // let belong_datas = item.belong_data
-      // this.purchase_detail_data = [];
-      // this.inbound_info_data = {};
-      // belong_datas.forEach(data =>{
-      //   data.inbound_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
-      //   this.purchase_detail_data.push(data);
-
-      //   if(data.belong_data){
-      //     data.belong_data.forEach(shipdata => {
-      //     shipdata.inbound_price = ""
-      //   })
-      //   }
-      // })
-      // let file_name = item.files.split('/');
-      // if(!file_name[0]){
-      //   file_name = ""
-      // }
-      // this.inbound_info_data = {
-      //   code:item.code,
-      //   project_code:item.project_code,
-      //   spot:item.spot,
-      //   abnormal_reason : item.abnormal_reason,
-      //   receiving_inspection_file : item.receiving_inspection_file,
-      //   inspection_report_file : item.inspection_report_file,
-      //   note: item.note,
-      //   files: file_name,
-      // }
-
-      // const prevURL = window.location.href;
-      // try {
-      //   this.loading_dialog = true;
-      //   // 제품의 썸네일
-      //   let result = await mux.Server.post({
-      //     path: '/api/common_rest_api/',
-      //     params: [
-      //       {
-      //         "inbound_confirmation_table.code": item.code
-      //       }
-      //     ],
-      //     "script_file_name": "rooting_입고_thumbnail_검색_24_05_16_15_32_Z97.json",
-      //     "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_thumbnail_검색_24_05_16_15_32_7VD"
-      //   });
-      //   if (prevURL !== window.location.href) return;
-
-      //   if (typeof result === 'string'){
-      //     result = JSON.parse(result);
-      //   }
-      //   if(result['code'] == 0){
-      //     let receiving_inspection_thumbnail = '';
-      //     let inspection_report_thumbnail = '';
-      //     if (result['data'].length > 0){
-      //       receiving_inspection_thumbnail = result['data'][0].receiving_inspection_thumbnail;
-      //       inspection_report_thumbnail = result['data'][0].inspection_report_thumbnail;
-      //     }
-      //     this.receivingInspectionThumbnail = receiving_inspection_thumbnail;
-      //     this.inspectionReportThumbnail = inspection_report_thumbnail;
-      //     this.loading_dialog = false;
-      //   } else {
-      //     this.loading_dialog = false;
-      //     mux.Util.showAlert(result['failed_info']);
-      //   }
-      // } catch (error) {
-      //   if (prevURL !== window.location.href) return;
-      //   this.loading_dialog = false;
-      //   if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-      //     mux.Util.showAlert(error.response['data']['failed_info'].msg);
-      //   else
-      //     mux.Util.showAlert(error);
-      // }
+    closeUnestiamtedDialog(){
+      this.unestimatedMailDialog = false;
+      this.unestimated_steppers = 1;
+    },
+    orderRequest(item){
+      this.order_request_data = item
+      this.orderRequestDialog = true;
+    },
+    async clickApproveData(item){
+      this.purchase_detail_data = item.belong_data;
+      let unestimated = 0;
+      for(let i=0; i<item.belong_data.length; i++){
+        if(item.belong_data[i].purchase_estimate !== '완료'){
+          unestimated++;
+        }
+      }
+      if(unestimated === 0){
+        this.show_request_estimate_button = false;
+      }else{
+        this.show_request_estimate_button = true;
+      }
       this.inbound_product_list_dialog = true;
     },
 
