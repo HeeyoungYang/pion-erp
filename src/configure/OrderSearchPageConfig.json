@@ -17,23 +17,34 @@
     {"label":"리드타임", "col":"12", "sm":"4", "lg":"4", "value": ""}
   ],
 
-  "order_data_headers": [
+  "project_code_data_headers": [
     { "text": "승인 요청일", "align": "start", "value": "created_time"},
-    { "text": "발주일", "align": "start", "value": "ordered_time"},
     { "text": "발주 업체", "align": "start", "value": "order_company"},
+    { "text": "발주일", "align": "start", "value": "ordered_time"},
+    { "text": "1차 계산일", "align": "start", "value": "first_bill_date"},
+    { "text": "2차 계산일", "align": "start", "value": "second_bill_date"},
+    { "text": "3차 계산일", "align": "start", "value": "third_bill_date"}
+  ],
+  "order_code_data_headers": [
+    { "text": "승인 요청일", "align": "start", "value": "created_time"},
+    { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
+    { "text": "발주일", "align": "start", "value": "ordered_time"},
     { "text": "1차 계산일", "align": "start", "value": "first_bill_date"},
     { "text": "2차 계산일", "align": "start", "value": "second_bill_date"},
     { "text": "3차 계산일", "align": "start", "value": "third_bill_date"}
   ],
 
-  "inbound_product_list_headers": [
+  "order_detail_headers": [
+    { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
     { "text": "종류", "align": "start", "value": "type"},
     { "text": "분류", "align": "start", "value": "classification"},
     { "text": "관리코드", "align": "start", "value": "product_code"},
     { "text": "제품명", "align": "start", "value": "name"},
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
-    { "text": "구매 요청 수량", "align": "start", "value": "spot"}
+    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
+    { "text": "발주 수량", "align": "start", "value": "order_num"},
+    { "text": "비고", "align": "start", "value": "note"}
   ],
   "survey_cost_headers": [
     { "text": "No.", "align": "start", "value": ""},
@@ -380,7 +391,8 @@
     "approved_date":"",
     "belong_data":[]
   },
-  "test_order_approve_data":[
+  
+  "test_project_code_criterion_data":[
     {
       "project_code": "PROJECT-001",
       "belong_data":[
@@ -403,7 +415,19 @@
           "rejecter": null,
           "rejected_date": null,
           "reject_reason": null,
-          "belong_data":[]
+          "belong_data":[
+            {    
+              "type":"원부자재",
+              "classification":"GFM",
+              "product_code":"1",
+              "name":"원부자재B",
+              "model":"MODEL-002",
+              "spec":"SPEC-002",
+              "purchase_num":"3",   
+              "order_num" : "10",
+              "note": "PROJECT-001 3개, PROJECT-002 7개"       
+            }
+          ]
         },
         {
           "created_time": "2024-05-17 08:32:44",
@@ -420,6 +444,134 @@
           "approver": " 윤준수",
           "approver_id": "yjs",
           "approved_date": null,
+          "rejecter": null,
+          "rejected_date": null,
+          "reject_reason": null,
+          "belong_data":[
+            {
+
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "project_code": "PROJECT-002",
+      "belong_data":[
+        {
+          "ordered_time": "2024-05-23",
+          "created_time": "2024-05-17 08:32:44",
+          "given_name": "양희영",
+          "code": "ORDER-001:2024-05-17 08:31:28.759",
+          "order_company": "업체A",
+          "first_bill_date": "2024-06-01",
+          "second_bill_date": "2024-06-02",
+          "third_bill_date": "2024-06-03",
+          "approval_phase": "승인",
+          "checker": "양희영",
+          "checker_id": "heeyoung",
+          "checked_date": "2024-05-17 09:33:04",
+          "approver": " 윤준수",
+          "approver_id": "yjs",
+          "approved_date": "2024-05-20 09:33:04",
+          "rejecter": null,
+          "rejected_date": null,
+          "reject_reason": null,
+          "belong_data":[]
+        }
+      ]
+    }
+  ],
+  "test_order_code_criterion_data":[
+    {
+      "order_code": "order-001",
+      "order_company": "업체A",
+      "belong_data":[
+        {
+          "ordered_time": "2024-05-23",
+          "created_time": "2024-05-17 08:32:44",
+          "given_name": "양희영",
+          "code": "ORDER-001:2024-05-17 08:31:28.759",
+          "project_code": "PROJECT-001",
+          "first_bill_date": "2024-06-01",
+          "second_bill_date": "2024-06-02",
+          "third_bill_date": "2024-06-03",
+          "approval_phase": "승인",
+          "checker": "양희영",
+          "checker_id": "heeyoung",
+          "checked_date": "2024-05-17 09:33:04",
+          "approver": " 윤준수",
+          "approver_id": "yjs",
+          "approved_date": "2024-05-20 09:33:04",
+          "rejecter": null,
+          "rejected_date": null,
+          "reject_reason": null,
+          "belong_data":[]
+        },
+        {
+          "ordered_time": "2024-05-23",
+          "created_time": "2024-05-17 08:32:44",
+          "given_name": "양희영",
+          "code": "ORDER-001:2024-05-17 08:31:28.759",
+          "project_code": "PROJECT-002",
+          "first_bill_date": "2024-06-01",
+          "second_bill_date": "2024-06-02",
+          "third_bill_date": "2024-06-03",
+          "approval_phase": "승인",
+          "checker": "양희영",
+          "checker_id": "heeyoung",
+          "checked_date": "2024-05-17 09:33:04",
+          "approver": " 윤준수",
+          "approver_id": "yjs",
+          "approved_date": "2024-05-20 09:33:04",
+          "rejecter": null,
+          "rejected_date": null,
+          "reject_reason": null,
+          "belong_data":[]
+        }
+      ]
+    },
+    {
+      "order_code": "order-002",
+      "order_company": "업체B",
+      "belong_data":[
+        {
+          "ordered_time": "2024-05-23",
+          "created_time": "2024-05-17 08:32:44",
+          "given_name": "양희영",
+          "code": "ORDER-001:2024-05-17 08:31:28.759",
+          "project_code": "PROJECT-001",
+          "first_bill_date": "2024-06-01",
+          "second_bill_date": "2024-06-02",
+          "third_bill_date": "2024-06-03",
+          "approval_phase": "승인",
+          "checker": "양희영",
+          "checker_id": "heeyoung",
+          "checked_date": "2024-05-17 09:33:04",
+          "approver": " 윤준수",
+          "approver_id": "yjs",
+          "approved_date": "2024-05-20 09:33:04",
+          "rejecter": null,
+          "rejected_date": null,
+          "reject_reason": null,
+          "belong_data":[]
+        },
+        {
+          "ordered_time": "2024-05-23",
+          "created_time": "2024-05-17 08:32:44",
+          "given_name": "양희영",
+          "code": "ORDER-001:2024-05-17 08:31:28.759",
+          "project_code": "PROJECT-002",
+          "first_bill_date": "2024-06-01",
+          "second_bill_date": "2024-06-02",
+          "third_bill_date": "2024-06-03",
+          "approval_phase": "승인",
+          "checker": "양희영",
+          "checker_id": "heeyoung",
+          "checked_date": "2024-05-17 09:33:04",
+          "approver": " 윤준수",
+          "approver_id": "yjs",
+          "approved_date": "2024-05-20 09:33:04",
           "rejecter": null,
           "rejected_date": null,
           "reject_reason": null,

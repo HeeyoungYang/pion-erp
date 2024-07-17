@@ -25,6 +25,28 @@
               :inputs="searchCardInputs"
               @enter="searchButton"
             >
+              <!-- <v-col
+                cols="12"
+                sm="4"
+                lg="3"
+                align-self="center"
+              >
+                <v-radio-group
+                  hide-details
+                  v-model="code_criterion"
+                  class="mt-0"
+                  row
+                >
+                  <v-radio
+                    label="프로젝트 기준"
+                    value="project"
+                  ></v-radio>
+                  <v-radio
+                    label="발주 기준"
+                    value="order"
+                  ></v-radio>
+                </v-radio-group>
+              </v-col> -->
               <v-col
                 cols="12"
                 sm="4"
@@ -43,9 +65,26 @@
           </CardComponent>
 
           <div>
+
+            <v-radio-group
+              v-show="criterion"
+              hide-details
+              v-model="code_criterion"
+              class="mt-7"
+              row
+            >
+              <v-radio
+                label="프로젝트 기준"
+                value="project"
+              ></v-radio>
+              <v-radio
+                label="발주 기준"
+                value="order"
+              ></v-radio>
+            </v-radio-group>
             <ExpansionPanelComponent
-              :data="order_approve_data"
-              @headerStockApply="headerStockApply"
+              v-if="code_criterion === 'project'"
+              :data="project_code_criterion_data"
               elevation="1"
               class="mt-5"
               multiple>
@@ -69,16 +108,78 @@
                       color="default"
                       class="mr-2"
                     >일괄 승인</v-btn>
-
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="12">
                     <DataTableComponent
-                      :headers="order_data_headers"
+                      :headers="project_code_data_headers"
                       :items="data.belong_data"
                       :item-key="data.belong_data.order_company"
                       approval="inbound"
+                      dense
+                      :loginId="login_info.id"
+                      @clickTr="clickApproveData"
+                      @setApprovalPhase="setApprovalPhase"
+                      @cancleApprove="cancleApprove"
+                      @setCanclePhase="setCanclePhase"
+                    />
+                  </v-col>
+                </v-row>
+              </template>
+            </ExpansionPanelComponent>
+          </div>
+          <div
+            v-if="code_criterion === 'order'"
+          >
+            <ExpansionPanelComponent
+              :data="order_code_criterion_data"
+              elevation="1"
+              class="mt-5"
+              multiple>
+
+              <template v-slot:header="{ data }">
+                <p
+                  class=" mb-0"
+                  item-align-center
+                >
+                  <span class="text-h6 font-weight-black">{{ data.order_code }} ({{ data.order_company }})</span>
+                </p>
+              </template>
+              <template v-slot:content="{ data }">
+                <v-divider class="mb-4"></v-divider>
+                <v-row>
+                  <v-col
+                    cols="12"
+                  >
+                    <!-- <v-btn
+                      small
+                      color="default"
+                      class="mr-2"
+                    >일괄 승인</v-btn> -->
+                    <v-chip
+                      small
+                      color="primary"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      승인
+                    </v-chip>
+                    <v-btn
+                      small
+                      color="default"
+                      class="ml-2"
+                      @click="clickApproveData"
+                    >상세 보기</v-btn>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <DataTableComponent
+                      :headers="order_code_data_headers"
+                      :items="data.belong_data"
+                      :item-key="data.belong_data.project_code"
+                      approval="order"
                       dense
                       :loginId="login_info.id"
                       @clickTr="clickApproveData"
@@ -162,17 +263,20 @@
             ref="orderPurchaseComponent"
           />
         </v-col>
-        <!-- <v-col cols="12">
-          <DataTableComponent
-            :headers="inbound_product_list_headers"
-            :items="inbound_product_list_data"
-            :item-key="inbound_product_list_data.product_code"
-            dense
-          />
-        </v-col> -->
       </v-row>
       <v-row>
         <v-col cols="12" sm="12">
+          <v-col cols="12">
+            <p class="font-weight-bold primary--text mb-0" style="font-size: 18px;">
+              발주 상세 내역
+            </p>
+            <DataTableComponent
+              :headers="order_detail_headers"
+              :items="order_detail_data"
+              dense
+            />
+          </v-col>
+          <v-divider class="my-4"></v-divider>
           <v-col cols="12">
             <p class="font-weight-bold primary--text mb-0" style="font-size: 18px;">
               <v-btn
@@ -436,6 +540,7 @@ export default {
       mux: mux,
       billNum:3,
       dates: [],
+      criterion: false,
       orderPurchase: false,
       order_detail_dialog: false,
       loading_dialog: false,
@@ -446,6 +551,7 @@ export default {
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
       uploadFilesTitle: '',
+      code_criterion: 'project',
 
       inbound_info_data:{},
       inbound_product_list_data:[],
@@ -459,10 +565,10 @@ export default {
       login_info: OrderSearchPageConfig.login_info,
       searchCardInputs:OrderSearchPageConfig.searchCardInputs,
       setPurchaseInputs:OrderSearchPageConfig.setPurchaseInputs,
-      order_data_headers:OrderSearchPageConfig.order_data_headers,
+      project_code_data_headers:OrderSearchPageConfig.project_code_data_headers,
+      order_code_data_headers:OrderSearchPageConfig.order_code_data_headers,
       orderCompanyFiles:OrderSearchPageConfig.orderCompanyFiles,
-      inbound_product_list_headers:OrderSearchPageConfig.inbound_product_list_headers,
-      // order_approve_data:[],
+      order_detail_headers:OrderSearchPageConfig.order_detail_headers,
       bom_list_headers: OrderSearchPageConfig.bom_list_headers,
       bom_list_purchase_headers: OrderSearchPageConfig.bom_list_purchase_headers,
       bom_list_data: OrderSearchPageConfig.bom_list_test_data,
@@ -470,7 +576,10 @@ export default {
       survey_cost_headers: OrderSearchPageConfig.survey_cost_headers,
       labor_cost_headers: OrderSearchPageConfig.labor_cost_headers,
       calc_cost_detail_data: JSON.parse(JSON.stringify(OrderSearchPageConfig.calc_cost_detail_data)),
-      order_approve_data:[],
+      // order_approve_data:[],
+      order_detail_data: [],
+      project_code_criterion_data:[],
+      order_code_criterion_data:[],
       defaultMailData: OrderSearchPageConfig.default_mail_data,
     }
   },
@@ -542,84 +651,17 @@ export default {
 
     async searchButton(){
       this.loading_dialog = true;
-      this.order_approve_data = OrderSearchPageConfig.test_order_approve_data
+      this.criterion = true;
+      this.project_code_criterion_data = OrderSearchPageConfig.test_project_code_criterion_data
+      this.order_code_criterion_data = OrderSearchPageConfig.test_order_code_criterion_data
       this.loading_dialog = false;
     },
     closeProductList(){
       this.order_detail_dialog = false;
     },
-    async clickApproveData(){
-
-      // let belong_datas = item.belong_data
-      // this.inbound_product_list_data = [];
-      // this.inbound_info_data = {};
-      // belong_datas.forEach(data =>{
-      //   data.inbound_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
-      //   this.inbound_product_list_data.push(data);
-
-      //   if(data.belong_data){
-      //     data.belong_data.forEach(shipdata => {
-      //     shipdata.inbound_price = ""
-      //   })
-      //   }
-      // })
-      // let file_name = item.files.split('/');
-      // if(!file_name[0]){
-      //   file_name = ""
-      // }
-      // this.inbound_info_data = {
-      //   code:item.code,
-      //   project_code:item.project_code,
-      //   spot:item.spot,
-      //   abnormal_reason : item.abnormal_reason,
-      //   receiving_inspection_file : item.receiving_inspection_file,
-      //   inspection_report_file : item.inspection_report_file,
-      //   note: item.note,
-      //   files: file_name,
-      // }
-
-      // const prevURL = window.location.href;
-      // try {
-      //   this.loading_dialog = true;
-      //   // 제품의 썸네일
-      //   let result = await mux.Server.post({
-      //     path: '/api/common_rest_api/',
-      //     params: [
-      //       {
-      //         "inbound_confirmation_table.code": item.code
-      //       }
-      //     ],
-      //     "script_file_name": "rooting_입고_thumbnail_검색_24_05_16_15_32_Z97.json",
-      //     "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_thumbnail_검색_24_05_16_15_32_7VD"
-      //   });
-      //   if (prevURL !== window.location.href) return;
-
-      //   if (typeof result === 'string'){
-      //     result = JSON.parse(result);
-      //   }
-      //   if(result['code'] == 0){
-      //     let receiving_inspection_thumbnail = '';
-      //     let inspection_report_thumbnail = '';
-      //     if (result['data'].length > 0){
-      //       receiving_inspection_thumbnail = result['data'][0].receiving_inspection_thumbnail;
-      //       inspection_report_thumbnail = result['data'][0].inspection_report_thumbnail;
-      //     }
-      //     this.receivingInspectionThumbnail = receiving_inspection_thumbnail;
-      //     this.inspectionReportThumbnail = inspection_report_thumbnail;
-      //     this.loading_dialog = false;
-      //   } else {
-      //     this.loading_dialog = false;
-      //     mux.Util.showAlert(result['failed_info']);
-      //   }
-      // } catch (error) {
-      //   if (prevURL !== window.location.href) return;
-      //   this.loading_dialog = false;
-      //   if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-      //     mux.Util.showAlert(error.response['data']['failed_info'].msg);
-      //   else
-      //     mux.Util.showAlert(error);
-      // }
+    async clickApproveData(item){
       this.order_detail_dialog = true;
+      this.order_detail_data = item.belong_data;
     },
 
     async searchItemStock(data){

@@ -73,7 +73,7 @@
                   <v-btn v-if="addToTable" @click="addData(item)" :disabled="checkAddToTableDisalbed(item)" x-small color="success">일괄 추가</v-btn>
                   <v-btn v-if="exceptFromTable" @click="exceptData(index)" x-small color="grey" class="white--text">제외</v-btn>
                 </td>
-                <td v-if="approval" align="center">
+                <td v-if="approval !== 'order'" align="center">
                   <!-- 확인 또는 승인자가 아닐 경우 노출되는 단순  chip -->
                   <v-chip
                     v-if="((item.approval_phase == '미확인' || item.approval_phase == '추가 미확인') && item.checker_id !== userID) || ((item.approval_phase == '미승인' || item.approval_phase == '추가 미승인') && item.approver_id !== userID)"
@@ -994,7 +994,9 @@ export default {
       this.addedHeaders.unshift({ text: '승인', align: 'start', value: 'approver', sortable: false });
       this.addedHeaders.unshift({ text: '확인', align: 'start', value: 'checker', sortable: false });
       this.addedHeaders.unshift({ text: '신청자', align: 'start', value: 'given_name', sortable: false });
-      this.addedHeaders.unshift({ text: '단계', align: 'center', value: 'approval', sortable: false });
+      if(this.approval !== 'order'){
+        this.addedHeaders.unshift({ text: '단계', align: 'center', value: 'approval', sortable: false });
+      }
     }
     if (this.groupBy){
       this.addedHeaders.unshift({ text: this.headers.find(x=>x.value === this.groupBy).text, align: 'center', value: ''});
