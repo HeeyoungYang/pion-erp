@@ -73,7 +73,7 @@
                   <v-btn v-if="addToTable" @click="addData(item)" :disabled="checkAddToTableDisalbed(item)" x-small color="success">일괄 추가</v-btn>
                   <v-btn v-if="exceptFromTable" @click="exceptData(index)" x-small color="grey" class="white--text">제외</v-btn>
                 </td>
-                <td v-if="approval !== 'order'" align="center">
+                <td v-if="approval && approval !== 'order'" align="center">
                   <!-- 확인 또는 승인자가 아닐 경우 노출되는 단순  chip -->
                   <v-chip
                     v-if="((item.approval_phase == '미확인' || item.approval_phase == '추가 미확인') && item.checker_id !== userID) || ((item.approval_phase == '미승인' || item.approval_phase == '추가 미승인') && item.approver_id !== userID)"
