@@ -100,15 +100,7 @@
           :key="'surveycost_'+index+'_'+idx"
           v-show="!hideChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index))">
           <td>
-            <v-btn v-if="!preventEditable && innerItem.deletable_row"
-              :color="innerItem.deleteRowBtn.color ? innerItem.deleteRowBtn.color : 'danger'"
-              x-small
-              :class="'dont_print ' + (innerItem.deleteRowBtn.class ? innerItem.deleteRowBtn.class : 'ml-3')"
-              data-html2canvas-ignore="true"
-              :elevation="innerItem.deleteRowBtn.elevation ? innerItem.deleteRowBtn.elevation : '0'"
-              @click="innerItem.deleteRowBtn.click ? innerItem.deleteRowBtn.click : item.belong_data.splice(idx, 1)"
-            >{{ innerItem.deleteRowBtn.text ? innerItem.deleteRowBtn.text : '-' }}
-            </v-btn>
+            <v-icon v-if="!preventEditable && !costNumEditDisabled && innerItem.deletable_row" small color="error" style="cursor:pointer" @click="item.belong_data.splice(idx, 1)">mdi-minus-thick</v-icon>
             {{ preventEditable || !innerItem.deletable_row ? innerItem.cost_no : '' }}
           </td>
           <td :colspan="!hideChildren && !hideGrandChildren || (showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx)) ? innerItem.cost_list_colspan : ''">
@@ -191,15 +183,7 @@
           :key="'surveycost_'+index+'_'+idx+'_'+inIdx"
           v-show="!hideChildren && !hideGrandChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index) && showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx))">
           <td>
-            <v-btn v-if="!preventEditable && innerBelongItem.deletable_row"
-              :color="innerBelongItem.deleteRowBtn.color ? innerBelongItem.deleteRowBtn.color : 'danger'"
-              x-small
-              :class="'dont_print ' + (innerBelongItem.deleteRowBtn.class ? innerBelongItem.deleteRowBtn.class : 'ml-3')"
-              data-html2canvas-ignore="true"
-              :elevation="innerBelongItem.deleteRowBtn.elevation ? innerBelongItem.deleteRowBtn.elevation : '0'"
-              @click="innerBelongItem.deleteRowBtn.click ? innerBelongItem.deleteRowBtn.click : innerItem.belong_data.splice(inIdx, 1)"
-            >{{ innerBelongItem.deleteRowBtn.text ? innerBelongItem.deleteRowBtn.text : '-' }}
-            </v-btn>
+            <v-icon v-if="!preventEditable && !costNumEditDisabled && innerBelongItem.deletable_row" small color="error" style="cursor:pointer" @click="innerItem.belong_data.splice(idx, 1)">mdi-minus-thick</v-icon>
             {{ preventEditable || !innerBelongItem.deletable_row ? innerBelongItem.cost_no : '' }}
           </td>
           <td style="padding-left:40px;" :colspan="innerBelongItem.cost_list_colspan">

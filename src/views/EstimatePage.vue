@@ -508,7 +508,7 @@
                             class="mr-3 float-right dont_print white--text"
                             elevation="0"
                             data-html2canvas-ignore="true"
-                            @click="dialog_search_product = true"
+                            @click="clickedProductCost.estimate_type === '재료비' ? dialog_search_product = true : dialog_payment = true"
                           >
                             재료 수정
                           </v-btn>
@@ -1060,7 +1060,10 @@
                       class="ml-3"
                       elevation="0"
                       @click="addCostList(item)"
-                    >적용
+                      :disabled="
+                        tab_main === 0 ? calc_cost_detail_data_product_cost.belong_data.findIndex(x => x.belong_data.find(xx => xx.cost_list === item.complete_product_name)) >= 0
+                        : calc_cost_detail_data_product_cost2.belong_data.find(x => x.belong_data.findIndex(xx => xx.cost_list === item.complete_product_name)) >= 0"
+                    >추가
                     </v-btn>
                   </template>
                   </v-data-table>
@@ -1094,16 +1097,20 @@
                   <v-data-table
                     dense
                     :headers="construction_materials_headers"
-                    :items="construction_materials_data"
+                    :items="tab_main === 0
+                              ? calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재')) ? calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재')).belong_data : []
+                              : calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재')) ? calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재')).belong_data : []
+                            "
                     hide-default-footer
                     disable-pagination
                     item-key="construction_materials"
                     class="elevation-1"
                   >
-                    <template v-slot:item>
+                    <template v-slot:item="{ item, index }">
                       <tr>
                         <td align="center">
                           <v-text-field
+                            v-model="item.cost_list"
                             dense
                             hide-details
                             filled
@@ -1113,24 +1120,28 @@
                         </td>
                         <td align="center">
                           <v-text-field
+                            v-model="item.cost_num"
                             dense
                             hide-details
                             filled
+                            type="number"
                             style="width:200px"
                           >
                           </v-text-field>
                         </td>
                         <td align="center">
                           <v-text-field
+                            v-model="item.cost_unit_price"
                             dense
                             hide-details
                             filled
+                            type="number"
                             style="width:200px"
                           >
                           </v-text-field>
                         </td>
                         <td align="center">
-                          0000
+                          {{ item.cost_num * item.cost_unit_price }}
                         </td>
                         <td align="center">
                           <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
@@ -1192,16 +1203,19 @@
               <v-data-table
                 dense
                 :headers="construction_materials_headers"
-                :items="construction_materials_data"
+                :items="tab_main === 0
+                              ? calc_cost_detail_data_product_cost.belong_data
+                              : calc_cost_detail_data_product_cost2.belong_data"
                 hide-default-footer
                 disable-pagination
                 item-key="construction_materials"
                 class="elevation-1"
               >
-                <template v-slot:item>
+                <template v-slot:item="{ item, index }">
                   <tr>
                     <td align="center">
                       <v-text-field
+                        v-model="item.cost_list"
                         dense
                         hide-details
                         filled
@@ -1211,24 +1225,28 @@
                     </td>
                     <td align="center">
                       <v-text-field
+                        v-model="item.cost_num"
                         dense
                         hide-details
                         filled
+                        type="number"
                         style="width:200px"
                       >
                       </v-text-field>
                     </td>
                     <td align="center">
                       <v-text-field
+                        v-model="item.cost_unit_price"
                         dense
                         hide-details
                         filled
+                        type="number"
                         style="width:200px"
                       >
                       </v-text-field>
                     </td>
                     <td align="center">
-                      0000
+                      {{ item.cost_num * item.cost_unit_price }}
                     </td>
                     <td align="center">
                       <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
@@ -1466,6 +1484,7 @@ export default {
                 a.allow_one_or_greater = true;
                 a.cost_unit_price_editable = true;
                 a.cost_list_sub_editable = true;
+                a.deletable_row = true;
                 return a;
               })
             });
@@ -1482,6 +1501,7 @@ export default {
                 a.cost_num_editable = true;
                 a.allow_one_or_greater = true;
                 a.cost_unit_price_editable = true;
+                a.deletable_row = true;
                 return a;
               })
             });
@@ -1496,6 +1516,7 @@ export default {
               a.cost_num_editable = true;
               a.allow_one_or_greater = true;
               a.cost_unit_price_editable = true;
+              a.deletable_row = true;
               return a;
             });
           }
@@ -2094,7 +2115,7 @@ export default {
             delete data.model;
             data.product_spec = data.spec;
             delete data.spec;
-            data.unit_price = data.unit_price.toLocaleString();
+            data.unit_price = '₩ ' + data.unit_price.toLocaleString();
 
             if(data.belong_data){
               let total_unit_price = 0;
@@ -2206,9 +2227,49 @@ export default {
       this.searched_datas = searchResult;
     },
     addCostList(item){
-      this.dialog_search_product = false;
-      this.dialog_selected_product_data = item;
-      this.calc_cost_detail_data2[0].belong_data = item.belong_data;
+      // this.dialog_search_product = false;
+      // this.dialog_selected_product_data = item;
+      if (this.tab_main === 0){ // 조회 탭
+        if (!this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list.includes('재료'))){
+          this.calc_cost_detail_data_product_cost.belong_data.unshift({
+            "cost_list": "가. 재료",
+            "cost_list_colspan": 4,
+            "belong_data": []
+          });
+        }
+        this.calc_cost_detail_data_product_cost.belong_data[0].belong_data.push({
+          cost_list: item.complete_product_name,
+          cost_list_sub: item.product_spec,
+          cost_num: 1,
+          cost_unit_price: Number(item.unit_price.replaceAll('₩', '').replaceAll(',', '')),
+          cost_unit: '제품',
+          cost_num_editable: true,
+          allow_one_or_greater: true,
+          cost_unit_price_editable: true,
+          cost_list_sub_editable: true,
+          deletable_row: true
+        });
+      }else { // 작성 탭
+        if (!this.calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list.includes('재료'))){
+          this.calc_cost_detail_data_product_cost2.belong_data.unshift({
+            "cost_list": "가. 재료",
+            "cost_list_colspan": 4,
+            "belong_data": []
+          });
+        }
+        this.calc_cost_detail_data_product_cost2.belong_data[0].belong_data.push({
+          cost_list: item.complete_product_name,
+          cost_list_sub: item.product_spec,
+          cost_num: 1,
+          cost_unit_price: Number(item.unit_price.replaceAll('₩', '').replaceAll(',', '')),
+          cost_unit: '제품',
+          cost_num_editable: true,
+          allow_one_or_greater: true,
+          cost_unit_price_editable: true,
+          cost_list_sub_editable: true,
+          deletable_row: true
+        });
+      }
     },
     selectOccupationFunc(item, data){
       let wage_list;
@@ -2902,7 +2963,7 @@ export default {
                       product_name: data.cost_list,
                       product_spec: data.cost_list_sub,
                       product_num: data.cost_num,
-                      product_unit_price: data.cost_unit_price,
+                      product_unit_price: data.cost_unit_price
                     }
                   );
                 });
@@ -3109,14 +3170,99 @@ export default {
       }
     },
     addDatas(){
-      this.construction_materials_data.push(
-        {
-          construction_materials: '',
-          construction_materials_num: '',
-          construction_materials_unit_price: ''
+      if (this.tab_main === 0){
+        if (this.clickedProductCost.estimate_type === '재료비'){
+          if (!this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재'))){
+            this.calc_cost_detail_data_product_cost.belong_data.push(
+              {
+                "cost_list": `${this.calc_cost_detail_data_product_cost.belong_data.length > 0 ? '나' : '가'}. 공사 자재`,
+                "cost_list_colspan": 4,
+                "belong_data": []
+              }
+            );
+          }
+          this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재')).belong_data.push(
+            {
+              cost_calc_code: this.clickedProductCost.cost_calc_code,
+              cost_list: '',
+              cost_num: '',
+              cost_unit_price: '',
+              cost_unit: '개',
+              cost_num_editable: true,
+              allow_one_or_greater: true,
+              cost_unit_price_editable: true,
+              deletable_row: true
+            }
+          );
+        }else {
+          this.calc_cost_detail_data_product_cost.belong_data.push(
+            {
+              cost_calc_code: this.clickedProductCost.cost_calc_code,
+              cost_list: '',
+              cost_num: '',
+              cost_unit_price: '',
+              cost_unit: '건',
+              cost_num_editable: true,
+              allow_one_or_greater: true,
+              cost_unit_price_editable: true,
+              deletable_row: true
+            }
+          );
         }
-      )
-    }
+      }else {
+        if (this.estimate_type === '재료비'){
+          if (!this.calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재'))){
+            this.calc_cost_detail_data_product_cost2.belong_data.push(
+              {
+                "cost_list": `${this.calc_cost_detail_data_product_cost2.belong_data.length > 0 ? '나' : '가'}. 공사 자재`,
+                "cost_list_colspan": 4,
+                "belong_data": []
+              }
+            );
+          }
+          this.calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재')).belong_data.push(
+            {
+              cost_list: '',
+              cost_num: '',
+              cost_unit_price: '',
+              cost_unit: '개',
+              cost_num_editable: true,
+              allow_one_or_greater: true,
+              cost_unit_price_editable: true,
+              deletable_row: true
+            }
+          );
+        }else {
+          this.calc_cost_detail_data_product_cost2.belong_data.push(
+            {
+              cost_list: '',
+              cost_num: '',
+              cost_unit_price: '',
+              cost_unit: '건',
+              cost_num_editable: true,
+              allow_one_or_greater: true,
+              cost_unit_price_editable: true,
+              deletable_row: true
+            }
+          );
+        }
+      }
+    },
+    deleteInboundDataRow(index){
+      if (this.tab_main === 0){
+        if (this.clickedProductCost.estimate_type === '재료비'){
+          this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재')).belong_data.splice(index, 1);
+        }else {
+          this.calc_cost_detail_data_product_cost.belong_data.splice(index, 1);
+        }
+      }else {
+        if (this.estimate_type === '재료비'){
+          this.calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재')).belong_data.splice(index, 1);
+        }else {
+          this.calc_cost_detail_data_product_cost2.belong_data.splice(index, 1);
+        }
+      }
+    },
   },
   data(){
     return{
@@ -3184,7 +3330,6 @@ export default {
       ],
 
 
-      construction_materials_data: [],
       calc_cost_detail_data: JSON.parse(JSON.stringify(EstimatePageConfig.calc_cost_detail_data)),
       calc_cost_detail_data2: EstimatePageConfig.calc_cost_detail_data.map(x => {
         if (x.cost_list === '재료비') {
