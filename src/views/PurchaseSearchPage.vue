@@ -23,6 +23,7 @@
               filled
               hide-details
               :inputs="searchCardInputs"
+              @enter="searchButton"
             >
               <v-col
                 cols="12"
@@ -216,7 +217,7 @@
               </v-row>
               <v-btn
                 color="primary"
-                @click="unestimated_steppers = 2"
+                @click="nextStep(n, 'estimate')"
               >
                 다음 ▶
               </v-btn>
@@ -229,18 +230,45 @@
             <div v-if="n === 2">
               <v-row>
                 <v-col cols="12">
-                  <DataTableComponent
+                  <v-data-table
+                    :headers="selected_unestimated_headers"
+                    :items="selected_unestimated_data"
+                    group-by="project_code"
+                    dense
+                  >
+
+                    <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                      <th  @click="toggle" colspan="8">
+                        <v-icon
+                        >
+                          {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                        </v-icon>
+                        {{ items[0].project_code }}
+                      </th>
+                    </template>
+                    <!-- <template v-slot:[`item.purchase_estimate`] = "{ item }">
+                      <td>
+                        <v-icon
+                          v-if="item.estimate_company === '*견적서 미등록'"
+                          color="default"
+                          small
+                          @click="estiamteDialog"
+                        >mdi-file</v-icon>
+                      </td>
+                    </template> -->
+                  </v-data-table>
+                  <!-- <DataTableComponent
                     :headers="selected_unestimated_headers"
                     :items="selected_unestimated_data"
                     table-class="elevation-0"
                     item-key="product_code"
                     dense
-                  />
+                  /> -->
                 </v-col>
               </v-row>
               <v-btn
                 color="primary"
-                @click="unestimated_steppers = 2"
+                @click="nextStep(n, 'estimate')"
               >
                 다음 ▶
               </v-btn>
@@ -516,7 +544,7 @@
                         <v-col cols="12" sm="4" align-self="center">
                           <v-btn
                             color="primary"
-                            @click="order_steppers = 2"
+                            @click="nextStep(n, 'order')"
                           >
                             다음 ▶
                           </v-btn>
@@ -703,7 +731,7 @@ export default {
       bom_list_purchase_headers: PurchaseSearchPageConfig.bom_list_purchase_headers,
       bom_list_data: PurchaseSearchPageConfig.bom_list_test_data,
       bom_list_purchase_data: PurchaseSearchPageConfig.bom_list_purchase_test_data,
-      purchase_data:PurchaseSearchPageConfig.test_purchase_data,
+      purchase_data:[],
       purchase_detail_data:[]
     }
   },
@@ -736,12 +764,11 @@ export default {
   },
   methods:{
 
-    nextStep (n, steppers, steps) {
-      if (n === steps) {
-        steppers = 1
-      } else {
-        steppers = n + 1
-      }
+    nextStep (step, type) {
+      if(type === 'estimate')
+        this.unestimated_steppers = step + 1
+      else
+        this.order_steppers = step + 1
     },
 
     async initialize () {
@@ -796,80 +823,7 @@ export default {
 
     async searchButton(){
       this.loading_dialog = true;
-
-      let searchApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
-      if (searchApprovalPhase === 'All')
-        searchApprovalPhase = '';
-      let searchOrderCode = this.searchCardInputs.find(x=>x.label === '발주번호').value;
-      if (searchOrderCode)
-      searchOrderCode = searchOrderCode.trim();
-
-      let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
-      if (searchProductCode)
-      searchProductCode = searchProductCode.trim();
-
-      let searchProductName = this.searchCardInputs.find(x=>x.label === '제품명').value;
-      if (searchProductName)
-      searchProductName = searchProductName.trim();
-
-      let searchInboundDate = this.searchCardInputs.find(x=>x.label === '입고일자').value;
-      let searchInboundStartDate = searchInboundDate[0];
-      let searchInboundEndDate = searchInboundDate[1];
-
-
-      const prevURL = window.location.href;
-      try {
-        let result = await mux.Server.post({
-          path: '/api/common_rest_api/',
-          params: [
-            {
-            "inbound_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
-            "inbound_product_table.product_code": searchProductCode ? searchProductCode : "",
-            "inbound_product_table.name": searchProductName ?  searchProductName: "",
-            "inbound_confirmation_table.order_code": searchOrderCode ? searchOrderCode : "",
-            "inbound_confirmation_table.inbound_date_start_date": searchInboundStartDate ? searchInboundStartDate : "",
-            "inbound_confirmation_table.inbound_date_end_date": searchInboundEndDate ? searchInboundEndDate : ""
-            }
-          ],
-          "script_file_name": "rooting_입고_검색_24_06_07_10_34_C6Q.json",
-          "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_검색_24_06_07_10_34_T59"
-        });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        if(result['code'] == 0){
-          if(result['data'].length === 0){
-            mux.Util.showAlert('검색 결과가 없습니다.');
-          }
-          result.data.forEach(datas =>{
-            for(let d=0; d<datas.belong_data.length; d++){
-              datas.belong_data[d].inbound_num = Number(datas.belong_data[d].inbound_num).toLocaleString();
-              datas.belong_data[d].unit_price = '₩ ' + Number(datas.belong_data[d].unit_price).toLocaleString();
-              if(datas.belong_data[d].belong_data){
-                for(let dd=0; dd<datas.belong_data[d].belong_data.length; dd++){
-                  datas.belong_data[d].belong_data[dd].inbound_num="";
-                  datas.belong_data[d].belong_data[dd].unit_price = '₩ ' + Number(datas.belong_data[d].belong_data[dd].unit_price).toLocaleString();
-                  datas.belong_data[d].ship_date="";
-                }
-              }
-            }
-
-          })
-          this.inbound_approve_data  = result.data.reverse();
-        }else{
-          mux.Util.showAlert(result['failed_info']);
-        }
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
-      }
-      // this.inbound_approve_data = PurchaseSearchPageConfig.test_inbound_approve_data
+      this.purchase_data = PurchaseSearchPageConfig.test_purchase_data
       this.loading_dialog = false;
     },
     closeProductList(){
@@ -885,6 +839,9 @@ export default {
     },
     async clickApproveData(item){
       this.purchase_detail_data = item.belong_data;
+      this.purchase_detail_data.forEach(data =>{
+        data.project_code = item.project_code;
+      })
       let unestimated = 0;
       for(let i=0; i<item.belong_data.length; i++){
         if(item.belong_data[i].purchase_estimate !== '완료'){

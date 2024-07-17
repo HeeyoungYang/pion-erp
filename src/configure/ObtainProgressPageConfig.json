@@ -4,7 +4,7 @@
     {"title":"PDF", "click":"pdf"}
   ],
   "progress_tab_items": [
-    "수주서", "수주 확인서", "설계", "구매/발주"
+    "수주서", "수주 확인서", "설계", "구매/발주", "생산"
   ],
   "searchCardInputs":[
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4"}
@@ -66,6 +66,19 @@
     { "text": "사양", "align": "center", "value": "product_spec"},
     { "text": "제조사", "align": "center", "value": "manufacturer"},
     { "text": "단가", "align": "center", "value": "unit_price"}
+  ],
+
+  "test_estimate_data":[
+    {
+      "created_time": "2021-01-01", 
+      "given_name": "홍길동", 
+      "company_name": "삼성전자", 
+      "project_code": "Project-01", 
+      "inhouse_bid_number": "inhouse-01", 
+      "company_bid_number": "company-01", 
+      "cost_total_amount": "₩ 1,000,000",
+      "belong_data":[]
+    }
   ],
 
   "calc_cost_detail_data": [

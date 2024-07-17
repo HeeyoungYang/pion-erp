@@ -45,8 +45,8 @@
                     dense
                     :headers="search_estimate_headers"
                     :items="search_estimate_data"
+                    @clickTr="clickApproveData"
                     item-key="estimate_code"
-                    deletable
                   />
                 </v-col>
               </v-row>
@@ -71,7 +71,7 @@
             <v-tabs-items v-model="tab_progress" class="pb-1">
               <!-- 수주서 -->
               <v-tab-item>
-                <v-card ref="calcCostCard">
+                <v-card v-if="show_detail">
                   <v-card-text>
                     <div style="width:100%; background-color: #ccc; min-height:700px">
                       ※ 수주서 PDF 미리보기 영역
@@ -81,7 +81,7 @@
               </v-tab-item>
               <!-- 수주 확인서 -->
               <v-tab-item>
-                <v-card class="elevation-0">
+                <v-card class="elevation-0" v-if="show_detail">
                   <div style="text-align: right;">
                     <v-menu offset-y>
                       <template v-slot:activator="{ on, attrs }">
@@ -232,7 +232,7 @@
 
               <!-- 설계 -->
               <v-tab-item>
-                <v-card class="elevation-0">
+                <v-card class="elevation-0" v-if="show_detail">
                   <v-card-text>
                     <v-row>
                       <v-col cols="12" sm="5">
@@ -279,58 +279,18 @@
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 구조도</p>
                         <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                        <!-- <v-img
-                          alt="thumbnail"
-                          class="shrink mr-2"
-                          contain
-                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                          transition="scale-transition"
-                          width="350"
-                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                          style="cursor: pointer;"
-                        /> -->
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 단선도</p>
                         <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                        <!-- <v-img
-                          alt="thumbnail"
-                          class="shrink mr-2"
-                          contain
-                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                          transition="scale-transition"
-                          width="350"
-                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                          style="cursor: pointer;"
-                        /> -->
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 삼선도</p>
                         <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                        <!-- <v-img
-                          alt="thumbnail"
-                          class="shrink mr-2"
-                          contain
-                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                          transition="scale-transition"
-                          width="350"
-                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                          style="cursor: pointer;"
-                        /> -->
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 회로도</p>
                         <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                        <!-- <v-img
-                          alt="thumbnail"
-                          class="shrink mr-2"
-                          contain
-                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                          transition="scale-transition"
-                          width="350"
-                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                          style="cursor: pointer;"
-                        /> -->
                       </v-col>
                     </v-row>
                     <v-divider class="mt-7"></v-divider>
@@ -338,30 +298,10 @@
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 승인도서</p>
                         <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                        <!-- <v-img
-                          alt="thumbnail"
-                          class="shrink mr-2"
-                          contain
-                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                          transition="scale-transition"
-                          width="350"
-                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                          style="cursor: pointer;"
-                        /> -->
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 제작사양서</p>
                         <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                        <!-- <v-img
-                          alt="thumbnail"
-                          class="shrink mr-2"
-                          contain
-                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                          transition="scale-transition"
-                          width="350"
-                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                          style="cursor: pointer;"
-                        /> -->
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 기타</p>
@@ -384,7 +324,7 @@
               </v-tab-item>
               <!-- 구매 -->
               <v-tab-item>
-                <v-card class="elevation-0">
+                <v-card class="elevation-0" v-if="show_detail">
                   <v-card-text>
                     <DataTableComponent
                       dense
@@ -392,6 +332,49 @@
                       :items="search_estimate_data"
                       item-key="estimate_code"
                     />
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+              <!-- 생산 -->
+              <v-tab-item>
+                <v-card class="elevation-0" v-if="show_detail">
+                  <v-card-text>
+                    <v-row>
+                      <v-col cols="12" sm="412">
+                        <v-chip
+                          class="font-weight-bold mr-3"
+                          color="primary"
+                        >
+                          생산 완료
+                        </v-chip>
+                        <span>입고일 : </span>
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 자체시험</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 공장시험</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 현장시험</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 시운전</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 전자세금계산서</p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <p class="font-weight-bold primary--text mb-0">▼ 하자보증증권 </p>
+                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                      </v-col>
+
+                    </v-row>
                   </v-card-text>
                 </v-card>
               </v-tab-item>
@@ -452,9 +435,15 @@ export default {
       // mux.Server.uploadFile({path: '/', folder:'somefolder', file: this.files[0]});
       mux.Server.uploadFile({path: '/', folder:'somefolder', files: this.files});
     },
+    clickApproveData(item){
+      console.log(item);
+      this.tab_progress = 0;
+      this.show_detail = true;
+    },
   },
   data(){
     return{
+      show_detail: false,
       tab_progress: null,
       versions:['수주 원본', '1차 수주 설계', '2차 수주 설계', '3차 수주 설계'],
 
