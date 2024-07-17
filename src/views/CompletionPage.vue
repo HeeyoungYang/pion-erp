@@ -42,9 +42,10 @@
                 >
                   <DataTableComponent
                     dense
-                    :headers="search_estimate_headers"
-                    :items="search_estimate_data"
+                    :headers="search_completion_headers"
+                    :items="search_completion_data"
                     item-key="estimate_code"
+                    @clickTr="completionDetail"
                   />
                 </v-col>
               </v-row>
@@ -55,6 +56,7 @@
           <CardComponent
             elevation="1"
             text-class=" pt-3"
+            v-if="show_detail"
           >
             <v-row slot="cardTitle">
               <v-chip
@@ -244,15 +246,25 @@ export default {
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     initialize(){
-      // this.search_estimate_data = CompletionPageConfig.test_estimate_data
+      // this.search_completion_data = CompletionPageConfig.test_estimate_data
     },
+    searchButton(){
+      this.loading_dialog = true;
+      this.search_completion_data = CompletionPageConfig.test_completion_data;
+      this.loading_dialog = false;
+    },
+    completionDetail(){
+      this.show_detail = true;
+    }
   },
   data(){
     return{
       edit_data : false,
+      show_detail: false,
       searchCardInputs: CompletionPageConfig.searchCardInputs,
       editDataInputs: CompletionPageConfig.editDataInputs,
-      search_estimate_headers: CompletionPageConfig.search_estimate_headers,
+      search_completion_headers: CompletionPageConfig.search_completion_headers,
+      search_completion_data: []
     }
   }
 }

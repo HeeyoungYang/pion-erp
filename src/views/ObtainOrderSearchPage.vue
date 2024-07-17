@@ -23,6 +23,7 @@
               filled
               hide-details
               :inputs="searchCardInputs"
+              @enter="searchButton"
             >
               <v-col
                 cols="12"
@@ -41,38 +42,34 @@
             </InputsFormComponent>
           </CardComponent>
 
-          <v-row>
-            <v-col
-              cols="12"
-              sm="12"
-            >
-              <v-card
-              elevation="1"
-              class="mt-5"
-              >
-                <v-card-text class=" pt-3">
-                  <DataTableComponent
-                    :headers="obtain_approve_headers"
-                    :items="obtain_approve_data"
-                    item-key="product_code"
-                    approval="inbound"
-                    dense
-                    :loginId="login_info.id"
-                    @clickTr="clickApproveData"
-                    @setApprovalPhase="setApprovalPhase"
-                    @cancleApprove="cancleApprove"
-                    @setCanclePhase="setCanclePhase"
-                  />
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
+          <CardComponent
+            elevation="1"
+            card-class="mt-5"
+            text-class=" pt-3"
+            title-class="d-none"
+          >
+            <div slot="cardText">
+              <DataTableComponent
+                :headers="obtain_approve_headers"
+                :items="obtain_approve_data.obtain_info"
+                item-key="product_code"
+                approval="inbound"
+                dense
+                :loginId="login_info.id"
+                @clickTr="clickApproveData"
+                @setApprovalPhase="setApprovalPhase"
+                @cancleApprove="cancleApprove"
+                @setCanclePhase="setCanclePhase"
+              />
+            </div>
+          </CardComponent>
         </v-col>
       </v-row>
     </v-main>
 
+    <!-- 행 클릭 시 노출되는 모달 -->
     <ModalDialogComponent
-      :dialog-value="inbound_product_list_dialog"
+      :dialog-value="obtain_order_detail_dialog"
       max-width="50%"
       title-class=" "
       :dialog-transition="'slide-x-transition'"
@@ -265,30 +262,10 @@
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
               <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-              <!-- <v-img
-                alt="thumbnail"
-                class="shrink mr-2"
-                contain
-                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                transition="scale-transition"
-                width="350"
-                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                style="cursor: pointer;"
-              /> -->
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
               <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-              <!-- <v-img
-                alt="thumbnail"
-                class="shrink mr-2"
-                contain
-                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
-                transition="scale-transition"
-                width="350"
-                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
-                style="cursor: pointer;"
-              /> -->
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
@@ -425,18 +402,47 @@
         <!-- 생산 의뢰서 -->
         <v-tab-item>
           <v-card style="border: 1px solid #ccc;" elevation="0">
-
-            <v-btn
-              color="primary"
-              elevation="0"
-              fab
-              x-small
-              @click="sendEstiamteMail"
-              class="mr-3 dont_print"
-              data-html2canvas-ignore="true"
+            <v-menu
+              offset-y
+              :close-on-content-click="false"
             >
-              <v-icon >mdi-email</v-icon>
-            </v-btn>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  color="primary"
+                  fab
+                  x-small
+                  class="mr-3 dont_print"
+                  elevation="0"
+                  v-bind="attrs"
+                  v-on="on"
+                  data-html2canvas-ignore="true"
+                >
+                  <v-icon
+                    small
+                  >mdi-email</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-combobox
+                      ref="toCombobox"
+                      label="담당자"
+                      required
+                      v-model="selectDesigner"
+                      :items="designer_list"
+                      dense
+                      hide-selected
+                      small-chips
+                      ></v-combobox>
+                    <v-btn
+                      small
+                      @click="productionRequestMailDialog"
+                    >발송</v-btn>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-menu>
             <v-menu offset-y>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -623,14 +629,10 @@ export default {
       mux: mux,
       dates: [],
       versions:['수주 원본', '1차 수주 설계', '2차 수주 설계', '3차 수주 설계'],
-      inbound_product_list_dialog: false,
+      obtain_order_detail_dialog: false,
+      request_mail_dialog: false,
       loading_dialog: false,
       tab_search: null,
-      receivingInspectionThumbnail: '',
-      inspectionReportThumbnail: '',
-
-      inbound_info_data:{},
-      inbound_product_list_data:[],
 
       change_approve:{},
 
@@ -641,13 +643,11 @@ export default {
       searchCardInputs:ObtainOrderSearchPageConfig.searchCardInputs,
       obtain_approve_headers:ObtainOrderSearchPageConfig.obtain_approve_headers,
       production_request_headers: ObtainOrderSearchPageConfig.production_request_headers,
-      inbound_product_list_headers:ObtainOrderSearchPageConfig.inbound_product_list_headers,
-      // obtain_approve_data:[],
+      obtain_approve_data:[],
       survey_cost_headers: ObtainOrderSearchPageConfig.survey_cost_headers,
       search_tab_items: ObtainOrderSearchPageConfig.search_tab_items,
       labor_cost_headers: ObtainOrderSearchPageConfig.labor_cost_headers,
       calc_cost_detail_data: JSON.parse(JSON.stringify(ObtainOrderSearchPageConfig.calc_cost_detail_data)),
-      obtain_approve_data:ObtainOrderSearchPageConfig.test_obtain_approve_data,
       production_request_data : [],
     }
   },
@@ -658,7 +658,7 @@ export default {
     },
   },
   watch:{
-    inbound_product_list_dialog(val){
+    obtain_order_detail_dialog(val){
       val || this.closeProductList()
     },
   },
@@ -719,161 +719,20 @@ export default {
     },
 
 
-    async searchButton(){
+    searchButton(){
       this.loading_dialog = true;
-
-      let searchApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
-      if (searchApprovalPhase === 'All')
-        searchApprovalPhase = '';
-      let searchOrderCode = this.searchCardInputs.find(x=>x.label === '발주번호').value;
-      if (searchOrderCode)
-      searchOrderCode = searchOrderCode.trim();
-
-      let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
-      if (searchProductCode)
-      searchProductCode = searchProductCode.trim();
-
-      let searchProductName = this.searchCardInputs.find(x=>x.label === '제품명').value;
-      if (searchProductName)
-      searchProductName = searchProductName.trim();
-
-      let searchInboundDate = this.searchCardInputs.find(x=>x.label === '입고일자').value;
-      let searchInboundStartDate = searchInboundDate[0];
-      let searchInboundEndDate = searchInboundDate[1];
-
-
-      const prevURL = window.location.href;
-      try {
-        let result = await mux.Server.post({
-          path: '/api/common_rest_api/',
-          params: [
-            {
-            "inbound_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
-            "inbound_product_table.product_code": searchProductCode ? searchProductCode : "",
-            "inbound_product_table.name": searchProductName ?  searchProductName: "",
-            "inbound_confirmation_table.order_code": searchOrderCode ? searchOrderCode : "",
-            "inbound_confirmation_table.inbound_date_start_date": searchInboundStartDate ? searchInboundStartDate : "",
-            "inbound_confirmation_table.inbound_date_end_date": searchInboundEndDate ? searchInboundEndDate : ""
-            }
-          ],
-          "script_file_name": "rooting_입고_검색_24_06_07_10_34_C6Q.json",
-          "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_검색_24_06_07_10_34_T59"
-        });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        if(result['code'] == 0){
-          if(result['data'].length === 0){
-            mux.Util.showAlert('검색 결과가 없습니다.');
-          }
-          result.data.forEach(datas =>{
-            for(let d=0; d<datas.belong_data.length; d++){
-              datas.belong_data[d].inbound_num = Number(datas.belong_data[d].inbound_num).toLocaleString();
-              datas.belong_data[d].unit_price = '₩ ' + Number(datas.belong_data[d].unit_price).toLocaleString();
-              if(datas.belong_data[d].belong_data){
-                for(let dd=0; dd<datas.belong_data[d].belong_data.length; dd++){
-                  datas.belong_data[d].belong_data[dd].inbound_num="";
-                  datas.belong_data[d].belong_data[dd].unit_price = '₩ ' + Number(datas.belong_data[d].belong_data[dd].unit_price).toLocaleString();
-                  datas.belong_data[d].ship_date="";
-                }
-              }
-            }
-
-          })
-          this.obtain_approve_data  = result.data.reverse();
-        }else{
-          mux.Util.showAlert(result['failed_info']);
-        }
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
-      }
-      // this.obtain_approve_data = ObtainOrderSearchPageConfig.test_obtain_approve_data
+      this.obtain_approve_data = ObtainOrderSearchPageConfig.test_obtain_approve_data
       this.loading_dialog = false;
     },
     closeProductList(){
-      this.inbound_product_list_dialog = false;
+      this.obtain_order_detail_dialog = false;
     },
     async clickApproveData(){
-
-      // let belong_datas = item.belong_data
-      // this.inbound_product_list_data = [];
-      // this.inbound_info_data = {};
-      // belong_datas.forEach(data =>{
-      //   data.inbound_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
-      //   this.inbound_product_list_data.push(data);
-
-      //   if(data.belong_data){
-      //     data.belong_data.forEach(shipdata => {
-      //     shipdata.inbound_price = ""
-      //   })
-      //   }
-      // })
-      // let file_name = item.files.split('/');
-      // if(!file_name[0]){
-      //   file_name = ""
-      // }
-      // this.inbound_info_data = {
-      //   code:item.code,
-      //   project_code:item.project_code,
-      //   spot:item.spot,
-      //   abnormal_reason : item.abnormal_reason,
-      //   receiving_inspection_file : item.receiving_inspection_file,
-      //   inspection_report_file : item.inspection_report_file,
-      //   note: item.note,
-      //   files: file_name,
-      // }
-
-      // const prevURL = window.location.href;
-      // try {
-      //   this.loading_dialog = true;
-      //   // 제품의 썸네일
-      //   let result = await mux.Server.post({
-      //     path: '/api/common_rest_api/',
-      //     params: [
-      //       {
-      //         "inbound_confirmation_table.code": item.code
-      //       }
-      //     ],
-      //     "script_file_name": "rooting_입고_thumbnail_검색_24_05_16_15_32_Z97.json",
-      //     "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_thumbnail_검색_24_05_16_15_32_7VD"
-      //   });
-      //   if (prevURL !== window.location.href) return;
-
-      //   if (typeof result === 'string'){
-      //     result = JSON.parse(result);
-      //   }
-      //   if(result['code'] == 0){
-      //     let receiving_inspection_thumbnail = '';
-      //     let inspection_report_thumbnail = '';
-      //     if (result['data'].length > 0){
-      //       receiving_inspection_thumbnail = result['data'][0].receiving_inspection_thumbnail;
-      //       inspection_report_thumbnail = result['data'][0].inspection_report_thumbnail;
-      //     }
-      //     this.receivingInspectionThumbnail = receiving_inspection_thumbnail;
-      //     this.inspectionReportThumbnail = inspection_report_thumbnail;
-      //     this.loading_dialog = false;
-      //   } else {
-      //     this.loading_dialog = false;
-      //     mux.Util.showAlert(result['failed_info']);
-      //   }
-      // } catch (error) {
-      //   if (prevURL !== window.location.href) return;
-      //   this.loading_dialog = false;
-      //   if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-      //     mux.Util.showAlert(error.response['data']['failed_info'].msg);
-      //   else
-      //     mux.Util.showAlert(error);
-      // }
-      this.inbound_product_list_dialog = true;
+      this.obtain_order_detail_dialog = true;
     },
-
+    productionRequestMailDialog(){
+      this.request_mail_dialog = true;
+    },
     async searchItemStock(data){
       const prevURL = window.location.href;
       try {

@@ -58,7 +58,7 @@
                       <DataTableComponent
                         dense
                         :headers="search_estimate_headers"
-                        :items="search_estimate_data"
+                        :items="search_production_data"
                         item-key="estimate_code"
                         deletable
                       />
@@ -2193,7 +2193,7 @@ export default {
     },
     async searchButton(){
       this.loading_dialog = true;
-      this.search_estimate_data = DesignProductionPageConfig.test_estimate_data
+      this.search_production_data = DesignProductionPageConfig.test_production_data
       this.loading_dialog = false;
     },
     test(){
@@ -2355,7 +2355,7 @@ export default {
       bomProductSearchInputs: DesignProductionPageConfig.bomProductSearchInputs,
       searchPurchaseInputs: DesignProductionPageConfig.searchPurchaseInputs,
       setPurchaseInputs: DesignProductionPageConfig.setPurchaseInputs,
-      search_estimate_data: [],
+      search_production_data: [],
     }
   },
 }

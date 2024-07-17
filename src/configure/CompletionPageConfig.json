@@ -13,11 +13,18 @@
     {"label":"전자세금계산서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
     {"label":"전자세금계산서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"}
   ],
-  "search_estimate_headers":[
+  "search_completion_headers":[
     { "text": "작성자", "align": "start", "value": "given_name"},
     { "text": "업체명", "align": "start", "value": "company_name"},
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
     { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"}
+  ],
+  "test_completion_data":[
+    {"given_name":"양희영",
+    "company_name":"업체A",
+    "project_code":"2024-0001",
+    "inhouse_bid_number":"2024-0002",
+    "company_bid_number":"2024-0003"}
   ]
 }

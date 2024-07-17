@@ -23,6 +23,7 @@
               filled
               hide-details
               :inputs="searchCardInputs"
+              @enter="searchButton"
             >
               <v-col
                 cols="12"
@@ -52,8 +53,8 @@
               >
                 <v-card-text class=" pt-3">
                   <DataTableComponent
-                    :headers="inbound_approve_headers"
-                    :items="inbound_approve_data"
+                    :headers="production_approve_headers"
+                    :items="production_approve_data"
                     item-key="product_code"
                     approval="inbound"
                     dense
@@ -510,16 +511,14 @@ export default {
       searchCardInputs:DesignProductionSearchPageConfig.searchCardInputs,
       setPurchaseInputs:DesignProductionSearchPageConfig.setPurchaseInputs,
       searchPurchaseInputs:DesignProductionSearchPageConfig.searchPurchaseInputs,
-      inbound_approve_headers:DesignProductionSearchPageConfig.inbound_approve_headers,
-      inbound_product_list_headers:DesignProductionSearchPageConfig.inbound_product_list_headers,
-      // inbound_approve_data:[],
+      production_approve_headers:DesignProductionSearchPageConfig.production_approve_headers,
       bom_list_headers: DesignProductionSearchPageConfig.bom_list_headers,
       bom_list_data: DesignProductionSearchPageConfig.bom_list_test_data,
       survey_cost_headers: DesignProductionSearchPageConfig.survey_cost_headers,
       search_tab_items: DesignProductionSearchPageConfig.search_tab_items,
       labor_cost_headers: DesignProductionSearchPageConfig.labor_cost_headers,
       calc_cost_detail_data: JSON.parse(JSON.stringify(DesignProductionSearchPageConfig.calc_cost_detail_data)),
-      inbound_approve_data:DesignProductionSearchPageConfig.test_inbound_approve_data,
+      production_approve_data:[],
 
 
       purchase_detail_headers: DesignProductionSearchPageConfig.purchase_detail_headers,
@@ -602,80 +601,7 @@ export default {
 
     async searchButton(){
       this.loading_dialog = true;
-
-      let searchApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
-      if (searchApprovalPhase === 'All')
-        searchApprovalPhase = '';
-      let searchOrderCode = this.searchCardInputs.find(x=>x.label === '발주번호').value;
-      if (searchOrderCode)
-      searchOrderCode = searchOrderCode.trim();
-
-      let searchProductCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
-      if (searchProductCode)
-      searchProductCode = searchProductCode.trim();
-
-      let searchProductName = this.searchCardInputs.find(x=>x.label === '제품명').value;
-      if (searchProductName)
-      searchProductName = searchProductName.trim();
-
-      let searchInboundDate = this.searchCardInputs.find(x=>x.label === '입고일자').value;
-      let searchInboundStartDate = searchInboundDate[0];
-      let searchInboundEndDate = searchInboundDate[1];
-
-
-      const prevURL = window.location.href;
-      try {
-        let result = await mux.Server.post({
-          path: '/api/common_rest_api/',
-          params: [
-            {
-            "inbound_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
-            "inbound_product_table.product_code": searchProductCode ? searchProductCode : "",
-            "inbound_product_table.name": searchProductName ?  searchProductName: "",
-            "inbound_confirmation_table.order_code": searchOrderCode ? searchOrderCode : "",
-            "inbound_confirmation_table.inbound_date_start_date": searchInboundStartDate ? searchInboundStartDate : "",
-            "inbound_confirmation_table.inbound_date_end_date": searchInboundEndDate ? searchInboundEndDate : ""
-            }
-          ],
-          "script_file_name": "rooting_입고_검색_24_06_07_10_34_C6Q.json",
-          "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_검색_24_06_07_10_34_T59"
-        });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        if(result['code'] == 0){
-          if(result['data'].length === 0){
-            mux.Util.showAlert('검색 결과가 없습니다.');
-          }
-          result.data.forEach(datas =>{
-            for(let d=0; d<datas.belong_data.length; d++){
-              datas.belong_data[d].inbound_num = Number(datas.belong_data[d].inbound_num).toLocaleString();
-              datas.belong_data[d].unit_price = '₩ ' + Number(datas.belong_data[d].unit_price).toLocaleString();
-              if(datas.belong_data[d].belong_data){
-                for(let dd=0; dd<datas.belong_data[d].belong_data.length; dd++){
-                  datas.belong_data[d].belong_data[dd].inbound_num="";
-                  datas.belong_data[d].belong_data[dd].unit_price = '₩ ' + Number(datas.belong_data[d].belong_data[dd].unit_price).toLocaleString();
-                  datas.belong_data[d].ship_date="";
-                }
-              }
-            }
-
-          })
-          this.inbound_approve_data  = result.data.reverse();
-        }else{
-          mux.Util.showAlert(result['failed_info']);
-        }
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
-      }
-      // this.inbound_approve_data = DesignProductionSearchPageConfig.test_inbound_approve_data
+      this.production_approve_data = DesignProductionSearchPageConfig.test_production_approve_data
       this.loading_dialog = false;
     },
     closeProductList(){

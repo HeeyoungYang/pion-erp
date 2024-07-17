@@ -23,6 +23,7 @@
               filled
               hide-details
               :inputs="searchCardInputs"
+              @enter="searchButton"
             >
               <v-col
                 cols="12"
@@ -83,7 +84,7 @@
     >
       <v-container>
         <v-row class="mb-4">
-          <v-col cols="12" sm="412">
+          <v-col cols="12" sm="12">
             <v-chip
               class="font-weight-bold mr-3"
               color="primary"
@@ -255,6 +256,11 @@ export default {
     closeProductList(){
       this.completion_detail_dialog = false;
     },
+    searchButton(){
+      this.loading_dialog = true;
+      this.completion_datas = CompletionSearchPageConfig.test_completion_datas;
+      this.loading_dialog = false;
+    },
   },
   data(){
     return{
@@ -263,7 +269,7 @@ export default {
       searchCardInputs: CompletionSearchPageConfig.searchCardInputs,
       login_info: CompletionSearchPageConfig.login_info,
       completion_data_headers: CompletionSearchPageConfig.completion_data_headers,
-      completion_datas: CompletionSearchPageConfig.test_completion_datas,
+      completion_datas: [],
     }
   }
 }

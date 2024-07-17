@@ -23,6 +23,7 @@
               filled
               hide-details
               :inputs="searchCardInputs"
+              @enter="searchButton"
             >
               <v-col
                 cols="12"
@@ -40,37 +41,32 @@
               </v-col>
             </InputsFormComponent>
           </CardComponent>
-
-          <v-row>
-            <v-col
-              cols="12"
-              sm="12"
-            >
-              <v-card
-              elevation="1"
-              class="mt-5"
-              >
-                <v-card-text class=" pt-3">
-                  <DataTableComponent
-                    :headers="estimate_approve_headers"
-                    :items="estimate_approve_data"
-                    item-key="product_code"
-                    approval="inbound"
-                    dense
-                    :loginId="login_info.id"
-                    @clickTr="clickApproveData"
-                    @setApprovalPhase="setApprovalPhase"
-                    @cancleApprove="cancleApprove"
-                    @setCanclePhase="setCanclePhase"
-                  />
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
+          <CardComponent
+            elevation="1"
+            card-class="mt-5"
+            text-class="pt-3"
+            title-class="d-none"
+          >
+            <div slot="cardText">
+              <DataTableComponent
+                :headers="estimate_approve_headers"
+                :items="estimate_approve_data"
+                item-key="product_code"
+                approval="inbound"
+                dense
+                :loginId="login_info.id"
+                @clickTr="clickApproveData"
+                @setApprovalPhase="setApprovalPhase"
+                @cancleApprove="cancleApprove"
+                @setCanclePhase="setCanclePhase"
+              />
+            </div>
+          </CardComponent>
         </v-col>
       </v-row>
     </v-main>
 
+    <!-- 행 클릭 시 노출되는 모달 -->
     <ModalDialogComponent
       :dialog-value="estimate_product_list_dialog"
       max-width="51%"
@@ -554,7 +550,7 @@ export default {
       search_tab_items: EstimateSearchPageConfig.search_tab_items,
       labor_cost_headers: EstimateSearchPageConfig.labor_cost_headers,
       calc_cost_detail_data: JSON.parse(JSON.stringify(EstimateSearchPageConfig.calc_cost_detail_data)),
-      estimate_approve_data:EstimateSearchPageConfig.test_estimate_approve_data
+      estimate_approve_data:[],
     }
   },
 
@@ -632,6 +628,7 @@ export default {
     },
     async searchButton(){
       this.loading_dialog = true;
+      this.estimate_approve_data = EstimateSearchPageConfig.test_estimate_approve_data;
       this.loading_dialog = false;
     },
     closeProductList(){
