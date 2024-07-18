@@ -709,6 +709,7 @@
                             산출내역서
                           </p>
                           <v-radio-group
+                            v-show="false"
                             v-model="estimate_type"
                             class="mt-0 float-left ml-3"
                             row
@@ -1417,12 +1418,14 @@
       <ProductCostSearchDialogComponent
         :dialog-value="product_cost_dialog"
         :persistent="true"
+        @apply="applyCostLoad"
         @close="closeCostSearchDialog"
       >
       </ProductCostSearchDialogComponent>
       <EstimateCostSearchDialogComponent
         :dialog-value="estimate_cost_dialog"
         :persistent="true"
+        @apply="applyEstimateLoad"
         @close="closeCostSearchDialog"
       >
       </EstimateCostSearchDialogComponent>
@@ -1858,9 +1861,17 @@ export default {
 
     total_product_cost2(){
       if (!this.calc_cost_detail_data_product_cost2.belong_data || this.calc_cost_detail_data_product_cost2.belong_data.length === 0) return 0;
-      return this.calc_cost_detail_data_product_cost2.belong_data.reduce((a,b)=>{
-        return a + Math.round(b.cost_unit_price * b.cost_num);
-      }, 0);
+      if (this.calc_cost_detail_data_product_cost2.belong_data[0].belong_data && this.calc_cost_detail_data_product_cost2.belong_data[0].belong_data.length !== 0){
+        return this.calc_cost_detail_data_product_cost2.belong_data.reduce((aa,bb)=>{
+          return aa + bb.belong_data.reduce((a,b)=>{
+            return a + Math.round(b.cost_unit_price * b.cost_num);
+          }, 0)
+        }, 0);
+      }else {
+        return this.calc_cost_detail_data_product_cost2.belong_data.reduce((a,b)=>{
+          return a + Math.round(b.cost_unit_price * b.cost_num);
+        }, 0)
+      }
     },
     direct_labor_cost2(){ return this.merged_labor_cost_list.reduce((a,b)=>{
         return a + Math.round(b.cost_unit_price * b.cost_num);
@@ -1896,6 +1907,18 @@ export default {
     calc_cost_detail_data_industrial_safety2(){ return this.calc_cost_detail_data2.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('산업안전보건관리비'))},
     calc_cost_detail_data_normal_maintenance_fee2(){ return this.calc_cost_detail_data2.find(x=>x.cost_list==='일반관리비')},
     calc_cost_detail_data_profite2(){ return this.calc_cost_detail_data2.find(x=>x.cost_list==='이윤')},
+
+    input_issue_date2() { return this.estimateWriteDefaultInfoInputs.find(x=>x.label === '발행일') },
+    input_inhouse_bid_number2() { return this.estimateWriteDefaultInfoInputs.find(x=>x.label === '사내 입찰번호') },
+    input_company_bid_number2() { return this.estimateWriteDefaultInfoInputs.find(x=>x.label === '기업별 입찰번호') },
+    input_due_date2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '납기') },
+    input_service_name2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '용역명') },
+    input_service_period2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '용역기간') },
+    input_remark2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '특이사항') },
+    input_company_name2() { return this.estimateWriteCompanyInfoInputs.find(x=>x.label === '업체명') },
+    input_company_manager2() { return this.estimateWriteCompanyInfoInputs.find(x=>x.label === '담당자') },
+    input_company_manager_email2() { return this.estimateWriteCompanyInfoInputs.find(x=>x.label === '담당자 E-mail') },
+    input_company_manager_phone2() { return this.estimateWriteCompanyInfoInputs.find(x=>x.label === '담당자 연락처') },
   },
 
   methods:{
@@ -1997,6 +2020,8 @@ export default {
       this.calc_cost_detail_data_industrial_safety2.belong_data[0].cost_list = ' - ' + this.new_industrial_safety_formula;
       this.calc_cost_detail_data_normal_maintenance_fee2.belong_data[0].cost_list = ' - ' + this.new_normal_maintenance_fee_formula;
       this.calc_cost_detail_data_profite2.belong_data[0].cost_list = ' - ' + this.new_profite_formula;
+
+      this.clearClicked();
     },
     async searchButton(){
       mux.Util.showLoading();
@@ -2058,6 +2083,156 @@ export default {
       // console.log('test');
       // mux.Server.uploadFile({path: '/', folder:'somefolder', file: this.files[0]});
       mux.Server.uploadFile({path: '/', folder:'somefolder', files: this.files});
+    },
+    applyCostLoad(loadData){
+      const estimate = JSON.parse(JSON.stringify(loadData));
+
+      this.calc_cost_detail_data_product_cost2.belong_data = [];
+      if (estimate.product_cost_calc_detail){
+        let estimateProduct = { cost_num: 1, cost_unit_price: 0 };
+        estimate.product_cost_calc_detail.forEach((a,i)=>{
+          if (i === 0){
+            this.calc_cost_detail_data_product_cost2.belong_data.push({
+              "cost_list": "가. 재료",
+              "cost_list_colspan": 4,
+              "belong_data": []
+            });
+
+            estimateProduct.cost_list = a.product_name;
+            estimateProduct.cost_list_sub = a.product_spec;
+            estimateProduct.cost_unit = '제품';
+            estimateProduct.cost_num_editable = true;
+            estimateProduct.allow_one_or_greater = true;
+            estimateProduct.cost_unit_price_editable = true;
+            estimateProduct.cost_list_sub_editable = true;
+            estimateProduct.deletable_row = true;
+          }
+          
+          estimateProduct.cost_unit_price += Math.round(a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
+        });
+        
+        this.calc_cost_detail_data_product_cost2.belong_data[0].belong_data.push(estimateProduct);
+      }
+      this.labor_cost_list = estimate.labor_cost_calc_detail;
+
+      // set num
+      this.calc_cost_detail_data_employment_insurance2.cost_num = estimate.product_cost[0].employment_insurance_num;
+      this.calc_cost_detail_data_tool_rent_fee2.cost_num = estimate.product_cost[0].tool_rent_fee_num;
+      this.calc_cost_detail_data_transportation_fee2.cost_num = estimate.product_cost[0].transportation_fee_num;
+      this.calc_cost_detail_data_industrial_accident2.cost_num = estimate.product_cost[0].industrial_accident_num;
+      this.calc_cost_detail_data_taxes_dues2.cost_num = estimate.product_cost[0].taxes_dues_num;
+      this.calc_cost_detail_data_welfare_benefits2.cost_num = estimate.product_cost[0].welfare_benefits_num;
+      this.calc_cost_detail_data_retirement2.cost_num = estimate.product_cost[0].retirement_num;
+      this.calc_cost_detail_data_expendables2.cost_num = estimate.product_cost[0].expendables_num;
+      this.calc_cost_detail_data_industrial_safety2.cost_num = estimate.product_cost[0].industrial_safety_num;
+      this.calc_cost_detail_data_normal_maintenance_fee2.cost_num = estimate.product_cost[0].normal_maintenance_fee_num;
+      this.calc_cost_detail_data_profite2.cost_num = estimate.product_cost[0].profite_num;
+      // set formula
+      this.calc_cost_detail_data_indirect_labor2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].indirect_labor_formula;
+      this.calc_cost_detail_data_employment_insurance2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].employment_insurance_formula;
+      this.calc_cost_detail_data_tool_rent_fee2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].tool_rent_fee_formula;
+      this.calc_cost_detail_data_transportation_fee2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].transportation_fee_formula;
+      this.calc_cost_detail_data_industrial_accident2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].industrial_accident_formula;
+      this.calc_cost_detail_data_taxes_dues2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].taxes_dues_formula;
+      this.calc_cost_detail_data_welfare_benefits2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].welfare_benefits_formula;
+      this.calc_cost_detail_data_retirement2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].retirement_formula;
+      this.calc_cost_detail_data_expendables2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].expendables_formula;
+      this.calc_cost_detail_data_industrial_safety2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].industrial_safety_formula;
+      this.calc_cost_detail_data_normal_maintenance_fee2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].normal_maintenance_fee_formula;
+      this.calc_cost_detail_data_profite2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].profite_formula;
+
+      this.product_cost_dialog = false;
+    },
+    applyEstimateLoad(loadData){
+      const estimate = JSON.parse(JSON.stringify(loadData));
+
+      this.calc_cost_detail_data_product_cost2.belong_data = [];
+      if (estimate.product_cost_calc_detail){
+        estimate.product_cost_calc_detail.forEach((a,i)=>{
+          if (i === 0){
+            this.calc_cost_detail_data_product_cost2.belong_data.push({
+              "cost_list": "가. 재료",
+              "cost_list_colspan": 4,
+              "belong_data": []
+            });
+          }
+          this.calc_cost_detail_data_product_cost2.belong_data[0].belong_data.push({
+            cost_list: a.product_name,
+            cost_list_sub: a.product_spec,
+            cost_num: a.product_num,
+            cost_unit_price: a.product_unit_price,
+            cost_unit: '제품',
+            cost_num_editable: true,
+            allow_one_or_greater: true,
+            cost_unit_price_editable: true,
+            cost_list_sub_editable: true,
+            deletable_row: true
+          });
+        });
+      }
+      if (estimate.construction_materials_data){
+        estimate.construction_materials_data.forEach((a,i)=>{
+          if (i === 0){
+            this.calc_cost_detail_data_product_cost2.belong_data.push({
+              "cost_list": `${this.calc_cost_detail_data_product_cost2.belong_data.length > 0 ? '나' : '가'}. 공사 자재`,
+              "cost_list_colspan": 4,
+              "belong_data": []
+            });
+          }
+          this.calc_cost_detail_data_product_cost2.belong_data[this.calc_cost_detail_data_product_cost2.belong_data.length-1].belong_data.push({
+            cost_list: a.construction_materials,
+            cost_num: a.construction_materials_num,
+            cost_unit_price: a.construction_materials_unit_price,
+            cost_unit: '개',
+            cost_num_editable: true,
+            allow_one_or_greater: true,
+            cost_unit_price_editable: true,
+            cost_list_sub_editable: true,
+            deletable_row: true
+          });
+        });
+      }
+      this.labor_cost_list = estimate.labor_cost_calc_detail;
+
+      // set num
+      this.calc_cost_detail_data_employment_insurance2.cost_num = estimate.product_cost[0].employment_insurance_num;
+      this.calc_cost_detail_data_tool_rent_fee2.cost_num = estimate.product_cost[0].tool_rent_fee_num;
+      this.calc_cost_detail_data_transportation_fee2.cost_num = estimate.product_cost[0].transportation_fee_num;
+      this.calc_cost_detail_data_industrial_accident2.cost_num = estimate.product_cost[0].industrial_accident_num;
+      this.calc_cost_detail_data_taxes_dues2.cost_num = estimate.product_cost[0].taxes_dues_num;
+      this.calc_cost_detail_data_welfare_benefits2.cost_num = estimate.product_cost[0].welfare_benefits_num;
+      this.calc_cost_detail_data_retirement2.cost_num = estimate.product_cost[0].retirement_num;
+      this.calc_cost_detail_data_expendables2.cost_num = estimate.product_cost[0].expendables_num;
+      this.calc_cost_detail_data_industrial_safety2.cost_num = estimate.product_cost[0].industrial_safety_num;
+      this.calc_cost_detail_data_normal_maintenance_fee2.cost_num = estimate.product_cost[0].normal_maintenance_fee_num;
+      this.calc_cost_detail_data_profite2.cost_num = estimate.product_cost[0].profite_num;
+      // set formula
+      this.calc_cost_detail_data_indirect_labor2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].indirect_labor_formula;
+      this.calc_cost_detail_data_employment_insurance2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].employment_insurance_formula;
+      this.calc_cost_detail_data_tool_rent_fee2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].tool_rent_fee_formula;
+      this.calc_cost_detail_data_transportation_fee2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].transportation_fee_formula;
+      this.calc_cost_detail_data_industrial_accident2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].industrial_accident_formula;
+      this.calc_cost_detail_data_taxes_dues2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].taxes_dues_formula;
+      this.calc_cost_detail_data_welfare_benefits2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].welfare_benefits_formula;
+      this.calc_cost_detail_data_retirement2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].retirement_formula;
+      this.calc_cost_detail_data_expendables2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].expendables_formula;
+      this.calc_cost_detail_data_industrial_safety2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].industrial_safety_formula;
+      this.calc_cost_detail_data_normal_maintenance_fee2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].normal_maintenance_fee_formula;
+      this.calc_cost_detail_data_profite2.belong_data[0].cost_list = ' - ' + estimate.product_cost[0].profite_formula;
+
+      this.input_issue_date2.value = estimate.product_cost[0].issue_date;
+      this.input_inhouse_bid_number2.value = estimate.product_cost[0].inhouse_bid_number;
+      this.input_company_bid_number2.value = estimate.product_cost[0].company_bid_number;
+      this.input_due_date2.value = estimate.product_cost[0].due_date;
+      this.input_service_name2.value = estimate.product_cost[0].service_name;
+      this.input_service_period2.value = estimate.product_cost[0].service_period;
+      this.input_remark2.value = estimate.product_cost[0].remark;
+      this.input_company_name2.value = estimate.product_cost[0].company_name;
+      this.input_company_manager2.value = estimate.product_cost[0].company_manager;
+      this.input_company_manager_email2.value = estimate.product_cost[0].company_manager_email;
+      this.input_company_manager_phone2.value = estimate.product_cost[0].company_manager_phone;
+
+      this.estimate_cost_dialog = false;
     },
     closeCostSearchDialog(){
       this.product_cost_dialog = false;
@@ -3029,8 +3204,8 @@ export default {
     },
 
     async save() {
-      if (!this.dialog_selected_product_data.product_code){
-        mux.Util.showAlert('제품을 불러와야 합니다.');
+      if (this.calc_cost_detail_data_product_cost2.belong_data.length === 0){
+        mux.Util.showAlert('재료비 항목이 없습니다.');
         return;
       }
       if (this.calc_cost_detail_data_direct_labor2.belong_data.length === 0 || this.calc_cost_detail_data_direct_labor2.belong_data[0].cost_list === ''){
