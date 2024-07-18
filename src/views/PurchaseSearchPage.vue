@@ -105,13 +105,16 @@
         <v-tab-item>
           <v-row>
             <v-col cols="12">
-              <DataTableComponent
+              <PurchaseDataTableComponent
                 :headers="purchase_detail_headers"
                 :items="purchase_detail_data"
+                :other-headers="other_obtain_headers"
+                :other-items="other_obtain_data"
                 :item-key="purchase_detail_data.product_code"
+                @checkOthers="checkOthers"
                 dense
               >
-              </DataTableComponent>
+              </PurchaseDataTableComponent>
             </v-col>
           </v-row>
         </v-tab-item>
@@ -230,7 +233,17 @@
             <div v-if="n === 2">
               <v-row>
                 <v-col cols="12">
-                  <v-data-table
+                  <PurchaseDataTableComponent
+                    :headers="selected_unestimated_headers"
+                    :items="selected_unestimated_data"
+                    :other-headers="other_purchase_headers"
+                    :other-items="other_purchase_data"
+                    group-by="project_code"
+                    @checkOthers="checkOthers"
+                    dense
+                  >
+                  </PurchaseDataTableComponent>
+                  <!-- <v-data-table
                     :headers="selected_unestimated_headers"
                     :items="selected_unestimated_data"
                     group-by="project_code"
@@ -246,24 +259,7 @@
                         {{ items[0].project_code }}
                       </th>
                     </template>
-                    <!-- <template v-slot:[`item.purchase_estimate`] = "{ item }">
-                      <td>
-                        <v-icon
-                          v-if="item.estimate_company === '*견적서 미등록'"
-                          color="default"
-                          small
-                          @click="estiamteDialog"
-                        >mdi-file</v-icon>
-                      </td>
-                    </template> -->
-                  </v-data-table>
-                  <!-- <DataTableComponent
-                    :headers="selected_unestimated_headers"
-                    :items="selected_unestimated_data"
-                    table-class="elevation-0"
-                    item-key="product_code"
-                    dense
-                  /> -->
+                  </v-data-table> -->
                 </v-col>
               </v-row>
               <v-btn
@@ -573,14 +569,14 @@
                         <template v-slot:item="{ item }">
                           <tr>
                             <td>
-                              <v-icon
+                              <!-- <v-icon
                                 color="error"
                                 class="mr-2"
                                 x-small
                                 style="background: #ffedb4; border-radius: 50px; padding: 4px; cursor: pointer;"
                               >
                                 mdi-exclamation-thick
-                              </v-icon>
+                              </v-icon> -->
                               {{ item.product_code }}
                             </td>
                             <td>
@@ -622,6 +618,15 @@
                             <td>{{ item.purchase_num }}</td>
                             <td>{{ item.purchase_num * item.unit_price }}</td>
                             <td>{{ (item.purchase_num * item.unit_price)*0.1 }}</td>
+                            <td>
+                              <v-text-field
+                                v-model="item.note"
+                                filled
+                                dense
+                                hide-details
+                                style="font-size: 13px;"
+                              ></v-text-field>
+                            </td>
                           </tr>
                         </template>
                       </v-data-table>
@@ -660,6 +665,7 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
+import PurchaseDataTableComponent from "@/components/PurchaseDataTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
@@ -677,6 +683,7 @@ export default {
   components: {
                 NavComponent,
                 DataTableComponent,
+                PurchaseDataTableComponent,
                 ModalDialogComponent,
                 CardComponent,
                 InputsFormComponent,
@@ -724,6 +731,8 @@ export default {
       setPurchaseInputs:PurchaseSearchPageConfig.setPurchaseInputs,
       purchase_headers:PurchaseSearchPageConfig.purchase_headers,
       purchase_detail_headers:PurchaseSearchPageConfig.purchase_detail_headers,
+      other_obtain_headers:PurchaseSearchPageConfig.other_obtain_headers,
+      other_purchase_headers:PurchaseSearchPageConfig.other_purchase_headers,
       selected_unestimated_headers:PurchaseSearchPageConfig.selected_unestimated_headers,
       purchase_order_headers:PurchaseSearchPageConfig.purchase_order_headers,
       order_request_headers:PurchaseSearchPageConfig.order_request_headers,
@@ -732,7 +741,8 @@ export default {
       bom_list_data: PurchaseSearchPageConfig.bom_list_test_data,
       bom_list_purchase_data: PurchaseSearchPageConfig.bom_list_purchase_test_data,
       purchase_data:[],
-      purchase_detail_data:[]
+      purchase_detail_data:[],
+      other_obtain_data:[]
     }
   },
 
