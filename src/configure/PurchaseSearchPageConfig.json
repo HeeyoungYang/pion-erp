@@ -40,7 +40,8 @@
   "purchase_headers": [
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
     { "text": "요청일", "align": "start", "value": "created_time"},
-    { "text": "구매 견적", "align": "start", "value": "purchase_estimate"}
+    { "text": "구매 견적", "align": "start", "value": "purchase_estimate"},
+    { "text": "발주 진행", "align": "start", "value": "order_situation"}
   ],
 
   "purchase_detail_headers": [
@@ -51,7 +52,23 @@
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
-    { "text": "견적", "align": "start", "value": "purchase_estimate"}
+    { "text": "견적", "align": "start", "value": "purchase_estimate"},
+    { "text": "", "align": "start", "value": "check_others"}
+  ],
+  "other_obtain_headers": [
+    { "text": "작성자", "align": "start", "value": "given_name"},
+    { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
+    { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
+    { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"},
+    { "text": "사용 완제품", "align": "start", "value": "name"},
+    { "text": "필요 수량", "align": "start", "value": "num"}
+  ],
+  "other_purchase_headers": [
+    { "text": "작성자", "align": "start", "value": "given_name"},
+    { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
+    { "text": "요청일", "align": "start", "value": "created_time"},
+    { "text": "견적 현황", "align": "start", "value": "company_bid_number"},
+    { "text": "구매 요청 수량", "align": "start", "value": "num"}
   ],
   "selected_unestimated_headers": [
     { "text": "종류", "align": "start", "value": "type"},
@@ -83,7 +100,8 @@
     { "text": "단가", "align": "start", "value": "unit_price"},
     { "text": "수량", "align": "start", "value": "purchase_num"},
     { "text": "공급가액", "align": "start", "value": "supply_price"},
-    { "text": "부가세", "align": "start", "value": "vat"}
+    { "text": "부가세", "align": "start", "value": "vat"},
+    { "text": "비고", "align": "start", "value": "note"}
   ],
   "bom_list_headers": [
     { "text": "종류", "align": "start", "value": "type"},
@@ -236,12 +254,13 @@
       "rejected_date": null,
       "reject_reason": null,
       "purchase_estimate": "완료",
+      "order_situation": "1건 미발주",
       "belong_data":[
         {
           "estimate_company": "업체A",
           "type":"원부자재",
           "classification":"GFM",
-          "product_code":"1",
+          "product_code":"관리코드1",
           "name":"원부자재B",
           "model":"MODEL-002",
           "spec":"SPEC-002",
@@ -255,7 +274,7 @@
           "estimate_company": "업체A",
           "type":"반제품",
           "classification":"GFM",
-          "product_code":"2",
+          "product_code":"관리코드2",
           "name":"반제품A",
           "model":"MODEL-003",
           "spec":"SPEC-003",
@@ -269,7 +288,7 @@
           "estimate_company": "업체B",
           "type":"원부자재",
           "classification":"GFM",
-          "product_code":"5",
+          "product_code":"관리코드5",
           "name":"원부자재A",
           "model":"MODEL-002",
           "spec":"SPEC-002",
@@ -301,13 +320,14 @@
       "rejecter": null,
       "rejected_date": null,
       "reject_reason": null,
-      "purchase_estimate": "N건 미완료",
+      "purchase_estimate": "4건 미완료",
+      "order_situation": "5건 미발주",
       "belong_data":[
         {
           "estimate_company": "업체A",
           "type":"원부자재",
           "classification":"GFM",
-          "product_code":"1",
+          "product_code":"원부자재-관리코드1",
           "name":"원부자재B",
           "model":"MODEL-002",
           "spec":"SPEC-002",
@@ -321,7 +341,7 @@
           "estimate_company": "업체A",
           "type":"반제품",
           "classification":"GFM",
-          "product_code":"2",
+          "product_code":"반제품-관리코드1",
           "name":"반제품A",
           "model":"MODEL-003",
           "spec":"SPEC-003",
@@ -335,7 +355,7 @@
           "estimate_company": "업체B",
           "type":"원부자재",
           "classification":"GFM",
-          "product_code":"5",
+          "product_code":"원부자재-관리코드2",
           "name":"원부자재A",
           "model":"MODEL-002",
           "spec":"SPEC-002",
@@ -348,7 +368,7 @@
           "estimate_company": "*견적서 미등록",
           "type":"원부자재",
           "classification":"GFM",
-          "product_code":"1",
+          "product_code":"원부자재-관리코드3",
           "name":"원부자재D",
           "model":"MODEL-002",
           "spec":"SPEC-002",
@@ -362,7 +382,7 @@
           "estimate_company": "*견적서 미등록",
           "type":"반제품",
           "classification":"GFM",
-          "product_code":"2",
+          "product_code":"반제품-관리코드2",
           "name":"반제품B",
           "model":"MODEL-003",
           "spec":"SPEC-003",
@@ -376,7 +396,7 @@
           "estimate_company": "*견적서 미등록",
           "type":"반제품",
           "classification":"GFM",
-          "product_code":"3",
+          "product_code":"반제품-관리코드3",
           "name":"반제품C",
           "model":"MODEL-003",
           "spec":"SPEC-003",
@@ -390,7 +410,7 @@
           "estimate_company": "*견적서 미등록",
           "type":"원부자재",
           "classification":"GFM",
-          "product_code":"4",
+          "product_code":"원부자재-관리코드4",
           "name":"원부자재C",
           "model":"MODEL-002",
           "spec":"SPEC-002",
