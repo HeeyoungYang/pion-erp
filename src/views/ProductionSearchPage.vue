@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :completionMenu="true"></NavComponent>
+    <NavComponent :productionMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -53,8 +53,8 @@
               >
                 <v-card-text class=" pt-3">
                   <DataTableComponent
-                    :headers="completion_data_headers"
-                    :items="completion_datas"
+                    :headers="production_data_headers"
+                    :items="production_datas"
                     item-key="product_code"
                     approval="inbound"
                     dense
@@ -74,7 +74,7 @@
 
 
     <ModalDialogComponent
-      :dialog-value="completion_detail_dialog"
+      :dialog-value="production_detail_dialog"
       max-width="50%"
       title-class=" "
       :dialog-transition="'slide-x-transition'"
@@ -198,11 +198,11 @@ import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import DataTableComponent from "@/components/DataTableComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
-import CompletionSearchPageConfig from "@/configure/CompletionSearchPageConfig.json";
+import ProductionSearchPageConfig from "@/configure/ProductionSearchPageConfig.json";
 import mux from "@/mux";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=CompletionPage')],
+  mixins: [CheckPagePermission('/api/check_page_permission?page_name=ProductionPage')],
   mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
   },
@@ -220,7 +220,7 @@ export default {
   },
 
   watch:{
-    completion_detail_dialog(val){
+    production_detail_dialog(val){
       val || this.closeProductList()
     },
   },
@@ -251,25 +251,25 @@ export default {
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
     clickApproveData(){
-      this.completion_detail_dialog = true;
+      this.production_detail_dialog = true;
     },
     closeProductList(){
-      this.completion_detail_dialog = false;
+      this.production_detail_dialog = false;
     },
     searchButton(){
       this.loading_dialog = true;
-      this.completion_datas = CompletionSearchPageConfig.test_completion_datas;
+      this.production_datas = ProductionSearchPageConfig.test_production_datas;
       this.loading_dialog = false;
     },
   },
   data(){
     return{
       loading_dialog : false,
-      completion_detail_dialog: false,
-      searchCardInputs: CompletionSearchPageConfig.searchCardInputs,
-      login_info: CompletionSearchPageConfig.login_info,
-      completion_data_headers: CompletionSearchPageConfig.completion_data_headers,
-      completion_datas: [],
+      production_detail_dialog: false,
+      searchCardInputs: ProductionSearchPageConfig.searchCardInputs,
+      login_info: ProductionSearchPageConfig.login_info,
+      production_data_headers: ProductionSearchPageConfig.production_data_headers,
+      production_datas: [],
     }
   }
 }

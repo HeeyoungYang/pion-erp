@@ -36,53 +36,53 @@
         </v-col>
 
         <v-col cols="12" sm="12" class="pb-0">
-          <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
+          <table style="border-spacing: 0px; width: 100%;">
             <tr class="text-body-1">
-              <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">관리번호</td>
-              <td class="estimate_info">PE-20240425-001</td>
-              <td class="estimate_info estimate_title text-center" >발행일</td>
-              <td class="estimate_info">2024-00-00</td>
-              <td class="estimate_info estimate_title text-center">납기일</td>
-              <td class="estimate_info">2024-00-00</td>
+              <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">관리번호</td>
+              <td class="order_info">PE-20240425-001</td>
+              <td class="order_info order_title text-center" >발행일</td>
+              <td class="order_info">2024-00-00</td>
+              <td class="order_info order_title text-center">납기일</td>
+              <td class="order_info">2024-00-00</td>
             </tr>
           </table>
         </v-col>
 
-        <v-col align-self="center" cols="12" sm="6" class="pb-0">
-          <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
+        <v-col cols="12" sm="6" class="pb-0">
+          <table style="table-layout: fixed; border-spacing: 0px; width: 100%; ">
             <tr class="text-body-1">
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">수신업체</td>
-              <td class="estimate_info" style="border-bottom: 0px;border-right: 0px;">AAAAA</td>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
-              <td class="estimate_info" style="border-bottom: 0px;">AAAAA</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">수신업체</td>
+              <td class="order_info" style=" style='WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">dsjfidsjfiowedsfjsdfkljl</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
+              <td class="order_info" style="border-bottom: 0px;">AAAAA</td>
             </tr>
             <tr>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-              <td colspan="3" class="estimate_info" style="border-bottom: 0px;"></td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
+              <td colspan="3" class="order_info" style="border-bottom: 0px;"></td>
             </tr>
             <tr>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
-              <td colspan="3" class="estimate_info" style="border-bottom: 0px;"></td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
+              <td colspan="3" class="order_info" style="border-bottom: 0px;"></td>
             </tr>
             <tr class="text-body-1">
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">전화</td>
-              <td class="estimate_info" style="border-bottom: 0px;border-right: 0px;">AAAAA</td>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">팩스</td>
-              <td class="estimate_info" style="border-bottom: 0px;">AAAAA</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">전화</td>
+              <td class="order_info" style="border-bottom: 0px;border-right: 0px;">AAAAA</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">팩스</td>
+              <td class="order_info" style="border-bottom: 0px;">AAAAA</td>
             </tr>
             <tr class="text-body-1">
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">결제조건</td>
-              <td class="estimate_info" style="border-bottom: 0px;border-right: 0px;">AAAAA</td>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트</td>
-              <td class="estimate_info" style="border-bottom: 0px;">AAAAA</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">결제조건</td>
+              <td class="order_info" style="border-bottom: 0px;border-right: 0px;">AAAAA</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트</td>
+              <td class="order_info" style="border-bottom: 0px;">AAAAA</td>
             </tr>
             <tr>
-              <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">계좌정보</td>
-              <td colspan="3" class="estimate_info"></td>
+              <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">계좌정보</td>
+              <td colspan="3" class="order_info"></td>
             </tr>
           </table>
         </v-col>
-        <v-col align-self="center" cols="12" sm="6" style="position: relative;" class="pb-0">
+        <v-col cols="12" sm="6" style="position: relative;" class="pb-0">
           <v-img
             alt="직인"
             contain
@@ -91,38 +91,38 @@
             width="40"
             style="position: absolute; right:25px; top:25px"
           />
-          <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
+          <table style=" border-spacing: 0px; width: 100%;">
             <tr>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-              <td colspan="3" class="estimate_info" style="border-bottom: 0px;">851 - 86 - 00038</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
+              <td colspan="3" class="order_info" style="border-bottom: 0px;">851 - 86 - 00038</td>
             </tr>
             <tr>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">상호</td>
-              <td class="estimate_info" style="border-bottom: 0px;">파이온일렉트릭(주)</td>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">대표자</td>
-              <td class="estimate_info" style="border-bottom: 0px;">윤광희</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">상호</td>
+              <td class="order_info" style="border-bottom: 0px;">파이온일렉트릭(주)</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;">대표자</td>
+              <td class="order_info" style="border-bottom: 0px;">윤광희</td>
             </tr>
             <tr>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
-              <td colspan="3" class="estimate_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호 (연세대학교 공학원)</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
+              <td colspan="3" class="order_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호<br>(연세대학교 공학원)</td>
             </tr>
             <tr>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업태</td>
-              <td class="estimate_info" style="border-bottom: 0px;">제조업</td>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">종목</td>
-              <td class="estimate_info" style="border-bottom: 0px;">전력전자기기</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업태</td>
+              <td class="order_info" style="border-bottom: 0px;">제조업</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;">종목</td>
+              <td class="order_info" style="border-bottom: 0px;">전력전자기기</td>
             </tr>
             <tr>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표전화</td>
-              <td class="estimate_info" style="border-bottom: 0px;">070-5096-4179</td>
-              <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">팩스</td>
-              <td class="estimate_info" style="border-bottom: 0px;">0505-300-4179</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표전화</td>
+              <td class="order_info" style="border-bottom: 0px;">070-5096-4179</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;">팩스</td>
+              <td class="order_info" style="border-bottom: 0px;">0505-300-4179</td>
             </tr>
             <tr>
-              <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
-              <td class="estimate_info" >OOO</td>
-              <td class="estimate_info estimate_title text-center" >연락처</td>
-              <td class="estimate_info">070-1234-5678</td>
+              <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
+              <td class="order_info" >OOO</td>
+              <td class="order_info order_title text-center" >연락처</td>
+              <td class="order_info">070-1234-5678</td>
             </tr>
           </table>
         </v-col>
@@ -130,10 +130,10 @@
 
           <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
             <tr class="text-body-1">
-              <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">담당자 확인</td>
-              <td class="estimate_info">PE-20240425-001</td>
-              <td class="estimate_info estimate_title text-center" >비고</td>
-              <td class="estimate_info">2024-00-00</td>
+              <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">담당자 확인</td>
+              <td class="order_info">PE-20240425-001</td>
+              <td class="order_info order_title text-center" >비고</td>
+              <td class="order_info">2024-00-00</td>
             </tr>
           </table>
         </v-col> -->
@@ -205,5 +205,9 @@ export default {
 }
 </script>
 <style>
+.order_info{border:1px solid #b6b6b6; padding: 2px 10px; font-size: 11px; border-left: 0px; text-overflow: ellipsis;white-space: normal;
+    word-wrap: break-word;
+    word-break: break-all;}
+.order_title{background-color: #efefef; font-weight: bold;}
 
 </style>

@@ -1,14 +1,9 @@
 {
-  "login_info": {
-    "user_id" : "",
-    "name": "",
-    "email": ""
-  },
   "searchCardInputs":[
-    {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"2"},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"2"},
-    {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"2"},
-    {"label":"업체명", "col":"12", "sm":"4", "lg":"2", "value": ""}
+    {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "value": ""}
   ],
   "editDataInputs":[
     {"label":"자체시험 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
@@ -18,31 +13,18 @@
     {"label":"전자세금계산서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
     {"label":"전자세금계산서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"}
   ],
-  "completion_data_headers":[
-    { "text": "승인 요청일", "align": "start", "value": "created_time"},
+  "search_production_headers":[
+    { "text": "작성자", "align": "start", "value": "given_name"},
     { "text": "업체명", "align": "start", "value": "company_name"},
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
     { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"}
   ],
-  "test_completion_datas":[
-    {
-      "created_time": "2024-05-17 08:32:44",
-      "given_name": "양희영",
-      "approval_phase": "승인",
-      "checker": "양희영",
-      "checker_id": "heeyoung",
-      "checked_date": "2024-05-17 09:33:04",
-      "approver": " 윤준수",
-      "approver_id": "yjs",
-      "approved_date": null,
-      "rejecter": null,
-      "rejected_date": null,
-      "reject_reason": null,
-      "company_name": "업체A", 
-      "project_code": "P001", 
-      "inhouse_bid_number": "I001", 
-      "company_bid_number": "C001"
-    }  
+  "test_production_data":[
+    {"given_name":"양희영",
+    "company_name":"업체A",
+    "project_code":"2024-0001",
+    "inhouse_bid_number":"2024-0002",
+    "company_bid_number":"2024-0003"}
   ]
 }

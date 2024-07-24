@@ -70,7 +70,7 @@
     </v-main>
 
     <ModalDialogComponent
-      :dialog-value="inbound_product_list_dialog"
+      :dialog-value="purchase_detail_dialog"
       max-width="70%"
       title-class=" "
       :dialog-transition="'slide-x-transition'"
@@ -560,6 +560,9 @@
                 <div v-if="n === 2">
                   <v-row>
                     <v-col cols="12">
+                      <orderPurchaseComponent
+                        ref="orderPurchaseComponent"
+                      />
                       <v-data-table
                         :headers="order_request_headers"
                         :items="order_request_data"
@@ -656,6 +659,7 @@
           </v-stepper>
         </v-col>
         <v-col cols="12" sm="6">
+          <!-- mux iframesrc 반영 -->
           <iframe width="100%" style="height:450px" src="/forms/테스트용.pdf#toolbar=0&navpanes=0&scrollbar=0"></iframe>
         </v-col>
       </v-row>
@@ -671,6 +675,7 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import MailFormComponent from "@/components/MailFormComponent.vue";
+import orderPurchaseComponent from "@/components/orderPurchaseComponent.vue";
 import PurchaseSearchPageConfig from "@/configure/PurchaseSearchPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import mux from "@/mux";
@@ -689,6 +694,7 @@ export default {
                 InputsFormComponent,
                 LoadingModalComponent,
                 MailFormComponent,
+                orderPurchaseComponent,
               },
   data(){
     return{
@@ -702,7 +708,7 @@ export default {
       unestimated_request:'mailed',
       show_request_estimate_button: false,
       orderRequestDialog: false,
-      inbound_product_list_dialog: false,
+      purchase_detail_dialog: false,
       loading_dialog: false,
       unestimatedMailDialog: false,
       estimatedDialog: false,
@@ -752,7 +758,7 @@ export default {
     },
   },
   watch:{
-    inbound_product_list_dialog(val){
+    purchase_detail_dialog(val){
       val || this.closeProductList()
       this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
     },
@@ -837,7 +843,7 @@ export default {
       this.loading_dialog = false;
     },
     closeProductList(){
-      this.inbound_product_list_dialog = false;
+      this.purchase_detail_dialog = false;
     },
     closeUnestiamtedDialog(){
       this.unestimatedMailDialog = false;
@@ -863,7 +869,7 @@ export default {
       }else{
         this.show_request_estimate_button = true;
       }
-      this.inbound_product_list_dialog = true;
+      this.purchase_detail_dialog = true;
     },
 
     async searchItemStock(data){

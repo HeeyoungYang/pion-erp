@@ -53,7 +53,7 @@
             </div>
           </CardComponent>
         </v-col>
-        <v-col cols="12" sm="7">
+        <v-col cols="12" sm="7"  v-if="show_detail">
           <v-card>
             <v-tabs
               v-model="tab_progress"
@@ -71,7 +71,7 @@
             <v-tabs-items v-model="tab_progress" class="pb-1">
               <!-- 수주서 -->
               <v-tab-item>
-                <v-card v-if="show_detail">
+                <v-card>
                   <v-card-text>
                     <div style="width:100%; background-color: #ccc; min-height:700px">
                       ※ 수주서 PDF 미리보기 영역
@@ -81,7 +81,7 @@
               </v-tab-item>
               <!-- 수주 확인서 -->
               <v-tab-item>
-                <v-card class="elevation-0" v-if="show_detail">
+                <v-card class="elevation-0">
                   <div style="text-align: right;">
                     <v-menu offset-y>
                       <template v-slot:activator="{ on, attrs }">
@@ -232,7 +232,7 @@
 
               <!-- 설계 -->
               <v-tab-item>
-                <v-card class="elevation-0" v-if="show_detail">
+                <v-card class="elevation-0">
                   <v-card-text>
                     <v-row>
                       <v-col cols="12" sm="5">
@@ -324,7 +324,7 @@
               </v-tab-item>
               <!-- 구매 -->
               <v-tab-item>
-                <v-card class="elevation-0" v-if="show_detail">
+                <v-card class="elevation-0">
                   <v-card-text>
                     <DataTableComponent
                       dense
@@ -337,7 +337,7 @@
               </v-tab-item>
               <!-- 생산 -->
               <v-tab-item>
-                <v-card class="elevation-0" v-if="show_detail">
+                <v-card class="elevation-0">
                   <v-card-text>
                     <v-row>
                       <v-col cols="12" sm="412">

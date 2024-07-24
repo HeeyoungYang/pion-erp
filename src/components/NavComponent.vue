@@ -227,8 +227,8 @@
         </v-list-group>
 
         <v-list-group
-          v-if="completionPagesInfo.length > 0"
-          :value="completionMenu"
+          v-if="productionPagesInfo.length > 0"
+          :value="productionMenu"
           prepend-icon="mdi-check-decagram"
         >
           <template v-slot:activator>
@@ -236,7 +236,7 @@
           </template>
 
           <v-list-item
-              v-for="([title, icon, to], i) in completionPagesInfo"
+              v-for="([title, icon, to], i) in productionPagesInfo"
               :key="i"
               link
               :to="to"
@@ -379,7 +379,7 @@
 import mux from '@/mux';
 
   export default {
-    props: ['userMenu', 'productMenu', 'inboundMenu', 'shipMenu', 'estimateMenu', 'backDataMenu', 'salesMenu', 'obtainOrderMenu', 'designProductionMenu', 'purchaseMenu', 'completionMenu'],
+    props: ['userMenu', 'productMenu', 'inboundMenu', 'shipMenu', 'estimateMenu', 'backDataMenu', 'salesMenu', 'obtainOrderMenu', 'designProductionMenu', 'purchaseMenu', 'productionMenu'],
     data: () => ({
       drawer: null,
       menuList: [
@@ -432,9 +432,9 @@ import mux from '@/mux';
         ['구매 요청 현황', '', '/purchase-search', ['master', '매니저']],
         ['발주 현황', '', '/order-search', ['master', '매니저']],
       ],
-      completionPages: [
-        ['생산', '', '/completion-request', ['master', '매니저']],
-        ['생산 현황', '', '/completion-search', ['master', '매니저']],
+      productionPages: [
+        ['생산', '', '/production-request', ['master', '매니저']],
+        ['생산 현황', '', '/production-search', ['master', '매니저']],
       ],
       // estimatePages: [
       //   ['견적 작성', '', '/home'],
@@ -526,23 +526,23 @@ import mux from '@/mux';
         });
         return purchasePagesInfo;
       },
-      completionPagesInfo() {
+      productionPagesInfo() {
         const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
         permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
         permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let completionPagesInfo = [];
-        this.completionPages.forEach(data => {
+        let productionPagesInfo = [];
+        this.productionPages.forEach(data => {
           if (data[data.length-1].length === 0){
-            completionPagesInfo.push(data);
+            productionPagesInfo.push(data);
           } else {
             data[data.length-1].forEach(permission => {
               if (permissionArr.includes(permission)){
-                completionPagesInfo.push(data);
+                productionPagesInfo.push(data);
               }
             });
           }
         });
-        return completionPagesInfo;
+        return productionPagesInfo;
       },
       inboundPagesInfo() {
         const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음

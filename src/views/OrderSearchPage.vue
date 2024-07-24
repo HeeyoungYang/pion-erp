@@ -212,7 +212,8 @@
 
 
           <v-menu offset-x
-                v-if="orderPurchase">
+            v-if="orderPurchase"
+          >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 color="success"

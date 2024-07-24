@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ▼ 상단 바, 좌측 메뉴 (기본 레이아웃) -->
-    <NavComponent :completionMenu="true"></NavComponent>
+    <NavComponent :productionMenu="true"></NavComponent>
 
     <!-- ▼ 본문 영역 -->
     <v-main>
@@ -42,10 +42,10 @@
                 >
                   <DataTableComponent
                     dense
-                    :headers="search_completion_headers"
-                    :items="search_completion_data"
+                    :headers="search_production_headers"
+                    :items="search_production_data"
                     item-key="estimate_code"
-                    @clickTr="completionDetail"
+                    @clickTr="productionDetail"
                   />
                 </v-col>
               </v-row>
@@ -219,10 +219,10 @@ import CheckPagePermission from "@/common_js/CheckPagePermission";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import DataTableComponent from "@/components/DataTableComponent.vue";
-import CompletionPageConfig from "@/configure/CompletionPageConfig.json";
+import ProductionPageConfig from "@/configure/ProductionPageConfig.json";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=CompletionPage')],
+  mixins: [CheckPagePermission('/api/check_page_permission?page_name=ProductionPage')],
   mounted() {
     this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
   },
@@ -246,14 +246,14 @@ export default {
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     initialize(){
-      // this.search_completion_data = CompletionPageConfig.test_estimate_data
+      // this.search_production_data = ProductionPageConfig.test_estimate_data
     },
     searchButton(){
       this.loading_dialog = true;
-      this.search_completion_data = CompletionPageConfig.test_completion_data;
+      this.search_production_data = ProductionPageConfig.test_production_data;
       this.loading_dialog = false;
     },
-    completionDetail(){
+    productionDetail(){
       this.show_detail = true;
     }
   },
@@ -261,10 +261,10 @@ export default {
     return{
       edit_data : false,
       show_detail: false,
-      searchCardInputs: CompletionPageConfig.searchCardInputs,
-      editDataInputs: CompletionPageConfig.editDataInputs,
-      search_completion_headers: CompletionPageConfig.search_completion_headers,
-      search_completion_data: []
+      searchCardInputs: ProductionPageConfig.searchCardInputs,
+      editDataInputs: ProductionPageConfig.editDataInputs,
+      search_production_headers: ProductionPageConfig.search_production_headers,
+      search_production_data: []
     }
   }
 }
