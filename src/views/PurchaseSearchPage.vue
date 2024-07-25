@@ -87,6 +87,7 @@
           color="success"
           small
           style="position: absolute;right: 0px;"
+          :disabled="clicked_tr_phase === '진행중' ? false : true"
           @click="estiamteDialog"
         >
           견적 요청
@@ -124,7 +125,7 @@
                 :headers="purchase_order_headers"
                 :items="purchase_detail_data"
                 :item-key="purchase_detail_data.product_code"
-                group-by="estimate_company"
+                group-by="purchase_estimate_company"
                 dense
               >
 
@@ -134,32 +135,34 @@
                     >
                       {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                     </v-icon>
-                    {{ items[0].estimate_company }}
+                    {{ items[0].purchase_estimate_company }}
                   </th>
                   <th>
                     <v-icon
-                      v-if="items[0].estimate_company !== '*견적서 미등록'"
+                      v-if="items[0].purchase_estimate_company !== '*견적서 미등록'"
                       color="primary"
                       small
-                      @click="estiamteDialog('add_estimate', items[0].order)"
+                      @click="estiamteDialog('add_estimate', items[0].ordered_date)"
                     >mdi-file</v-icon>
                   </th>
                   <th>
                     <v-btn
-                      v-if="items[0].order === '' && items[0].estimate_company !== '*견적서 미등록'"
+                      v-if="items[0].ordered_date === '' && items[0].purchase_estimate_company !== '*견적서 미등록'"
                       color="success"
                       x-small
+                      :disabled="clicked_tr_phase === '진행중' ? false : true"
                       @click="orderRequest(items)"
                     >발주 요청</v-btn>
-                    <span v-else>{{ items[0].order }}</span>
+                    <span v-else>{{ items[0].ordered_date }}</span>
                   </th>
                 </template>
                 <template v-slot:[`item.purchase_estimate`] = "{ item }">
                   <td>
                     <v-icon
-                      v-if="item.estimate_company === '*견적서 미등록'"
+                      v-if="item.purchase_estimate_company === '*견적서 미등록'"
                       color="default"
                       small
+                      :disabled="clicked_tr_phase === '진행중' ? false : true"
                       @click="estiamteDialog"
                     >mdi-file</v-icon>
                   </td>
@@ -208,9 +211,9 @@
                   <DataTableComponent
                     v-model="selected_unestimated_data"
                     :headers="purchase_detail_headers"
-                    :items="purchase_detail_data.filter(data => data.estimate_company === '*견적서 미등록')"
+                    :items="purchase_detail_data.filter(data => data.purchase_estimate_company === '*견적서 미등록')"
                     table-class="elevation-0"
-                    item-key="product_code"
+                    item-key="id"
                     show-select
                     dense
                   />
@@ -311,14 +314,6 @@
                 </v-card-text>
               </v-card>
               <v-divider v-if="tab_search === 0"></v-divider>
-              <!-- <MailFormComponent
-                v-if="unestimated_request === 'mailed' && tab_search === 0"
-                v-model="mailData"
-                title-class="d-none"
-                addCardClass="d-none"
-                mailCardClass="elevation-0"
-              >
-              </MailFormComponent> -->
               <v-form
                 ref="mailForm"
                 v-if="unestimated_request === 'mailed' && tab_search === 0"
@@ -330,23 +325,6 @@
                   addSystemFiles="purchase"
                   :loginInfo="login_info"
                 >
-                  <!-- <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      color="blue darken-1"
-                      text
-                      @click="mailDialog = false"
-                    >
-                      취소
-                    </v-btn>
-                    <v-btn
-                      color="blue darken-1"
-                      text
-                      @click="test()"
-                    >
-                      발송
-                    </v-btn>
-                  </v-card-actions> -->
                 </MailFormComponent>
               </v-form>
               <CardComponent
@@ -373,10 +351,18 @@
                     ◀ 이전
                   </v-btn>
                   <v-btn
+                    v-if="tab_search === 0"
+                    color="success"
+                    @click="saveEstimateRequest"
+                  >
+                    {{ unestimated_request === 'mailed' ? '발송' : '저장' }}
+                  </v-btn>
+                  <v-btn
+                    v-else
                     color="success"
                     @click="unestimatedMailDialog = false"
                   >
-                    {{ tab_search === 0 ? '발송' : '저장' }}
+                    저장
                   </v-btn>
 
                   <v-btn
@@ -417,6 +403,7 @@
             x-small
             class="ml-3"
             elevation="0"
+            :disabled="clicked_tr_phase === '진행중' ? false : true"
             @click="edit_purchase_estimate = true"
           >
             <v-icon
@@ -706,6 +693,7 @@ export default {
       order_step: 2,
       tab_search: null,
       unestimated_request:'mailed',
+      clicked_tr_phase: '',
       show_request_estimate_button: false,
       orderRequestDialog: false,
       purchase_detail_dialog: false,
@@ -717,6 +705,7 @@ export default {
       check_editable_purchase_estimate: false,
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
+      email_sign:'',
 
       inbound_info_data:{},
 
@@ -810,6 +799,7 @@ export default {
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
       this.estimateInfoInputs = JSON.parse(JSON.stringify(this.estimateInfoInputs));
       this.estimateInfoInpuorderRequestInfoInputsts = JSON.parse(JSON.stringify(this.orderRequestInfoInputs));
+      this.email_sign =`<div><p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px;"><strong>${this.login_info.name} 파이온 일렉트릭㈜ ${this.login_info.department} ${this.login_info.position} / Pion Electric Co., Ltd. </strong></p><p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;">Home page : www.pionelectric.com<br>E-mail: ${this.login_info.email}  C/P: ${'+82(0)' + this.login_info.phone_number.slice(1)}<br> Tel: ${'+82(0)' + this.login_info.office_phone_number.slice(1)} Fax: +82(0)505-300-4179<br><br> 본사: (03722) 서울특별시 서대문구 연세로 50 연세대학교 공학원 116호<br> Head office: #116, Engineering Research Park, Yonsei University, 50, Yonsei-ro, Seodaemun-gu, Seoul, 03722, Republic of KOREA<br><br> 광명 사무소: (14348) 경기도 광명시 일직로 72  A-1818호<br> Gwangmyeong office: #A-1818, 72, Iljik-ro, Gwangmyeong-si, Gyeonggi-do, Republic of KOREA 14348<br><br> 광주 공장: (47580) 광주광역시 광산구 연산동 1247<br> Gwangju factory: 1247 Yeonsan-dong, Gwangsan-gu, Gwangju, Republic of KOREA 47580<br><br> 보령 공장: (33448) 충청남도 보령시 주교면 관창공단길 266<br> Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheongnam-do, Republic of KOREA 33448<br><br></p> <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;"><strong>제품 및 서비스</strong><br> ∙ 고자기장 기반의 산업용 운용기기 (Development of Operating Device for Industrial Applications based on High Magnetic Field)<br> ∙ 광기기 기반의 전력전자 응용기기 (Development of Power Electronics Application Device based on Optical Device)<br> ∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)<br> ∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)<br> ∙ 전기공사면허</p> </div>`
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -840,6 +830,31 @@ export default {
     async searchButton(){
       this.loading_dialog = true;
       this.purchase_data = PurchaseSearchPageConfig.test_purchase_data
+      for(let i=0; i<this.purchase_data.length; i++){
+        let check_unestimated = 0;
+        let check_unordered = 0;
+        let data = this.purchase_data[i];
+        data.belong_data.forEach(belongs => {
+          if(belongs.purchase_estimate_company === ''){
+            belongs.purchase_estimate_company = '*견적서 미등록';
+          }
+          if(belongs.purchase_estimate_phase !== '완료'){
+            check_unestimated++;
+          }
+          if(belongs.ordered_date === ''){
+            check_unordered++;
+          }
+        });
+        if(check_unestimated === 0)
+          data.purchase_estimate = '완료'
+        else
+          data.purchase_estimate = check_unestimated + '건 미완료';
+
+        if(check_unordered === 0)
+          data.order_situation = '완료'
+        else
+          data.order_situation = check_unordered + '건 미발주';
+      }
       this.loading_dialog = false;
     },
     closeProductList(){
@@ -854,6 +869,7 @@ export default {
       this.orderRequestDialog = true;
     },
     async clickApproveData(item){
+      this.clicked_tr_phase = item.approval_phase;
       this.purchase_detail_data = item.belong_data;
       this.purchase_detail_data.forEach(data =>{
         data.project_code = item.project_code;
@@ -979,7 +995,7 @@ export default {
                 <html>
                   <body>
                     <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                      <h2 style="text-align: center; color:#13428a">구매 요청 알림</h2>
+                      <h2 style="text-align: center; color:#13428a">구매 요청 건 진행 알림</h2>
                       <table style="width: 100%;border-spacing: 10px 10px;">
                         <tr>
                           <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
@@ -1013,7 +1029,7 @@ export default {
             let sendEmailAlam = await mux.Server.post({
               path: '/api/send_email/',
               to_addrs: mailTo,
-              subject: "입고 " + phase + " 처리 알림",
+              subject: "구매 요청 건 진행 알림",
               content: content
             });
             if (prevURL !== window.location.href) return;
@@ -1043,408 +1059,31 @@ export default {
           mux.Util.showAlert(error);
       }
     },
-    async setCanclePhase(item, change, reason){
-      const currDate = new Date();
+    async changePurchaseEstimatePhase(){
+      // 견적 상태 변경
       const prevURL = window.location.href;
-      let phase;
-      let send_data = {};
-      let send_data_belong = {};
-      send_data.code = item.code;
-      // 현 승인 상태에 따른 필요 정보 정리
-      if(item.approval_phase === '취소 미확인'){
-        if(change === true){
-          send_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
-          send_data.approval_phase = '취소 미승인';
-          phase = '취소 확인';
-        }else{
-          if(reason === ''){
-            mux.Util.showAlert('취소 반려 사유 필수 기입');
-            return;
-          }else{
-            send_data.reject_reason = reason;
-            send_data.rejecter = this.login_info.name;
-            send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
-            send_data.approval_phase = '취소 반려';
-            phase = '취소 확인 반려';
-          }
-        }
-      }else if(item.approval_phase === '취소 미승인'){
-        if(change === true){
-          send_data.approved_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
-          send_data.approval_phase = '취소';
-          send_data_belong = item.belong_data
-          console.log(send_data_belong);
-          phase = '취소 승인';
-        }else{
-          if(reason === ''){
-            mux.Util.showAlert('취소 반려 사유 필수 기입');
-            return;
-          }else{
-            send_data.reject_reason = reason;
-            send_data.rejecter = this.login_info.name;
-            send_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
-            send_data.approval_phase = '취소 반려';
-            phase = '취소 승인 반려';
-          }
-        }
-      }
-
-      console.log(phase);
-
       let sendData = {};
+      let update_data = [];
 
-      //취소 미승인에서 취소로 변경하는 경우
-      if(send_data_belong.length > 0){
-        for (let i = 0; i < send_data_belong.length; i++) {
-          const belong = send_data_belong[i];
-
-          let insert_product_data = [];
-          let update_stock_data = [];
-          // product_code기준 재고(자재)검색
-          let stock_check = await mux.Server.post({
-            path: '/api/common_rest_api/',
-            params: [
-              {
-                "product_table.product_code": belong.product_code,
-                "module_table.module_code": belong.product_code,
-                "material_table.material_code": belong.product_code,
-                "material_table.directly_written": 0,
-                "stock_table.spot": belong.spot
-              }
-            ],
-            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
-          });
-          if (prevURL !== window.location.href) return;
-
-          if (typeof stock_check === 'string'){
-            stock_check = JSON.parse(stock_check);
-          }
-          if(stock_check['code'] == 0){
-            let searched_stock_data = [];
-            if(stock_check['data'].length > 0){
-              searched_stock_data = stock_check['data'][0]
-            }
-            if(belong.product_code === searched_stock_data._code && belong.spot === searched_stock_data.spot){
-              let minus_stock = Number(searched_stock_data.stock_num) - Number(belong.inbound_num.replace(/,/g,''));
-              update_stock_data.push({
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
-                "data": {
-                  "stock_num" : minus_stock
-                },
-                "update_where": {"product_code": belong.product_code, "spot": belong.spot},
-                "rollback": "yes"
-              })
-            }
-            insert_product_data.push({
-              "user_info": {
-                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                "role": "creater"
-              },
-              "data":{
-                  "code" : item.code,
-                  "type" : belong.type,
-                  "classification" : belong.classification,
-                  "product_code" : belong.product_code,
-                  "name" : belong.name,
-                  "inbound_num" : '-' + belong.inbound_num.replace(/,/g,''),
-                  "spot" : belong.spot,
-                  "spec" : belong.spec,
-                  "model" : belong.model,
-                  "manufacturer" : belong.manufacturer,
-                  "unit_price" : belong.unit_price.replace(/,/g,'').replace(/₩ /g,''),
-                  "ship_code" : belong.ship_code,
-              },
-              "select_where": {"product_code": "!JUST_INSERT!"},
-              "rollback": "no"
-            })
-
-            sendData["inbound_product_table-insert"] = insert_product_data;
-            sendData["stock_table-update"] = update_stock_data;
-          }
-        }
-
-      }
-
-
-      sendData["inbound_confirmation_table-update"] = [{
-        "user_info": {
-          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-          "role": "modifier"
-        },
-        "data": send_data,
-        "update_where": {"code": item.code},
-        "rollback": "yes"
-      }];
-      console.log(sendData);
-
-      try {
-        this.loading_dialog = true;
-        let resultInbound = await mux.Server.post({
-          path: '/api/common_rest_api/',
-          params: sendData
+      this.selected_unestimated_data.forEach(data => {
+        update_data.push({
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{
+            "purchase_estimate_phase": "요청"
+          },
+          "update_where": {"id": data.id },
+          "rollback": "yes"
         });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof resultInbound === 'string'){
-          resultInbound = JSON.parse(resultInbound);
-        }
-        if(resultInbound['code'] == 0){
-          let minus_send_product_data = [];
-          item.approval_phase = send_data.approval_phase;
-          switch (item.approval_phase) {
-            case '취소 미승인':
-              item.checked_date = send_data.checked_date;
-              break;
-            case '취소 반려':
-              item.reject_reason = send_data.reject_reason;
-              item.rejecter = send_data.rejecter;
-              item.rejected_date = send_data.rejected_date;
-              break;
-            case '취소 승인':
-              item.approved_date = send_data.approved_date;
-              minus_send_product_data = JSON.parse(JSON.stringify(item.belong_data));
-              minus_send_product_data.forEach(data => {
-                data.inbound_num = '-' + data.inbound_num;
-                data.inbound_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
-                item.belong_data.push(data);
-              });
-              break;
-
-            default:
-              break;
-          }
-
-          this.loading_dialog = false;
-          mux.Util.showAlert('입고 ' + phase + ' 완료', '완료', 3000);
-
-          //메일 알림 관련
-          let mailTo = [];
-          let creater = this.$cookies.get(this.$configJson.cookies.id.key);
-          let reject_info;
-          if(phase === '취소 확인'){
-            mailTo.push(creater);
-            mailTo.push(item.approver_id);
-          }else if(phase === '취소 승인'){
-            mailTo.push(creater);
-            if(creater !== item.checker_id){
-              mailTo.push(item.checker_id);
-            }
-          }else if(phase === '취소 확인 반려'){
-            mailTo.push(creater);
-            reject_info=`
-              <tr>
-                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
-                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejecter}</td>
-              </tr>
-              <tr>
-                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
-                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejected_date}</td>
-              </tr>
-            `
-          }else if(phase === '취소 승인 반려'){
-            mailTo.push(creater);
-            mailTo.push(item.checker_id);
-            reject_info=`
-              <tr>
-                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
-                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejecter}</td>
-              </tr>
-              <tr>
-                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
-                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${send_data.rejected_date}</td>
-              </tr>
-            `
-          }
-
-          // 메일 본문 내용
-          let content=`
-            <html>
-              <body>
-                <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                  <h2 style="text-align: center; color:#13428a">입고 ${phase} 처리 알림</h2>
-                  <table style="width: 100%;border-spacing: 10px 10px;">
-                    <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 번호</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.order_code}</td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">입고 일자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inbound_date}</td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
-                    </tr>
-                    ${reject_info ? reject_info : ''}
-                  </table>
-                  <a style="color: white; text-decoration:none"href="${prevURL}?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
-                    <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                      확인하기
-                    </p>
-                  </a>
-                </div>
-              </body>
-            </html>
-          `;
+      });
 
 
-          try {
-            let sendEmailAlam = await mux.Server.post({
-              path: '/api/send_email/',
-              to_addrs: mailTo,
-              subject: "입고 " + phase + " 처리 알림",
-              content: content
-            });
-            if (prevURL !== window.location.href) return;
-            if(sendEmailAlam['code'] == 0){
-              console.log(sendEmailAlam['message']);
-            } else {
-              if (prevURL !== window.location.href) return;
-              mux.Util.showAlert(sendEmailAlam['failed_info']);
-            }
-          } catch (error) {
-            if (prevURL !== window.location.href) return;
-            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              mux.Util.showAlert(error.response['data']['failed_info'].msg);
-            else
-              mux.Util.showAlert(error);
-          }
-        } else {
-          if (prevURL !== window.location.href) return;
-          mux.Util.showAlert(resultInbound['failed_info']);
-        }
-      } catch (error) {
-        this.loading_dialog = false;
-        if (prevURL !== window.location.href) return;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
-      }
-      // console.log(JSON.stringify(this.change_approve));
-    },
-    async cancleApprove(item){
-      // console.log(item)
-      const currDate = new Date();
-
-      const prevURL = window.location.href;
-      let send_confirmation_data = {}
-      let send_product_data = {}
-
-      if(this.login_info.id === item.approver_id){
-        send_confirmation_data.approval_phase = '취소';
-        send_confirmation_data.approved_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
-        send_product_data = item.belong_data;
-      }else if(this.login_info.id === item.checker_id){
-        send_confirmation_data.approval_phase = "취소 미승인";
-        send_confirmation_data.approved_date = null;
-      }else{
-        send_confirmation_data.approval_phase = "취소 미확인";
-        send_confirmation_data.checked_date = null;
-        send_confirmation_data.approved_date = null;
-      }
-
-      let sendData = {};
-
-      if(send_product_data.length > 0){
-        for (let i = 0; i < send_product_data.length; i++) {
-          const product = send_product_data[i];
-
-          let insert_product_data = [];
-          let update_stock_data = [];
-          // product_code기준 재고(자재)검색
-          let stock_check = await mux.Server.post({
-            path: '/api/common_rest_api/',
-            params: [
-              {
-                "product_table.product_code": product.product_code,
-                "module_table.module_code": product.product_code,
-                "material_table.material_code": product.product_code,
-                "material_table.directly_written": 0,
-                "stock_table.spot": product.spot
-              }
-            ],
-            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
-          });
-          if (prevURL !== window.location.href) return;
-
-          if (typeof stock_check === 'string'){
-            stock_check = JSON.parse(stock_check);
-          }
-          if(stock_check['code'] == 0){
-            let searched_stock_data = [];
-            if(stock_check['data'].length > 0){
-              searched_stock_data = stock_check['data'][0]
-            }
-            if(product.product_code === searched_stock_data._code && product.spot === searched_stock_data.spot){
-              let minus_stock = searched_stock_data.stock_num - product.inbound_num.replace(/,/g,'');
-              update_stock_data.push({
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
-                "data": {
-                  "stock_num" : minus_stock
-                },
-                "update_where": {"product_code": product.product_code, "spot": product.spot},
-                "rollback": "yes"
-              })
-            }
-            insert_product_data.push({
-              "user_info": {
-                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                "role": "creater"
-              },
-              "data":{
-                  "code" : item.code,
-                  "type" : product.type,
-                  "classification" : product.classification,
-                  "product_code" : product.product_code,
-                  "name" : product.name,
-                  "inbound_num" : '-' + product.inbound_num.replace(/,/g,''),
-                  "spot" : product.spot,
-                  "spec" : product.spec,
-                  "model" : product.model,
-                  "manufacturer" : product.manufacturer,
-                  "unit_price" : product.unit_price.replace(/,/g,'').replace(/₩ /g,''),
-                  "ship_code" : product.ship_code,
-              },
-              "select_where": {"product_code": "!JUST_INSERT!"},
-              "rollback": "no"
-            })
-
-            sendData["inbound_product_table-insert"] = insert_product_data;
-            sendData["stock_table-update"] = update_stock_data;
-          }
-        }
-
-      }
-
-      sendData["inbound_confirmation_table-update"] = [{
-        "user_info": {
-          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-          "role": "modifier"
-        },
-        "data": send_confirmation_data,
-        "update_where": {"code": item.code},
-        "rollback": "yes"
-      }];
+      sendData["purchase_product_table-update"] = update_data;
 
       try {
-        this.loading_dialog = true;
+        // selected_unestimated_data
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1455,125 +1094,56 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0){
-          let minus_send_product_data = [];
-          item.approval_phase = send_confirmation_data.approval_phase;
-          switch (send_confirmation_data.approval_phase) {
-            case '취소':
-              item.approved_date = send_confirmation_data.approved_date;
-              minus_send_product_data = JSON.parse(JSON.stringify(item.belong_data));
-              minus_send_product_data.forEach(data => {
-                data.inbound_num = '-' + data.inbound_num;
-                data.inbound_price = '₩ ' + Number(data.unit_price.replace(/,/g,'').replace(/₩ /g,'') * data.inbound_num.replace(/,/g,'')).toLocaleString();
-                item.belong_data.push(data);
-              });
-              break;
-            case '취소 미승인':
-              item.approved_date = null;
-              break;
-            case '취소 미확인':
-              item.checked_date = null;
-              item.approved_date = null;
-              break;
-
-            default:
-              break;
-          }
-
-          mux.Util.showAlert(send_confirmation_data.approval_phase === '취소' ? '취소 완료' : '취소 요청 완료', '완료', 3000);
-          this.loading_dialog = false;
-
-          //메일 알림 관련
-          let mailTo = [];
-          let creater = this.$cookies.get(this.$configJson.cookies.id.key);
-          let phase;
-          if(send_confirmation_data.approval_phase === '취소'){
-            mailTo.push(creater);
-            if(creater !== item.checker_id){
-              mailTo.push(item.checker_id);
-            }
-            phase = '취소 처리'
-          }else if(send_confirmation_data.approval_phase === '취소 미승인'){
-            mailTo.push(item.approver_id);
-            phase ='취소 승인 요청'
-          }else if(send_confirmation_data.approval_phase === '취소 미확인'){
-            mailTo.push(item.checker_id);
-            phase ='취소 확인 요청'
-          }
-
-          // 메일 본문 내용
-          let content=`
-            <html>
-              <body>
-                <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                  <h2 style="text-align: center; color:#13428a">입고 ${phase} 알림</h2>
-                  <table style="width: 100%;border-spacing: 10px 10px;">
-                    <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 번호</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.order_code}</td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">입고 일자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inbound_date}</td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
-                    </tr>
-                  </table>
-                  <a style="color: white; text-decoration:none"href="${prevURL}?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
-                    <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                      확인하기
-                    </p>
-                  </a>
-                </div>
-              </body>
-            </html>
-          `;
-
-          // 메일 알림 요청 정보
-
-          try {
-            let sendEmailAlam = await mux.Server.post({
-              path: '/api/send_email/',
-              to_addrs: mailTo,
-              subject: "입고 " + phase + " 알림",
-              content: content
-            });
-            if (prevURL !== window.location.href) return;
-            if(sendEmailAlam['code'] == 0){
-              console.log(sendEmailAlam['message']);
-            } else {
-              if (prevURL !== window.location.href) return;
-              mux.Util.showAlert(sendEmailAlam['failed_info']);
-            }
-          } catch (error) {
-            if (prevURL !== window.location.href) return;
-            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              mux.Util.showAlert(error.response['data']['failed_info'].msg);
-            else
-              mux.Util.showAlert(error);
-          }
+          // console.log('result :>> ', result);
+          mux.Util.showAlert(this.unestimated_request === 'mailed' ? '견적 요청 메일이 발송되었습니다' : '미요청에서 요청으로 변경되었습니다.', '완료', 3000);
+          mux.Util.hideLoading();
+          this.closeUnestiamtedDialog();
         } else {
           if (prevURL !== window.location.href) return;
           mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
-        this.loading_dialog = false;
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
           mux.Util.showAlert(error);
       }
-      console.log('sendData :: ' + JSON.stringify(sendData))
+    },
+
+    async saveEstimateRequest(){
+
+      mux.Util.showLoading();
+      if(this.unestimated_request === 'mailed'){
+        await this.$refs.mailFormComponent[0].dispatchEnterKeyToAllCombobox();
+        const validate = this.$refs.mailForm[0].validate();
+        if (!validate) return;
+
+        let mail_data = JSON.parse(JSON.stringify(this.mailData));
+        mail_data.content += this.email_sign
+        let sendMailData = {};
+        for (let key in mail_data) {
+          if(key === 'content'){
+            sendMailData[key] = '<html><body>' + mail_data.content  + '</body></html>';
+          }else{
+            sendMailData[key] = mail_data[key];
+          }
+        }
+        sendMailData.path = '/api/send_email_extention/';
+        sendMailData.files = [];
+        for (let i = 0; i < this.mailData.files.length; i++) {
+          const file = this.mailData.files[i];
+          sendMailData.files.push(file);
+        }
+        try {
+          await mux.Server.sendEmail(sendMailData);
+          this.changePurchaseEstimatePhase();
+        } catch (error) {
+          mux.Util.showAlert(error);
+        }
+      }else{
+        this.changePurchaseEstimatePhase();
+      }
     },
     estiamteDialog(type, order){
       if(this.tab_search === 0){
