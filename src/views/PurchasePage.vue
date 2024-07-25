@@ -111,7 +111,16 @@
             <v-card-text class=" pt-3">
               <v-row>
                 <v-col cols="12" sm="9" align-self="center">
-                  <MemberSearchDialogComponent
+                  <v-autocomplete
+                    v-model="select_purchase_manager"
+                    :items="purchasers"
+                    label="구매 담당자"
+                    dense
+                    clearable
+                    hide-details
+                    style="width:200px"
+                  ></v-autocomplete>
+                  <!-- <MemberSearchDialogComponent
                     :dialog-value="member_dialog"
                     :persistent="true"
                     @close="close"
@@ -128,7 +137,7 @@
                     @click="selectMemberDialog(i)"
                   >
                     {{ member.type }} : {{ member.name }}
-                  </v-chip>
+                  </v-chip> -->
                 </v-col>
               </v-row>
 
@@ -359,6 +368,7 @@
                           >
                           </v-text-field>
                         </td>
+                        <td align="center">{{ item.usable_num }}</td>
                         <td align="center">
                           <v-text-field
                             dense
@@ -369,7 +379,6 @@
                             :oninput="!item.purchase_num ? 0 : item.purchase_num = item.purchase_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                           ></v-text-field>
                         </td>
-                        <td align="center">{{ item.stock_num }}</td>
                         <td align="center">{{  calcTotal(item) }}</td>
                         <td align="center">
                           <div  style="min-width: 160px;">
@@ -580,7 +589,7 @@ import DataTableComponent from "@/components/DataTableComponent";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent";
-import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent";
+// import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent";
 import PurchasePageConfig from "@/configure/PurchasePageConfig.json";
 import mux from "@/mux";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
@@ -597,7 +606,7 @@ export default {
                 CardComponent,
                 InputsFormComponent,
                 LoadingModalComponent,
-                MemberSearchDialogComponent,
+                // MemberSearchDialogComponent,
               },
   data(){
     return{
@@ -606,9 +615,9 @@ export default {
       unestimated_steppers: 1,
       unestimated_step: 2,
       add_data_type: '완제품자재',
+      select_purchase_manager: '',
 
       loading_dialog: false,
-      member_dialog: false,
       unestimatedMailDialog: false,
       show_selected_unestimated_data: false,
 
@@ -622,6 +631,7 @@ export default {
       bom_list_purchase_items_data:[],
       product_data:[],
       selected_item_data:[],
+      purchasers:[],
 
       type_list:PurchasePageConfig.type_list,
       searchProductCardInputs:PurchasePageConfig.searchProductCardInputs,
@@ -641,6 +651,17 @@ export default {
   },
 
   watch: {
+    select_purchase_manager(val){
+      if(val !== null) {
+        let user_id = val.split('(')[1].split(')')[0];
+        let user_name = val.split('(')[0];
+        this.purchase_member_info[1].name = user_name;
+        this.purchase_member_info[1].user_id =  user_id;
+      }else{
+        this.purchase_member_info[1].name = '';
+        this.purchase_member_info[1].user_id =  '';
+      }
+    }
   },
 
   created () {
@@ -672,10 +693,33 @@ export default {
         this.purchase_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.purchase_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
         this.purchase_member_info[0].user_id =  this.$cookies.get(this.$configJson.cookies.id.key);
-        this.login_id =  this.$cookies.get(this.$configJson.cookies.id.key);
+        // this.login_id =  this.$cookies.get(this.$configJson.cookies.id.key);
       } catch (error) {
         if (prevURL !== window.location.href) return;
         mux.Util.showAlert(error);
+      }
+
+      // 구매담당자 리스트업 (설계 > 작성 > 구매요청 step > 구매담당자 선택을 위함)
+      try {
+        const result = await mux.Server.get({path:'/api/admin/users/'});
+        if (prevURL !== window.location.href) return;
+        if (result.code == 0){
+          result.data.Users.map(data => {
+            if(data.Attributes.find(x=>x.Name === 'custom:department').Value === '기획관리부'){
+              this.purchasers.push((data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '') + '(' + data.Username + ')');
+            }
+          });
+
+        }else {
+          this.loading_dialog = false;
+          mux.Util.showAlert(result.message);
+          return;
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        mux.Util.showAlert(error);
+        return;
       }
 
       mux.List.addProductBasicInfoLists(this.searchItemsCardInputs, this.classification_list, this.manufacturer_list, true);
@@ -693,7 +737,6 @@ export default {
     },
 
     close(){
-      this.member_dialog = false;
       this.unestimatedMailDialog = false;
       this.unestimated_steppers = 1;
       this.estimateInfoInputs.forEach(input => {
@@ -702,18 +745,6 @@ export default {
           input.value.name = '';
         }
       });
-    },
-    selectMemberDialog(idx){
-      this.member_type_index = idx
-      this.member_dialog = true;
-    },
-    setMember(item){
-      this.purchase_member_info[this.member_type_index].name = item.name.trim()
-      this.purchase_member_info[this.member_type_index].user_id = item.user_id
-      this.close();
-    },
-    members(data){
-      this.members_list=data;
     },
     async searchProduct() {
       this.loading_dialog = true;
@@ -1173,45 +1204,42 @@ export default {
 
       confirmation_data.project_code = this.purchaseInfoInputs.find(x=>x.label === '프로젝트 코드').value;
       confirmation_data.note = this.purchaseInfoInputs.find(x=>x.label === '비고').value;
+      confirmation_data.approval_phase = '요청';
+      // confirmation_data.checker_id = this.purchase_member_info[0].user_id;
+      // confirmation_data.checker = this.purchase_member_info[0].name;
 
-
-      let empty_member = [];
-      member_input.forEach(mem => {
-        if(!mem.user_id){
-          empty_member.push(mem.type)
-        }else{
+      if(this.select_purchase_manager === '' || this.select_purchase_manager === null){
+        mux.Util.showAlert('구매담당자를 선택해주세요.');
+        return success = false;
+      }else{
+        member_input.forEach(mem => {
           if(mem.type === '확인'){
             confirmation_data.checker = mem.name;
             confirmation_data.checker_id = mem.user_id;
-            if(confirmation_data.checker_id == this.login_id){
-              confirmation_data.approval_phase = '미승인';
-            }else{
-              confirmation_data.approval_phase = '미확인';
-            }
           }else if(mem.type === '승인'){
             confirmation_data.approver = mem.name;
             confirmation_data.approver_id = mem.user_id;
           }
-        }
-      })
-
-      if(empty_member.length > 0){
-        mux.Util.showAlert(empty_member+"를 선택해주세요.");
-        return success = false;
+        })
       }
 
       let unestimated_data = [];
-      for(let b=0; b<bom_data.length; b++){
-        if(!bom_data[b].purchase_num  || bom_data[b].purchase_num === '' || bom_data[b].purchase_num === 0){
-          mux.Util.showAlert('구매 요청 수량 0이상 필수 입력');
-          return success = false;
-        }
-        if(bom_data[b].type === '' || bom_data[b].classification === '' || bom_data[b].name === ''){
-          mux.Util.showAlert('종류, 분류, 제품명 필수 입력');
-          return success = false;
-        }
-        if(!bom_data[b].purchase_estimate_check && bom_data[b].purchase_estimate_company === ''){
-          unestimated_data.push({"product_code": bom_data[b].product_code, "item_code" : bom_data[b].item_code});
+      if(bom_data.length === 0){
+        mux.Util.showAlert('구매요청할 제품을 선택해주세요.');
+        return success = false;
+      }else{
+        for(let b=0; b<bom_data.length; b++){
+          if(!bom_data[b].purchase_num  || bom_data[b].purchase_num === '' || bom_data[b].purchase_num === 0){
+            mux.Util.showAlert('구매 요청 수량 0이상 필수 입력');
+            return success = false;
+          }
+          if(bom_data[b].type === '' || bom_data[b].classification === '' || bom_data[b].name === ''){
+            mux.Util.showAlert('종류, 분류, 제품명 필수 입력');
+            return success = false;
+          }
+          if(!bom_data[b].purchase_estimate_check && bom_data[b].purchase_estimate_company === ''){
+            unestimated_data.push({"product_code": bom_data[b].product_code, "item_code" : bom_data[b].item_code});
+          }
         }
       }
 
@@ -1240,6 +1268,7 @@ export default {
               "approval_phase": confirmation_data.approval_phase,
               "checker" : confirmation_data.checker,
               "checker_id" : confirmation_data.checker_id,
+              "checked_date" : mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss'),
               "approver" : confirmation_data.approver,
               "approver_id" : confirmation_data.approver_id,
               "note" : confirmation_data.note
@@ -1250,9 +1279,9 @@ export default {
             "rollback": "yes"
           }]
         };
-        if(sendData["purchase_confirmation_table-insert"][0].data.approval_phase === '미승인'){
-          sendData["purchase_confirmation_table-insert"][0].data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
-        }
+        // if(sendData["purchase_confirmation_table-insert"][0].data.approval_phase === '미승인'){
+        //   sendData["purchase_confirmation_table-insert"][0].data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+        // }
 
         let bom_data_insert = [];
 
@@ -1276,7 +1305,7 @@ export default {
                   "manufacturer" : bom.manufacturer,
                   "unit_price" : bom.unit_price.replace(/,/g,'').replace(/₩ /g,''),
                   "purchase_num" : bom.purchase_num.replace(/,/g,''),
-                  "purchase_estimate_phase" : bom.purchase_estimate_company === '' ? '견적필요' : '견적완료',
+                  "purchase_estimate_phase" : bom.purchase_estimate_company === '' ? '미요청' : '완료',
                   "purchase_estimate_company" : bom.purchase_estimate_company,
                   "purchase_estimate_file" : bom.purchase_estimate_file_name,
                   "purchase_estimate_thumbnail" : bom.purchase_estimate_thumbnail,
@@ -1301,7 +1330,7 @@ export default {
                   "manufacturer" : bom.manufacturer,
                   "unit_price" : bom.data_type === 'selected' ? bom.unit_price.replace(/,/g,'').replace(/₩ /g,'') : (bom.unit_price === '' ? 0 : bom.unit_price.replace(/,/g,'')),
                   "purchase_num" : bom.purchase_num.replace(/,/g,''),
-                  "purchase_estimate_phase" : bom.purchase_estimate_company === '' ? '견적필요' : '견적완료',
+                  "purchase_estimate_phase" : bom.purchase_estimate_company === '' ? '미요청' : '완료',
                   "purchase_estimate_company" : bom.purchase_estimate_company,
                   "purchase_estimate_file" : bom.purchase_estimate_file_name,
                   "purchase_estimate_thumbnail" : bom.purchase_estimate_thumbnail,
@@ -1357,40 +1386,37 @@ export default {
 
               //메일 알림 관련
               let mailTo = [];
-              let phase;
-              if(confirmation_data.approval_phase === '미확인'){
-                mailTo.push(confirmation_data.checker_id);
-                phase = '확인'
-              }else if(confirmation_data.approval_phase === '미승인'){
-                mailTo.push(confirmation_data.approver_id);
-                phase = '승인'
-              }
+              mailTo.push(confirmation_data.approver_id);
+              // let phase;
+              // if(confirmation_data.approval_phase === '미확인'){
+              //   mailTo.push(confirmation_data.checker_id);
+              //   phase = '확인'
+              // }else if(confirmation_data.approval_phase === '미승인'){
+              //   mailTo.push(confirmation_data.approver_id);
+              //   phase = '승인'
+              // }
 
               // 메일 본문 내용
               let content=`
                 <html>
                   <body>
                     <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                      <h2 style="text-align: center; color:#13428a">구매 ${phase} 요청 알림</h2>
+                      <h2 style="text-align: center; color:#13428a">구매 요청 알림</h2>
                       <table style="width: 100%;border-spacing: 10px 10px;">
                         <tr>
                           <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.project_code}</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.project_code === '' ? '-' : confirmation_data.project_code}</td>
                         </tr>
                         <tr>
                           <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">비고</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.note}</td>
+                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.note === '' ? '-' : confirmation_data.note}</td>
                         </tr>
                         <tr>
                           <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
                         </tr>
                         <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.checker}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">구매담당자</td>
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
                         </tr>
                       </table>
@@ -1407,7 +1433,7 @@ export default {
                 let sendEmailAlam = await mux.Server.post({
                   path: '/api/send_email/',
                   to_addrs: mailTo,
-                  subject: "구매 " + phase + " 요청 알림",
+                  subject: "구매 요청 알림",
                   content: content
                 });
                 if (prevURL !== window.location.href) return;
