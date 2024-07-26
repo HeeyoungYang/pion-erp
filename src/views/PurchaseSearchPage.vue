@@ -561,7 +561,7 @@
 
     <v-dialog
       v-model="orderRequestDialog"
-      content-class="elevation-0"
+      content-class="elevation-0 overflow_visible"
       persistent
       max-width="90%"
     >
@@ -738,7 +738,7 @@
         </v-col>
         <v-col cols="12" sm="6">
           <!-- mux iframesrc 반영 -->
-          <iframe width="100%" style="height:450px" src="/forms/테스트용.pdf#toolbar=0&navpanes=0&scrollbar=0"></iframe>
+          <iframe width="100%" style="height: 100%;" src="/forms/테스트용.pdf#toolbar=0&navpanes=0&scrollbar=0"></iframe>
         </v-col>
       </v-row>
     </v-dialog>
