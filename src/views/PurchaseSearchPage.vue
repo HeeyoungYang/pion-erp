@@ -139,15 +139,22 @@
                   </th>
                   <th>
                     <v-icon
-                      v-if="items[0].purchase_estimate_company !== '*견적서 미등록'"
+                      v-if="items[0].purchase_estimate_phase === '완료'"
                       color="primary"
                       small
-                      @click="estiamteDialog('add_estimate', items[0].ordered_date)"
+                      @click="estiamteDialog('added_estimate', items[0].ordered_date, items)"
+                    >mdi-file</v-icon>
+                    <v-icon
+                      v-if="items[0].purchase_estimate_phase === '요청'"
+                      color="default"
+                      small
+                      :disabled="clicked_tr_phase === '진행중' ? false : true"
+                      @click="estiamteDialog(false, false, items)"
                     >mdi-file</v-icon>
                   </th>
                   <th>
                     <v-btn
-                      v-if="items[0].ordered_date === '' && items[0].purchase_estimate_company !== '*견적서 미등록'"
+                      v-if="items[0].ordered_date === '' && items[0].purchase_estimate_phase === '완료'"
                       color="success"
                       x-small
                       :disabled="clicked_tr_phase === '진행중' ? false : true"
@@ -156,17 +163,17 @@
                     <span v-else>{{ items[0].ordered_date }}</span>
                   </th>
                 </template>
-                <template v-slot:[`item.purchase_estimate`] = "{ item }">
+                <!-- <template v-slot:[`item.purchase_estimate`] = "{ item }">
                   <td>
                     <v-icon
-                      v-if="item.purchase_estimate_company === '*견적서 미등록'"
+                      v-if="item.purchase_estimate_phase === '미요청'"
                       color="default"
                       small
                       :disabled="clicked_tr_phase === '진행중' ? false : true"
                       @click="estiamteDialog"
                     >mdi-file</v-icon>
                   </td>
-                </template>
+                </template> -->
               </v-data-table>
             </v-col>
           </v-row>
@@ -189,7 +196,7 @@
               :step="n"
               editable
             >
-              {{ n ===  1 ? '관련 자재 선택' : (n ===  2 ? '구매 요청 내역 확인' : (tab_search === 0 ? '견적 요청' : '견적 등록'))}}
+              {{ n ===  1 ? '관련 자재 선택' : (n ===  2 ? '구매 요청 내역 확인' : '견적 요청')}}
             </v-stepper-step>
 
             <v-divider
@@ -211,7 +218,7 @@
                   <DataTableComponent
                     v-model="selected_unestimated_data"
                     :headers="purchase_detail_headers"
-                    :items="purchase_detail_data.filter(data => data.purchase_estimate_company === '*견적서 미등록')"
+                    :items="purchase_detail_data.filter(data => data.purchase_estimate_phase !== '완료')"
                     table-class="elevation-0"
                     item-key="id"
                     show-select
@@ -221,13 +228,13 @@
               </v-row>
               <v-btn
                 color="primary"
-                @click="nextStep(n, 'estimate')"
+                @click="nextUnestimatedStep(n, 'estimate')"
               >
                 다음 ▶
               </v-btn>
 
               <v-btn text color="error"
-              @click="closeUnestiamtedDialog">
+              @click="closePurchaseEstiamtedDialog">
                 취소
               </v-btn>
             </div>
@@ -236,11 +243,13 @@
                 <v-col cols="12">
                   <PurchaseDetailTableComponent
                     :headers="selected_unestimated_headers"
-                    :items="selected_unestimated_data"
-                    :other-headers="other_purchase_headers"
-                    :other-items="other_purchase_data"
+                    :items="selected_estimate_request_list_data"
+                    :other-headers="selected_unestimated_headers"
+                    :other-items="check_other_purchase_data"
                     group-by="project_code"
                     @checkOthers="checkOthers"
+                    @addList="addList"
+                    @subtractList="subtractList"
                     dense
                   >
                   </PurchaseDetailTableComponent>
@@ -265,19 +274,19 @@
               </v-row>
               <v-btn
                 color="primary"
-                @click="nextStep(n, 'estimate')"
+                @click="nextUnestimatedStep(n, 'estimate')"
               >
                 다음 ▶
               </v-btn>
 
               <v-btn text color="error"
-              @click="closeUnestiamtedDialog">
+              @click="closePurchaseEstiamtedDialog">
                 취소
               </v-btn>
             </div>
             <div v-if="n === 3">
               <v-card class="elevation-0">
-                <v-card-text class="pb-0">
+                <v-card-text class="pa-0">
                   <v-row>
                     <v-col cols="12">
                       <v-btn
@@ -290,12 +299,12 @@
                       <v-data-table
                       style="border:1px solid #c0c0c0"
                         :headers="purchase_detail_headers"
-                        :items="selected_unestimated_data"
+                        :items="selected_estimate_request_list_data"
                         item-key="product_code"
                         dense
                       ></v-data-table>
                     </v-col>
-                    <v-col cols="12" v-if="tab_search === 0">
+                    <v-col cols="12">
                       <v-radio-group
                         v-model="unestimated_request"
                         row
@@ -313,10 +322,18 @@
                   </v-row>
                 </v-card-text>
               </v-card>
-              <v-divider v-if="tab_search === 0"></v-divider>
+              <v-row>
+                <v-col cols="4">
+                  <v-text-field
+                    filled
+                    label="견적 요청 업체"
+                    v-model="estimate_request_company"
+                  />
+                </v-col>
+              </v-row>
               <v-form
                 ref="mailForm"
-                v-if="unestimated_request === 'mailed' && tab_search === 0"
+                v-if="unestimated_request === 'mailed'"
               >
                 <MailFormComponent
                   ref="mailFormComponent"
@@ -327,9 +344,93 @@
                 >
                 </MailFormComponent>
               </v-form>
+              <v-divider v-if="unestimated_request === 'requested'"></v-divider>
+              <v-card class="elevation-0">
+                <v-card-text>
+                  <v-btn
+                    color="primary"
+                    @click="unestimated_steppers = 2"
+                  >
+                    ◀ 이전
+                  </v-btn>
+                  <v-btn
+                    color="success"
+                    @click="saveEstimateRequest"
+                  >
+                    {{ unestimated_request === 'mailed' ? '발송' : '저장' }}
+                  </v-btn>
+                  <v-btn
+                    text
+                    color="error"
+                    @click="closePurchaseEstiamtedDialog"
+                  >
+                    취소
+                  </v-btn>
+
+                </v-card-text>
+              </v-card>
+            </div>
+          </v-stepper-content>
+        </v-stepper-items>
+      </v-stepper>
+    </v-dialog>
+    <v-dialog
+      v-model="setEstimateDialog"
+      persistent
+      max-width="1000px"
+    >
+      <v-stepper v-model="set_estimate_steppers">
+        <v-stepper-header>
+          <template v-for="n in set_estimate_step">
+            <v-stepper-step
+              :key="`${n}-step`"
+              :complete="set_estimate_steppers > n"
+              :step="n"
+              editable
+            >
+              {{ n ===  1 ? '견적 품목' : '견적 등록' }}
+            </v-stepper-step>
+
+            <v-divider
+              v-if="n !== set_estimate_step"
+              :key="n"
+            ></v-divider>
+          </template>
+        </v-stepper-header>
+
+        <v-stepper-items>
+          <v-stepper-content
+            v-for="n in set_estimate_step"
+            :key="`${n}-content`"
+            :step="n"
+          >
+            <div v-if="n === 1">
+              <v-row>
+                <v-col cols="12">
+                  <PurchaseDetailTableComponent
+                    :headers="selected_unestimated_headers.filter(header => header.value !== 'check_others')"
+                    :items="selected_estimate_request_list_data"
+                    group-by="project_code"
+                    dense
+                  >
+                  </PurchaseDetailTableComponent>
+                </v-col>
+              </v-row>
+              <v-btn
+                color="primary"
+                @click="nextSetEstimateStep(n)"
+              >
+                다음 ▶
+              </v-btn>
+
+              <v-btn text color="error"
+              @click="closePurchaseEstiamtedDialog">
+                취소
+              </v-btn>
+            </div>
+            <div v-if="n === 2">
               <CardComponent
                 title-class="d-none"
-                v-if="tab_search === 1"
                 class="elevation-0"
               >
                 <InputsFormComponent
@@ -342,33 +443,25 @@
                 />
               </CardComponent>
 
+              <v-divider v-if="unestimated_request === 'requested'"></v-divider>
               <v-card class="elevation-0">
                 <v-card-text>
                   <v-btn
                     color="primary"
-                    @click="unestimated_steppers = 1"
+                    @click="set_estimate_steppers = 1"
                   >
                     ◀ 이전
                   </v-btn>
                   <v-btn
-                    v-if="tab_search === 0"
                     color="success"
-                    @click="saveEstimateRequest"
-                  >
-                    {{ unestimated_request === 'mailed' ? '발송' : '저장' }}
-                  </v-btn>
-                  <v-btn
-                    v-else
-                    color="success"
-                    @click="unestimatedMailDialog = false"
+                    @click="saveEstimate"
                   >
                     저장
                   </v-btn>
-
                   <v-btn
                     text
                     color="error"
-                    @click="closeUnestiamtedDialog"
+                    @click="closePurchaseEstiamtedDialog"
                   >
                     취소
                   </v-btn>
@@ -525,7 +618,7 @@
                         <v-col cols="12" sm="4" align-self="center">
                           <v-btn
                             color="primary"
-                            @click="nextStep(n, 'order')"
+                            @click="nextUnestimatedStep(n, 'order')"
                           >
                             다음 ▶
                           </v-btn>
@@ -689,6 +782,8 @@ export default {
       dates: [],
       unestimated_steppers: 1,
       unestimated_step: 3,
+      set_estimate_steppers: 1,
+      set_estimate_step: 2,
       order_steppers: 1,
       order_step: 2,
       tab_search: null,
@@ -699,6 +794,7 @@ export default {
       purchase_detail_dialog: false,
       loading_dialog: false,
       unestimatedMailDialog: false,
+      setEstimateDialog: false,
       estimatedDialog: false,
       show_selected_unestimated_data: false,
       edit_purchase_estimate: false,
@@ -706,6 +802,7 @@ export default {
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
       email_sign:'',
+      estimate_request_company: '',
 
       inbound_info_data:{},
 
@@ -713,8 +810,11 @@ export default {
 
       searched_products:[],
       selected_unestimated_data:[],
+      selected_estimate_request_list_data:[],
 
       order_request_data:[],
+      search_other_purchase_data:[],
+      check_other_purchase_data:[],
 
       defaultMailData: PurchaseSearchPageConfig.default_mail_data,
       search_tab_items: PurchaseSearchPageConfig.search_tab_items,
@@ -756,6 +856,11 @@ export default {
         this.unestimated_steppers = val
       }
     },
+    set_estimate_step(val){
+      if (this.set_estimate_steppers > val) {
+        this.set_estimate_steppers = val
+      }
+    },
 
   },
   created () {
@@ -768,13 +873,6 @@ export default {
     }
   },
   methods:{
-
-    nextStep (step, type) {
-      if(type === 'estimate')
-        this.unestimated_steppers = step + 1
-      else
-        this.order_steppers = step + 1
-    },
 
     async initialize () {
       const prevURL = window.location.href;
@@ -816,6 +914,80 @@ export default {
         this.searchCardInputs.find(x=>x.label === '입고일자').value = [inbound_date, inbound_date];
       }
     },
+
+    nextUnestimatedStep (step, type) {
+      if(type === 'estimate'){
+        if(step === 1 && this.selected_unestimated_data.length === 0){
+          mux.Util.showAlert('견적을 요청할 자재를 선택해주세요.');
+          return;
+        }else if(step === 1 && this.selected_unestimated_data.length !== 0){
+          //선택한 자재가 다른 구매요청에 있는지 확인 (발주요청하지 않은 데이터만)
+          let searched_data = PurchaseSearchPageConfig.test_purchase_data;
+          this.selected_unestimated_data.forEach(item => {
+            for(let i=0; i<searched_data.length; i++){
+              let data = searched_data[i];
+              for(let j=0; j<data.belong_data.length; j++){
+                let belong = data.belong_data[j];
+                if(belong.item_code === item.item_code && belong.project_code !== item.project_code){
+                  item.exclamation = true
+                }
+              }
+            }
+            // item.exclamation = true
+          });
+          this.search_other_purchase_data = searched_data
+          this.selected_estimate_request_list_data = this.selected_unestimated_data
+
+
+        }
+        this.unestimated_steppers = step + 1
+      }
+      else{
+        this.order_steppers = step + 1
+      }
+    },
+
+    nextSetEstimateStep (step) {
+      this.set_estimate_steppers = step + 1
+    },
+
+    checkOthers(item, project_code){
+      this.check_other_purchase_data = [];
+      let searched_others = this.search_other_purchase_data;
+
+      searched_others.forEach(searched => {
+        if(project_code !== searched.project_code){
+          for(let i=0; i<searched.belong_data.length; i++){
+            let belong = searched.belong_data[i];
+            if(belong.item_code === item.item_code){
+              belong.project_code = searched.project_code;
+              belong.product_code = searched.product_code;
+              this.check_other_purchase_data.push(belong);
+            }
+          }
+        }
+      });
+    },
+    addList(item, project_code){
+      let selected_project_codes = [];
+      for(let i=0; i<this.selected_estimate_request_list_data.length; i++){
+        let data = this.selected_estimate_request_list_data[i];
+        selected_project_codes.push(data.project_code);
+      }
+
+      selected_project_codes = [...new Set(selected_project_codes)];
+      if (selected_project_codes.includes(project_code)) {
+        mux.Util.showAlert('이미 추가된 프로젝트입니다.');
+        return;
+      } else {
+        this.selected_estimate_request_list_data.push(...item);
+      }
+    },
+    subtractList(project_code){
+      console.log(project_code);
+      let filtered = this.selected_estimate_request_list_data.filter(data => data.project_code !== project_code);
+      this.selected_estimate_request_list_data = filtered
+    },
     async download(foldername, filename, prefix) {
       this.loading_dialog = true;
       try {
@@ -835,8 +1007,8 @@ export default {
         let check_unordered = 0;
         let data = this.purchase_data[i];
         data.belong_data.forEach(belongs => {
-          if(belongs.purchase_estimate_company === ''){
-            belongs.purchase_estimate_company = '*견적서 미등록';
+          if(belongs.purchase_estimate_phase === '미요청'){
+            belongs.purchase_estimate_company = '*견적서 미요청';
           }
           if(belongs.purchase_estimate_phase !== '완료'){
             check_unestimated++;
@@ -860,9 +1032,12 @@ export default {
     closeProductList(){
       this.purchase_detail_dialog = false;
     },
-    closeUnestiamtedDialog(){
+    closePurchaseEstiamtedDialog(){
       this.unestimatedMailDialog = false;
       this.unestimated_steppers = 1;
+      this.setEstimateDialog = false;
+      this.set_estimate_steppers = 1;
+      this.selected_unestimated_data =[];
     },
     orderRequest(item){
       this.order_request_data = item
@@ -1062,6 +1237,7 @@ export default {
     async changePurchaseEstimatePhase(){
       // 견적 상태 변경
       const prevURL = window.location.href;
+      const currDate = new Date();
       let sendData = {};
       let update_data = [];
 
@@ -1072,7 +1248,9 @@ export default {
             "role": "modifier"
           },
           "data":{
-            "purchase_estimate_phase": "요청"
+            "purchase_estimate_phase": "요청",
+            "purchase_estimate_company": this.estimate_request_company,
+            "purchase_estimate_code": this.estimate_request_company + '/' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key),
           },
           "update_where": {"id": data.id },
           "rollback": "yes"
@@ -1097,7 +1275,7 @@ export default {
           // console.log('result :>> ', result);
           mux.Util.showAlert(this.unestimated_request === 'mailed' ? '견적 요청 메일이 발송되었습니다' : '미요청에서 요청으로 변경되었습니다.', '완료', 3000);
           mux.Util.hideLoading();
-          this.closeUnestiamtedDialog();
+          this.closePurchaseEstiamtedDialog();
         } else {
           if (prevURL !== window.location.href) return;
           mux.Util.showAlert(result['failed_info']);
@@ -1112,6 +1290,11 @@ export default {
     },
 
     async saveEstimateRequest(){
+
+      if(this.estimate_request_company === ''){
+        mux.Util.showAlert('견적 요청 업체를 입력해주세요.');
+        return;
+      }
 
       mux.Util.showLoading();
       if(this.unestimated_request === 'mailed'){
@@ -1145,12 +1328,84 @@ export default {
         this.changePurchaseEstimatePhase();
       }
     },
-    estiamteDialog(type, order){
+    async saveEstimate(){
+      const currDate = new Date();
+      const prevURL = window.location.href;
+
+      for(let i=0; i<this.estimateInfoInputs.length; i++){
+        let input = this.estimateInfoInputs[i];
+        if(input.value === ''|| input.value === null  || !input.value){
+          mux.Util.showAlert(input.label + '를 입력해주세요.');
+          return;
+        }
+      }
+      mux.Util.showLoading();
+
+      let estimate_company = this.estimateInfoInputs.find(x=>x.label === '견적 확정 업체').value;
+      let estimate_file_value = this.estimateInfoInputs.find(x=>x.label === '견적서 첨부').value;
+      let estimate_file_name = estimate_file_value.name;
+      const getPdfThumbnail = await mux.Util.getPdfThumbnail(estimate_file_value, 1, false);
+      let estimate_file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+
+      let estimate_code = this.selected_estimate_request_list_data[0].purchase_estimate_code;
+
+      let sendData = {};
+
+      sendData["purchase_product_table-update"] = [{
+        "user_info": {
+          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+          "role": "modifier"
+        },
+        "data":{
+          "purchase_estimate_phase": "완료",
+          "purchase_estimate_company": estimate_company,
+          "purchase_estimate_code": estimate_company + '/' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key),
+          "purchase_estimate_file": estimate_file_name,
+          "purchase_estimate_thumbnail": estimate_file_thumbnail
+        },
+        "update_where": {"purchase_estimate_code": estimate_code},
+        "rollback": "yes"
+      }];
+      console.log("sendData ::: ", sendData);
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: sendData
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          // console.log('result :>> ', result);
+          mux.Util.showAlert('견적서가 등록되었습니다.', '완료', 3000);
+          this.closePurchaseEstiamtedDialog();
+          mux.Util.hideLoading();
+        } else {
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+
+
+    },
+    estiamteDialog(type, order, item){
+      this.selected_estimate_request_list_data = [];
       if(this.tab_search === 0){
         this.unestimatedMailDialog = true;
+        this.purchase_detail_data.forEach(data => {
+          data.exclamation = false;
+        });
       }
       else{
-        if(type === 'add_estimate'){
+        if(type === 'added_estimate'){
           this.estimatedDialog = true;
           if(order !== ""){
             this.check_editable_purchase_estimate = false;
@@ -1158,7 +1413,24 @@ export default {
             this.check_editable_purchase_estimate = true;
           }
         }else{
-          this.unestimatedMailDialog = true;
+          this.setEstimateDialog = true;
+          // this.selected_estimate_request_list_data = item;
+
+          //동일한 purchase_estimate_code를 가진 데이터 불러오기
+          let searched_data = PurchaseSearchPageConfig.test_purchase_data;
+          for(let i=0; i<searched_data.length; i++){
+            let data = searched_data[i];
+            for(let j=0; j<data.belong_data.length; j++){
+              let belong = data.belong_data[j];
+              belong.project_code = data.project_code;
+              belong.product_code = data.product_code;
+              if(belong.purchase_estimate_code === item[0].purchase_estimate_code){
+                this.selected_estimate_request_list_data.push(belong);
+              }
+            }
+          }
+          this.estimateInfoInputs.find(x=>x.label === '견적 확정 업체').value = item[0].purchase_estimate_company;
+          console.log(item)
         }
       }
     },

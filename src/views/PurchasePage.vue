@@ -1323,7 +1323,7 @@ export default {
                   "code" : code,
                   "type" : bom.type,
                   "classification" : bom.classification,
-                  "item_code" : bom.data_type === 'selected' ? bom.item_code : mux.Date.format(currDate, 'yyyyMMdd-HH:mm:ss.fff') + '-' + bom.item_code,
+                  "item_code" : bom.item_code,
                   "name" : bom.name,
                   "model" : bom.model,
                   "spec" : bom.spec,
@@ -1331,6 +1331,7 @@ export default {
                   "unit_price" : bom.data_type === 'selected' ? bom.unit_price.replace(/,/g,'').replace(/₩ /g,'') : (bom.unit_price === '' ? 0 : bom.unit_price.replace(/,/g,'')),
                   "purchase_num" : bom.purchase_num.replace(/,/g,''),
                   "purchase_estimate_phase" : bom.purchase_estimate_company === '' ? '미요청' : '완료',
+                  "purchase_estimate_code" : bom.purchase_estimate_company === '' ? '' : bom.purchase_estimate_company + '/' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key),
                   "purchase_estimate_company" : bom.purchase_estimate_company,
                   "purchase_estimate_file" : bom.purchase_estimate_file_name,
                   "purchase_estimate_thumbnail" : bom.purchase_estimate_thumbnail,
@@ -1462,6 +1463,8 @@ export default {
               mux.Util.showAlert(error);
           }
           this.loading_dialog = false;
+          this.bom_list_purchase_data=[];
+          this.bom_list_purchase_items_data=[];
       }
     },
 

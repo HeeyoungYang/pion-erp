@@ -7,7 +7,7 @@
         :headers="headers"
         :items="items"
         :item-key="itemKey"
-        :class="tableClass ? tableClass : 'elevation-1'"
+        :class="tableClass ? tableClass : ''"
         :show-select="showSelect"
         :search="search"
         :sort-by="sortBy"
@@ -18,7 +18,7 @@
         :disable-sort="disableSort"
       >
         <template v-slot:[`group.header`]="{items, isOpen, toggle}">
-          <th  @click="toggle" colspan="8">
+          <th  @click="toggle" colspan="9">
             <v-icon
             >
               {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
@@ -28,12 +28,12 @@
         </template>
         <template v-slot:[`item.check_others`] = "{ item }">
           <v-icon
-            v-if="item.purchase_estimate !== '완료'"
+            v-if="item.exclamation === true"
             color="error"
             class="mr-2"
             x-small
             style="background: #ffedb4; border-radius: 50px; padding: 4px; cursor: pointer;"
-            @click="checkOtherPurchase(item)"
+            @click="checkOtherPurchase(item, items[0].project_code)"
           >
             mdi-exclamation-thick
           </v-icon>
@@ -44,8 +44,47 @@
       class="mt-7"
       v-show="show_others"
     >
-      <p>원부자재-관리코드3</p>
+      <p>{{ check_item }}</p>
       <v-data-table
+        :dense="dense"
+        :headers="otherHeaders"
+        :items="otherItems"
+        :item-key="itemKey"
+        :group-by="groupBy"
+      >
+        <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+          <th  @click="toggle" colspan="8">
+            <v-icon
+            >
+              {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+            </v-icon>
+            {{ items[0].project_code }}
+          </th>
+          <th>
+            <v-icon
+              color="primary"
+              class="mr-2"
+              x-small
+              style="background: #e4e4e4; border-radius: 50px; padding: 4px; cursor: pointer;"
+              @click="addToList(items, items[0].project_code)"
+            >
+              mdi-plus-thick
+            </v-icon>
+            <v-icon
+              color="error"
+              class="mr-2"
+              x-small
+              style="background: #e4e4e4; border-radius: 50px; padding: 4px; cursor: pointer;"
+              @click="subtractToList(items[0].project_code)"
+            >
+              mdi-minus-thick
+            </v-icon>
+          </th>
+        </template>
+        <!-- <template v-slot:[`item.check_others`] = "{ item }">
+        </template> -->
+      </v-data-table>
+      <!-- <v-data-table
         :dense="dense"
         :headers="otherHeaders"
         :items="otherItems"
@@ -65,12 +104,12 @@
             class="mr-2"
             x-small
             style="background: #ffedb4; border-radius: 50px; padding: 4px; cursor: pointer;"
-            @click="checkOtherPurchase(item)"
+            @click="checkOtherPurchase(item, items[0].project_code)"
           >
             mdi-exclamation-thick
           </v-icon>
         </template>
-      </v-data-table>
+      </v-data-table> -->
     </v-col>
   </v-row>
 </template>
@@ -149,6 +188,7 @@ export default {
   data() {
     return {
       show_others: false,
+      check_item: '',
       // selected_data: this.value.slice(),
     };
   },
@@ -166,9 +206,16 @@ export default {
     deleteItem(index) {
       this.$emit("delete", index);
     },
-    checkOtherPurchase(item) {
+    checkOtherPurchase(item, project_code) {
       this.show_others = true;
-      this.$emit("checkOthers", item);
+      this.check_item = item.type + ' : ' + item.item_code;
+      this.$emit("checkOthers", item, project_code);
+    },
+    addToList(item, project_code) {
+      this.$emit("addList", item, project_code);
+    },
+    subtractToList( project_code) {
+      this.$emit("subtractList",  project_code);
     },
     calcTotal(item){
       let total = Number(item.num ? item.unit_price.replace(/,/g,'').replace(/₩ /g,'') * item.num.replace(/,/g,'') :  0).toLocaleString();
