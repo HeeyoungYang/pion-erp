@@ -772,9 +772,9 @@ export default {
       }
       mux.Util.hideLoading();
     },
-    estimateCheckbox(type, name){
+    async estimateCheckbox(type, name){
       if(name !== '재료비' && !this.estimate_checkbox[type]){
-        const confirm = mux.Util.showConfirm('재료비에 ' + name + '을(를) 포함하시겠습니까?', '금액 확인');
+        const confirm = await mux.Util.showConfirm('재료비에 ' + name + '을(를) 포함하시겠습니까?', '금액 확인');
         if (!confirm){
           return
         }

@@ -170,10 +170,7 @@ export default {
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
+        mux.Util.showAlert(error);
       }
 
       mux.Util.hideLoading();
@@ -186,14 +183,16 @@ export default {
     apply(item) {
       let applyObj = {};
       Object.keys(this.searchResult).forEach(key => {
-        this.searchResult[key].forEach(a=>{
-          if (a.cost_calc_code === item.cost_calc_code){
-            if (applyObj[key] === undefined){
-              applyObj[key] = [];
+        if (Array.isArray(this.searchResult[key])){
+          this.searchResult[key].forEach(a=>{
+            if (a.cost_calc_code === item.cost_calc_code){
+              if (applyObj[key] === undefined){
+                applyObj[key] = [];
+              }
+              applyObj[key].push(a);
             }
-            applyObj[key].push(a);
-          }
-        });
+          });
+        }
       });
       
       this.$emit("apply", applyObj);

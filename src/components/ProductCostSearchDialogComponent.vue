@@ -141,39 +141,34 @@ export default {
 
       const prevURL = window.location.href;
       try {
-        // let result = await mux.Server.post({
-        //   path: '/api/common_rest_api/',
-        //   params: [
-        //     {
-        //       "product_cost_table.product_name": searchProductName ? searchProductName : "%"
-        //     }
-        //   ],
-        //   "script_file_name": "rooting_원가_검색_24_05_22_11_57_N80.json",
-        //   "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_검색_24_05_22_11_57_555"
-        // });
-        // if (prevURL !== window.location.href) return;
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "product_cost_table.product_name": inputs[0],
+            }
+          ],
+          "script_file_name": "rooting_원가_검색_24_05_22_11_57_N80.json",
+          "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_검색_24_05_22_11_57_555"
+        });
+        if (prevURL !== window.location.href) return;
 
-        // if (typeof result === 'string'){
-        //   result = JSON.parse(result);
-        // }
-        // if(result['code'] == 0){
-        //   const searchResult = result.data;
-        this.searchResult = JSON.parse(JSON.stringify(ProductCostSearchDialogConfig.test_product_cost_data));
-        this.searchResult.product_cost.reverse(); // 최신순으로 정렬
-        this.searchDataCalcProcess(this.searchResult);
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          this.searchResult = result.data;
+          // this.searchResult = JSON.parse(JSON.stringify(ProductCostSearchDialogConfig.test_product_cost_data));
+          this.searchResult.product_cost.reverse(); // 최신순으로 정렬
+          this.searchDataCalcProcess(this.searchResult);
 
-        // }else{
-        //   mux.Util.showAlert(result['failed_info']);
-        // }
-
-        // this.search_estimate_data = EstimatePageConfig.test_estimate_data;
+        }else{
+          mux.Util.showAlert(result);
+        }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
+        mux.Util.showAlert(error);
       }
 
       mux.Util.hideLoading();
@@ -186,14 +181,16 @@ export default {
     apply(item) {
       let applyObj = {};
       Object.keys(this.searchResult).forEach(key => {
-        this.searchResult[key].forEach(a=>{
-          if (a.cost_calc_code === item.cost_calc_code){
-            if (applyObj[key] === undefined){
-              applyObj[key] = [];
+        if (Array.isArray(this.searchResult[key])){
+          this.searchResult[key].forEach(a=>{
+            if (a.cost_calc_code === item.cost_calc_code){
+              if (applyObj[key] === undefined){
+                applyObj[key] = [];
+              }
+              applyObj[key].push(a);
             }
-            applyObj[key].push(a);
-          }
-        });
+          });
+        }
       });
       
       this.$emit("apply", applyObj);

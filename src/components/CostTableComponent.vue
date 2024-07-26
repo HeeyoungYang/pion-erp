@@ -183,7 +183,7 @@
           :key="'surveycost_'+index+'_'+idx+'_'+inIdx"
           v-show="!hideChildren && !hideGrandChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index) && showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx))">
           <td>
-            <v-icon v-if="!preventEditable && !costNumEditDisabled && innerBelongItem.deletable_row" small color="error" style="cursor:pointer" @click="innerItem.belong_data.splice(idx, 1)">mdi-minus-thick</v-icon>
+            <v-icon v-if="!preventEditable && !costNumEditDisabled && innerBelongItem.deletable_row" small color="error" style="cursor:pointer" @click="innerItem.belong_data.splice(inIdx, 1)">mdi-minus-thick</v-icon>
             {{ preventEditable || !innerBelongItem.deletable_row ? innerBelongItem.cost_no : '' }}
           </td>
           <td style="padding-left:40px;" :colspan="innerBelongItem.cost_list_colspan">

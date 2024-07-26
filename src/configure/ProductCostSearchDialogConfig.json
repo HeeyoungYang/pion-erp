@@ -4,8 +4,8 @@
   ],
   "table_header": [
     {"text": "제품명", "align": "center", "value": "product_name"},
-    {"text": "작성일", "align": "center", "value": "cost_created_time"},
-    {"text": "작성자", "align": "center", "value": "cost_creater"},    
+    {"text": "작성일", "align": "center", "value": "created_time"},
+    {"text": "작성자", "align": "center", "value": "creater"},    
     {"text": "총액", "align": "center", "value": "cost_total_amount"},    
     {"text": "", "align": "center", "value": "set", "sortable":false}
   ],

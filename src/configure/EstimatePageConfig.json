@@ -21,8 +21,8 @@
     "제품 불러오기", "공사 자재"
   ],
   "estimate_member_info":[
-    {"type": "확인", "name": "", "user_id": "", "email": ""},
-    {"type": "승인", "name": "", "user_id": "", "email": ""}
+    {"type": "확인", "name": "", "user_id": "", "email": "", "checked_date": ""},
+    {"type": "승인", "name": "", "user_id": "", "email": "", "checked_date": ""}
   ],
   "searchCardInputs":[
     {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4"},
@@ -337,38 +337,95 @@
   ],
 
   "test_product_cost_data":{
+    "confirmation":[
+      {
+        "creater": "min",
+        "given_name": "선우민",
+        "office_phone_number": "02-1234-5678",
+        "modifier": "heeyoung",
+        "created_time": "2024-05-31 11:50:50",
+        "modified_time": "2024-06-21 09:30:50",
+        "cost_calc_code": "TEST-01/2024-05-31 11:50:51.470/min",
+
+        "estimate_type": "재료비",
+        
+        "issue_date": "2024-05-31",
+        "inhouse_bid_number": "TEST-01",
+        "company_bid_number": "TEST-02",
+        "due_date": "2024-06-30",
+        "service_name": "테스트용역명",
+        "service_period": "30일",
+        "remark": "테스트용역 특이사항",
+        "company_name": "업체A",
+        "company_manager": "김대리",
+        "company_manager_email": "kim@email.mail",
+        "company_manager_phone": "010-1234-5678",
+
+        "approval_phase": "확인",
+        "checker": "선우민",
+        "checker_id": "min",
+        "checked_date": "2024-06-01",
+        "approver": "양희영",
+        "approver_id": "heeyoung",
+        "approved_date": "",
+        "rejecter": "",
+        "rejected_date": "",
+        "reject_reason": "",
+
+        "approval_file": "승인서.pdf",
+        "approval_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "blueprint_file": "도면.pdf",
+        "blueprint_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "etc_files": "기타첨부파일.pdf/기타첨부파일2.xlsx"
+      },
+
+      {
+        "creater": "min",
+        "given_name": "선우민",
+        "office_phone_number": "02-1234-5678",
+        "modifier": "heeyoung",
+        "created_time": "2024-05-31 12:50:50",
+        "modified_time": "2024-06-21 09:30:50",
+        "cost_calc_code": "TEST-02/2024-05-31 12:50:51.470/min",
+
+        "estimate_type": "재료비",
+
+        "issue_date": "2024-05-31",
+        "inhouse_bid_number": "TEST-02",
+        "company_bid_number": "TEST-03",
+        "due_date": "2024-06-30",
+        "service_name": "테스트용역명",
+        "service_period": "30일",
+        "remark": "테스트용역 특이사항",
+        "company_name": "업체A",
+        "company_manager": "김대리",
+        "company_manager_email": "kim@email.mail",
+        "company_manager_phone": "010-1234-5678",
+
+        "approval_phase": "확인",
+        "checker": "알렉스",
+        "checker_id": "alex",
+        "checked_date": "2024-06-01",
+        "approver": "양희영",
+        "approver_id": "heeyoung",
+        "approved_date": "",
+        "rejecter": "",
+        "rejected_date": "",
+        "reject_reason": "",
+
+        "approval_file": "",
+        "blueprint_file": "",
+        "etc_files": "기타첨부파일.pdf/기타첨부파일2.xlsx"
+      }
+    ],
     "product_cost": [
         {
           "creater": "min",
-          "given_name": "선우민",
-          "office_phone_number": "02-1234-5678",
           "modifier": "heeyoung",
           "created_time": "2024-05-31 11:50:50",
           "modified_time": "2024-06-21 09:30:50",
-          "cost_calc_code": "ewrewr/2024-05-31 11:50:51.470/min",
-
-          "estimate_type": "재료비",
+          "cost_calc_code": "TEST-01/2024-05-31 11:50:51.470/min",
           
-          "issue_date": "2024-05-31",
-          "inhouse_bid_number": "TEST-01",
-          "company_bid_number": "TEST-02",
-          "due_date": "2024-06-30",
-          "service_name": "테스트용역명",
-          "service_period": "30일",
-          "remark": "테스트용역 특이사항",
-          "company_name": "업체A",
-          "company_manager": "김대리",
-          "company_manager_email": "kim@email.mail",
-          "company_manager_phone": "010-1234-5678",
-          "approval_file": "승인서.pdf",
-          "approval_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
-          "blueprint_file": "도면.pdf",
-          "blueprint_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
-          "etc_files": "기타첨부파일.pdf/기타첨부파일2.xlsx",
-          
-          "product_code": "ewrewr",
-          "product_name": "ewrwer",
-          "product_spec": "wqeqwe",
           "indirect_labor_num": 1,
           "indirect_labor_ratio": 0.122,
           "indirect_labor_formula": "직접노무비X12.2%",
@@ -409,33 +466,11 @@
 
         {
           "creater": "min",
-          "given_name": "선우민",
-          "office_phone_number": "02-1234-5678",
           "modifier": "heeyoung",
           "created_time": "2024-05-31 12:50:50",
           "modified_time": "2024-06-21 09:30:50",
-          "cost_calc_code": "tech1/2024-05-31 12:50:51.470/min",
-
-          "estimate_type": "기술료",
-
-          "issue_date": "2024-05-31",
-          "inhouse_bid_number": "TEST-01",
-          "company_bid_number": "TEST-02",
-          "due_date": "2024-06-30",
-          "service_name": "테스트용역명",
-          "service_period": "30일",
-          "remark": "테스트용역 특이사항",
-          "company_name": "업체A",
-          "company_manager": "김대리",
-          "company_manager_email": "kim@email.mail",
-          "company_manager_phone": "010-1234-5678",
-          "approval_file": "",
-          "blueprint_file": "",
-          "etc_files": "기타첨부파일.pdf/기타첨부파일2.xlsx",
+          "cost_calc_code": "TEST-02/2024-05-31 12:50:51.470/min",
           
-          "product_code": "tech1",
-          "product_name": "tech1",
-          "product_spec": "tech1spec",
           "indirect_labor_num": 1,
           "indirect_labor_ratio": 0.122,
           "indirect_labor_formula": "직접노무비X12.2%",
@@ -480,7 +515,7 @@
           "modifier": null,
           "created_time": "2024-05-31 11:50:50",
           "modified_time": "2024-05-31 11:50:50",
-          "cost_calc_code": "ewrewr/2024-05-31 11:50:51.470/min",
+          "cost_calc_code": "TEST-01/2024-05-31 11:50:51.470/min",
           "product_code": "ewrewr",
           "no": "품-2",
           "name": "저압케이블 포설",
@@ -498,7 +533,7 @@
           "modifier": null,
           "created_time": "2024-05-31 11:50:50",
           "modified_time": "2024-05-31 11:50:50",
-          "cost_calc_code": "ewrewr/2024-05-31 11:50:51.470/min",
+          "cost_calc_code": "TEST-01/2024-05-31 11:50:51.470/min",
           "product_code": "ewrewr",
           "no": "품-3",
           "name": "전력케이블 단말처리",
@@ -516,7 +551,7 @@
           "modifier": null,
           "created_time": "2024-05-31 11:50:50",
           "modified_time": "2024-05-31 11:50:50",
-          "cost_calc_code": "ewrewr/2024-05-31 11:50:51.470/min",
+          "cost_calc_code": "TEST-01/2024-05-31 11:50:51.470/min",
           "product_code": "ewrewr",
           "no": "품-4",
           "name": "Cubicle 설치",
@@ -534,7 +569,7 @@
           "modifier": null,
           "created_time": "2024-05-31 11:50:50",
           "modified_time": "2024-05-31 11:50:50",
-          "cost_calc_code": "ewrewr/2024-05-31 11:50:51.470/min",
+          "cost_calc_code": "TEST-01/2024-05-31 11:50:51.470/min",
           "product_code": "ewrewr",
           "no": "품-4",
           "name": "Cubicle 설치",
@@ -553,7 +588,7 @@
           "modifier": null,
           "created_time": "2024-05-31 12:50:50",
           "modified_time": "2024-05-31 12:50:50",
-          "cost_calc_code": "tech1/2024-05-31 12:50:51.470/min",
+          "cost_calc_code": "TEST-02/2024-05-31 12:50:51.470/min",
           "product_code": "tech1",
           "no": "품-2",
           "name": "저압케이블 포설",
@@ -571,7 +606,7 @@
           "modifier": null,
           "created_time": "2024-05-31 12:50:50",
           "modified_time": "2024-05-31 12:50:50",
-          "cost_calc_code": "tech1/2024-05-31 12:50:51.470/min",
+          "cost_calc_code": "TEST-02/2024-05-31 12:50:51.470/min",
           "product_code": "tech1",
           "no": "품-3",
           "name": "전력케이블 단말처리",
@@ -589,7 +624,7 @@
           "modifier": null,
           "created_time": "2024-05-31 12:50:50",
           "modified_time": "2024-05-31 12:50:50",
-          "cost_calc_code": "tech1/2024-05-31 12:50:51.470/min",
+          "cost_calc_code": "TEST-02/2024-05-31 12:50:51.470/min",
           "product_code": "tech1",
           "no": "품-4",
           "name": "Cubicle 설치",
@@ -607,7 +642,7 @@
           "modifier": null,
           "created_time": "2024-05-31 12:50:50",
           "modified_time": "2024-05-31 12:50:50",
-          "cost_calc_code": "tech1/2024-05-31 12:50:51.470/min",
+          "cost_calc_code": "TEST-02/2024-05-31 12:50:51.470/min",
           "product_code": "tech1",
           "no": "품-4",
           "name": "Cubicle 설치",
@@ -627,7 +662,7 @@
           "modifier": null,
           "created_time": "2024-05-31 11:50:50",
           "modified_time": "2024-05-31 11:50:50",
-          "cost_calc_code": "ewrewr/2024-05-31 11:50:51.470/min",
+          "cost_calc_code": "TEST-01/2024-05-31 11:50:51.470/min",
           "product_code": "ewrewr",
           "product_name": "ewrwer",
           "product_spec": "wqeqwe",
@@ -639,52 +674,44 @@
           "modifier": null,
           "created_time": "2024-05-31 11:50:50",
           "modified_time": "2024-05-31 11:50:50",
-          "cost_calc_code": "ewrewr/2024-05-31 11:50:51.470/min",
+          "cost_calc_code": "TEST-01/2024-05-31 11:50:51.470/min",
           "product_code": "ewrewr2",
           "product_name": "ewrwer2",
           "product_spec": "wqeqwe2",
+          "product_num": 1,
+          "product_unit_price": 222
+        },
+        {
+          "creater": "min",
+          "modifier": null,
+          "created_time": "2024-05-31 12:50:50",
+          "modified_time": "2024-05-31 12:50:50",
+          "cost_calc_code": "TEST-02/2024-05-31 12:50:51.470/min",
+          "product_code": "ewrewr3",
+          "product_name": "ewrwer3",
+          "product_spec": "wqeqwe3",
           "product_num": 1,
           "product_unit_price": 222
         }
     ],
     "construction_materials_data":[
       {
-        "cost_calc_code": "ewrewr/2024-05-31 11:50:51.470/min",
+        "cost_calc_code": "TEST-01/2024-05-31 11:50:51.470/min",
         "construction_materials": "공사자재1",
         "construction_materials_num": 3,
         "construction_materials_unit_price": 100000
       },
       {
-        "cost_calc_code": "ewrewr/2024-05-31 11:50:51.470/min",
+        "cost_calc_code": "TEST-01/2024-05-31 11:50:51.470/min",
         "construction_materials": "공사자재2",
         "construction_materials_num": 2,
         "construction_materials_unit_price": 200000
       },
       {
-        "cost_calc_code": "ewrewr/2024-05-31 11:50:51.470/min",
+        "cost_calc_code": "TEST-01/2024-05-31 11:50:51.470/min",
         "construction_materials": "공사자재3",
         "construction_materials_num": 1,
         "construction_materials_unit_price": 300000
-      }
-    ],
-    "technical_fee_data":[
-      {
-        "cost_calc_code": "tech1/2024-05-31 12:50:51.470/min",
-        "technical_fee": "기술료1",
-        "technical_fee_num": 3,
-        "technical_fee_unit_price": 100000
-      },
-      {
-        "cost_calc_code": "tech1/2024-05-31 12:50:51.470/min",
-        "technical_fee": "기술료2",
-        "technical_fee_num": 2,
-        "technical_fee_unit_price": 200000
-      },
-      {
-        "cost_calc_code": "tech1/2024-05-31 12:50:51.470/min",
-        "technical_fee": "기술료3",
-        "technical_fee_num": 1,
-        "technical_fee_unit_price": 300000
       }
     ]
   }

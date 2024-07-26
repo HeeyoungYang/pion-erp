@@ -228,7 +228,8 @@ export default {
           if (this.inputs.find(x=>x.type === 'dateSingle').value) {
             return this.inputs.find(x=>x.type === 'dateSingle').value;
           }else {
-            return (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10);
+            this.inputs.find(x=>x.type === 'dateSingle').value = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10);
+            return this.inputs.find(x=>x.type === 'dateSingle').value;
           }
         },
         set(value) {
