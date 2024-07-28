@@ -3477,7 +3477,7 @@ export default {
 
       mux.Util.showLoading();
       
-      const new_cost_calc_code = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
+      const new_cost_calc_code = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
       let sendData = {
         "estimate_confirmation_table-insert": [{
           "user_info": {
