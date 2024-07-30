@@ -156,7 +156,7 @@ export default {
         // if (typeof result === 'string'){
         //   result = JSON.parse(result);
         // }
-        // if(result['code'] == 0){
+        // if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
         //   const searchResult = result.data;
         this.searchResult = JSON.parse(JSON.stringify(EstimateCostSearchDialogConfig.test_product_cost_data));
         this.searchResult.product_cost.reverse(); // 최신순으로 정렬

@@ -292,7 +292,7 @@ export default {
           if (prevURL !== window.location.href) return;
           mux.Util.showAlert(result.message);
           // 성공시
-          if (result.code == 0){
+          if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             this.user_info.phone_number = this.userInputs.find(x=>x.column_name === 'phone_number').value;
             this.user_info.email_address = this.userInputs.find(x=>x.column_name === 'email_address').value;
             this.user_info.office_phone_number = this.userInputs.find(x=>x.column_name === 'office_phone_number').value;
@@ -334,7 +334,7 @@ export default {
           if (prevURL !== window.location.href) return;
           mux.Util.showAlert(result.message);
           // 성공시 다이얼로그 닫기
-          if (result.code == 0){
+          if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             this.dialog = false;
           }
         } catch (error) {

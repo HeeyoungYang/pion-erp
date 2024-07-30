@@ -656,7 +656,7 @@ export default {
       //   if (typeof result === 'string'){
       //     result = JSON.parse(result);
       //   }
-      //   if(result['code'] == 0){
+      //   if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
       //     let receiving_inspection_thumbnail = '';
       //     let inspection_report_thumbnail = '';
       //     if (result['data'].length > 0){
@@ -1577,7 +1577,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           let minus_send_product_data = [];
           item.approval_phase = send_confirmation_data.approval_phase;
           switch (send_confirmation_data.approval_phase) {

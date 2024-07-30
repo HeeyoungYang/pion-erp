@@ -1593,7 +1593,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           if(result['data'].length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
@@ -1761,7 +1761,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           if(result['data'].length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
@@ -2009,7 +2009,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           // console.log('result :>> ', result);
           mux.Util.showAlert('원부자재 등록이 완료되었습니다', '등록 완료', 3000);
         } else {
@@ -2069,7 +2069,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           let thumbnail = '';
           if (result['data'].length > 0){
             thumbnail = result['data'][0].thumbnail;
@@ -2238,7 +2238,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               // console.log('result :>> ', result);
               mux.Util.showAlert('원부자재 등록이 완료되었습니다', '등록 완료', 3000);
             } else {
@@ -2320,7 +2320,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               // console.log('result :>> ', result);
               mux.Util.showAlert('원부자재 수정이 완료되었습니다', '수정 완료', 3000);
             } else {
@@ -2424,7 +2424,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           if(result['data'].length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
@@ -2580,7 +2580,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           let thumbnail = '';
           if (result['data'].length > 0){
             thumbnail = result['data'][0].thumbnail;
@@ -2804,7 +2804,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               // console.log('result :>> ', result);
               mux.Util.showAlert('반제품 등록이 완료되었습니다', '등록 완료', 3000);
             } else {
@@ -2952,7 +2952,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               // console.log('result :>> ', result);
               mux.Util.showAlert('반제품 수정이 완료되었습니다', '수정 완료', 3000);
             } else {
@@ -3072,7 +3072,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           if(result['data'].length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
@@ -3413,7 +3413,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               // console.log('result :>> ', result);
               mux.Util.showAlert('완제품 등록이 완료되었습니다', '등록 완료', 3000);
             } else {
@@ -3555,7 +3555,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               // console.log('result :>> ', result);
               mux.Util.showAlert('완제품 수정이 완료되었습니다', '수정 완료', 3000);
             } else {
@@ -3657,7 +3657,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           let thumbnail = '';
           if (result['data'].length > 0){
             thumbnail = result['data'][0].thumbnail;
@@ -3825,7 +3825,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             mux.Util.showAlert('삭제가 완료되었습니다', '삭제 완료', 3000);
             this.material_data.splice(this.editedIndex, 1)
@@ -3906,7 +3906,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             mux.Util.showAlert('삭제가 완료되었습니다', '삭제 완료', 3000);
             this.module_data.splice(this.editedIndex, 1)
@@ -3973,7 +3973,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             mux.Util.showAlert('삭제가 완료되었습니다', '삭제 완료', 3000);
             this.product_data.splice(this.editedIndex, 1)

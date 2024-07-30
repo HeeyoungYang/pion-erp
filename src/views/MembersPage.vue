@@ -229,7 +229,7 @@ export default {
       try {
         const result = await mux.Server.get({path:'/api/admin/users/'});
         if (prevURL !== window.location.href) return;
-        if (result.code == 0){
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           memberList = result.data.Users.map(data => {
             let user = {};
             user.user_id = data.Username;
@@ -334,7 +334,7 @@ export default {
             // console.log('result :>> ', result);
             mux.Util.showAlert(result.message);
             // 성공시 다이얼로그 닫기
-            if (result.code == 0){
+            if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               this.dialog = false;
             }
           } catch (error) {
@@ -362,7 +362,7 @@ export default {
             // console.log('result :>> ', result);
             mux.Util.showAlert(result.message);
             // 성공시 다이얼로그 닫기
-            if (result.code == 0){
+            if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               this.members = this.members.map(a => {
                 if (a.user_id === item.user_id) {
                   return item;
@@ -412,7 +412,7 @@ export default {
         // console.log('result :>> ', result);
         mux.Util.showAlert(result.message);
         // 성공시 다이얼로그 닫기
-        if (result.code == 0){
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           this.members.splice(this.editedIndex, 1)
           this.closeDelete()
         }

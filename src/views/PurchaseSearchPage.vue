@@ -1271,7 +1271,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           // console.log('result :>> ', result);
           mux.Util.showAlert(this.unestimated_request === 'mailed' ? '견적 요청 메일이 발송되었습니다' : '미요청에서 요청으로 변경되었습니다.', '완료', 3000);
           mux.Util.hideLoading();
@@ -1377,7 +1377,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           // console.log('result :>> ', result);
           mux.Util.showAlert('견적서가 등록되었습니다.', '완료', 3000);
           this.closePurchaseEstiamtedDialog();

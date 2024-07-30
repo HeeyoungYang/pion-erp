@@ -1065,7 +1065,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
 
           if(result['data'].length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
@@ -1884,7 +1884,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               // console.log('result :>> ', result);
               mux.Util.showAlert('재입고 승인 요청이 완료되었습니다', '요청 완료', 3000);
 
@@ -2077,7 +2077,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           let ship_data_arr = [];
           if(this.add_self === '재입고'){
             result.data.forEach(datas =>{

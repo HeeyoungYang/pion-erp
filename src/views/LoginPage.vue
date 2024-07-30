@@ -226,7 +226,7 @@ export default {
         path:'/api/user/forgot_password/', user_name:this.userID
       }).then(result => {
         if (prevURL !== window.location.href) return;
-        if(result.code == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           mux.Util.showAlert("사용자 메일로 확인코드가 발송되었습니다!", '발송 완료', 3000);
           this.setPassword = true;
         }else{
@@ -247,7 +247,7 @@ export default {
         path:'/api/user/change_password_using_confirm_code/', user_name:this.userID, confirm_code:this.verificationCode, new_password:this.setNewPassword
       }).then(result => {
         if (prevURL !== window.location.href) return;
-        if(result.code == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           mux.Util.showAlert("비밀번호 변경이 완료되었습니다!", '변경 완료', 3000);
           this.newPasswordDialog = false;
           this.setPassword = false;

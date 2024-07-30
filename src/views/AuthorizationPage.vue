@@ -83,7 +83,7 @@ export default {
           group_names: data.authCheck
         }
       }).then(result => {
-        if (result.code == 0) {
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)) {
           mux.Util.showAlert('사용자 권한 변경이 완료되었습니다.', '변경 완료', 3000);
           data.authority = data.authCheck;
         } else {
@@ -103,7 +103,7 @@ export default {
       try {
         let result = await mux.Server.get({path:'/api/admin/users_authorization/'});
         if (prevURL !== window.location.href) return;
-        if (result.code == 0){
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           memberList = result.data.map(data => {
             let user = {};
             user.user_id = data.user_name;
@@ -145,7 +145,7 @@ export default {
       try {
         let result = await mux.Server.get({path:'/api/admin/groups/'});
         if (prevURL !== window.location.href) return;
-        if (result.code == 0){
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           memberList = result.data.forEach(data => {
             this.groups.push({name: data.GroupName, users: []});
           });
@@ -159,7 +159,7 @@ export default {
           const group = this.groups[i];
           result = await mux.Server.get({path:`/api/admin/group/users/?group_name=${group.name}`});
           if (prevURL !== window.location.href) return;
-          if (result.code == 0){
+          if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             result.data.Users.forEach(data => {
               group.users.push(data.Username);
             });
@@ -172,7 +172,7 @@ export default {
 
         result = await mux.Server.get({path:'/api/admin/users/'});
         if (prevURL !== window.location.href) return;
-        if (result.code == 0){
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           memberList = result.data.Users.map(data => {
             let user = {};
             user.user_id = data.Username;

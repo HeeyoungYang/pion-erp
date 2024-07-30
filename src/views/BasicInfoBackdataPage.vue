@@ -398,7 +398,7 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                if(result['code'] == 0){
+                if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
                   // console.log('result :>> ', result);
                   mux.Util.showAlert('분류 등록이 완료되었습니다.', '등록 완료', 1000);
                   this.classification_data.push({classification: item.classification_update})
@@ -439,7 +439,7 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                if(result['code'] == 0){
+                if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
                   // console.log('result :>> ', result);
                   mux.Util.showAlert('분류 수정이 완료되었습니다.', '수정 완료', 1000);
                   this.classification_data[this.editedBasicInfoIndex].classification = item.classification_update+'';
@@ -486,7 +486,7 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                if(result['code'] == 0){
+                if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
                   // console.log('result :>> ', result);
                   mux.Util.showAlert('제조사 등록이 완료되었습니다.', '등록 완료', 1000);
                   this.manufacturer_data.push({manufacturer: item.manufacturer_update})
@@ -527,7 +527,7 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                if(result['code'] == 0){
+                if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
                   // console.log('result :>> ', result);
                   mux.Util.showAlert('제조사 수정이 완료되었습니다.', '수정 완료', 1000);
                   this.manufacturer_data[this.editedBasicInfoIndex].manufacturer = item.manufacturer_update+'';
@@ -578,7 +578,7 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                if(result['code'] == 0){
+                if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
                   // console.log('result :>> ', result);
                   mux.Util.showAlert('위치 등록이 완료되었습니다.', '등록 완료', 1000);
                   this.spot_data.push({spot: item.spot_update})
@@ -619,7 +619,7 @@ export default {
                 if (typeof result === 'string'){
                   result = JSON.parse(result);
                 }
-                if(result['code'] == 0){
+                if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
                   // console.log('result :>> ', result);
                   mux.Util.showAlert('위치 수정이 완료되었습니다.', '수정 완료', 1000);
                   this.spot_data[this.editedBasicInfoIndex].spot = item.spot_update+'';
@@ -685,7 +685,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             mux.Util.showAlert('분류 삭제가 완료되었습니다.', '삭제 완료', 1000);
             this.classification_data.splice(this.editedBasicInfoIndex, 1)
@@ -724,7 +724,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             mux.Util.showAlert('제조사 삭제가 완료되었습니다.', '삭제 완료', 1000);
             this.manufacturer_data.splice(this.editedBasicInfoIndex, 1)
@@ -763,7 +763,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             mux.Util.showAlert('위치 삭제가 완료되었습니다.', '삭제 완료', 1000);
             this.spot_data.splice(this.editedBasicInfoIndex, 1)

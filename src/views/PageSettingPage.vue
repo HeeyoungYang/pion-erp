@@ -144,7 +144,7 @@ export default {
       try {
         let result = await mux.Server.get({path:'/api/admin/page_resources/'});
         if (prevURL !== window.location.href) return;
-        if (result.code == 0){
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           if( result.data.length > 0) {
             page_resourceList = result.data.map(data => {
               let page_resource = {};
@@ -234,7 +234,7 @@ export default {
             });
           }
           if (prevURL !== window.location.href) return;
-          if (result.code == 0) {
+          if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)) {
             this.close();
             this.initialize ();
           }else {
@@ -267,7 +267,7 @@ export default {
 
         let result = await mux.Server.delete(`/api/admin/page_resource/?page_name=${page_name}`);
         if (prevURL !== window.location.href) return;
-        if (result.code == 0) {
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)) {
           this.initialize ();
         }else {
           this.loading_dialog = false;

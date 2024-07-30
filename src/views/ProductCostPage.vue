@@ -952,7 +952,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               const searchResult = result.data;
 
               this.labor_data = ProductCostPageConfig.labor_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
@@ -1227,7 +1227,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           const searchResult = result.data;
 
           this.new_indirect_labor_ratio = searchResult.cost_ratio.find(x=> x.type === '간접 노무비').ratio;
@@ -1327,7 +1327,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           const searchResult = result.data;
           searchResult.product_cost.reverse(); // 최신순으로 정렬
           this.clearClicked();
@@ -1373,7 +1373,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           this.dialog_search_product_data = result['data'];
           this.dialog_search_product_data.forEach(data =>{
             data.product_code = data.code;
@@ -1613,7 +1613,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           for (let i = this.search_cost_data.length - 1; i >= 0; i--) {
             const data = this.search_cost_data[i];
             if (data.cost_calc_code === this.clickedProductCost.cost_calc_code){
@@ -1914,7 +1914,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
 
             this.origin_labor_cost_data = this.labor_cost_data;
             this.searched_datas.labor_cost_calc_detail = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
@@ -2049,7 +2049,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             this.origin_calc_cost_detail_data = this.calc_cost_detail_data;
             this.clickedProductCost.employment_insurance_num = this.calc_cost_detail_data_employment_insurance.cost_num;
             this.clickedProductCost.tool_rent_fee_num = this.calc_cost_detail_data_tool_rent_fee.cost_num;
@@ -2217,7 +2217,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             mux.Util.showAlert('등록되었습니다.', '등록 완료', 3000);
           } else {
             if (prevURL !== window.location.href) return;

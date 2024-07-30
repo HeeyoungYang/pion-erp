@@ -703,7 +703,7 @@ export default {
       try {
         const result = await mux.Server.get({path:'/api/admin/users/'});
         if (prevURL !== window.location.href) return;
-        if (result.code == 0){
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           result.data.Users.map(data => {
             if(data.Attributes.find(x=>x.Name === 'custom:department').Value === '기획관리부'){
               this.purchasers.push((data.Attributes.find(x=>x.Name === 'given_name') ? data.Attributes.find(x=>x.Name === 'given_name').Value : '') + '(' + data.Username + ')');
@@ -780,7 +780,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             if(result['data'].length === 0){
               mux.Util.showAlert('검색 결과가 없습니다.');
             }
@@ -922,7 +922,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
 
             if(result['data'].length === 0){
               mux.Util.showAlert('검색 결과가 없습니다.');

@@ -118,7 +118,7 @@ export default {
       try {
         const result = await mux.Server.get({path:'/api/admin/users/'});
         if (prevURL !== window.location.href) return;
-        if (result.code == 0){
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           this.members = result.data.Users.map(data => {
             let user = {};
             user.user_id = data.Username;

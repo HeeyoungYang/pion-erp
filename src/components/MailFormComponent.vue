@@ -305,7 +305,7 @@ export default {
       let allMembers = [];
       try {
         const result = await mux.Server.get({path:'/api/admin/users/'});
-        if (result.code == 0){
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           allMembers = result.data.Users.map(data => {
             let user = {};
             user.user_id = data.Username;

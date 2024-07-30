@@ -1682,7 +1682,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               const searchResult = result.data;
 
               this.labor_data = ProductCostPageConfig.labor_data; // 모달 진입시 history 에서 해당 시점 기준 데이터를 받아와 적용 필요
@@ -2041,7 +2041,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           const searchResult = result.data;
 
           this.new_indirect_labor_ratio = searchResult.cost_ratio.find(x=> x.type === '간접 노무비').ratio;
@@ -2196,7 +2196,7 @@ export default {
         // if (typeof result === 'string'){
         //   result = JSON.parse(result);
         // }
-        // if(result['code'] == 0){
+        // if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
         //   const searchResult = result.data;
         const searchResult = JSON.parse(JSON.stringify(EstimatePageConfig.test_product_cost_data));
         searchResult.confirmation.reverse(); // 최신순으로 정렬
@@ -2416,7 +2416,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           this.dialog_search_product_data = result['data'];
           this.dialog_search_product_data.forEach(data =>{
             data.product_code = data.code;
@@ -2702,7 +2702,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           for (let i = this.search_cost_data.length - 1; i >= 0; i--) {
             const data = this.search_cost_data[i];
             if (data.cost_calc_code === this.clickedProductCost.cost_calc_code){
@@ -3086,7 +3086,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
 
             this.estimate_member_info[0].checked_date = sendDataCheckedDate !== null ? sendDataCheckedDate : '';
             let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.clickedProductCost.cost_calc_code);
@@ -3337,7 +3337,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
 
             this.estimate_member_info[0].checked_date = sendDataCheckedDate !== null ? sendDataCheckedDate : '';
             const newApprovalFile = this.estimateFilesInputs.find(x=>x.column_name === 'approval').value;
@@ -3620,7 +3620,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             this.estimate_member_info[0].checked_date = sendDataCheckedDate !== null ? sendDataCheckedDate : '';
             let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.clickedProductCost.cost_calc_code);
             targetConfirmation.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
@@ -3984,7 +3984,7 @@ export default {
         if (result.code === undefined && result.data !== undefined && result.data.code !== undefined){
           result = result.data;
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           mux.Util.showAlert('등록되었습니다.', '등록 완료', 3000);
         } else {
           if (prevURL !== window.location.href) return;

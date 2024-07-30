@@ -368,7 +368,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           const searchResult = result.data;
 
           this.labor_data = searchResult.labor_cost.map(data => {
@@ -481,7 +481,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               // console.log('result :>> ', result);
               this.labor_data.push(item);
               mux.Util.showAlert('등록이 완료되었습니다.', '등록 완료', 3000);
@@ -527,7 +527,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               // console.log('result :>> ', result);
               this.labor_data[this.editedLaborIndex] = JSON.parse(JSON.stringify(item));
               mux.Util.showAlert('수정이 완료되었습니다.', '수정 완료', 3000);
@@ -622,7 +622,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               // console.log('result :>> ', result);
               this.wage_data.push(item);
               mux.Util.showAlert('등록이 완료되었습니다.', '등록 완료', 3000);
@@ -664,7 +664,7 @@ export default {
             if (typeof result === 'string'){
               result = JSON.parse(result);
             }
-            if(result['code'] == 0){
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               // console.log('result :>> ', result);
               this.wage_data[this.editedWageIndex] = JSON.parse(JSON.stringify(item));
               mux.Util.showAlert('수정이 완료되었습니다.', '수정 완료', 3000);
@@ -779,7 +779,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             this.ratio_data[this.editedRatioIndex] = {type: item.type, formula: item.formula};
             this.ratio_data = JSON.parse(JSON.stringify(this.ratio_data));
@@ -838,7 +838,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             this.labor_data.splice(this.editedLaborIndex, 1);
             mux.Util.showAlert('삭제가 완료되었습니다.', '삭제 완료', 3000);
@@ -878,7 +878,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             this.wage_data.splice(this.editedWageIndex, 1);
             mux.Util.showAlert('삭제가 완료되었습니다.', '삭제 완료', 3000);

@@ -396,7 +396,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           if(result['data'].length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
@@ -487,7 +487,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           let inspection_report_thumbnail = '';
           if (result['data'].length > 0){
             inspection_report_thumbnail = result['data'][0].inspection_report_thumbnail;
@@ -1004,7 +1004,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           let minus_send_product_data = [];
           item.approval_phase = send_data.approval_phase;
           switch (item.approval_phase) {
@@ -1264,7 +1264,7 @@ export default {
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
-        if(result['code'] == 0){
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           let minus_send_product_data = [];
           item.approval_phase = send_confirmation_data.approval_phase;
           switch (send_confirmation_data.approval_phase) {
@@ -1510,7 +1510,7 @@ export default {
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             mux.Util.showAlert('추가 출고 승인 요청이 완료되었습니다', '요청 완료', 3000);
             this.loading_dialog = false;

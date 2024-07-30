@@ -225,7 +225,7 @@ mux.Server = {
         if (enableMemberSelect && (customToMembers.length === 0 || customCcMembers.length === 0 || customBccMembers.length === 0)){
           try {
             const result = await mux.Server.get({path:'/api/admin/users/'});
-            if (result.code == 0){
+            if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               allMembers = result.data.Users.map(data => {
                 let user = {};
                 user.user_id = data.Username;
@@ -512,7 +512,7 @@ mux.Server = {
           reject('파일을 다운로드 할 수 없습니다.');
           return;
         }
-        if (result.code == 0) {
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)) {
           resolve(result);
         }else {
           reject(result.message);
@@ -559,7 +559,7 @@ mux.Server = {
 
         const result = await mux.Server.get(sendData);
 
-        if (result.code == 0) {
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)) {
           const fileData = result.data; // Base64로 인코딩된 파일 데이터
           const fileName = reqObj.showName ? reqObj.showName : reqObj.fileName; // 파일명
 
@@ -652,7 +652,7 @@ mux.Server = {
 
         const result = await mux.Server.get(sendData);
 
-        if (result.code == 0) {
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)) {
           const fileData = result.data; // Base64로 인코딩된 파일 데이터
 
           // Base64 디코딩하여 Blob 객체 생성
@@ -772,7 +772,7 @@ mux.Server = {
       this.get({
         path: '/api/user/',
       }).then((result) => {
-        if (result.code == 0) {
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)) {
           Vue.$cookies.set(configJson.cookies.name.key, result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value, configJson.cookies.name.expiration);
           Vue.$cookies.set(configJson.cookies.phone_number.key, mux.Number.formatPhoneNumber(result.data.UserAttributes.find(attr => attr.Name === 'phone_number').Value), configJson.cookies.phone_number.expiration);
           Vue.$cookies.set(configJson.cookies.email.key, result.data.UserAttributes.find(attr => attr.Name === 'email').Value, configJson.cookies.email.expiration);
@@ -811,7 +811,9 @@ mux.Server = {
         this.post({
           path:'/api/user/login/', user_name:encrypted_id, password:encrypted_pw, salt:salt
         }).then(result => {
-          if (result.code == 0 || result.code == 5031 || result.data.temporary_password){
+          if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0) 
+            || result['code'] == 5031 || (typeof result['data'] === 'object' && result['data']['code'] == 5031) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 5031)
+            || result.temporary_password || (typeof result['data'] === 'object' && result['data'].temporary_password) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data'].temporary_password)){
             if (saveIdCheck){
               Vue.$cookies.set(configJson.cookies.savedID.key, id, configJson.cookies.savedID.expiration);
             }else {
@@ -819,7 +821,7 @@ mux.Server = {
             }
             Vue.$cookies.set(configJson.cookies.id.key, id, configJson.cookies.id.expiration);
             // 최초 로그인 시 쿠키는 추후에 저장
-            if (result.code == 0){
+            if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
               this.setUserCookies().then(() => {
                 result.data.path = '/home';
                 this.move(result.data);
@@ -906,7 +908,7 @@ mux.Server = {
           result = JSON.parse(result);
         }
         let basicInfo = {};
-        if (result.code == 0) {
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)) {
           basicInfo.classification = result.data.classification.map(data => {
             return data.classification;
           });
@@ -979,7 +981,7 @@ mux.Server.axiosInstance.interceptors.response.use(
           localStorage.setItem('AccessToken', newAccessToken);
 
           axios.get('/api/user/').then((result) => {
-            if (result.code == 0) {
+            if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)) {
               Vue.$cookies.set(configJson.cookies.name.key, result.data.UserAttributes.find(attr => attr.Name === 'given_name').Value, configJson.cookies.name.expiration);
               Vue.$cookies.set(configJson.cookies.phone_number.key, mux.Number.formatPhoneNumber(result.data.UserAttributes.find(attr => attr.Name === 'phone_number').Value), configJson.cookies.phone_number.expiration);
               Vue.$cookies.set(configJson.cookies.email.key, result.data.UserAttributes.find(attr => attr.Name === 'email').Value, configJson.cookies.email.expiration);

@@ -1028,7 +1028,7 @@ export default {
           // console.log('result :>> ', result);
           //alert(result.message);
           // 성공시
-          if (result.code == 0){
+          if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             this.authority_list_info = result;
             this.authority_list = result.data.map(x=>x.group_alias);
           }
