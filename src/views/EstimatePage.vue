@@ -2175,9 +2175,15 @@ export default {
     async searchButton(){
       mux.Util.showLoading();
 
-      let searchProductName = this.searching_product_name;
-      if (searchProductName)
-      searchProductName = searchProductName ? searchProductName.trim() : "";
+      let inputs = [];
+      this.searchCardInputs.forEach((input) => {
+        if (input.value && String(input.value).trim()) {
+          inputs.push(String(input.value).trim());
+        }else {
+          inputs.push("%");
+        }
+      });
+      console.log('inputs :>> ', inputs);
 
       const prevURL = window.location.href;
       try {

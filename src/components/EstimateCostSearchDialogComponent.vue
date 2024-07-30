@@ -157,16 +157,15 @@ export default {
         //   result = JSON.parse(result);
         // }
         // if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-        //   const searchResult = result.data;
+        //   this.searchResult = result.data;
         this.searchResult = JSON.parse(JSON.stringify(EstimateCostSearchDialogConfig.test_product_cost_data));
-        this.searchResult.product_cost.reverse(); // 최신순으로 정렬
+        this.searchResult.confirmation.reverse(); // 최신순으로 정렬
         this.searchDataCalcProcess(this.searchResult);
 
         // }else{
         //   mux.Util.showAlert(result['failed_info']);
         // }
 
-        // this.search_estimate_data = EstimatePageConfig.test_estimate_data;
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
@@ -271,6 +270,18 @@ export default {
           info.full_created_time = info.created_time + "";
           info.created_time = mux.Date.format(info.created_time, 'yyyy-MM-dd');
         }
+
+        searchResult.confirmation.forEach(confirmation => {
+          if (confirmation.cost_calc_code === info.cost_calc_code){
+            Object.keys(confirmation).forEach(key=> {
+              if (key === 'created_time'){
+                confirmation[key] = mux.Date.format(confirmation[key], 'yyyy-MM-dd');
+              }
+              info[key] = confirmation[key];
+            });
+          }
+        });
+
         return info;
       });
 
