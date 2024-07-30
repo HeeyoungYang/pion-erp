@@ -1886,12 +1886,18 @@ export default {
           "labor_cost_calc_detail_table-insert": []
         };
         this.labor_cost_data.forEach(data => {
+          let insertData = {};
+          Object.keys(data).forEach(key => {
+            if (key !== 'total_amount'){
+              insertData[key] = data[key];
+            }
+          });
           sendData["labor_cost_calc_detail_table-insert"].push({
             "user_info": {
               "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
               "role": "creater"
             },
-            "data": data,
+            "data": insertData,
             "select_where": {"cost_calc_code": "!JUST_INSERT!"},
             "rollback": "no"
           });
