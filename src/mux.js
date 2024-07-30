@@ -1553,20 +1553,15 @@ mux.Util = {
 
   showAlert(message, title = '알림', timeout = 0) {
     let messageStr = '';
+    if (typeof message !== 'object') {
+      try {
+        message = JSON.parse(message);
+      } catch (error) {
+        messageStr = message;
+      }
+    }
     if (typeof message === 'object') {
-      if (message.message){
-        messageStr = message.message;
-      }else if (message.msg){
-        messageStr = message.msg;
-      }else if (message.failed_info){
-        if (message.failed_info.message){
-          messageStr = message.failed_info.message;
-        }else if (message.failed_info.msg){
-          messageStr = message.failed_info.msg;
-        }else {
-          messageStr = message.failed_info;
-        }
-      }else if (message.response){
+      if (message.response){
         if (message.response.data){
           if (message.response.data.message){
             messageStr = message.response.data.message;
@@ -1586,6 +1581,34 @@ mux.Util = {
         }else {
           messageStr = message.response;
         }
+      }else if (message.data){
+        if (message.data.message){
+          messageStr = message.data.message;
+        }else if (message.data.msg){
+          messageStr = message.data.msg;
+        }else if (message.data.failed_info){
+          if (message.data.failed_info.message){
+            messageStr = message.data.failed_info.message;
+          }else if (message.data.failed_info.msg){
+            messageStr = message.data.failed_info.msg;
+          }else {
+            messageStr = message.data.failed_info;
+          }
+        }else {
+          messageStr = message.data;
+        }
+      }else if (message.msg){
+        messageStr = message.msg;
+      }else if (message.failed_info){
+        if (message.failed_info.message){
+          messageStr = message.failed_info.message;
+        }else if (message.failed_info.msg){
+          messageStr = message.failed_info.msg;
+        }else {
+          messageStr = message.failed_info;
+        }
+      }else if (message.message){
+        messageStr = message.message;
       }else if (message.error){
         if (message.error.message){
           messageStr = message.error.message;
@@ -1597,9 +1620,8 @@ mux.Util = {
       }else {
         messageStr = message;
       }
-    }else {
-      messageStr = message;
     }
+    
     if (typeof messageStr !== 'string'){
       messageStr = JSON.stringify(messageStr);
     }

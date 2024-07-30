@@ -309,6 +309,7 @@
                           <v-btn
                             v-if="clickedProductCost.creater && clickedProductCost.creater === $cookies.get($configJson.cookies.id.key)
                               && !clickedProductCost.approved_date
+                              && clickedProductCost.is_last_confirmation
                               && edit_estimate_info_disabled && !during_edit"
                             color="primary"
                             fab
@@ -378,7 +379,7 @@
                               :src="mux.Util.imageBinary(clickedProductCost.approval_thumbnail)"
                               transition="scale-transition"
                               width="350"
-                              @click="download('estimate/approval', clickedProductCost.approval_file, clickedProductCost.cost_calc_code+'_')"
+                              @click="download('estimate/approval', clickedProductCost.approval_file.replace(clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_', ''), clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_')"
                               style="cursor: pointer;"
                             />
                           </v-col>
@@ -393,7 +394,7 @@
                               :src="mux.Util.imageBinary(clickedProductCost.blueprint_thumbnail)"
                               transition="scale-transition"
                               width="350"
-                              @click="download('estimate/blueprint', clickedProductCost.blueprint_file, clickedProductCost.cost_calc_code+'_')"
+                              @click="download('estimate/blueprint', clickedProductCost.blueprint_file.replace(clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_', ''), clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_')"
                               style="cursor: pointer;"
                             />  
                           </v-col>
@@ -405,9 +406,9 @@
                                 :key="i"
                                 color="grey lighten-2"
                                 class="ma-2"
-                                @click="download('estimate/etc', clickedProductCost.etc_files, clickedProductCost.cost_calc_code+'_')"
+                                @click="download('estimate/etc', file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', ''), file.split('_')[0]+'_'+file.split('_')[1]+'_')"
                               >
-                                {{ file }}
+                                {{ file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', '') }}
                               </v-chip>
                             </div>
                           </v-col>
@@ -1694,15 +1695,12 @@ export default {
                 return x;
               });
             }else{
-              mux.Util.showAlert(result['failed_info']);
+              mux.Util.showAlert(result);
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
             this.loading_dialog = false;
-            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              mux.Util.showAlert(error.response['data']['failed_info'].msg);
-            else
-              mux.Util.showAlert(error);
+            mux.Util.showAlert(error);
           }
           this.loading_dialog = false;
 
@@ -2079,7 +2077,7 @@ export default {
             return x;
           });
         }else{
-          mux.Util.showAlert(result['failed_info']);
+          mux.Util.showAlert(result);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
@@ -2206,16 +2204,13 @@ export default {
         this.searchDataCalcProcess(searchResult);
 
         // }else{
-        //   mux.Util.showAlert(result['failed_info']);
+        //   mux.Util.showAlert(result);
         // }
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
         this.loading_dialog = false;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
+        mux.Util.showAlert(error);
       }
 
       mux.Util.hideLoading();
@@ -2452,15 +2447,12 @@ export default {
           })
         }else{
           if (prevURL !== window.location.href) return;
-          mux.Util.showAlert(result['failed_info']);
+          mux.Util.showAlert(result);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         // console.error(error);
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
+        mux.Util.showAlert(error);
       }
       mux.Util.hideLoading();
     },
@@ -2660,6 +2652,9 @@ export default {
 
       this.edit_buttons_show = true;
       this.clickedProductCost = item;
+      if (this.searched_datas.last_confirmation.findIndex(x=>x.cost_calc_code === item.cost_calc_code) > -1){
+        this.clickedProductCost.is_last_confirmation = true;
+      }
       
     },
     deleteItem () {
@@ -2726,15 +2721,12 @@ export default {
           this.clearClicked();
           this.closeDelete();
         } else {
-          mux.Util.showAlert(result['failed_info']);
+          mux.Util.showAlert(result);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
+        mux.Util.showAlert(error);
         return;
       }
     },
@@ -2987,42 +2979,104 @@ export default {
             return;
           }
         }
+
+        const newDate = new Date();
+
         let sendDataCheckedDate = '';
         if (this.estimate_member_info[0].user_id === this.$cookies.get(this.$configJson.cookies.id.key)){
-          sendDataCheckedDate = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+          sendDataCheckedDate = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
         }else {
-          sendDataCheckedDate = 'NULL';
+          sendDataCheckedDate = null;
         }
+
+        let new_inhouse_bid_number = '';
+        if (this.clickedProductCost.created_time === this.clickedProductCost.modified_time){
+          new_inhouse_bid_number = this.input_inhouse_bid_number.value + '-1';
+        }else {
+          let splitted_inhouse_bid_number = this.input_inhouse_bid_number.value.split('-');
+          let origin_modified_num = splitted_inhouse_bid_number[splitted_inhouse_bid_number.length - 1];
+          let new_modified_num = Number(origin_modified_num) + 1;
+          splitted_inhouse_bid_number[splitted_inhouse_bid_number.length - 1] = new_modified_num;
+          new_inhouse_bid_number = splitted_inhouse_bid_number.join('-');
+        }
+
+        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
 
         // 품번 기준 정렬
         this.labor_cost_data.sort((a,b) => a.no.localeCompare(b.no));
 
         let sendData = {
-          "labor_cost_calc_detail_table-delete": [{
+          "estimate_confirmation_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{
+              "cost_calc_code": new_cost_calc_code,
+              "inhouse_bid_number": new_inhouse_bid_number,
+              "checked_date": sendDataCheckedDate,
+              "rejecter": '',
+              "rejected_date": null,
+              "reject_reason": '',
+            },
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "yes"
+          }],
+          "estimate_cost_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{"cost_calc_code": new_cost_calc_code},
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "yes"
+          }],
+          "estimate_cost_calc_detail_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{"cost_calc_code": new_cost_calc_code},
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "no"
+          }],
+          "estimate_construction_detail_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{"cost_calc_code": new_cost_calc_code},
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "no"
+          }],
+          "estimate_labor_cost_calc_detail_table-delete": [{
             "user_info": {
               "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
               "role": "modifier"
             },
             "data":{},
             "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
-            "rollback": "no"
+            "rollback": "yes"
           }],
-          "labor_cost_calc_detail_table-insert": []
+          "estimate_labor_cost_calc_detail_table-insert": []
         };
         this.labor_cost_data.forEach(data => {
-          sendData["labor_cost_calc_detail_table-insert"].push({
+          data.cost_calc_code = new_cost_calc_code;
+          sendData["estimate_labor_cost_calc_detail_table-insert"].push({
             "user_info": {
               "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
               "role": "creater"
             },
             "data": data,
-            "select_where": {"cost_calc_code": "!JUST_INSERT!"},
-            "rollback": "no"
+            "select_where": {"cost_calc_code": new_cost_calc_code, "name": data.name, "type": data.type, "occupation": data.occupation},
+            "rollback": "yes"
           });
         });
 
         const prevURL = window.location.href;
         try {
+          mux.Util.showLoading();
+
           let result = await mux.Server.post({
             path: '/api/common_rest_api/',
             params: sendData
@@ -3034,31 +3088,37 @@ export default {
           }
           if(result['code'] == 0){
 
-            this.estimate_member_info[0].checked_date = sendDataCheckedDate !== 'NULL' ? sendDataCheckedDate : '';
-            this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
+            this.estimate_member_info[0].checked_date = sendDataCheckedDate !== null ? sendDataCheckedDate : '';
             let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.clickedProductCost.cost_calc_code);
+            targetConfirmation.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
             targetConfirmation.checked_date = `${this.estimate_member_info[0].checked_date}`;
-
+            targetConfirmation.inhouse_bid_number = new_inhouse_bid_number;
+            
             this.origin_labor_cost_data = this.labor_cost_data;
             this.searched_datas.labor_cost_calc_detail = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
             this.labor_cost_data.forEach(data => {
               this.searched_datas.labor_cost_calc_detail.push(data);
             });
+            targetConfirmation.cost_calc_code = new_cost_calc_code;
+            this.searched_datas.last_confirmation.find(x=>x.cost_calc_code === this.clickedProductCost.cost_calc_code).cost_calc_code = new_cost_calc_code;
+            
+            this.clickedProductCost.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
+            this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
+            this.input_inhouse_bid_number.value = new_inhouse_bid_number;
+            this.clickedProductCost.inhouse_bid_number = this.input_inhouse_bid_number.value;
+            this.clickedProductCost.cost_calc_code = new_cost_calc_code;
+
             this.searchDataCalcProcess(this.searched_datas);
             mux.Util.showAlert('저장되었습니다.', '저장 완료', 3000);
           } else {
             if (prevURL !== window.location.href) return;
-            mux.Util.showAlert(result['failed_info']);
-            return;
+            mux.Util.showAlert(result);
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            mux.Util.showAlert(error.response['data']['failed_info'].msg);
-          else
-            mux.Util.showAlert(error);
-          return;
+          mux.Util.showAlert(error);
         }
+        mux.Util.hideLoading();
 
       }else {
         // 계산
@@ -3142,84 +3202,167 @@ export default {
             return;
           }
         }
+
+        const newDate = new Date();
+
         let sendDataCheckedDate = '';
         if (this.estimate_member_info[0].user_id === this.$cookies.get(this.$configJson.cookies.id.key)){
-          sendDataCheckedDate = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+          sendDataCheckedDate = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
         }else {
-          sendDataCheckedDate = 'NULL';
+          sendDataCheckedDate = null;
         }
 
-        // let sendData = {
-        //   "product_cost_table-update": [{
-        //     "user_info": {
-        //       "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-        //       "role": "modifier"
-        //     },
-        //     "data":{
-        //       "employment_insurance_num": this.calc_cost_detail_data_employment_insurance.cost_num,
-        //       "tool_rent_fee_num": this.calc_cost_detail_data_tool_rent_fee.cost_num,
-        //       "transportation_fee_num": this.calc_cost_detail_data_transportation_fee.cost_num,
-        //       "industrial_accident_num": this.calc_cost_detail_data_industrial_accident.cost_num,
-        //       "taxes_dues_num": this.calc_cost_detail_data_taxes_dues.cost_num,
-        //       "welfare_benefits_num": this.calc_cost_detail_data_welfare_benefits.cost_num,
-        //       "retirement_num": this.calc_cost_detail_data_retirement.cost_num,
-        //       "expendables_num": this.calc_cost_detail_data_expendables.cost_num,
-        //       "industrial_safety_num": this.calc_cost_detail_data_industrial_safety.cost_num,
-        //       "normal_maintenance_fee_num": this.calc_cost_detail_data_normal_maintenance_fee.cost_num,
-        //       "profite_num": this.calc_cost_detail_data_profite.cost_num,
-        //     },
-        //     "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
-        //     "rollback": "yes"
-        //   }]
-        // };
+        let new_inhouse_bid_number = '';
+        if (this.clickedProductCost.created_time === this.clickedProductCost.modified_time){
+          new_inhouse_bid_number = this.input_inhouse_bid_number.value + '-1';
+        }else {
+          let splitted_inhouse_bid_number = this.input_inhouse_bid_number.value.split('-');
+          let origin_modified_num = splitted_inhouse_bid_number[splitted_inhouse_bid_number.length - 1];
+          let new_modified_num = Number(origin_modified_num) + 1;
+          splitted_inhouse_bid_number[splitted_inhouse_bid_number.length - 1] = new_modified_num;
+          new_inhouse_bid_number = splitted_inhouse_bid_number.join('-');
+        }
 
-        // const prevURL = window.location.href;
-        // try {
-        //   let result = await mux.Server.post({
-        //     path: '/api/common_rest_api/',
-        //     params: sendData
-        //   });
-        //   if (prevURL !== window.location.href) return;
+        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
 
-        //   if (typeof result === 'string'){
-        //     result = JSON.parse(result);
-        //   }
-        //   if(result['code'] == 0){
+        let sendData = {
+          "estimate_confirmation_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{
+              "cost_calc_code": new_cost_calc_code,
+              "issue_date": this.input_issue_date.value,
+              "inhouse_bid_number": new_inhouse_bid_number,
+              "company_bid_number": this.input_company_bid_number.value,
+              "due_date": this.input_due_date.value,
+              "service_name": this.input_service_name.value,
+              "service_period": this.input_service_period.value,
+              "remark": this.input_remark.value,
+              "company_name": this.input_company_name.value,
+              "company_manager": this.input_company_manager.value,
+              "company_manager_email": this.input_company_manager_email.value,
+              "company_manager_phone": this.input_company_manager_phone.value,
+              "approval_phase": sendDataCheckedDate === null ? '미확인' : '미승인',
+              "checker": this.estimate_member_info[0].name,
+              "checker_id": this.estimate_member_info[0].user_id,
+              "checked_date": sendDataCheckedDate,
+              "approver": this.estimate_member_info[1].name,
+              "approver_id": this.estimate_member_info[1].user_id,
+              "rejecter": '',
+              "rejected_date": null,
+              "reject_reason": '',
+            },
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "yes"
+          }],
+          "estimate_cost_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{"cost_calc_code": new_cost_calc_code},
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "yes"
+          }],
+          "estimate_cost_calc_detail_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{"cost_calc_code": new_cost_calc_code},
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "no"
+          }],
+          "estimate_construction_detail_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{"cost_calc_code": new_cost_calc_code},
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "no"
+          }],
+          "estimate_labor_cost_calc_detail_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{"cost_calc_code": new_cost_calc_code},
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "yes"
+          }]
+        };
 
-            this.estimate_member_info[0].checked_date = sendDataCheckedDate !== 'NULL' ? sendDataCheckedDate : '';
-            this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
-            this.clickedProductCost.checker = this.estimate_member_info[0].name;
-            this.clickedProductCost.checker_id = this.estimate_member_info[0].user_id;
-            this.clickedProductCost.approver = this.estimate_member_info[1].name;
-            this.clickedProductCost.approver_id = this.estimate_member_info[1].user_id;
+        sendData.path = '/api/multipart_rest_api/';
+        sendData.prefix = new_cost_calc_code + '_';
+        sendData.files = [];
 
-            this.clickedProductCost.issue_date = this.input_issue_date.value;
-            this.clickedProductCost.inhouse_bid_number = this.input_inhouse_bid_number.value;
-            this.clickedProductCost.company_bid_number = this.input_company_bid_number.value;
-            this.clickedProductCost.due_date = this.input_due_date.value;
-            this.clickedProductCost.service_name = this.input_service_name.value;
-            this.clickedProductCost.service_period = this.input_service_period.value;
-            this.clickedProductCost.remark = this.input_remark.value;
-            this.clickedProductCost.company_name = this.input_company_name.value;
-            this.clickedProductCost.company_manager = this.input_company_manager.value;
-            this.clickedProductCost.company_manager_email = this.input_company_manager_email.value;
-            this.clickedProductCost.company_manager_phone = this.input_company_manager_phone.value;
+        if (this.input_approval_file.value){
+          sendData['estimate_confirmation_table-update'][0].approval_file = new_cost_calc_code + '_' + this.input_approval_file.value.name;
+          sendData['estimate_confirmation_table-update'][0].approval_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_approval_file.value, 1, false, 1000, 1000));
+          sendData.files.push({
+            "column_name": "approval",
+            "file": this.input_approval_file.value,
+            "name": this.input_approval_file.value.name
+          });
+        }
+        if (this.input_blueprint_file.value){
+          sendData['estimate_confirmation_table-update'][0].blueprint_file = new_cost_calc_code + '_' + this.input_blueprint_file.value.name;
+          sendData['estimate_confirmation_table-update'][0].blueprint_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_blueprint_file.value, 1, false, 1000, 1000));
+          sendData.files.push({
+            "column_name": "blueprint",
+            "file": this.input_blueprint_file.value,
+            "name": this.input_blueprint_file.value.name
+          });
+        }
+        if (this.input_etc_file.value && this.input_etc_file.value.length > 0){
+          sendData['estimate_confirmation_table-update'][0].etc_files = new_cost_calc_code + '_' + this.input_etc_file.value.map(x=>x.name).join('/');
+          this.input_etc_file.value.forEach(file => {
+            sendData.files.push({
+              "column_name": "files",
+              "file": file,
+              "name": file.name
+            });
+          });
+        }
+
+        const prevURL = window.location.href;
+        try {
+          mux.Util.showLoading();
+          let result = await mux.Server.uploadFile(sendData);
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0){
+
+            this.estimate_member_info[0].checked_date = sendDataCheckedDate !== null ? sendDataCheckedDate : '';
             const newApprovalFile = this.estimateFilesInputs.find(x=>x.column_name === 'approval').value;
-            if (newApprovalFile){
-              this.clickedProductCost.approval_file = newApprovalFile.name;
-              this.clickedProductCost.approval_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(newApprovalFile, 1, false, 1000, 1000));
-            }
             const newBlueprintFile = this.estimateFilesInputs.find(x=>x.column_name === 'blueprint').value;
-            if (newBlueprintFile){
-              this.clickedProductCost.blueprint_file = newBlueprintFile.name;
-              this.clickedProductCost.blueprint_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(newBlueprintFile, 1, false, 1000, 1000));
-            }
             const newEtcFiles = this.estimateFilesInputs.find(x=>x.column_name === 'files').value;
-            if (newEtcFiles && newEtcFiles.length > 0){
-              this.clickedProductCost.etc_files = newEtcFiles.map(x=>x.name).join('/');
-            }
 
             let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.clickedProductCost.cost_calc_code);
+            targetConfirmation.cost_calc_code = new_cost_calc_code;
+            this.searched_datas.last_confirmation.find(x=>x.cost_calc_code === this.clickedProductCost.cost_calc_code).cost_calc_code = new_cost_calc_code;
+            this.searched_datas.product_cost_calc_detail.forEach(item => {
+              if (item.cost_calc_code === this.clickedProductCost.cost_calc_code){
+                item.cost_calc_code = new_cost_calc_code;
+              }
+            });
+            this.searched_datas.construction_materials_data.forEach(item => {
+              if (item.cost_calc_code === this.clickedProductCost.cost_calc_code){
+                item.cost_calc_code = new_cost_calc_code;
+              }
+            });
+            this.searched_datas.labor_cost_calc_detail.forEach(item => {
+              if (item.cost_calc_code === this.clickedProductCost.cost_calc_code){
+                item.cost_calc_code = new_cost_calc_code;
+              }
+            });
+            targetConfirmation.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
             targetConfirmation.checked_date = `${this.estimate_member_info[0].checked_date}`;
             targetConfirmation.checker = `${this.estimate_member_info[0].name}`;
             targetConfirmation.checker_id = `${this.estimate_member_info[0].user_id}`;
@@ -3237,16 +3380,51 @@ export default {
             targetConfirmation.company_manager_email = `${this.input_company_manager_email.value}`;
             targetConfirmation.company_manager_phone = `${this.input_company_manager_phone.value}`;
             if (newApprovalFile){
-              targetConfirmation.approval_file = `${newApprovalFile.name}`;
+              targetConfirmation.approval_file = `${new_cost_calc_code + '_' + newApprovalFile.name}`;
               targetConfirmation.approval_thumbnail = `${mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(newApprovalFile, 1, false, 1000, 1000))}`;
             }
             if (newBlueprintFile){
-              targetConfirmation.blueprint_file = `${newBlueprintFile.name}`;
+              targetConfirmation.blueprint_file = `${new_cost_calc_code + '_' + newBlueprintFile.name}`;
               targetConfirmation.blueprint_thumbnail = `${mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(newBlueprintFile, 1, false, 1000, 1000))}`;
             }
             if (newEtcFiles && newEtcFiles.length > 0){
-              targetConfirmation.etc_files = `${newEtcFiles.map(x=>x.name).join('/')}`;
+              targetConfirmation.etc_files = `${newEtcFiles.map(x=>new_cost_calc_code + '_' + x.name).join('/')}`;
             }
+
+            this.clickedProductCost.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
+            this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
+            this.clickedProductCost.checker = this.estimate_member_info[0].name;
+            this.clickedProductCost.checker_id = this.estimate_member_info[0].user_id;
+            this.clickedProductCost.approver = this.estimate_member_info[1].name;
+            this.clickedProductCost.approver_id = this.estimate_member_info[1].user_id;
+
+            this.clickedProductCost.issue_date = this.input_issue_date.value;
+            this.input_inhouse_bid_number.value = new_inhouse_bid_number;
+            this.clickedProductCost.inhouse_bid_number = this.input_inhouse_bid_number.value;
+            this.clickedProductCost.company_bid_number = this.input_company_bid_number.value;
+            this.clickedProductCost.due_date = this.input_due_date.value;
+            this.clickedProductCost.service_name = this.input_service_name.value;
+            this.clickedProductCost.service_period = this.input_service_period.value;
+            this.clickedProductCost.remark = this.input_remark.value;
+            this.clickedProductCost.company_name = this.input_company_name.value;
+            this.clickedProductCost.company_manager = this.input_company_manager.value;
+            this.clickedProductCost.company_manager_email = this.input_company_manager_email.value;
+            this.clickedProductCost.company_manager_phone = this.input_company_manager_phone.value;
+            
+            if (newApprovalFile){
+              this.clickedProductCost.approval_file = new_cost_calc_code + '_' + newApprovalFile.name;
+              this.clickedProductCost.approval_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(newApprovalFile, 1, false, 1000, 1000));
+            }
+            if (newBlueprintFile){
+              this.clickedProductCost.blueprint_file = new_cost_calc_code + '_' + newBlueprintFile.name;
+              this.clickedProductCost.blueprint_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(newBlueprintFile, 1, false, 1000, 1000));
+            }
+            if (newEtcFiles && newEtcFiles.length > 0){
+              this.clickedProductCost.etc_files = newEtcFiles.map(x=>new_cost_calc_code + '_' + x.name).join('/');
+            }
+
+            this.clickedProductCost.cost_calc_code = new_cost_calc_code;
+
 
           // const clickedIndex = this.search_estimate_data.findIndex(x => x.cost_calc_code === item.cost_calc_code);
           // if (clickedIndex !== -1) {
@@ -3255,19 +3433,16 @@ export default {
             this.origin_clickedProductCost = this.clickedProductCost;
             this.edit_estimate_info_disabled = true;
             this.during_edit = false;
-        //     mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
-        //   } else {
-        //     if (prevURL !== window.location.href) return;
-        //     mux.Util.showAlert(result['failed_info']);
-        //   }
-        // } catch (error) {
-        //   if (prevURL !== window.location.href) return;
-        //   if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-        //     mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        //   else
-        //     mux.Util.showAlert(error);
-        // }
-
+            mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+          } else {
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(result);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(error);
+        }
+        mux.Util.hideLoading();
 
       }
 
@@ -3283,67 +3458,177 @@ export default {
             return;
           }
         }
+
+        const newDate = new Date();
+
         let sendDataCheckedDate = '';
         if (this.estimate_member_info[0].user_id === this.$cookies.get(this.$configJson.cookies.id.key)){
-          sendDataCheckedDate = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+          sendDataCheckedDate = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
         }else {
-          sendDataCheckedDate = 'NULL';
+          sendDataCheckedDate = null;
         }
 
-        // let sendData = {
-        //   "product_cost_table-update": [{
-        //     "user_info": {
-        //       "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-        //       "role": "modifier"
-        //     },
-        //     "data":{
-        //       "employment_insurance_num": this.calc_cost_detail_data_employment_insurance.cost_num,
-        //       "tool_rent_fee_num": this.calc_cost_detail_data_tool_rent_fee.cost_num,
-        //       "transportation_fee_num": this.calc_cost_detail_data_transportation_fee.cost_num,
-        //       "industrial_accident_num": this.calc_cost_detail_data_industrial_accident.cost_num,
-        //       "taxes_dues_num": this.calc_cost_detail_data_taxes_dues.cost_num,
-        //       "welfare_benefits_num": this.calc_cost_detail_data_welfare_benefits.cost_num,
-        //       "retirement_num": this.calc_cost_detail_data_retirement.cost_num,
-        //       "expendables_num": this.calc_cost_detail_data_expendables.cost_num,
-        //       "industrial_safety_num": this.calc_cost_detail_data_industrial_safety.cost_num,
-        //       "normal_maintenance_fee_num": this.calc_cost_detail_data_normal_maintenance_fee.cost_num,
-        //       "profite_num": this.calc_cost_detail_data_profite.cost_num,
-        //     },
-        //     "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
-        //     "rollback": "yes"
-        //   }]
-        // };
+        let new_inhouse_bid_number = '';
+        if (this.clickedProductCost.created_time === this.clickedProductCost.modified_time){
+          new_inhouse_bid_number = this.input_inhouse_bid_number.value + '-1';
+        }else {
+          let splitted_inhouse_bid_number = this.input_inhouse_bid_number.value.split('-');
+          let origin_modified_num = splitted_inhouse_bid_number[splitted_inhouse_bid_number.length - 1];
+          let new_modified_num = Number(origin_modified_num) + 1;
+          splitted_inhouse_bid_number[splitted_inhouse_bid_number.length - 1] = new_modified_num;
+          new_inhouse_bid_number = splitted_inhouse_bid_number.join('-');
+        }
 
-        // const prevURL = window.location.href;
-        // try {
-        //   let result = await mux.Server.post({
-        //     path: '/api/common_rest_api/',
-        //     params: sendData
-        //   });
-        //   if (prevURL !== window.location.href) return;
+        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
 
-        //   if (typeof result === 'string'){
-        //     result = JSON.parse(result);
-        //   }
-        //   if(result['code'] == 0){
-            this.estimate_member_info[0].checked_date = sendDataCheckedDate !== 'NULL' ? sendDataCheckedDate : '';
-            this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
+        let sendData = {
+          "estimate_confirmation_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{
+              "cost_calc_code": new_cost_calc_code,
+              "inhouse_bid_number": new_inhouse_bid_number,
+              "checked_date": sendDataCheckedDate,
+              "rejecter": '',
+              "rejected_date": null,
+              "reject_reason": '',
+            },
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "yes"
+          }],
+          "estimate_cost_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{
+              "cost_calc_code": new_cost_calc_code,
+              "employment_insurance_num": this.calc_cost_detail_data_employment_insurance.cost_num,
+              "tool_rent_fee_num": this.calc_cost_detail_data_tool_rent_fee.cost_num,
+              "transportation_fee_num": this.calc_cost_detail_data_transportation_fee.cost_num,
+              "industrial_accident_num": this.calc_cost_detail_data_industrial_accident.cost_num,
+              "taxes_dues_num": this.calc_cost_detail_data_taxes_dues.cost_num,
+              "welfare_benefits_num": this.calc_cost_detail_data_welfare_benefits.cost_num,
+              "retirement_num": this.calc_cost_detail_data_retirement.cost_num,
+              "expendables_num": this.calc_cost_detail_data_expendables.cost_num,
+              "industrial_safety_num": this.calc_cost_detail_data_industrial_safety.cost_num,
+              "normal_maintenance_fee_num": this.calc_cost_detail_data_normal_maintenance_fee.cost_num,
+              "profite_num": this.calc_cost_detail_data_profite.cost_num,
+            },
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "yes"
+          }],
+          "estimate_cost_calc_detail_table-delete": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{},
+            "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "no"
+          }],
+          "estimate_construction_detail_table-delete": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{},
+            "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "no"
+          }],
+          "estimate_labor_cost_calc_detail_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{"cost_calc_code": new_cost_calc_code},
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "yes"
+          }],
+          "estimate_cost_calc_detail_table-insert": [],
+          "estimate_construction_detail_table-insert": [],
+        };
+
+        const new_product_cost_calc_detail = [];
+        const new_construction_materials_data = [];
+        if (this.clickedProductCost.estimate_type === '재료비'){
+          const product_cost_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('재료'));
+          if (product_cost_materials){
+            product_cost_materials.belong_data.forEach(data => {
+              new_product_cost_calc_detail.push(
+                {
+                  cost_calc_code: new_cost_calc_code,
+                  product_code: data.product_code,
+                  product_name: data.cost_list,
+                  product_spec: data.cost_list_sub,
+                  product_num: data.cost_num,
+                  product_unit_price: data.cost_unit_price
+                }
+              );
+            });
+            new_product_cost_calc_detail.forEach(data => {
+              sendData["estimate_cost_calc_detail_table-insert"].push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data": data,
+                "select_where": {"cost_calc_code": new_cost_calc_code, "product_code": data.product_code},
+                "rollback": "yes"
+              });
+            });
+          }
+
+          const product_cost_construction_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재'));
+          if (product_cost_construction_materials){
+            product_cost_construction_materials.belong_data.forEach(data => {
+              new_construction_materials_data.push(
+                {
+                  cost_calc_code: new_cost_calc_code,
+                  construction_materials: data.cost_list,
+                  construction_materials_num: data.cost_num,
+                  construction_materials_unit_price: data.cost_unit_price,
+                }
+              );
+            });
+            new_construction_materials_data.forEach(data => {
+              sendData["estimate_construction_detail_table-insert"].push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data": data,
+                "select_where": {"cost_calc_code": "!JUST_INSERT!"},
+                "rollback": "no"
+              });
+            });
+          }
+        }
+
+        const prevURL = window.location.href;
+        try {
+          mux.Util.showLoading();
+
+          let result = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: sendData
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0){
+            this.estimate_member_info[0].checked_date = sendDataCheckedDate !== null ? sendDataCheckedDate : '';
             let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.clickedProductCost.cost_calc_code);
+            targetConfirmation.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
             targetConfirmation.checked_date = `${this.estimate_member_info[0].checked_date}`;
+            targetConfirmation.inhouse_bid_number = new_inhouse_bid_number;
             
             this.origin_calc_cost_detail_data = JSON.parse(JSON.stringify(this.calc_cost_detail_data));
             // this.clickedProductCost.product = this.calc_cost_detail_data_product_cost.belong_data[0].cost_list;
-            this.clickedProductCost.employment_insurance_num = this.calc_cost_detail_data_employment_insurance.cost_num;
-            this.clickedProductCost.tool_rent_fee_num = this.calc_cost_detail_data_tool_rent_fee.cost_num;
-            this.clickedProductCost.transportation_fee_num = this.calc_cost_detail_data_transportation_fee.cost_num;
-            this.clickedProductCost.industrial_accident_num = this.calc_cost_detail_data_industrial_accident.cost_num;
-            this.clickedProductCost.taxes_dues_num = this.calc_cost_detail_data_taxes_dues.cost_num;
-            this.clickedProductCost.welfare_benefits_num = this.calc_cost_detail_data_welfare_benefits.cost_num;
-            this.clickedProductCost.retirement_num = this.calc_cost_detail_data_retirement.cost_num;
-            this.clickedProductCost.expendables_num = this.calc_cost_detail_data_expendables.cost_num;
-            this.clickedProductCost.industrial_safety_num = this.calc_cost_detail_data_industrial_safety.cost_num;
-            this.clickedProductCost.normal_maintenance_fee_num = this.calc_cost_detail_data_normal_maintenance_fee.cost_num;
-            this.clickedProductCost.profite_num = this.calc_cost_detail_data_profite.cost_num;
             
             if (this.clickedProductCost.estimate_type === '재료비'){
               const product_cost_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('재료'));
@@ -3353,7 +3638,7 @@ export default {
                 product_cost_materials.belong_data.forEach(data => {
                   new_product_cost_calc_detail.push(
                     {
-                      cost_calc_code: this.clickedProductCost.cost_calc_code,
+                      cost_calc_code: new_cost_calc_code,
                       product_name: data.cost_list,
                       product_spec: data.cost_list_sub,
                       product_num: data.cost_num,
@@ -3372,7 +3657,7 @@ export default {
                 product_cost_construction_materials.belong_data.forEach(data => {
                   new_construction_materials_data.push(
                     {
-                      cost_calc_code: this.clickedProductCost.cost_calc_code,
+                      cost_calc_code: new_cost_calc_code,
                       construction_materials: data.cost_list,
                       construction_materials_num: data.cost_num,
                       construction_materials_unit_price: data.cost_unit_price,
@@ -3389,7 +3674,7 @@ export default {
               this.calc_cost_detail_data_product_cost.belong_data.forEach(data => {
                 new_technical_fee_data.push(
                   {
-                    cost_calc_code: this.clickedProductCost.cost_calc_code,
+                    cost_calc_code: new_cost_calc_code,
                     technical_fee: data.cost_list,
                     technical_fee_num: data.cost_num,
                     technical_fee_unit_price: data.cost_unit_price,
@@ -3400,23 +3685,45 @@ export default {
               this.searched_datas.technical_fee_data.push(...new_technical_fee_data);
             }
 
+            targetConfirmation.cost_calc_code = new_cost_calc_code;
+            this.searched_datas.last_confirmation.find(x=>x.cost_calc_code === this.clickedProductCost.cost_calc_code).cost_calc_code = new_cost_calc_code;
+            this.searched_datas.labor_cost_calc_detail.forEach(item => {
+              if (item.cost_calc_code === this.clickedProductCost.cost_calc_code){
+                item.cost_calc_code = new_cost_calc_code;
+              }
+            });
+
+            this.clickedProductCost.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
+            this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
+            this.input_inhouse_bid_number.value = new_inhouse_bid_number;
+            this.clickedProductCost.inhouse_bid_number = this.input_inhouse_bid_number.value;
+            this.clickedProductCost.employment_insurance_num = this.calc_cost_detail_data_employment_insurance.cost_num;
+            this.clickedProductCost.tool_rent_fee_num = this.calc_cost_detail_data_tool_rent_fee.cost_num;
+            this.clickedProductCost.transportation_fee_num = this.calc_cost_detail_data_transportation_fee.cost_num;
+            this.clickedProductCost.industrial_accident_num = this.calc_cost_detail_data_industrial_accident.cost_num;
+            this.clickedProductCost.taxes_dues_num = this.calc_cost_detail_data_taxes_dues.cost_num;
+            this.clickedProductCost.welfare_benefits_num = this.calc_cost_detail_data_welfare_benefits.cost_num;
+            this.clickedProductCost.retirement_num = this.calc_cost_detail_data_retirement.cost_num;
+            this.clickedProductCost.expendables_num = this.calc_cost_detail_data_expendables.cost_num;
+            this.clickedProductCost.industrial_safety_num = this.calc_cost_detail_data_industrial_safety.cost_num;
+            this.clickedProductCost.normal_maintenance_fee_num = this.calc_cost_detail_data_normal_maintenance_fee.cost_num;
+            this.clickedProductCost.profite_num = this.calc_cost_detail_data_profite.cost_num;
+            this.clickedProductCost.cost_calc_code = new_cost_calc_code;
+
             this.searchDataCalcProcess(this.searched_datas);
 
             this.edit_survey_cost_num_disabled = true;
             this.during_edit = false;
-        //     mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
-        //   } else {
-        //     if (prevURL !== window.location.href) return;
-        //     mux.Util.showAlert(result['failed_info']);
-        //   }
-        // } catch (error) {
-        //   if (prevURL !== window.location.href) return;
-        //   if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-        //     mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        //   else
-        //     mux.Util.showAlert(error);
-        // }
-
+            mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+          } else {
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(result);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(error);
+        }
+        mux.Util.hideLoading();
 
       }
 
@@ -3505,15 +3812,15 @@ export default {
             checker_id: this.estimate_member_info2[0].user_id,
             approver: this.estimate_member_info2[1].name,
             approver_id: this.estimate_member_info2[1].user_id,
-            approval_file: this.input_approval_file2.value.name,
+            approval_file: new_cost_calc_code + '_' + this.input_approval_file2.value.name,
             approval_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_approval_file2.value, 1, false, 1000, 1000)),
-            blueprint_file: this.input_blueprint_file2.value.name,
+            blueprint_file: new_cost_calc_code + '_' + this.input_blueprint_file2.value.name,
             blueprint_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_blueprint_file2.value, 1, false, 1000, 1000)),
-            etc_files: this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value 
-            ? this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value.map(x=>x.name).join('/')
+            etc_files: this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value && this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value.length > 0
+            ? new_cost_calc_code + '_' + this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value.map(x=>x.name).join('/')
             : '',
           },
-          "select_where": {"inhouse_bid_number": this.input_inhouse_bid_number2.value},
+          "select_where": {"cost_calc_code": new_cost_calc_code},
           "rollback": "yes"
         }],
         "estimate_cost_table-insert": [{
@@ -3603,7 +3910,7 @@ export default {
               construction_materials_unit_price: data.cost_unit_price,
             },
             "select_where": {"cost_calc_code": "!JUST_INSERT!"},
-            "rollback": "yes"
+            "rollback": "no"
           });
         });
       }
