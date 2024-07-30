@@ -371,7 +371,7 @@
         "company_manager_email": "kim@email.mail",
         "company_manager_phone": "010-1234-5678",
 
-        "approval_phase": "확인",
+        "approval_phase": "미승인",
         "checker": "선우민",
         "checker_id": "min",
         "checked_date": "2024-06-01",
@@ -411,7 +411,7 @@
         "company_manager_email": "kim@email.mail",
         "company_manager_phone": "010-1234-5678",
 
-        "approval_phase": "확인",
+        "approval_phase": "미승인",
         "checker": "선우민",
         "checker_id": "min",
         "checked_date": "2024-06-01",
@@ -452,7 +452,7 @@
         "company_manager_email": "kim@email.mail",
         "company_manager_phone": "010-1234-5678",
 
-        "approval_phase": "확인",
+        "approval_phase": "미승인",
         "checker": "알렉스",
         "checker_id": "alex",
         "checked_date": "2024-06-01",

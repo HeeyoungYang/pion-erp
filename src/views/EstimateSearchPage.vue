@@ -5,7 +5,6 @@
 
     <!-- ▼ 본문 영역 -->
     <v-main>
-      <LoadingModalComponent :dialog-value="loading_dialog" hide-overlay></LoadingModalComponent>
       <v-row justify="center">
         <v-col
           cols="12"
@@ -144,7 +143,7 @@
                   elevation="0"
                   fab
                   x-small
-                  @click="sendEstiamteMail"
+                  @click="openEstiamteMailForm"
                   class="mb-3 ml-3 float-right dont_print"
                   data-html2canvas-ignore="true"
                 >
@@ -208,25 +207,25 @@
               <v-row class="mt-5" justify="space-between">
                 <v-col align-self="center" cols="12" sm="5" class="pb-0">
                   <v-row style="border-bottom:1px solid #b4b4b4; font-size: 15px;" class="mb-4">
-                    <v-col cols="12" sm="10" class="font-weight-bold">업체A</v-col>
+                    <v-col cols="12" sm="10" class="font-weight-bold">{{ clickedProductCost.company_name ? clickedProductCost.company_name : '' }}</v-col>
                     <v-col cols="12" sm="2">귀하</v-col>
                   </v-row>
                   <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
                     <tr class="text-body-1">
                       <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">발행일</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">2024-05-29</td>
+                      <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.issue_date ? mux.Date.format(clickedProductCost.issue_date, 'yyyy-MM-dd') : '' }}</td>
                     </tr>
                     <tr>
                       <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역명</td>
-                      <td class="estimate_info" style="border-bottom: 0px;"></td>
+                      <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_name ? clickedProductCost.service_name : '' }}</td>
                     </tr>
                     <tr>
                       <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역기간</td>
-                      <td class="estimate_info" style="border-bottom: 0px;"></td>
+                      <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_period ? clickedProductCost.service_period : '' }}</td>
                     </tr>
                     <tr>
                       <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">유효기간</td>
-                      <td class="estimate_info"></td>
+                      <td class="estimate_info"> 발행일로부터 30일 이내 </td>
                     </tr>
                   </table>
                   <p style=" font-size: 12px;" class="mt-3 text-center font-weight-bold">하기와 같이 견적 드립니다.</p>
@@ -269,9 +268,9 @@
                     </tr>
                     <tr>
                       <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
-                      <td class="estimate_info" >OOO</td>
+                      <td class="estimate_info" >{{ clickedProductCost.given_name ? clickedProductCost.given_name : '' }}</td>
                       <td class="estimate_info estimate_title text-center" >연락처</td>
-                      <td class="estimate_info">070-1234-5678</td>
+                      <td class="estimate_info">{{ clickedProductCost.office_phone_number ? clickedProductCost.office_phone_number : '' }}</td>
                     </tr>
                   </table>
                 </v-col>
@@ -279,7 +278,7 @@
                   <table style=" border-spacing: 0px; width: 100%;" class="mb-5">
                     <tr>
                       <td class="estimate_price_info estimate_price_title text-center">일금</td>
-                      <td class="estimate_price_info"><span class="font-weight-bold">일천일백만 원정 </span>(￦ 11,000,000) <span style="font-size:11px" class="pl-10">* 부가가치세(VAT) 별도</span></td>
+                      <td class="estimate_price_info"><span class="font-weight-bold">{{ !total_cost || isNaN(total_cost) ? '' : mux.Number.toKorean(total_cost, ' 원정') }} </span>{{ !total_cost || isNaN(total_cost) ? '' : `(￦ ${mux.Number.withComma(total_cost)})` }} <span style="font-size:11px" class="pl-10">* 부가가치세(VAT) 별도</span></td>
                     </tr>
                   </table>
                 </v-col>
@@ -292,7 +291,8 @@
                 prevent-editable
                 prevent-button
                 hide-children
-                :show-childs-parent-index-arr="[0]"
+                :show-childs-parent-index-arr="show_childs_parent_index_arr"
+                :show-grand-childs-parent-index-arr="show_grand_childs_parent_index_arr"
                 class="cost_table_border"
               />
             </v-card-text>
@@ -300,36 +300,47 @@
           <v-row class="mt-3">
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
-              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-              <!-- <v-img
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.approval_file"
                 alt="thumbnail"
                 class="shrink mr-2"
                 contain
-                :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                :src="mux.Util.imageBinary(clickedProductCost.approval_thumbnail)"
                 transition="scale-transition"
                 width="350"
-                @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                @click="download('estimate/approval', clickedProductCost.approval_file.replace(clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_', ''), clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_')"
                 style="cursor: pointer;"
-              /> -->
+              />
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.blueprint_file"
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(clickedProductCost.blueprint_thumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('estimate/blueprint', clickedProductCost.blueprint_file.replace(clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_', ''), clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_')"
+                style="cursor: pointer;"
+              />  
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
-              <v-chip
-                color="grey lighten-2"
-                class="ma-2"
-              >
-                기타첨부파일.jpg
-              </v-chip>
-              <v-chip
-                color="grey lighten-2"
-                class="ma-2"
-              >
-                기타첨부파일2.xlsx
-              </v-chip>
+              <div v-if="clickedProductCost.etc_files">
+                <v-chip
+                  v-for="(file, i) in clickedProductCost.etc_files.split('/')"
+                  :key="i"
+                  color="grey lighten-2"
+                  class="ma-2"
+                  @click="download('estimate/etc', file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', ''), file.split('_')[0]+'_'+file.split('_')[1]+'_')"
+                >
+                  {{ file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', '') }}
+                </v-chip>
+              </div>
             </v-col>
           </v-row>
         </v-tab-item>
@@ -360,7 +371,8 @@
                     :key="index"
                     dense
                     @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                            : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                            : item.click === 'excel' ? mux.Excel.downloadTable(survey_cost_headers, calc_cost_detail_data, '산출내역서')
+                            : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data', '산출내역서') : ''"
                   >
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
                   </v-list-item>
@@ -375,7 +387,7 @@
                   item-key="product_code"
                   trStyle="background-color:#efefef; "
                   trClass="font-weight-black estimate_title"
-                  :cost-num-edit-disabled="edit_survey_cost_num_disabled"
+                  :cost-num-edit-disabled="true"
                   class="cost_table_border print_cost_table"
                 >
                 </CostTableComponent>
@@ -410,8 +422,9 @@
                     v-for="(item, index) in save_estimates"
                     :key="index"
                     dense
-                    @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                            : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                    @click="item.click === 'print' ? printLaborCost()
+                            : item.click === 'excel' ? mux.Excel.downloadTable(labor_cost_headers, labor_cost_data, '노무비 산출')
+                            : item.click === 'pdf' ? printLaborCost('노무비 산출') : ''"
                   >
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
                   </v-list-item>
@@ -476,7 +489,7 @@
             <v-btn
               color="blue darken-1"
               text
-              @click="test()"
+              @click="sendEstimateMail()"
             >
               발송
             </v-btn>
@@ -492,7 +505,6 @@ import DataTableComponent from "@/components/DataTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
-import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import CostTableComponent from "@/components/CostTableComponent.vue";
 import MailFormComponent from "@/components/MailFormComponent.vue";
 import EstimateSearchPageConfig from "@/configure/EstimateSearchPageConfig.json";
@@ -510,16 +522,16 @@ export default {
                 ModalDialogComponent,
                 CardComponent,
                 InputsFormComponent,
-                LoadingModalComponent,
                 CostTableComponent,
                 MailFormComponent,
               },
   data(){
     return{
       mux: mux,
+      searched_datas: {},
       dates: [],
       estimate_product_list_dialog: false,
-      loading_dialog: false,
+      clickedProductCost: {},
       mailDialog: false,
       tab_search: null,
       receivingInspectionThumbnail: '',
@@ -532,6 +544,8 @@ export default {
         general_management:true,
         profit:true
       },
+      show_childs_parent_index_arr: [0],
+      show_grand_childs_parent_index_arr: [0, 1],
       estimate_info_data:{},
       estimate_product_list_data:[],
 
@@ -549,8 +563,12 @@ export default {
       survey_cost_headers: EstimateSearchPageConfig.survey_cost_headers,
       search_tab_items: EstimateSearchPageConfig.search_tab_items,
       labor_cost_headers: EstimateSearchPageConfig.labor_cost_headers,
+      labor_cost_data: [],
+      merged_labor_cost_data: [],
       calc_cost_detail_data: JSON.parse(JSON.stringify(EstimateSearchPageConfig.calc_cost_detail_data)),
       estimate_approve_data:[],
+
+      print_labor_table: false,
     }
   },
 
@@ -558,11 +576,240 @@ export default {
     dateRangeText () {
       return this.dates.join(' ~ ')
     },
+    total_cost(){
+      return this.total_product_cost + this.total_labor_cost + this.total_expense_fee + this.normal_maintenance_fee + this.profite;
+    },
+    total_product_cost(){
+      if (!this.calc_cost_detail_data_product_cost.belong_data || this.calc_cost_detail_data_product_cost.belong_data.length === 0) return 0;
+      if (this.calc_cost_detail_data_product_cost.belong_data[0].belong_data && this.calc_cost_detail_data_product_cost.belong_data[0].belong_data.length !== 0){
+        return this.calc_cost_detail_data_product_cost.belong_data.reduce((aa,bb)=>{
+          return aa + bb.belong_data.reduce((a,b)=>{
+            return a + Math.round(b.cost_unit_price * b.cost_num);
+          }, 0)
+        }, 0);
+      }else {
+        return this.calc_cost_detail_data_product_cost.belong_data.reduce((a,b)=>{
+          return a + Math.round(b.cost_unit_price * b.cost_num);
+        }, 0)
+      }
+    },
+    direct_labor_cost(){ return this.merged_labor_cost_data.reduce((a,b)=>{
+        return a + Math.round(b.cost_unit_price * b.cost_num);
+      }, 0)},
+    indirect_labor_cost_unit_price(){ return Math.round(this.direct_labor_cost * this.clickedProductCost.indirect_labor_ratio)},
+    indirect_labor_cost(){ return this.calc_cost_detail_data_indirect_labor.cost_num * this.indirect_labor_cost_unit_price},
+    total_labor_cost(){ return this.direct_labor_cost + this.indirect_labor_cost},
+    total_expense_fee(){ return Math.round(this.calc_cost_detail_data_employment_insurance.cost_unit_price * this.calc_cost_detail_data_employment_insurance.cost_num)
+      + Math.round(this.calc_cost_detail_data_tool_rent_fee.cost_unit_price * this.calc_cost_detail_data_tool_rent_fee.cost_num)
+      + Math.round(this.calc_cost_detail_data_transportation_fee.cost_unit_price * this.calc_cost_detail_data_transportation_fee.cost_num)
+      + Math.round(this.calc_cost_detail_data_industrial_accident.cost_unit_price * this.calc_cost_detail_data_industrial_accident.cost_num)
+      + Math.round(this.calc_cost_detail_data_taxes_dues.cost_unit_price * this.calc_cost_detail_data_taxes_dues.cost_num)
+      + Math.round(this.calc_cost_detail_data_welfare_benefits.cost_unit_price * this.calc_cost_detail_data_welfare_benefits.cost_num)
+      + Math.round(this.calc_cost_detail_data_retirement.cost_unit_price * this.calc_cost_detail_data_retirement.cost_num)
+      + Math.round(this.calc_cost_detail_data_expendables.cost_unit_price * this.calc_cost_detail_data_expendables.cost_num)
+      + Math.round(this.calc_cost_detail_data_industrial_safety.cost_unit_price * this.calc_cost_detail_data_industrial_safety.cost_num)},
+    normal_maintenance_fee_unit_price(){ return Math.round((this.total_product_cost + this.total_labor_cost + this.total_expense_fee) * this.clickedProductCost.normal_maintenance_fee_ratio)},
+    normal_maintenance_fee(){ return Math.round(this.normal_maintenance_fee_unit_price * this.calc_cost_detail_data_normal_maintenance_fee.cost_num)},
+    profite_unit_price() { return Math.round((this.total_labor_cost + this.total_expense_fee + this.normal_maintenance_fee) * this.clickedProductCost.profite_ratio)},
+    profite(){ return Math.round(this.profite_unit_price * this.calc_cost_detail_data_profite.cost_num)},
+
+    calc_cost_detail_data_product_cost(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='재료비' || x.cost_list==='기술료')},
+    calc_cost_detail_data_direct_labor(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='노무비').belong_data.find(x=>x.cost_list.includes('직접 노무비'))},
+    calc_cost_detail_data_indirect_labor(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='노무비').belong_data.find(x=>x.cost_list.includes('간접 노무비'))},
+    calc_cost_detail_data_employment_insurance(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('고용보험료'))},
+    calc_cost_detail_data_tool_rent_fee(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('공구손료'))},
+    calc_cost_detail_data_transportation_fee(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('여비교통 통신비'))},
+    calc_cost_detail_data_industrial_accident(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('산재보험료'))},
+    calc_cost_detail_data_taxes_dues(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('세금과공과'))},
+    calc_cost_detail_data_welfare_benefits(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('복리후생비'))},
+    calc_cost_detail_data_retirement(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('퇴직공제 부금비'))},
+    calc_cost_detail_data_expendables(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('소모품비'))},
+    calc_cost_detail_data_industrial_safety(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='경비').belong_data.find(x=>x.cost_list.includes('산업안전보건관리비'))},
+    calc_cost_detail_data_normal_maintenance_fee(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='일반관리비')},
+    calc_cost_detail_data_profite(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='이윤')},
+
+    // input_issue_date() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '발행일') },
+    // input_inhouse_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '사내 입찰번호') },
+    // input_company_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '기업별 입찰번호') },
+    // input_due_date() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '납기') },
+    // input_service_name() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '용역명') },
+    // input_service_period() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '용역기간') },
+    // input_remark() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '특이사항') },
+    // input_company_name() { return this.estimateSearchCompanyInfoInputs.find(x=>x.label === '업체명') },
+    // input_company_manager() { return this.estimateSearchCompanyInfoInputs.find(x=>x.label === '담당자') },
+    // input_company_manager_email() { return this.estimateSearchCompanyInfoInputs.find(x=>x.label === '담당자 E-mail') },
+    // input_company_manager_phone() { return this.estimateSearchCompanyInfoInputs.find(x=>x.label === '담당자 연락처') },
+    // input_approval_file() { return this.estimateFilesInputs.find(x=>x.column_name === 'approval')},
+    // input_blueprint_file() { return this.estimateFilesInputs.find(x=>x.column_name === 'blueprint')},
+    // input_etc_file() { return this.estimateFilesInputs.find(x=>x.column_name === 'files')},
   },
   watch:{
     estimate_product_list_dialog(val){
       val || this.closeProductList()
       this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
+    },
+    clickedProductCost: {
+      handler(item){
+        if (Object.keys(item).length > 0) {
+          // this.estimate_member_info[0].name = item.checker;
+          // this.estimate_member_info[0].user_id = item.checker_id;
+          // this.estimate_member_info[0].checked_date = item.checked_date;
+          // this.estimate_member_info[1].name = item.approver;
+          // this.estimate_member_info[1].user_id = item.approver_id;
+          // this.estimate_member_info[1].checked_date = item.approved_date;
+
+          this.labor_cost_data = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code);
+          this.calc_cost_detail_data_product_cost.belong_data = [];
+          if (this.searched_datas.product_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code).length > 0){
+            this.calc_cost_detail_data_product_cost.belong_data.push({
+              "cost_list": "가. 재료",
+              "cost_list_colspan": 4,
+              "belong_data": this.searched_datas.product_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
+                a.cost_list = a.product_name;
+                a.cost_list_sub = a.product_spec;
+                a.cost_num = a.product_num;
+                a.cost_unit_price = a.product_unit_price;
+                a.cost_unit = '제품';
+                return a;
+              })
+            });
+          }
+          if (this.searched_datas.construction_materials_data.filter(x=>x.cost_calc_code === item.cost_calc_code).length > 0) {
+            this.calc_cost_detail_data_product_cost.belong_data.push({
+              "cost_list": `${this.calc_cost_detail_data_product_cost.belong_data.length > 0 ? '나' : '가'}. 공사 자재`,
+              "cost_list_colspan": 4,
+              "belong_data": this.searched_datas.construction_materials_data.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
+                a.cost_list = a.construction_materials;
+                a.cost_num = a.construction_materials_num;
+                a.cost_unit_price = a.construction_materials_unit_price;
+                a.cost_unit = '개';
+                return a;
+              })
+            });
+          }
+          // if (this.searched_datas.technical_fee_data.filter(x=>x.cost_calc_code === item.cost_calc_code).length > 0) {
+          //   this.calc_cost_detail_data_product_cost.belong_data = this.searched_datas.technical_fee_data.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
+          //     a.cost_list = a.technical_fee;
+          //     a.cost_num = a.technical_fee_num;
+          //     a.cost_unit_price = a.technical_fee_unit_price;
+          //     a.cost_unit = '건';
+          //     a.belong_data = [];
+          //     return a;
+          //   });
+          // }
+          // set num
+          this.calc_cost_detail_data_employment_insurance.cost_num = item.employment_insurance_num;
+          this.calc_cost_detail_data_tool_rent_fee.cost_num = item.tool_rent_fee_num;
+          this.calc_cost_detail_data_transportation_fee.cost_num = item.transportation_fee_num;
+          this.calc_cost_detail_data_industrial_accident.cost_num = item.industrial_accident_num;
+          this.calc_cost_detail_data_taxes_dues.cost_num = item.taxes_dues_num;
+          this.calc_cost_detail_data_welfare_benefits.cost_num = item.welfare_benefits_num;
+          this.calc_cost_detail_data_retirement.cost_num = item.retirement_num;
+          this.calc_cost_detail_data_expendables.cost_num = item.expendables_num;
+          this.calc_cost_detail_data_industrial_safety.cost_num = item.industrial_safety_num;
+          this.calc_cost_detail_data_normal_maintenance_fee.cost_num = item.normal_maintenance_fee_num;
+          this.calc_cost_detail_data_profite.cost_num = item.profite_num;
+          // set formula
+          this.calc_cost_detail_data_indirect_labor.belong_data[0].cost_list = ' - ' + item.indirect_labor_formula;
+          this.calc_cost_detail_data_employment_insurance.belong_data[0].cost_list = ' - ' + item.employment_insurance_formula;
+          this.calc_cost_detail_data_tool_rent_fee.belong_data[0].cost_list = ' - ' + item.tool_rent_fee_formula;
+          this.calc_cost_detail_data_transportation_fee.belong_data[0].cost_list = ' - ' + item.transportation_fee_formula;
+          this.calc_cost_detail_data_industrial_accident.belong_data[0].cost_list = ' - ' + item.industrial_accident_formula;
+          this.calc_cost_detail_data_taxes_dues.belong_data[0].cost_list = ' - ' + item.taxes_dues_formula;
+          this.calc_cost_detail_data_welfare_benefits.belong_data[0].cost_list = ' - ' + item.welfare_benefits_formula;
+          this.calc_cost_detail_data_retirement.belong_data[0].cost_list = ' - ' + item.retirement_formula;
+          this.calc_cost_detail_data_expendables.belong_data[0].cost_list = ' - ' + item.expendables_formula;
+          this.calc_cost_detail_data_industrial_safety.belong_data[0].cost_list = ' - ' + item.industrial_safety_formula;
+          this.calc_cost_detail_data_normal_maintenance_fee.belong_data[0].cost_list = ' - ' + item.normal_maintenance_fee_formula;
+          this.calc_cost_detail_data_profite.belong_data[0].cost_list = ' - ' + item.profite_formula;
+
+          // this.input_issue_date.value = item.issue_date;
+          // this.input_inhouse_bid_number.value = item.inhouse_bid_number;
+          // this.input_company_bid_number.value = item.company_bid_number;
+          // this.input_due_date.value = item.due_date;
+          // this.input_service_name.value = item.service_name;
+          // this.input_service_period.value = item.service_period;
+          // this.input_remark.value = item.remark;
+          // this.input_company_name.value = item.company_name;
+          // this.input_company_manager.value = item.company_manager;
+          // this.input_company_manager_email.value = item.company_manager_email;
+          // this.input_company_manager_phone.value = item.company_manager_phone;
+
+        }
+      },
+      deep: true
+    },
+    calc_cost_detail_data_product_cost: {
+      handler(new_calc_cost_detail_data_product_cost){
+        let belongs = new_calc_cost_detail_data_product_cost.belong_data;
+        for (let i = belongs.length-1; i >= 0; i--) {
+          const belong = belongs[i];
+          if (belong.belong_data.length === 0) {
+            belongs.splice(i, 1);
+          }
+        }
+        if (belongs.length === 1 && belongs[0].cost_list === '나. 공사 자재') {
+          belongs[0].cost_list = '가. 공사 자재';
+        }else if (belongs.length === 2 && belongs[1].cost_list === '가. 공사 자재') {
+          belongs[1].cost_list = '나. 공사 자재';
+        }
+      },
+      deep: true
+    },
+    // 조회 - 노무비 데이터 변경
+    labor_cost_data: {
+      handler(new_labor_cost_data){
+        this.merged_labor_cost_data = [];
+        new_labor_cost_data.forEach(labor => {
+          const sameNameIndex = this.merged_labor_cost_data.findIndex(x=>x.cost_list === labor.name);
+          const mergedUnitPrice = Math.round(labor.unit_price * labor.quantity * labor.man_per_hour);
+          if (sameNameIndex >= 0){
+            this.merged_labor_cost_data[sameNameIndex].cost_unit_price += mergedUnitPrice;
+          }else {
+            this.merged_labor_cost_data.push({cost_list:labor.name, cost_unit:'식', cost_num:'1', cost_unit_price:mergedUnitPrice});
+          }
+        });
+
+      // 조회 - 직접 노무비 리스트 적용
+      this.calc_cost_detail_data_direct_labor.belong_data = this.merged_labor_cost_data;
+      // 조회 - 간접 노무비 적용
+      this.calc_cost_detail_data_indirect_labor.cost_unit_price = this.indirect_labor_cost_unit_price;
+      // 조회 - 고용보험료 적용
+      this.calc_cost_detail_data_employment_insurance.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.employment_insurance_ratio);
+      // 조회 - 공구손료 적용
+      this.calc_cost_detail_data_tool_rent_fee.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.tool_rent_fee_ratio);
+      // 조회 - 여비교통 통신비 적용
+      this.calc_cost_detail_data_transportation_fee.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.transportation_fee_ratio);
+      // 조회 - 산재보험료 적용
+      this.calc_cost_detail_data_industrial_accident.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.industrial_accident_ratio);
+      // 조회 - 세금과공과 적용
+      this.calc_cost_detail_data_taxes_dues.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.taxes_dues_ratio);
+      // 조회 - 복리후생비 적용
+      this.calc_cost_detail_data_welfare_benefits.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.welfare_benefits_ratio);
+      // 조회 - 퇴직공제 부금비 적용
+      this.calc_cost_detail_data_retirement.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.retirement_ratio);
+      // 조회 - 소모품비 적용
+      this.calc_cost_detail_data_expendables.cost_unit_price = Math.round(this.total_labor_cost * this.clickedProductCost.expendables_ratio);
+      // 조회 - 산업안전보건관리비 적용
+      this.calc_cost_detail_data_industrial_safety.cost_unit_price = Math.round(this.direct_labor_cost * this.clickedProductCost.industrial_safety_ratio);
+
+      // 조회 - 일반관리비 적용
+      this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
+      // 조회 - 이윤 적용
+      this.calc_cost_detail_data_profite.cost_unit_price = this.profite_unit_price;
+      },
+      deep: true // 객체 내부 속성 변경 감지
+    },
+
+    // 조회 - 데이터 변경
+    calc_cost_detail_data: {
+      handler(){
+        // 조회 - 일반관리비 적용
+        this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
+        // 조회 - 이윤 적용
+        this.calc_cost_detail_data_profite.cost_unit_price = this.profite_unit_price;
+      },
+      deep: true // 객체 내부 속성 변경 감지
     },
   },
   created () {
@@ -617,24 +864,262 @@ export default {
         this.searchCardInputs.find(x=>x.label === '발행일').value = [created_time, created_time];
       }
     },
+    calcNoTotalAmount(labor){
+      let labor_data = this.labor_cost_data
+      let sum_no_total_amount = 0;
+      labor_data.forEach(data =>{
+        if(data.name == labor){
+          sum_no_total_amount += Number((data.man_per_hour * data.quantity * data.unit_price).toFixed(0));
+        }
+      })
+      return sum_no_total_amount;
+    },
+    calcRowSpan(labor, idx){
+      let labor_data = this.labor_cost_data
+      let rowspan = 0;
+      if(idx > 0  && labor_data[idx].name == labor_data[idx-1].name){
+        rowspan = 0;
+      }else {
+        labor_data.forEach(data =>{
+          if(data.name == labor){
+            rowspan++;
+          }
+        })
+      }
+      return rowspan;
+    },
+    printLaborCost(fileName){
+      this.print_labor_table = true;
+
+      setTimeout(async () => {
+        if (fileName){
+          mux.Util.downloadPDF(this.$refs.calcLaborCard, fileName);
+          this.print_labor_table = false;
+        }else {
+          mux.Util.print(this.$refs.calcLaborCard);
+          this.print_labor_table = false;
+        }
+      }, 500);
+
+    },
+
+    // 파일명 인자 있을 경우 PDF download, 없을 경우 print
+    async costDetailPrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
+      let items = this[itemsThisKeyStr];
+      const originItems = JSON.parse(JSON.stringify(items));
+      items = items.map(item => {
+        for (let i = Object.keys(item).length - 1; i >= 0; i--) {
+          const key = Object.keys(item)[i];
+          if (key.includes('editable')){
+            delete item[key];
+          }
+          if (key === 'belong_data'){
+            for (let j = 0; j < item.belong_data.length; j++) {
+              const innerItem = item.belong_data[j];
+              for (let ii = Object.keys(innerItem).length - 1; ii >= 0; ii--) {
+                const innerKey = Object.keys(innerItem)[ii];
+                if (innerKey.includes('editable')){
+                  delete innerItem[innerKey];
+                }
+                if (innerKey === 'belong_data'){
+                  for (let j = 0; j < innerItem.belong_data.length; j++) {
+                    const belongInnerItem = innerItem.belong_data[j];
+                    for (let ii = Object.keys(belongInnerItem).length - 1; ii >= 0; ii--) {
+                      const belongInnerKey = Object.keys(belongInnerItem)[ii];
+                      if (belongInnerKey.includes('editable')){
+                        delete belongInnerItem[belongInnerKey];
+                      }
+                      // if (belongInnerKey === 'belong_data'){
+
+                      // }
+                    }
+
+                  }
+                }
+              }
+
+            }
+          }
+        }
+        return item;
+
+      });
+
+      this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+      // UI 적용을 위한 editable = false 1초 후 작동
+      setTimeout(async () => {
+        if (fileName){
+          await mux.Util.downloadPDF(element, fileName);
+        }else {
+          await mux.Util.print(element);
+        }
+        this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+        this[itemsThisKeyStr] = originItems;
+      }, 1000);
+
+
+    },
     async download(foldername, filename, prefix) {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       try {
         await mux.Server.downloadFile(foldername, filename, prefix);
       } catch (error) {
         mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     async searchButton(){
-      this.loading_dialog = true;
-      this.estimate_approve_data = EstimateSearchPageConfig.test_estimate_approve_data;
-      this.loading_dialog = false;
+      mux.Util.showLoading();
+
+      let inputs = [];
+      this.searchCardInputs.forEach((input) => {
+        if (input.value && String(input.value).trim()) {
+          inputs.push(String(input.value).trim());
+        }else {
+          inputs.push("%");
+        }
+      });
+      console.log('inputs :>> ', inputs);
+
+      const prevURL = window.location.href;
+      try {
+        // let result = await mux.Server.post({
+        //   path: '/api/common_rest_api/',
+        //   params: [
+        //     {
+        //       "product_cost_table.product_name": searchProductName ? searchProductName : "%"
+        //     }
+        //   ],
+        //   "script_file_name": "rooting_원가_검색_24_05_22_11_57_N80.json",
+        //   "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_검색_24_05_22_11_57_555"
+        // });
+        // if (prevURL !== window.location.href) return;
+
+        // if (typeof result === 'string'){
+        //   result = JSON.parse(result);
+        // }
+        // if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+        //   const searchResult = result.data;
+        const searchResult = JSON.parse(JSON.stringify(EstimateSearchPageConfig.test_estimate_approve_data));
+        searchResult.confirmation.reverse(); // 최신순으로 정렬
+        this.searchDataCalcProcess(searchResult);
+
+        // }else{
+        //   mux.Util.showAlert(result);
+        // }
+
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.showAlert(error);
+      }
+
+      mux.Util.hideLoading();
+    },
+    searchDataCalcProcess(searchResult, isFirst){
+      const productTotalCost = {};
+      searchResult.product_cost_calc_detail.forEach(a=>{
+        if (!productTotalCost[a.cost_calc_code]){
+          productTotalCost[a.cost_calc_code] = Math.round(a.product_num > 0 ? a.product_num * a.product_unit_price : a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
+        }else {
+          productTotalCost[a.cost_calc_code] += Math.round(a.product_num > 0 ? a.product_num * a.product_unit_price : a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
+        }
+      });
+      searchResult.construction_materials_data.forEach(a=>{
+        if (!productTotalCost[a.cost_calc_code]){
+          productTotalCost[a.cost_calc_code] = Math.round(a.construction_materials_num * a.construction_materials_unit_price);
+        }else {
+          productTotalCost[a.cost_calc_code] += Math.round(a.construction_materials_num * a.construction_materials_unit_price);
+        }
+      });
+      // searchResult.technical_fee_data.forEach(a=>{
+      //   if (!productTotalCost[a.cost_calc_code]){
+      //     productTotalCost[a.cost_calc_code] = Math.round(a.technical_fee_num * a.technical_fee_unit_price);
+      //   }else {
+      //     productTotalCost[a.cost_calc_code] += Math.round(a.technical_fee_num * a.technical_fee_unit_price);
+      //   }
+      // });
+      const directLaborCost = {};
+      searchResult.labor_cost_calc_detail.forEach(a=>{
+        if (!directLaborCost[a.cost_calc_code]){
+          directLaborCost[a.cost_calc_code] = Math.round(a.unit_price * a.quantity * a.man_per_hour);
+        }else {
+          directLaborCost[a.cost_calc_code] += Math.round(a.unit_price * a.quantity * a.man_per_hour);
+        }
+      });
+
+      const productCostArr = searchResult.product_cost.map((info)=> {
+        const productTotalCostInfo = productTotalCost[info.cost_calc_code] ? productTotalCost[info.cost_calc_code] : 0;
+        const directLaborCostInfo = directLaborCost[info.cost_calc_code];
+
+        let indirectLaborUnitPrice = Math.round(directLaborCostInfo * info.indirect_labor_ratio);
+        const indirectLaborCost = Math.round(indirectLaborUnitPrice * info.indirect_labor_num);
+        const totalLaborCost = directLaborCostInfo + indirectLaborCost;
+        let employmentInsuranceUnitPrice = Math.round(totalLaborCost * info.employment_insurance_ratio);
+        const employmentInsuranceCost = Math.round(employmentInsuranceUnitPrice * info.employment_insurance_num);
+        let toolRentFeeUnitPrice = Math.round(directLaborCostInfo * info.tool_rent_fee_ratio);
+        const toolRentFeeCost = Math.round(toolRentFeeUnitPrice * info.tool_rent_fee_num);
+        let transportationFeeUnitPrice = Math.round(totalLaborCost * info.transportation_fee_ratio);
+        const transportationFeeCost = Math.round(transportationFeeUnitPrice * info.transportation_fee_num);
+        let industrialAccidentUnitPrice = Math.round(totalLaborCost * info.industrial_accident_ratio);
+        const industrialAccidentCost = Math.round(industrialAccidentUnitPrice * info.industrial_accident_num);
+        let taxesDuesUnitPrice = Math.round(totalLaborCost * info.taxes_dues_ratio);
+        const taxesDuesCost = Math.round(taxesDuesUnitPrice * info.taxes_dues_num);
+        let welfareBenefitsUnitPrice = Math.round(totalLaborCost * info.welfare_benefits_ratio);
+        const welfareBenefitsCost = Math.round(welfareBenefitsUnitPrice * info.welfare_benefits_num);
+        let retirementUnitPrice = Math.round(directLaborCostInfo * info.retirement_ratio);
+        const retirementCost = Math.round(retirementUnitPrice * info.retirement_num);
+        let expendablesUnitPrice = Math.round(totalLaborCost * info.expendables_ratio);
+        const expendablesCost = Math.round(expendablesUnitPrice * info.expendables_num);
+        let industrialSafetyUnitPrice = Math.round(directLaborCostInfo * info.industrial_safety_ratio);
+        const industrialSafetyCost = Math.round(industrialSafetyUnitPrice * info.industrial_safety_num);
+        const totalExpenseFeeCost = employmentInsuranceCost + toolRentFeeCost + transportationFeeCost + industrialAccidentCost + taxesDuesCost + welfareBenefitsCost + retirementCost + expendablesCost + industrialSafetyCost;
+        let normalMaintenanceFeeUnitPrice = Math.round((productTotalCostInfo + totalLaborCost + totalExpenseFeeCost) * info.normal_maintenance_fee_ratio);
+        const normalMaintenanceFeeCost = Math.round(normalMaintenanceFeeUnitPrice * info.normal_maintenance_fee_num);
+        let profiteUnitPrice = Math.round((totalLaborCost + totalExpenseFeeCost + normalMaintenanceFeeCost) * info.profite_ratio);
+        const profiteCost = Math.round(profiteUnitPrice * info.profite_num);
+
+        const allTotalCost = productTotalCostInfo + totalLaborCost + totalExpenseFeeCost + normalMaintenanceFeeCost + profiteCost;
+        info.cost_total_amount = mux.Number.withComma(allTotalCost);
+        if (isFirst){
+          info.product_name += '('+info.product_spec+')';
+        }
+        if (info.created_time){
+          info.full_created_time = info.created_time + "";
+          info.created_time = mux.Date.format(info.created_time, 'yyyy-MM-dd');
+        }
+
+        searchResult.confirmation.forEach(confirmation => {
+          if (confirmation.cost_calc_code === info.cost_calc_code){
+            Object.keys(confirmation).forEach(key=> {
+              if (key === 'created_time'){
+                confirmation[key] = mux.Date.format(confirmation[key], 'yyyy-MM-dd');
+              }
+              info[key] = confirmation[key];
+            });
+          }
+        });
+
+        return info;
+      });
+
+
+      this.estimate_approve_data = productCostArr;
+      this.searched_datas = searchResult;
     },
     closeProductList(){
       this.estimate_product_list_dialog = false;
+      this.clickedProductCost = {};
+      this.show_childs_parent_index_arr = [0];
+      this.show_grand_childs_parent_index_arr = [0, 1];
+      Object.keys(this.estimate_checkbox).forEach(key => {
+        this.estimate_checkbox[key] = true;
+      });
     },
-    async clickApproveData(){
+    async clickApproveData(item){
+      this.clickedProductCost = {};
+      this.clickedProductCost = item;
       this.estimate_product_list_dialog = true;
     },
     async setApprovalPhase(item, change, reason){
@@ -646,11 +1131,11 @@ export default {
     async cancleApprove(item){
       console.log(item)
     },
-    sendEstiamteMail(){
+    openEstiamteMailForm(){
       // this.estimate_product_list_dialog = false;
       this.mailDialog = true;
     },
-    async test(){
+    async sendEstimteaMail(){
       await this.$refs.mailFormComponent.dispatchEnterKeyToAllCombobox();
       const validate = this.$refs.mailForm.validate();
       if (!validate) return;
@@ -695,21 +1180,29 @@ export default {
       let specificationFile = null;
       // 산출내역서 PDF 파일 생성
       if (sendData.specification) {
-        const origin_tab = this.tab_search;
-        this.tab_search = 1; // 산출내역서 탭을 load 한 적이 없는 것을 대비하여 이동
-        await new Promise(resolve => setTimeout(resolve, 500));
+        if (!this.$refs.calcDetailCard){ // 산출내역서 탭을 load 한 적이 없는 것을 대비
+          const origin_tab = this.tab_search;
+          this.tab_search = 1;
+          let refLoadCount = 0
+          while(refLoadCount < 50){
+            if (this.$refs.calcDetailCard){
+              break;
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+            refLoadCount++;
+          }
+          this.tab_search = origin_tab;
+        }
         const specification = this.$refs.calcDetailCard.$el;
         try {
           // await mux.Util.downloadPDF(specification, 'specification');
           specificationFile = await mux.Util.getPDF(specification, '산출내역서');
           sendData.files.push(specificationFile);
         } catch (error) {
-          this.tab_search = origin_tab;
           this.mailDialog = true;
           mux.Util.showAlert('산출내역서 PDF 파일 생성 중 오류가 발생했습니다.');
           return;
         }
-        this.tab_search = origin_tab;
       }
       delete sendData.specification;
 
@@ -717,21 +1210,29 @@ export default {
       let laborFile = null;
       // 노무비 산출 PDF 파일 생성
       if (sendData.labor) {
-        const origin_tab = this.tab_search;
-        this.tab_search = 2; // 노무비 산출 탭을 load 한 적이 없는 것을 대비하여 이동
-        await new Promise(resolve => setTimeout(resolve, 500));
+        if (!this.$refs.calcLaborCard){ // 노무비 산출 탭을 load 한 적이 없는 것을 대비
+          const origin_tab = this.tab_search;
+          this.tab_search = 2;
+          let refLoadCount = 0
+          while(refLoadCount < 50){
+            if (this.$refs.calcLaborCard){
+              break;
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+            refLoadCount++;
+          }
+          this.tab_search = origin_tab;
+        }
         const labor = this.$refs.calcLaborCard.$el;
         try {
           // await mux.Util.downloadPDF(labor, 'labor');
           laborFile = await mux.Util.getPDF(labor, '노무비 산출');
           sendData.files.push(laborFile);
         } catch (error) {
-          this.tab_search = origin_tab;
           this.mailDialog = true;
           mux.Util.showAlert('노무비 산출 PDF 파일 생성 중 오류가 발생했습니다.');
           return;
         }
-        this.tab_search = origin_tab;
       }
       delete sendData.labor;
 
@@ -740,18 +1241,19 @@ export default {
       let attachment = [];
 
       if (sendData.blueprint) {
-        attachment.push({folder: 'estimate/blueprint', fileName: 'blueprint_test.pdf', newName: '도면.pdf'});
+        attachment.push({folder: 'estimate/blueprint', fileName: this.clickedProductCost.blueprint_file, newName: this.clickedProductCost.blueprint_file.replace(this.clickedProductCost.blueprint_file.split('_')[0]+'_'+this.clickedProductCost.blueprint_file.split('_')[1]+'_', '')});
       }
       delete sendData.blueprint;
 
       if (sendData.approval) {
-        attachment.push({folder: 'estimate/approval', fileName: 'approval_test.pdf', newName: '승인서.pdf'});
+        attachment.push({folder: 'estimate/approval', fileName: this.clickedProductCost.approval_file, newName: this.clickedProductCost.approval_file.replace(this.clickedProductCost.approval_file.split('_')[0]+'_'+this.clickedProductCost.approval_file.split('_')[1]+'_', '')});
       }
       delete sendData.approval;
 
-      if (sendData.etc) {
-        attachment.push({folder: 'estimate/etc', fileName: '기타첨부테스트.jpg', newName: '기타첨부파일.jpg'});
-        attachment.push({folder: 'estimate/etc', fileName: '기타첨부테스트2.xlsx', newName: '기타첨부파일2.xlsx'});
+      if (sendData.etc && this.clickedProductCost.etc_files) {
+        this.clickedProductCost.etc_files.split('/').forEach(file => {
+          attachment.push({folder: 'estimate/etc', fileName: file, newName: file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', '')});
+        });
       }
       delete sendData.etc;
 
@@ -776,8 +1278,37 @@ export default {
       if(name !== '재료비' && !this.estimate_checkbox[type]){
         const confirm = await mux.Util.showConfirm('재료비에 ' + name + '을(를) 포함하시겠습니까?', '금액 확인');
         if (!confirm){
+          this.estimate_checkbox[type] = true;
           return
         }
+        switch (name) {
+          case '노무비':
+            // // this.calc_cost_detail_data = JSON.parse(JSON.stringify(this.calc_cost_detail_data));
+            // this.calc_cost_detail_data_product_cost.belong_data.push({
+            //   "cost_list": "노무비",
+            //   "cost_list_colspan": 4,
+            //   "belong_data": this.merged_labor_cost_data
+            // });
+            // this.calc_cost_detail_data = this.calc_cost_detail_data.filter(x=>x.cost_list !== '노무비');
+            break;
+        
+          default:
+            break;
+        }
+
+        this.estimate_checkbox.product = false;
+      }else if (name === '재료비' && this.estimate_checkbox[type]){
+        Object.keys(this.estimate_checkbox).forEach(key => {
+          this.estimate_checkbox[key] = true;
+        });
+      }
+      
+      if (this.estimate_checkbox.product){
+        this.show_childs_parent_index_arr = [0];
+        this.show_grand_childs_parent_index_arr = [0, 1];
+      }else {
+        this.show_childs_parent_index_arr = [];
+        this.show_grand_childs_parent_index_arr = [];
       }
     },
   },

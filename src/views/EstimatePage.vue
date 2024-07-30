@@ -4103,7 +4103,6 @@ export default {
       mux: mux,
       todayDate: '',
       username: '',
-      searching_product_name: '',
       searched_datas: {},
       product_cost_dialog: false,
       estimate_cost_dialog: false,
