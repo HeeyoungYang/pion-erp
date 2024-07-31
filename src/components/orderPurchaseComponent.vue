@@ -50,35 +50,36 @@
 
         <v-col cols="12" sm="6" class="pb-0">
           <table style="table-layout: fixed; border-spacing: 0px; width: 100%; ">
-            <tr class="text-body-1">
-              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">수신업체</td>
-              <td class="order_info" style=" style='WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">dsjfidsjfiowedsfjsdfkljl</td>
-              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
-              <td class="order_info" style="border-bottom: 0px;">AAAAA</td>
-            </tr>
+
             <tr>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">수신업체</td>
+              <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ orderInfo.company_name }}</td>
+            </tr>
+            <tr class="text-body-1">
               <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-              <td colspan="3" class="order_info" style="border-bottom: 0px;"></td>
+              <td class="order_info" style=" style='WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">{{ orderInfo.company_registration_number }}</td>
+              <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
+              <td class="order_info" style="border-bottom: 0px;">{{ orderInfo.company_manager }}</td>
             </tr>
             <tr>
               <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
-              <td colspan="3" class="order_info" style="border-bottom: 0px;"></td>
+              <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ orderInfo.company_address }}</td>
             </tr>
             <tr class="text-body-1">
               <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">전화</td>
-              <td class="order_info" style="border-bottom: 0px;border-right: 0px;">AAAAA</td>
+              <td class="order_info" style="border-bottom: 0px;border-right: 0px;">{{ orderInfo.company_phone }}</td>
               <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">팩스</td>
-              <td class="order_info" style="border-bottom: 0px;">AAAAA</td>
+              <td class="order_info" style="border-bottom: 0px;">{{ orderInfo.company_fax }}</td>
             </tr>
             <tr class="text-body-1">
               <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">결제조건</td>
-              <td class="order_info" style="border-bottom: 0px;border-right: 0px;">AAAAA</td>
+              <td class="order_info" style="border-bottom: 0px;border-right: 0px;">{{ orderInfo.payment_terms }}</td>
               <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트</td>
-              <td class="order_info" style="border-bottom: 0px;">AAAAA</td>
+              <td class="order_info" style="border-bottom: 0px;">{{ orderInfo.company_fax }}</td>
             </tr>
             <tr>
               <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">계좌정보</td>
-              <td colspan="3" class="order_info"></td>
+              <td colspan="3" class="order_info">{{ orderInfo.account_number }}</td>
             </tr>
           </table>
         </v-col>
@@ -181,12 +182,14 @@
 <script>
 /**
  * @file orderPurchaseComponent.vue
- * @description 입고확인서 컴포넌트
+ * @description 발주서 컴포넌트
  *
  * @typedef {Object} props
+ * @property {Object} orderInfo - 발주 정보 데이터
 **/
 export default {
   props: {
+    orderInfo:Object
   },
   methods: {
   },

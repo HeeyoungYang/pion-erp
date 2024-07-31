@@ -124,7 +124,7 @@
               <v-data-table
                 :headers="purchase_order_headers"
                 :items="purchase_detail_data"
-                :item-key="purchase_detail_data.product_code"
+                :item-key="purchase_detail_data.item_code"
                 group-by="purchase_estimate_company"
                 dense
               >
@@ -274,7 +274,7 @@
               </v-row>
               <v-btn
                 color="primary"
-                @click="nextUnestimatedStep(n, 'estimate')"
+                @click="nextUnestimatedStep(n)"
               >
                 다음 ▶
               </v-btn>
@@ -586,7 +586,9 @@
               </template>
             </v-stepper-header>
 
-            <v-stepper-items>
+            <v-stepper-items
+              style="max-height: 650px; overflow-y: scroll;"
+            >
               <v-stepper-content
                 v-for="n in order_step"
                 :key="`${n}-content`"
@@ -595,10 +597,18 @@
                 <div v-if="n === 1">
                   <v-row class="mb-3">
                     <v-col cols="12">
+                      <MemberSearchDialogComponent
+                        :dialog-value="member_dialog"
+                        :persistent="true"
+                        @close="closeMember"
+                        @setMember = "setMember"
+                        @members = "members"
+                      >
+                      </MemberSearchDialogComponent>
                       <v-chip
                         class="mr-2"
                         style="cursor:pointer"
-                        v-for="(member, i) in purchase_member_info"
+                        v-for="(member, i) in order_member_info"
                         :key="i"
                         :color="member.name ? 'success' : 'default'"
                         @click="selectMemberDialog(i)"
@@ -607,124 +617,296 @@
                       </v-chip>
                     </v-col>
                     <v-col cols="12">
-                      <InputsFormComponent
+                      <div
                         slot="cardText"
-                        dense
-                        clearable
-                        filled
-                        hide-details
-                        :inputs="orderRequestInfoInputs"
                       >
-                        <v-col cols="12" sm="4" align-self="center">
-                          <v-btn
-                            color="primary"
-                            @click="nextUnestimatedStep(n, 'order')"
+                        <v-form ref="orderForm">
+                          <InputsFormComponent
+                            dense
+                            clearable
+                            filled
+                            hide-details
+                            :inputs="orderRequestInfoInputs"
                           >
-                            다음 ▶
-                          </v-btn>
+                            <v-col cols="12" sm="4" align-self="center">
+                              <v-btn
+                                color="primary"
+                                @click="nextOrderStep(n)"
+                              >
+                                다음 ▶
+                              </v-btn>
 
-                          <v-btn
-                            text
-                            color="error"
-                            @click="orderRequestDialog = false"
-                          >
-                            취소
-                          </v-btn>
-                        </v-col>
-                      </InputsFormComponent>
+                              <v-btn
+                                text
+                                color="error"
+                                @click="closeOrderRequestDialog"
+                              >
+                                취소
+                              </v-btn>
+                            </v-col>
+                          </InputsFormComponent>
+                        </v-form>
+                      </div>
                     </v-col>
                   </v-row>
                 </div>
                 <div v-if="n === 2">
                   <v-row>
                     <v-col cols="12">
-                      <orderPurchaseComponent
-                        ref="orderPurchaseComponent"
-                      />
+                      <!-- <orderPurchaseComponent
+                        :order-info = "order_confirm_data"
+                      /> -->
+                      <div >
+                        <p class="print_doc_title">발주서</p>
+                        <v-row style="margin-top:15px">
+                          <v-col cols="6">
+                            <v-img
+                              alt="Pionelectric Logo"
+                              class="shrink mr-2"
+                              contain
+                              src="../assets/img/pion_logo.png"
+                              transition="scale-transition"
+                              style="margin-top:10px; width: 150px;"
+                            />
+                          </v-col>
+                          <v-col cols="6">
+                            <table style="border-spacing: 0;width: 100%; text-align: center;">
+                                <tr>
+                                <td rowspan="3" class="approve_list_title">결재</td>
+                                <td class="approve_list_title approve_list_title_border">작성</td>
+                                <td class="approve_list_title approve_list_title_border">확인</td>
+                                <td class="approve_list_title approve_list_title_border">승인</td>
+                              </tr>
+                              <tr>
+                                <td class="approve_list_name">{{ login_info.name }}</td>
+                                <td class="approve_list_name">{{ order_confirm_data.checker }}</td>
+                                <td class="approve_list_name">{{ order_confirm_data.approver }}</td>
+                              </tr>
+                              <tr>
+                                <td class="approve_list_date">{{ mux.Date.format(new Date(), 'yyyy-MM-dd') }}</td>
+                                <td class="approve_list_date">{{ order_confirm_data.checker_id === login_info.id ? mux.Date.format(new Date(), 'yyyy-MM-dd') : '' }}</td>
+                                <td class="approve_list_date"></td>
+                              </tr>
+                            </table>
+                          </v-col>
+
+                          <v-col cols="12" sm="12" class="pb-0">
+                            <table style="border-spacing: 0px; width: 100%;">
+                              <tr class="text-body-1">
+                                <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">관리번호</td>
+                                <td class="order_info">PE-20240425-001</td>
+                                <td class="order_info order_title text-center" >발행일</td>
+                                <td class="order_info">2024-00-00</td>
+                                <td class="order_info order_title text-center">납기일</td>
+                                <td class="order_info">2024-00-00</td>
+                              </tr>
+                            </table>
+                          </v-col>
+
+                          <v-col cols="12" sm="6" class="pb-0">
+                            <table style="table-layout: fixed; border-spacing: 0px; width: 100%; ">
+
+                              <tr>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">수신업체</td>
+                                <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ order_confirm_data.company_name }}</td>
+                              </tr>
+                              <tr class="text-body-1">
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
+                                <td class="order_info" style=" style='WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">{{ order_confirm_data.company_registration_number }}</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
+                                <td class="order_info" style="border-bottom: 0px;">{{ order_confirm_data.company_manager }}</td>
+                              </tr>
+                              <tr>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
+                                <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ order_confirm_data.company_address }}</td>
+                              </tr>
+                              <tr class="text-body-1">
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">전화</td>
+                                <td class="order_info" style="border-bottom: 0px;border-right: 0px;">{{ order_confirm_data.company_phone }}</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">팩스</td>
+                                <td class="order_info" style="border-bottom: 0px;">{{ order_confirm_data.company_fax }}</td>
+                              </tr>
+                              <tr class="text-body-1">
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">결제조건</td>
+                                <td class="order_info" style="border-bottom: 0px;border-right: 0px;">{{ order_confirm_data.payment_terms }}</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트</td>
+                                <td class="order_info" style="border-bottom: 0px;">{{ order_confirm_data.company_fax }}</td>
+                              </tr>
+                              <tr>
+                                <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">계좌정보</td>
+                                <td colspan="3" class="order_info">{{ order_confirm_data.account_number }}</td>
+                              </tr>
+                            </table>
+                          </v-col>
+                          <v-col cols="12" sm="6" style="position: relative;" class="pb-0">
+                            <v-img
+                              alt="직인"
+                              contain
+                              src="../assets/img/pion_stamp.png"
+                              transition="scale-transition"
+                              width="40"
+                              style="position: absolute; right:25px; top:25px"
+                            />
+                            <table style=" border-spacing: 0px; width: 100%;">
+                              <tr>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
+                                <td colspan="3" class="order_info" style="border-bottom: 0px;">851 - 86 - 00038</td>
+                              </tr>
+                              <tr>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">상호</td>
+                                <td class="order_info" style="border-bottom: 0px;">파이온일렉트릭(주)</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;">대표자</td>
+                                <td class="order_info" style="border-bottom: 0px;">윤광희</td>
+                              </tr>
+                              <tr>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
+                                <td colspan="3" class="order_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호<br>(연세대학교 공학원)</td>
+                              </tr>
+                              <tr>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업태</td>
+                                <td class="order_info" style="border-bottom: 0px;">제조업</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;">종목</td>
+                                <td class="order_info" style="border-bottom: 0px;">전력전자기기</td>
+                              </tr>
+                              <tr>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표전화</td>
+                                <td class="order_info" style="border-bottom: 0px;">070-5096-4179</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;">팩스</td>
+                                <td class="order_info" style="border-bottom: 0px;">0505-300-4179</td>
+                              </tr>
+                              <tr>
+                                <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
+                                <td class="order_info" >OOO</td>
+                                <td class="order_info order_title text-center" >연락처</td>
+                                <td class="order_info">070-1234-5678</td>
+                              </tr>
+                            </table>
+                          </v-col>
+                        </v-row>
+                      </div>
+                    </v-col>
+                    <v-col cols="12">
                       <v-data-table
                         :headers="order_request_headers"
                         :items="order_request_data"
-                        item-key="product_code"
+                        group-by="item_code"
+                        item-key="item_code"
+                        hide-default-footer
+                        disable-pagination
                         dense
+                        disable-sort
+                        style="border:1px solid #ccc"
                       >
-                        <template v-slot:item="{ item }">
+
+                        <template v-slot:[`group.header`]="{items}">
+                          <th>
+                            <v-text-field
+                              v-model="items[0].order_name"
+                              dense
+                              hide-details
+                              style="font-size: 13px;"
+                            ></v-text-field>
+                          </th>
+                          <th>
+                            <v-text-field
+                              v-model="items[0].order_spec"
+                              dense
+                              hide-details
+                              style="font-size: 13px;"
+                            ></v-text-field>
+                          </th>
+                          <th>
+                            <v-text-field
+                              v-model="items[0].order_unit_price"
+                              dense
+                              hide-details
+                              style="font-size: 13px;"
+                              @keyup="orderPriceCalc(items[0])"
+                            ></v-text-field>
+                          </th>
+                          <th>{{ items[0].ordered_num }}</th>
+                          <th>{{ items[0].order_price }}</th>
+                          <th>{{ items[0].order_price_vat }}</th>
+                          <th>
+                            <v-icon
+                              color="primary"
+                              class="mr-2"
+                              x-small
+                              style="background: #e4e4e4; border-radius: 50px; padding: 4px; cursor: pointer;"
+                              @click="addNotes(items)"
+                            >
+                              mdi-plus-thick
+                            </v-icon>
+                          </th>
+                        </template>
+                        <template v-slot:item="{ item, index }">
                           <tr>
-                            <td>
-                              <!-- <v-icon
-                                color="error"
-                                class="mr-2"
-                                x-small
-                                style="background: #ffedb4; border-radius: 50px; padding: 4px; cursor: pointer;"
-                              >
-                                mdi-exclamation-thick
-                              </v-icon> -->
-                              {{ item.product_code }}
-                            </td>
-                            <td>
-                              <v-text-field
-                                v-model="item.name"
-                                filled
-                                dense
-                                hide-details
-                                style="font-size: 13px;"
-                              ></v-text-field>
-                            </td>
-                            <td>
-                              <v-text-field
-                                v-model="item.spec"
-                                filled
-                                dense
-                                hide-details
-                                style="font-size: 13px;"
-                              ></v-text-field>
-                            </td>
-                            <td>
-                              <v-text-field
-                                v-model="item.unit_price"
-                                filled
-                                dense
-                                hide-details
-                                style="font-size: 13px;"
-                              ></v-text-field>
-                            </td>
-                            <!-- <td>
-                              <v-text-field
-                                v-model="item.purchase_num"
-                                filled
-                                dense
-                                hide-details
-                                style="font-size: 13px;"
-                              ></v-text-field>
-                            </td> -->
-                            <td>{{ item.purchase_num }}</td>
-                            <td>{{ item.purchase_num * item.unit_price }}</td>
-                            <td>{{ (item.purchase_num * item.unit_price)*0.1 }}</td>
-                            <td>
+                            <td colspan="6">
                               <v-text-field
                                 v-model="item.note"
-                                filled
                                 dense
                                 hide-details
                                 style="font-size: 13px;"
+                                @keyup="noteChange(item.item_code, item.note, index)"
                               ></v-text-field>
+                            </td>
+                            <td>
+                              <v-icon
+                                color="primary"
+                                class="mr-2"
+                                x-small
+                                style="background: #e4e4e4; border-radius: 50px; padding: 4px; cursor: pointer;"
+                                @click="subtractNotes(item.item_code, index)"
+                              >
+                                mdi-minus-thick
+                              </v-icon>
                             </td>
                           </tr>
                         </template>
                       </v-data-table>
                     </v-col>
+                    <v-col cols="12" class="mt-4">
+                      <v-btn
+                        x-small
+                        color="grey darken-1"
+                        class="white--text"
+                        @click="detail_list ? detail_list = false : detail_list = true"
+                      >
+                        {{ detail_list ? '접기' : '프로젝트 정보' }}
+                      </v-btn>
+                      <v-data-table
+                        v-if="detail_list"
+                        :headers="order_purchase_list_headers"
+                        :items="order_purchase_list_data"
+                        group-by="project_code"
+                        dense
+                        style="border:1px solid #ccc"
+                      >
+                        <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                          <th  @click="toggle" colspan="5">
+                            <v-icon
+                            >
+                              {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                            </v-icon>
+                            {{ items[0].project_code }}
+                          </th>
+                        </template>
+                      </v-data-table>
+                    </v-col>
                   </v-row>
-                  <v-card class="elevation-0">
-                    <v-card-text>
+                  <v-divider class="my-6"></v-divider>
+                  <v-card class="elevation-0 pa-0">
+                    <v-card-text class="pa-0">
                       <v-btn
                         color="primary"
-                        @click="orderRequestDialog = false"
+                        @click="orderApprovalRequest"
                       >
                         요청
                       </v-btn>
                       <v-btn
                         text
                         color="error"
-                        @click="orderRequestDialog = false"
+                        @click="closeOrderRequestDialog"
                       >
                         취소
                       </v-btn>
@@ -754,7 +936,8 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import MailFormComponent from "@/components/MailFormComponent.vue";
-import orderPurchaseComponent from "@/components/orderPurchaseComponent.vue";
+import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent.vue";
+// import orderPurchaseComponent from "@/components/orderPurchaseComponent.vue";
 import PurchaseSearchPageConfig from "@/configure/PurchaseSearchPageConfig.json";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import mux from "@/mux";
@@ -774,7 +957,8 @@ export default {
                 InputsFormComponent,
                 LoadingModalComponent,
                 MailFormComponent,
-                orderPurchaseComponent,
+                MemberSearchDialogComponent,
+                // orderPurchaseComponent,
               },
   data(){
     return{
@@ -786,9 +970,12 @@ export default {
       set_estimate_step: 2,
       order_steppers: 1,
       order_step: 2,
+      member_type_index:0,
       tab_search: null,
       unestimated_request:'mailed',
       clicked_tr_phase: '',
+      detail_list: false,
+      member_dialog: false,
       show_request_estimate_button: false,
       orderRequestDialog: false,
       purchase_detail_dialog: false,
@@ -808,22 +995,28 @@ export default {
 
       change_approve:{},
 
+      members_list:[],
       searched_products:[],
       selected_unestimated_data:[],
       selected_estimate_request_list_data:[],
 
       order_request_data:[],
+      order_purchase_list_data:[],
       search_other_purchase_data:[],
       check_other_purchase_data:[],
 
+      order_confirm_data:{},
+
+      // order_item_note_data:PurchaseSearchPageConfig.order_item_note_data,
+
+      order_item_note_data:[],
       defaultMailData: PurchaseSearchPageConfig.default_mail_data,
       search_tab_items: PurchaseSearchPageConfig.search_tab_items,
-      purchase_member_info:PurchaseSearchPageConfig.purchase_member_info,
+      order_member_info:PurchaseSearchPageConfig.order_member_info,
       login_info: PurchaseSearchPageConfig.login_info,
       searchCardInputs:PurchaseSearchPageConfig.searchCardInputs,
       estimateInfoInputs:PurchaseSearchPageConfig.estimateInfoInputs,
       orderRequestInfoInputs:PurchaseSearchPageConfig.orderRequestInfoInputs,
-      setPurchaseInputs:PurchaseSearchPageConfig.setPurchaseInputs,
       purchase_headers:PurchaseSearchPageConfig.purchase_headers,
       purchase_detail_headers:PurchaseSearchPageConfig.purchase_detail_headers,
       other_obtain_headers:PurchaseSearchPageConfig.other_obtain_headers,
@@ -831,6 +1024,7 @@ export default {
       selected_unestimated_headers:PurchaseSearchPageConfig.selected_unestimated_headers,
       purchase_order_headers:PurchaseSearchPageConfig.purchase_order_headers,
       order_request_headers:PurchaseSearchPageConfig.order_request_headers,
+      order_purchase_list_headers:PurchaseSearchPageConfig.order_purchase_list_headers,
       bom_list_headers: PurchaseSearchPageConfig.bom_list_headers,
       bom_list_purchase_headers: PurchaseSearchPageConfig.bom_list_purchase_headers,
       bom_list_data: PurchaseSearchPageConfig.bom_list_test_data,
@@ -889,12 +1083,19 @@ export default {
         this.login_info.department = this.$cookies.get(this.$configJson.cookies.department.key);
         this.login_info.office_phone_number = this.$cookies.get(this.$configJson.cookies.office_phone_number.key);
         this.login_info.phone_number = this.$cookies.get(this.$configJson.cookies.phone_number.key);
-        console.log(this.login_info)
+
+
+        this.order_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+        this.order_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
+        this.order_member_info[0].user_id =  this.$cookies.get(this.$configJson.cookies.id.key);
       } catch (error) {
         if (prevURL !== window.location.href) return;
         mux.Util.showAlert(error);
       }
+      mux.Rules.rulesSet(this.orderRequestInfoInputs);
+
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
+      this.orderRequestInfoInputs = JSON.parse(JSON.stringify(this.orderRequestInfoInputs));
       this.estimateInfoInputs = JSON.parse(JSON.stringify(this.estimateInfoInputs));
       this.estimateInfoInpuorderRequestInfoInputsts = JSON.parse(JSON.stringify(this.orderRequestInfoInputs));
       this.email_sign =`<div><p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px;"><strong>${this.login_info.name} 파이온 일렉트릭㈜ ${this.login_info.department} ${this.login_info.position} / Pion Electric Co., Ltd. </strong></p><p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;">Home page : www.pionelectric.com<br>E-mail: ${this.login_info.email}  C/P: ${'+82(0)' + this.login_info.phone_number.slice(1)}<br> Tel: ${'+82(0)' + this.login_info.office_phone_number.slice(1)} Fax: +82(0)505-300-4179<br><br> 본사: (03722) 서울특별시 서대문구 연세로 50 연세대학교 공학원 116호<br> Head office: #116, Engineering Research Park, Yonsei University, 50, Yonsei-ro, Seodaemun-gu, Seoul, 03722, Republic of KOREA<br><br> 광명 사무소: (14348) 경기도 광명시 일직로 72  A-1818호<br> Gwangmyeong office: #A-1818, 72, Iljik-ro, Gwangmyeong-si, Gyeonggi-do, Republic of KOREA 14348<br><br> 광주 공장: (47580) 광주광역시 광산구 연산동 1247<br> Gwangju factory: 1247 Yeonsan-dong, Gwangsan-gu, Gwangju, Republic of KOREA 47580<br><br> 보령 공장: (33448) 충청남도 보령시 주교면 관창공단길 266<br> Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheongnam-do, Republic of KOREA 33448<br><br></p> <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;"><strong>제품 및 서비스</strong><br> ∙ 고자기장 기반의 산업용 운용기기 (Development of Operating Device for Industrial Applications based on High Magnetic Field)<br> ∙ 광기기 기반의 전력전자 응용기기 (Development of Power Electronics Application Device based on Optical Device)<br> ∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)<br> ∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)<br> ∙ 전기공사면허</p> </div>`
@@ -915,40 +1116,140 @@ export default {
       }
     },
 
-    nextUnestimatedStep (step, type) {
-      if(type === 'estimate'){
-        if(step === 1 && this.selected_unestimated_data.length === 0){
-          mux.Util.showAlert('견적을 요청할 자재를 선택해주세요.');
-          return;
-        }else if(step === 1 && this.selected_unestimated_data.length !== 0){
-          //선택한 자재가 다른 구매요청에 있는지 확인 (발주요청하지 않은 데이터만)
-          let searched_data = PurchaseSearchPageConfig.test_purchase_data;
-          this.selected_unestimated_data.forEach(item => {
-            for(let i=0; i<searched_data.length; i++){
-              let data = searched_data[i];
-              for(let j=0; j<data.belong_data.length; j++){
-                let belong = data.belong_data[j];
-                if(belong.item_code === item.item_code && belong.project_code !== item.project_code){
-                  item.exclamation = true
-                }
+    nextUnestimatedStep (step) {
+      if(step === 1 && this.selected_unestimated_data.length === 0){
+        mux.Util.showAlert('견적을 요청할 자재를 선택해주세요.');
+        return;
+      }else if(step === 1 && this.selected_unestimated_data.length !== 0){
+        //선택한 자재가 다른 구매요청에 있는지 확인 (발주요청하지 않은 데이터만)
+        let searched_data = PurchaseSearchPageConfig.test_purchase_data;
+        this.selected_unestimated_data.forEach(item => {
+          for(let i=0; i<searched_data.length; i++){
+            let data = searched_data[i];
+            for(let j=0; j<data.belong_data.length; j++){
+              let belong = data.belong_data[j];
+              if(belong.item_code === item.item_code && belong.project_code !== item.project_code){
+                item.exclamation = true
               }
             }
-            // item.exclamation = true
-          });
-          this.search_other_purchase_data = searched_data
-          this.selected_estimate_request_list_data = this.selected_unestimated_data
-
-
-        }
-        this.unestimated_steppers = step + 1
+          }
+          // item.exclamation = true
+        });
+        this.search_other_purchase_data = searched_data
+        this.selected_estimate_request_list_data = this.selected_unestimated_data
       }
-      else{
-        this.order_steppers = step + 1
-      }
+      this.unestimated_steppers = step + 1
     },
 
     nextSetEstimateStep (step) {
       this.set_estimate_steppers = step + 1
+    },
+
+    nextOrderStep(step){
+      const validate = this.$refs.orderForm[0].validate();
+      if(validate){
+        let next_step = true;
+
+        let checker = this.order_member_info.find(x=>x.type === '확인').user_id;
+        let approver = this.order_member_info.find(x=>x.type === '승인').user_id;
+        if(checker === '' ){
+          mux.Util.showAlert('확인자를 선택해주세요.');
+          return next_step = false;
+        }else if(approver === '' ){
+          mux.Util.showAlert('승인자를 선택해주세요.');
+          return next_step = false;
+        }
+
+
+        let order_file = this.orderRequestInfoInputs.find(x=>x.label === '발주확인서').value;
+        let registration_file = this.orderRequestInfoInputs.find(x=>x.label === '사업자 등록증').value;
+        let bankbook_file = this.orderRequestInfoInputs.find(x=>x.label === '통장 사본').value;
+        if(order_file === '' || order_file === null || order_file === undefined){
+          mux.Util.showAlert('발주확인서를 첨부해주세요.');
+          return next_step = false;
+        }else if(registration_file === '' || registration_file === null || registration_file === undefined){
+          mux.Util.showAlert('사업자 등록증을 첨부해주세요.');
+          return next_step = false;
+        }else if(bankbook_file === '' || bankbook_file === null || bankbook_file === undefined){
+          mux.Util.showAlert('통장 사본을 첨부해주세요.');
+          return next_step = false;
+        }
+
+        if(next_step){
+          this.orderRequestInfoInputs.forEach(async item => {
+            if(item.type !== 'file'){
+              this.order_confirm_data[item.column_name] = item.value;
+            }else{
+              this.order_confirm_data[item.column_name+'_value'] = item.value;
+              this.order_confirm_data[item.column_name+'_name'] = item.value.name;
+              const getPdfThumbnail = await mux.Util.getPdfThumbnail(item.value, 1, false);
+              let file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+              this.order_confirm_data[item.column_name+'_thumbnail'] = file_thumbnail;
+            }
+          });
+          this.order_member_info.forEach(mem => {
+            if(mem.type === '확인'){
+              this.order_confirm_data.checker = mem.name;
+              this.order_confirm_data.checker_id = mem.user_id;
+              if(mem.user_id == this.login_info.id){
+                this.order_confirm_data.approval_phase = '미승인';
+              }else{
+                this.order_confirm_data.approval_phase = '미확인';
+              }
+            }else if(mem.type === '승인'){
+              this.order_confirm_data.approver = mem.name;
+              this.order_confirm_data.approver_id = mem.user_id;
+            }
+          })
+          let purchase_data = JSON.parse(JSON.stringify(this.order_purchase_list_data));
+          this.order_steppers = step + 1
+          purchase_data.forEach(item => {
+            if(this.order_request_data.length === 0){
+              item.ordered_num = item.purchase_num;
+              item.order_name = item.name;
+              item.order_spec = item.spec;
+              item.order_unit_price = 0;
+              item.order_price = 0;
+              item.order_price_vat = 0;
+              item.note = '';
+              this.order_request_data.push(item);
+            }else{
+              for(let o=0; o<this.order_request_data.length; o++){
+                let order = this.order_request_data[o];
+                if(order.item_code === item.item_code){
+                  order.ordered_num = order.purchase_num + item.purchase_num;
+                  item.order_name = item.name;
+                  item.order_spec = item.spec;
+                  item.order_unit_price = 0;
+                  item.order_price = 0;
+                  item.order_price_vat = 0;
+                  item.note = '';
+                  return;
+                }else{
+                  item.ordered_num = item.purchase_num;
+                  item.order_name = item.name;
+                  item.order_spec = item.spec;
+                  item.order_unit_price = 0;
+                  item.order_price = 0;
+                  item.order_price_vat = 0;
+                  item.note = '';
+                  this.order_request_data.push(item);
+                }
+              }
+            }
+          });
+
+          this.order_request_data.forEach(item => {
+            this.order_item_note_data.push({
+              item_code: item.item_code,
+              belong_data: [
+                {note: ""}
+              ]
+            });
+          });
+        }
+      }
+
     },
 
     checkOthers(item, project_code){
@@ -983,10 +1284,85 @@ export default {
         this.selected_estimate_request_list_data.push(...item);
       }
     },
+    orderPriceCalc(item){
+      console.log(item);
+      this.order_request_data.forEach(data => {
+        if(data.item_code === item.item_code){
+          data.order_unit_price = item.order_unit_price;
+          data.order_price = Math.round(item.order_unit_price * item.ordered_num);
+          data.order_price_vat = Math.round(item.order_price * 0.1);
+        }
+      });
+    },
     subtractList(project_code){
       console.log(project_code);
       let filtered = this.selected_estimate_request_list_data.filter(data => data.project_code !== project_code);
       this.selected_estimate_request_list_data = filtered
+    },
+    addNotes(item){
+      // let data = item[0];
+      // data.note= '';
+      let new_data = JSON.parse(JSON.stringify(item[0]))
+      new_data.note = '';
+      this.order_request_data.push(new_data);
+      // this.order_request_data[this.order_request_data.length-1].note = '';
+
+      this.order_item_note_data.forEach(data => {
+        if(data.item_code === item[0].item_code){
+          data.belong_data.push({note: ""});
+        }
+      });
+    },
+    subtractNotes(item, idx){
+      if(this.order_item_note_data.find(data => data.item_code === item).belong_data.length === 1){
+        this.order_item_note_data.find(data => data.item_code === item).belong_data[idx].note = '';
+      }else{
+        this.order_item_note_data.find(data => data.item_code === item).belong_data.splice(idx, 1);
+      }
+
+      let order_item_note_data = JSON.parse(JSON.stringify(this.order_item_note_data));
+      let order_data = this.order_request_data;
+      order_data.forEach(data => {
+        delete data.note;
+      });
+
+
+      // let set = new Set(order_data);
+      // let order_data_unique = [...set];
+      let order_data_unique = order_data.reduce((prev, now) => {
+        if(!prev.some(obj => obj.item_code === now.item_code)){
+          prev.push(now);
+        }
+        return prev;
+      }, [])
+
+      let note_data = [];
+      order_item_note_data.forEach(data => {
+        for(let i=0; i<data.belong_data.length; i++){
+          let reload = data.belong_data[i]
+          reload.item_code = data.item_code;
+          note_data.push(reload);
+        }
+      });
+
+      let re_data = []
+      note_data.forEach(data => {
+        for(let i=0; i<order_data_unique.length; i++){
+          if(data.item_code === order_data_unique[i].item_code){
+            for(let k=0; k<Object.keys(order_data_unique[i]).length; k++){
+              data[Object.keys(order_data_unique[i])[k]] = order_data_unique[i][Object.keys(order_data_unique[i])[k]];
+            }
+            // order_data_unique[i].note = data.note;
+            re_data.push(data);
+          }
+        }
+      });
+      console.log(re_data)
+      this.order_request_data = [];
+      this.order_request_data.push(...re_data)
+    },
+    noteChange(item, note, idx){
+      this.order_item_note_data.find(data => data.item_code === item).belong_data[idx].note = note;
     },
     async download(foldername, filename, prefix) {
       this.loading_dialog = true;
@@ -1039,8 +1415,38 @@ export default {
       this.set_estimate_steppers = 1;
       this.selected_unestimated_data =[];
     },
+    closeOrderRequestDialog(){
+      this.orderRequestDialog = false;
+      this.order_steppers = 1;
+      this.order_member_info[1].name = '';
+      this.order_member_info[1].email = '';
+      this.order_member_info[1].user_id = '';
+      this.orderRequestInfoInputs.forEach(item => {
+        if(item.type !== 'file'){
+          item.value = '';
+        }else{
+          delete item.value
+        }
+      });
+      this.order_confirm_data = {};
+      this.order_request_data = [];
+      this.order_item_note_data = [];
+      this.order_purchase_list_data = [];
+
+    },
     orderRequest(item){
-      this.order_request_data = item
+      this.orderRequestInfoInputs.find(data => data.label === '수신업체').value = item[0].purchase_estimate_company;
+
+      //동일한 견적 코드를 가진 데이터 조회
+      this.purchase_data.forEach(data => {
+        for(let i=0; i<data.belong_data.length; i++){
+          if(data.belong_data[i].purchase_estimate_code === item[0].purchase_estimate_code){
+            data.belong_data[i].project_code = data.project_code
+            this.order_purchase_list_data.push(data.belong_data[i]);
+          }
+        }
+      });
+      // this.order_request_data = item
       this.orderRequestDialog = true;
     },
     async clickApproveData(item){
@@ -1063,58 +1469,20 @@ export default {
       this.purchase_detail_dialog = true;
     },
 
-    async searchItemStock(data){
-      const prevURL = window.location.href;
-      try {
-        data.forEach(async datas => {
-          let stock_check = await mux.Server.post({
-            path: '/api/common_rest_api/',
-            params: [
-              {
-                "product_table.product_code": datas.product_code,
-
-                "module_table.module_code": datas.product_code,
-
-                "material_table.material_code": datas.product_code,
-                "material_table.directly_written": 0,
-              }
-            ],
-            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
-          });
-          if (prevURL !== window.location.href) return;
-
-          if (typeof stock_check === 'string'){
-            stock_check = JSON.parse(stock_check);
-          }
-          if(stock_check['code'] == 0){
-
-            stock_check = stock_check['data'].map(a => {
-              if (!a.stock_num){
-                a.stock_price = 0;
-              }else {
-                a.stock_price = Math.round(a.unit_price * a.stock_num)
-              }
-              return a;
-            });
-
-            console.log(stock_check);
-
-            stock_check.forEach(data => {
-              this.searched_products.push(data);
-            });
-          }
-
-        })
-
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
-      }
+    selectMemberDialog(idx){
+      this.member_type_index = idx
+      this.member_dialog = true;
+    },
+    setMember(item){
+      this.order_member_info[this.member_type_index].name = item.name.trim()
+      this.order_member_info[this.member_type_index].user_id = item.user_id
+      this.closeMember();
+    },
+    members(data){
+      this.members_list=data;
+    },
+    closeMember(){
+      this.member_dialog = false;
     },
     // async setApprovalPhase(item, change, reason){
     async setApprovalPhase(item){
@@ -1394,6 +1762,236 @@ export default {
           mux.Util.showAlert(error);
       }
 
+
+    },
+    async orderApprovalRequest(){
+
+      const currDate = new Date();
+      let confirmation_data = {};
+      let code = 'PE-' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
+
+      // order_confirmation_table insert 데이터 정리
+      confirmation_data = JSON.parse(JSON.stringify(this.order_confirm_data))
+      delete confirmation_data.order_confirmation_file_value;
+      delete confirmation_data.business_registration_file_value;
+      delete confirmation_data.bankbook_file_value;
+
+
+      //order_product_table insert 데이터 정리
+      let order_data = JSON.parse(JSON.stringify(this.order_request_data));
+      order_data.forEach(data => {
+        delete data.note;
+      });
+
+      let order_data_unique = order_data.reduce((prev, now) => {
+        if(!prev.some(obj => obj.item_code === now.item_code)){
+          prev.push(now);
+        }
+        return prev;
+      }, [])
+
+      for(let d=0; d<order_data_unique.length; d++){
+        let order = order_data_unique[d];
+        if(order.order_unit_price === 0){
+          mux.Util.showAlert('단가를 입력해주세요.');
+          return;
+        }
+      }
+
+
+      this.loading_dialog = true;
+
+      let sendData = {
+        "order_confirmation_table-insert": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "creater"
+          },
+          "data":{
+            "code": code,
+            "approval_phase": confirmation_data.approval_phase,
+            "checker": confirmation_data.checker,
+            "checker_id": confirmation_data.checker_id,
+            "approver": confirmation_data.approver,
+            "approver_id": confirmation_data.approver_id,
+            "due_date": confirmation_data.due_date,
+            "company_name": confirmation_data.company_name,
+            "company_manager": confirmation_data.company_manager,
+            "company_registration_number": confirmation_data.company_registration_number,
+            "company_address": confirmation_data.company_address,
+            "company_phone": confirmation_data.company_phone,
+            "company_fax": confirmation_data.company_fax,
+            "payment_terms": confirmation_data.payment_terms,
+            "account_number": confirmation_data.account_number,
+            "order_confirmation_file": confirmation_data.order_confirmation_file_name,
+            "order_confirmation_thumbnail": confirmation_data.order_confirmation_file_thumbnail,
+            "business_registration_file": confirmation_data.business_registration_file_name,
+            "business_registration_thumbnail": confirmation_data.business_registration_file_thumbnail,
+            "bankbook_file": confirmation_data.bankbook_file_name,
+            "bankbook_thumbnail": confirmation_data.bankbook_file_thumbnail
+          },
+          "select_where": {"code": code},
+          "rollback": "yes"
+        }]
+      };
+      if(sendData["order_confirmation_table-insert"][0].data.approval_phase === '미승인'){
+        sendData["order_confirmation_table-insert"][0].data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+      }
+
+      let product_data = [];
+      order_data_unique.forEach(data => {
+        product_data.push({
+          "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "creater"
+            },
+            "data":{
+              "code" : code,
+              "item_code" : data.item_code,
+              "name" : data.order_name,
+              "spec" : data.order_spec,
+              "unit_price" : data.order_unit_price,
+              "ordered_num" : data.ordered_num,
+            },
+            "select_where": {"code": code, "item_code": data.item_code},
+            "rollback": "yes"
+        });
+      });
+      sendData["order_product_table-insert"] = product_data;
+
+
+      //order_product_notes_table insert 데이터 정리
+      let note_data = [];
+      this.order_item_note_data.forEach(data => {
+        for(let i=0; i<data.belong_data.length; i++){
+          let note = data.belong_data[i];
+          if(note.note !== ''){
+            note_data.push({
+              "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "code" : code,
+                  "item_code" : data.item_code,
+                  "note" : note.note,
+                },
+                "select_where": {"code": code, "item_code": data.item_code},
+                "rollback": "yes"
+            });
+          }
+        }
+      });
+      sendData["order_product_notes_table-insert"] = note_data;
+
+
+      //purchase_product_table update 데이터 정리
+      let purchase_estimate_code = this.order_purchase_list_data[0].purchase_estimate_code;
+      sendData["purchase_product_table-update"] = [{
+        "user_info": {
+          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+          "role": "modifier"
+        },
+        "data": {
+          "order_code": code,
+          "ordered_date": mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss')
+        },
+        "update_where": {"purchase_estimate_code": purchase_estimate_code},
+        "rollback": "yes"
+      }];
+
+      const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: sendData
+          });
+          // let result = await mux.Server.uploadFile(sendData);
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0){
+            mux.Util.showAlert('발주 요청이 완료되었습니다', '요청 완료', 3000);
+            //메일 알림 관련
+            let mailTo = [];
+            // mailTo.push(confirmation_data.approver_id);
+            let phase;
+            if(confirmation_data.approval_phase === '미확인'){
+              mailTo.push(confirmation_data.checker_id);
+              phase = '확인'
+            }else if(confirmation_data.approval_phase === '미승인'){
+              mailTo.push(confirmation_data.approver_id);
+              phase = '승인'
+            }
+
+            // 메일 본문 내용
+            let content=`
+              <html>
+                <body>
+                  <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                    <h2 style="text-align: center; color:#13428a">발주 ${phase} 요청 알림</h2>
+                    <table style="width: 100%;border-spacing: 10px 10px;">
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 업체</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.company_name}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.checker}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
+                      </tr>
+                    </table>
+                    <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${confirmation_data.project_code}">
+                      <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                        확인하기
+                      </p>
+                    </a>
+                  </div>
+                </body>
+              </html>
+            `;
+            try {
+              let sendEmailAlam = await mux.Server.post({
+                path: '/api/send_email/',
+                to_addrs: mailTo,
+                subject: `발주 ${phase} 요청 알림`,
+                content: content
+              });
+              if (prevURL !== window.location.href) return;
+              if(sendEmailAlam['code'] == 0){
+                console.log(sendEmailAlam['message']);
+              } else {
+                if (prevURL !== window.location.href) return;
+                mux.Util.showAlert(sendEmailAlam['failed_info']);
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                mux.Util.showAlert(error.response['data']['failed_info'].msg);
+              else
+                mux.Util.showAlert(error);
+            }
+          } else {
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
+          else
+            mux.Util.showAlert(error);
+        }
+        this.loading_dialog = false;
 
     },
     estiamteDialog(type, order, item){

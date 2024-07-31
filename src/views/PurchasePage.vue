@@ -1371,100 +1371,100 @@ export default {
         // }
 
         const prevURL = window.location.href;
-          try {
-            // let result = await mux.Server.post({
-            //   path: '/api/common_rest_api/',
-            //   params: sendData
-            // });
-            let result = await mux.Server.uploadFile(sendData);
-            if (prevURL !== window.location.href) return;
+        try {
+          // let result = await mux.Server.post({
+          //   path: '/api/common_rest_api/',
+          //   params: sendData
+          // });
+          let result = await mux.Server.uploadFile(sendData);
+          if (prevURL !== window.location.href) return;
 
-            if (typeof result === 'string'){
-              result = JSON.parse(result);
-            }
-            if(result.data['code'] == 0){
-              mux.Util.showAlert('구매 요청이 완료되었습니다', '요청 완료', 3000);
-
-              //메일 알림 관련
-              let mailTo = [];
-              mailTo.push(confirmation_data.approver_id);
-              // let phase;
-              // if(confirmation_data.approval_phase === '미확인'){
-              //   mailTo.push(confirmation_data.checker_id);
-              //   phase = '확인'
-              // }else if(confirmation_data.approval_phase === '미승인'){
-              //   mailTo.push(confirmation_data.approver_id);
-              //   phase = '승인'
-              // }
-
-              // 메일 본문 내용
-              let content=`
-                <html>
-                  <body>
-                    <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                      <h2 style="text-align: center; color:#13428a">구매 요청 알림</h2>
-                      <table style="width: 100%;border-spacing: 10px 10px;">
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.project_code === '' ? '-' : confirmation_data.project_code}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">비고</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.note === '' ? '-' : confirmation_data.note}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">구매담당자</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
-                        </tr>
-                      </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${confirmation_data.project_code}">
-                        <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                          확인하기
-                        </p>
-                      </a>
-                    </div>
-                  </body>
-                </html>
-              `;
-              try {
-                let sendEmailAlam = await mux.Server.post({
-                  path: '/api/send_email/',
-                  to_addrs: mailTo,
-                  subject: "구매 요청 알림",
-                  content: content
-                });
-                if (prevURL !== window.location.href) return;
-                if(sendEmailAlam['code'] == 0){
-                  console.log(sendEmailAlam['message']);
-                } else {
-                  if (prevURL !== window.location.href) return;
-                  mux.Util.showAlert(sendEmailAlam['failed_info']);
-                }
-              } catch (error) {
-                if (prevURL !== window.location.href) return;
-                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
-                else
-                  mux.Util.showAlert(error);
-              }
-            } else {
-              if (prevURL !== window.location.href) return;
-              mux.Util.showAlert(result['failed_info']);
-            }
-          } catch (error) {
-            if (prevURL !== window.location.href) return;
-            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              mux.Util.showAlert(error.response['data']['failed_info'].msg);
-            else
-              mux.Util.showAlert(error);
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
           }
-          this.loading_dialog = false;
-          this.bom_list_purchase_data=[];
-          this.bom_list_purchase_items_data=[];
+          if(result.data['code'] == 0){
+            mux.Util.showAlert('구매 요청이 완료되었습니다', '요청 완료', 3000);
+
+            //메일 알림 관련
+            let mailTo = [];
+            mailTo.push(confirmation_data.approver_id);
+            // let phase;
+            // if(confirmation_data.approval_phase === '미확인'){
+            //   mailTo.push(confirmation_data.checker_id);
+            //   phase = '확인'
+            // }else if(confirmation_data.approval_phase === '미승인'){
+            //   mailTo.push(confirmation_data.approver_id);
+            //   phase = '승인'
+            // }
+
+            // 메일 본문 내용
+            let content=`
+              <html>
+                <body>
+                  <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                    <h2 style="text-align: center; color:#13428a">구매 요청 알림</h2>
+                    <table style="width: 100%;border-spacing: 10px 10px;">
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.project_code === '' ? '-' : confirmation_data.project_code}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">비고</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.note === '' ? '-' : confirmation_data.note}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">구매담당자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
+                      </tr>
+                    </table>
+                    <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${confirmation_data.project_code}">
+                      <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                        확인하기
+                      </p>
+                    </a>
+                  </div>
+                </body>
+              </html>
+            `;
+            try {
+              let sendEmailAlam = await mux.Server.post({
+                path: '/api/send_email/',
+                to_addrs: mailTo,
+                subject: "구매 요청 알림",
+                content: content
+              });
+              if (prevURL !== window.location.href) return;
+              if(sendEmailAlam['code'] == 0){
+                console.log(sendEmailAlam['message']);
+              } else {
+                if (prevURL !== window.location.href) return;
+                mux.Util.showAlert(sendEmailAlam['failed_info']);
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                mux.Util.showAlert(error.response['data']['failed_info'].msg);
+              else
+                mux.Util.showAlert(error);
+            }
+          } else {
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
+          else
+            mux.Util.showAlert(error);
+        }
+        this.loading_dialog = false;
+        this.bom_list_purchase_data=[];
+        this.bom_list_purchase_items_data=[];
       }
     },
 
