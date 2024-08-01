@@ -229,7 +229,7 @@
         <v-list-group
           v-if="productionPagesInfo.length > 0"
           :value="productionMenu"
-          prepend-icon="mdi-check-decagram"
+          prepend-icon="mdi-wrench-cog"
         >
           <template v-slot:activator>
             <v-list-item-title>생산 관리</v-list-item-title>

@@ -1355,20 +1355,6 @@ export default {
 
         sendData.path = '/api/multipart_rest_api/';
         sendData.prefix = code + '_';
-        // if (this.inbound_confirmation_data.receiving_inspection) {
-        //   sendData.files.push({
-        //     folder: 'inbound/receiving_inspection',
-        //     file: this.receiving_inspection_value,
-        //     name: this.inbound_confirmation_data.receiving_inspection
-        //   });
-        // }
-        // if (this.inbound_confirmation_data.inspection_report) {
-        //   sendData.files.push({
-        //     folder: 'inbound/inspection_report',
-        //     file: this.inspection_report_value,
-        //     name: this.inbound_confirmation_data.inspection_report
-        //   });
-        // }
 
         const prevURL = window.location.href;
         try {
@@ -1525,10 +1511,6 @@ export default {
           "purchase_estimate_thumbnail" :""
         }
       )
-    },
-
-    showEstiamteSet(item){
-      console.log(mux.Util.imageBinary(item.purchase_estimate_thumbnail));
     },
 
   }
