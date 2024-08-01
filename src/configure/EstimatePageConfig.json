@@ -74,7 +74,7 @@
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"},
     { "text": "작성자", "align": "start", "value": "given_name"},
     { "text": "업체명", "align": "start", "value": "company_name"},
-    { "text": "발행일", "align": "start", "value": "created_time"},
+    { "text": "발행일", "align": "start", "value": "issue_date"},
     { "text": "총액", "align": "start", "value": "cost_total_amount"}
   ],
   "survey_cost_headers": [
