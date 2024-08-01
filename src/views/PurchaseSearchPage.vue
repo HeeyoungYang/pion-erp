@@ -74,7 +74,7 @@
       :dialog-transition="'slide-x-transition'"
       :dialog-custom="'custom-dialog elevation-0 white'"
       :card-elevation="'0'"
-      @close="closeProductList"
+      @close="closePurchaseDetail"
     >
     <v-container>
       <v-tabs
@@ -1008,18 +1008,9 @@ export default {
     return{
       mux: mux,
       dates: [],
-      unestimated_steppers: 1,
-      unestimated_step: 3,
-      set_estimate_steppers: 1,
-      set_estimate_step: 2,
-      order_steppers: 1,
-      order_step: 2,
-      member_type_index:0,
+
+
       tab_search: null,
-      unestimated_request:'mailed',
-      clicked_tr_phase: '',
-      estimate_company: '',
-      estimate_code: '',
       check_estimate_list:false,
       creater_authority: false,
       detail_list: false,
@@ -1033,37 +1024,41 @@ export default {
       setEstimateDialog: false,
       estimatedDialog: false,
       show_selected_unestimated_data: false,
-      edit_purchase_estimate: false,
       check_editable_purchase_estimate: false,
 
+      unestimated_request:'mailed',
+      clicked_tr_phase: '',
+      estimate_company: '',
+      estimate_code: '',
       purchaseEstimateCode: '',
       purchaseEstimateThumbnail: '',
       purchaseEstimateFile: '',
-
-      inspectionReportThumbnail: '',
       email_sign:'',
       estimate_request_company: '',
 
-      inbound_info_data:{},
+      unestimated_steppers: 1,
+      unestimated_step: 3,
+      set_estimate_steppers: 1,
+      set_estimate_step: 2,
+      order_steppers: 1,
+      order_step: 2,
+      member_type_index:0,
 
-      change_approve:{},
+      order_confirm_data:{},
 
       members_list:[],
-      searched_products:[],
       selected_unestimated_data:[],
       selected_estimate_request_list_data:[],
-
       order_request_data:[],
       order_purchase_list_data:[],
       estimate_purchase_list_data:[],
       search_other_purchase_data:[],
       check_other_purchase_data:[],
-
-      order_confirm_data:{},
-
-      // order_item_note_data:PurchaseSearchPageConfig.order_item_note_data,
-
+      purchase_data:[],
+      purchase_detail_data:[],
+      other_obtain_data:[],
       order_item_note_data:[],
+
       defaultMailData: PurchaseSearchPageConfig.default_mail_data,
       search_tab_items: PurchaseSearchPageConfig.search_tab_items,
       order_member_info:PurchaseSearchPageConfig.order_member_info,
@@ -1074,29 +1069,19 @@ export default {
       purchase_headers:PurchaseSearchPageConfig.purchase_headers,
       purchase_detail_headers:PurchaseSearchPageConfig.purchase_detail_headers,
       other_obtain_headers:PurchaseSearchPageConfig.other_obtain_headers,
-      other_purchase_headers:PurchaseSearchPageConfig.other_purchase_headers,
       selected_unestimated_headers:PurchaseSearchPageConfig.selected_unestimated_headers,
       purchase_order_headers:PurchaseSearchPageConfig.purchase_order_headers,
       order_request_headers:PurchaseSearchPageConfig.order_request_headers,
       order_purchase_list_headers:PurchaseSearchPageConfig.order_purchase_list_headers,
-      bom_list_headers: PurchaseSearchPageConfig.bom_list_headers,
-      bom_list_purchase_headers: PurchaseSearchPageConfig.bom_list_purchase_headers,
-      bom_list_data: PurchaseSearchPageConfig.bom_list_test_data,
-      bom_list_purchase_data: PurchaseSearchPageConfig.bom_list_purchase_test_data,
-      purchase_data:[],
-      purchase_detail_data:[],
-      other_obtain_data:[]
+
     }
   },
 
   computed: {
-    dateRangeText () {
-      return this.dates.join(' ~ ')
-    },
   },
   watch:{
     purchase_detail_dialog(val){
-      val || this.closeProductList()
+      val || this.closePurchaseDetail()
       this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
     },
     unestimated_step(val){
@@ -1113,10 +1098,9 @@ export default {
   },
   created () {
     this.initialize()
-    const order_code = this.$route.query.order_code;
-    const inbound_date = this.$route.query.inbound_date;
-    if (order_code && inbound_date){
-      this.setSearchCardInputs(order_code, inbound_date);
+    const project_code = this.$route.query.project_code;
+    if (project_code){
+      this.setSearchCardInputs(project_code);
       this.searchButton();
     }
   },
@@ -1161,13 +1145,8 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    setSearchCardInputs(order_code, inbound_date){
-      this.searchCardInputs.find(x=>x.label === '발주번호').value = order_code;
-      if (inbound_date.includes(' ~ ')){
-        this.searchCardInputs.find(x=>x.label === '입고일자').value = inbound_date.split(' ~ ');
-      } else {
-        this.searchCardInputs.find(x=>x.label === '입고일자').value = [inbound_date, inbound_date];
-      }
+    setSearchCardInputs(project_code){
+      this.searchCardInputs.find(x=>x.label === '발주번호').value = project_code;
     },
 
     editPurchaseEstimate(){
@@ -1470,7 +1449,7 @@ export default {
       }
       this.loading_dialog = false;
     },
-    closeProductList(){
+    closePurchaseDetail(){
       this.purchase_detail_dialog = false;
     },
     closePurchaseEstiamtedDialog(){
