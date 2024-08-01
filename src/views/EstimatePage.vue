@@ -2534,6 +2534,10 @@ export default {
           info.full_created_time = info.created_time + "";
           info.created_time = mux.Date.format(info.created_time, 'yyyy-MM-dd');
         }
+        if (info.modified_time){
+          info.full_modified_time = info.modified_time + "";
+          info.modified_time = mux.Date.format(info.modified_time, 'yyyy-MM-dd');
+        }
 
         searchResult.confirmation.forEach(confirmation => {
           if (confirmation.cost_calc_code === info.cost_calc_code){
@@ -2996,7 +3000,7 @@ export default {
         }
 
         let new_inhouse_bid_number = '';
-        if (this.clickedProductCost.created_time === this.clickedProductCost.modified_time){
+        if (this.clickedProductCost.full_created_time === this.clickedProductCost.full_modified_time){
           new_inhouse_bid_number = this.input_inhouse_bid_number.value + '-1';
         }else {
           let splitted_inhouse_bid_number = this.input_inhouse_bid_number.value.split('-');
@@ -3020,6 +3024,7 @@ export default {
             "data":{
               "cost_calc_code": new_cost_calc_code,
               "inhouse_bid_number": new_inhouse_bid_number,
+              "approval_phase": sendDataCheckedDate === null ? '미확인' : '미승인',
               "checked_date": sendDataCheckedDate,
               "rejecter": '',
               "rejected_date": null,
@@ -3219,7 +3224,7 @@ export default {
         }
 
         let new_inhouse_bid_number = '';
-        if (this.clickedProductCost.created_time === this.clickedProductCost.modified_time){
+        if (this.clickedProductCost.full_created_time === this.clickedProductCost.full_modified_time){
           new_inhouse_bid_number = this.input_inhouse_bid_number.value + '-1';
         }else {
           let splitted_inhouse_bid_number = this.input_inhouse_bid_number.value.split('-');
@@ -3475,7 +3480,7 @@ export default {
         }
 
         let new_inhouse_bid_number = '';
-        if (this.clickedProductCost.created_time === this.clickedProductCost.modified_time){
+        if (this.clickedProductCost.full_created_time === this.clickedProductCost.full_modified_time){
           new_inhouse_bid_number = this.input_inhouse_bid_number.value + '-1';
         }else {
           let splitted_inhouse_bid_number = this.input_inhouse_bid_number.value.split('-');
@@ -3496,6 +3501,7 @@ export default {
             "data":{
               "cost_calc_code": new_cost_calc_code,
               "inhouse_bid_number": new_inhouse_bid_number,
+              "approval_phase": sendDataCheckedDate === null ? '미확인' : '미승인',
               "checked_date": sendDataCheckedDate,
               "rejecter": '',
               "rejected_date": null,
@@ -3789,8 +3795,17 @@ export default {
       }
 
       mux.Util.showLoading();
+
+      const newDate = new Date();
+
+      let sendDataCheckedDate = '';
+      if (this.estimate_member_info2[0].user_id === this.$cookies.get(this.$configJson.cookies.id.key)){
+        sendDataCheckedDate = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
+      }else {
+        sendDataCheckedDate = null;
+      }
       
-      const new_cost_calc_code = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+      const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
       let sendData = {
         "estimate_confirmation_table-insert": [{
           "user_info": {
@@ -3813,9 +3828,10 @@ export default {
             company_manager: this.input_company_manager2.value,
             company_manager_email: this.input_company_manager_email2.value,
             company_manager_phone: this.input_company_manager_phone2.value,
-            approval_phase: '미확인',
+            approval_phase: sendDataCheckedDate === null ? '미확인' : '미승인',
             checker: this.estimate_member_info2[0].name,
             checker_id: this.estimate_member_info2[0].user_id,
+            checked_date: sendDataCheckedDate,
             approver: this.estimate_member_info2[1].name,
             approver_id: this.estimate_member_info2[1].user_id,
             approval_file: new_cost_calc_code + '_' + this.input_approval_file2.value.name,

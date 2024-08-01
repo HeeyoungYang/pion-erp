@@ -10,8 +10,8 @@
   >
 
     <template v-slot:item="{ item, index }">
-      <tr :class="trClass ? trClass : ''" :style="trStyle ? trStyle : ''">
-        <td>{{ index+1 }}</td>
+      <tr v-show="!item.hidden" :class="trClass ? trClass : ''" :style="trStyle ? trStyle : ''">
+        <td>{{ index+1 - items.slice(0, index).filter(item => item.hidden).length }}</td>
         <td :colspan="!hideChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index)) ? item.cost_list_colspan : ''">
           {{ item.cost_list_sub ? '' : item.cost_list }}
           <strong v-if="item.cost_list_sub">{{ item.cost_list }}</strong>
@@ -98,7 +98,7 @@
         <tr :class="childTrClass ? childTrClass : ''"
           :style="childTrStyle ? childTrStyle : ''"
           :key="'surveycost_'+index+'_'+idx"
-          v-show="!hideChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index))">
+          v-show="!item.hidden && !innerItem.hidden && (!hideChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index)))">
           <td>
             <v-icon v-if="!preventEditable && !costNumEditDisabled && innerItem.deletable_row" small color="error" style="cursor:pointer" @click="item.belong_data.splice(idx, 1)">mdi-minus-thick</v-icon>
             {{ preventEditable || !innerItem.deletable_row ? innerItem.cost_no : '' }}
@@ -181,7 +181,7 @@
           :class="grandChildTrClass ? grandChildTrClass : ''"
           :style="grandChildTrStyle ? grandChildTrStyle : ''"
           :key="'surveycost_'+index+'_'+idx+'_'+inIdx"
-          v-show="!hideChildren && !hideGrandChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index) && showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx))">
+          v-show="!item.hidden && !innerItem.hidden && !innerBelongItem.hidden && (!hideChildren && !hideGrandChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index) && showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx)))">
           <td>
             <v-icon v-if="!preventEditable && !costNumEditDisabled && innerBelongItem.deletable_row" small color="error" style="cursor:pointer" @click="innerItem.belong_data.splice(inIdx, 1)">mdi-minus-thick</v-icon>
             {{ preventEditable || !innerBelongItem.deletable_row ? innerBelongItem.cost_no : '' }}

@@ -1644,7 +1644,7 @@ mux.Util = {
     return modalInstance;
   },
 
-  showConfirm(message, title = '확인', useInput = false) {
+  showConfirm(message, title = '확인', useInput = false, confirmText = '확인', cancelText = '취소') {
     return new Promise((resolve) => {
       let messageStr = '';
       if (typeof message === 'object') {
@@ -1663,7 +1663,7 @@ mux.Util = {
       }
 
       const confirmInstance = new ConfirmConstructor({
-        propsData: { message: messageStr, title, useInput }
+        propsData: { message: messageStr, title, useInput, confirmText, cancelText }
       });
 
       confirmInstance.$mount();
