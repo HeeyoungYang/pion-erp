@@ -112,7 +112,7 @@
                 </v-row>
                 <v-row>
                   <v-col cols="12">
-                    <PurchaseDataTableComponent
+                    <OrderDataTableComponent
                       :headers="project_code_data_headers"
                       :items="data.belong_data"
                       item-key="id"
@@ -141,7 +141,7 @@
                   class=" mb-0"
                   item-align-center
                 >
-                  <span class="text-h6 font-weight-black">{{ data.order_code }} ({{ data.order_company }})</span>
+                  <span class="text-h6 font-weight-black">{{ data.code }} ({{ data.company_name }})</span>
                 </p>
               </template>
               <template v-slot:content="{ data }">
@@ -173,17 +173,14 @@
                 </v-row>
                 <v-row>
                   <v-col cols="12">
-                    <DataTableComponent
+                    <OrderDataTableComponent
                       :headers="order_code_data_headers"
                       :items="data.belong_data"
-                      :item-key="data.belong_data.project_code"
-                      approval="order"
+                      item-key="id"
+                      approval
                       dense
                       :loginId="login_info.id"
-                      @clickTr="clickApproveData"
                       @setApprovalPhase="setApprovalPhase"
-                      @cancleApprove="cancleApprove"
-                      @setCanclePhase="setCanclePhase"
                     />
                   </v-col>
                 </v-row>
@@ -258,9 +255,137 @@
           class="pa-4"
           style="border: 1px solid #c3c3c3;"
         >
-          <orderPurchaseComponent
+          <!-- <orderPurchaseComponent
             ref="orderPurchaseComponent"
-          />
+          /> -->
+          <div >
+            <p class="print_doc_title">발주서</p>
+            <v-row style="margin-top:15px">
+              <v-col cols="6">
+                <v-img
+                  alt="Pionelectric Logo"
+                  class="shrink mr-2"
+                  contain
+                  src="../assets/img/pion_logo.png"
+                  transition="scale-transition"
+                  style="margin-top:10px; width: 150px;"
+                />
+              </v-col>
+              <v-col cols="6">
+                <table style="border-spacing: 0;width: 100%; text-align: center;">
+                    <tr>
+                    <td rowspan="3" class="approve_list_title">결재</td>
+                    <td class="approve_list_title approve_list_title_border">작성</td>
+                    <td class="approve_list_title approve_list_title_border">확인</td>
+                    <td class="approve_list_title approve_list_title_border">승인</td>
+                  </tr>
+                  <tr>
+                    <td class="approve_list_name"></td>
+                    <td class="approve_list_name"></td>
+                    <td class="approve_list_name"></td>
+                  </tr>
+                  <tr>
+                    <td class="approve_list_date"></td>
+                    <td class="approve_list_date"></td>
+                    <td class="approve_list_date"></td>
+                  </tr>
+                </table>
+              </v-col>
+
+              <v-col cols="12" sm="12" class="pb-0">
+                <table style="border-spacing: 0px; width: 100%;">
+                  <tr class="text-body-1">
+                    <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">관리번호</td>
+                    <td class="order_info">PE-20240425-001</td>
+                    <td class="order_info order_title text-center" >발행일</td>
+                    <td class="order_info">2024-00-00</td>
+                    <td class="order_info order_title text-center">납기일</td>
+                    <td class="order_info">2024-00-00</td>
+                  </tr>
+                </table>
+              </v-col>
+
+              <v-col cols="12" sm="6" class="pb-0">
+                <table style="table-layout: fixed; border-spacing: 0px; width: 100%; ">
+
+                  <tr>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">수신업체</td>
+                    <td colspan="3" class="order_info" style="border-bottom: 0px;"></td>
+                  </tr>
+                  <tr class="text-body-1">
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
+                    <td class="order_info" style=" style='WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;"></td>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
+                    <td class="order_info" style="border-bottom: 0px;"></td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
+                    <td colspan="3" class="order_info" style="border-bottom: 0px;"></td>
+                  </tr>
+                  <tr class="text-body-1">
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">전화</td>
+                    <td class="order_info" style="border-bottom: 0px;border-right: 0px;"></td>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">팩스</td>
+                    <td class="order_info" style="border-bottom: 0px;"></td>
+                  </tr>
+                  <tr class="text-body-1">
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">결제조건</td>
+                    <td class="order_info" style="border-bottom: 0px;border-right: 0px;"></td>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트</td>
+                    <td class="order_info" style="border-bottom: 0px;"></td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">계좌정보</td>
+                    <td colspan="3" class="order_info"></td>
+                  </tr>
+                </table>
+              </v-col>
+              <v-col cols="12" sm="6" style="position: relative;" class="pb-0">
+                <v-img
+                  alt="직인"
+                  contain
+                  src="../assets/img/pion_stamp.png"
+                  transition="scale-transition"
+                  width="40"
+                  style="position: absolute; right:25px; top:25px"
+                />
+                <table style=" border-spacing: 0px; width: 100%;">
+                  <tr>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
+                    <td colspan="3" class="order_info" style="border-bottom: 0px;">851 - 86 - 00038</td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">상호</td>
+                    <td class="order_info" style="border-bottom: 0px;">파이온일렉트릭(주)</td>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;">대표자</td>
+                    <td class="order_info" style="border-bottom: 0px;">윤광희</td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
+                    <td colspan="3" class="order_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호<br>(연세대학교 공학원)</td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업태</td>
+                    <td class="order_info" style="border-bottom: 0px;">제조업</td>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;">종목</td>
+                    <td class="order_info" style="border-bottom: 0px;">전력전자기기</td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표전화</td>
+                    <td class="order_info" style="border-bottom: 0px;">070-5096-4179</td>
+                    <td class="order_info order_title text-center" style="border-bottom: 0px;">팩스</td>
+                    <td class="order_info" style="border-bottom: 0px;">0505-300-4179</td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
+                    <td class="order_info" >OOO</td>
+                    <td class="order_info order_title text-center" >연락처</td>
+                    <td class="order_info">070-1234-5678</td>
+                  </tr>
+                </table>
+              </v-col>
+            </v-row>
+          </div>
         </v-col>
       </v-row>
       <v-row>
@@ -269,11 +394,29 @@
             <p class="font-weight-bold primary--text mb-0" style="font-size: 18px;">
               발주 상세 내역
             </p>
-            <DataTableComponent
+            <!-- <DataTableComponent
               :headers="order_detail_headers"
               :items="order_detail_data"
               dense
-            />
+            /> -->
+            <v-data-table
+              :headers="order_detail_headers"
+              :items="order_detail_data"
+              group-by="item_code"
+              dense
+            >
+              <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                <th @click="toggle">
+                  <v-icon
+                    >{{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                  </v-icon>
+                  {{ items[0].item_code }} : {{ items[0].name }} ({{ items[0].spec }})
+                </th>
+                <th @click="toggle">
+                  총 n 개
+                </th>
+              </template>
+            </v-data-table>
           </v-col>
           <v-divider class="my-4"></v-divider>
           <v-col cols="12">
@@ -506,8 +649,8 @@
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
-import DataTableComponent from "@/components/DataTableComponent";
-import PurchaseDataTableComponent from "@/components/PurchaseDataTableComponent";
+// import DataTableComponent from "@/components/DataTableComponent";
+import OrderDataTableComponent from "@/components/OrderDataTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
@@ -526,8 +669,8 @@ export default {
   },
   components: {
                 NavComponent,
-                DataTableComponent,
-                PurchaseDataTableComponent,
+                // DataTableComponent,
+                OrderDataTableComponent,
                 ModalDialogComponent,
                 CardComponent,
                 InputsFormComponent,
@@ -578,6 +721,7 @@ export default {
       labor_cost_headers: OrderSearchPageConfig.labor_cost_headers,
       calc_cost_detail_data: JSON.parse(JSON.stringify(OrderSearchPageConfig.calc_cost_detail_data)),
       // order_approve_data:[],
+      searched_order_data:[],
       order_detail_data: [],
       project_code_criterion_data:[],
       order_code_criterion_data:[],
@@ -650,19 +794,63 @@ export default {
     },
 
 
-    async searchButton(){
+    searchButton(){
       this.loading_dialog = true;
       this.criterion = true;
+      this.order_code_criterion_data = [];
+      this.searched_order_data = [];
+      // 프로젝트 기준 검색
       this.project_code_criterion_data = OrderSearchPageConfig.test_project_code_criterion_data
-      this.order_code_criterion_data = OrderSearchPageConfig.test_order_code_criterion_data
+
+      // 발주 기준 검색
+      let result = OrderSearchPageConfig.test_order_code_criterion_data;
+
+      this.searched_order_data = result;
+      result.forEach( data => {
+        let set_data = [];
+        set_data.belong_data = [];
+        set_data.code = data.code;
+        set_data.company_name = data.company_name;
+        for(let i=0; i<data.belong_data.length; i++){
+          let belong = data.belong_data[i];
+          set_data.belong_data.push({
+            project_code : belong.project_code,
+            created_time: data.created_time,
+            approval_phase: data.approval_phase,
+            given_name: data.given_name,
+            approver: data.approver,
+            approver_id: data.approver_id,
+            approved_date: data.approved_date,
+            order_date: data.order_date,
+            first_bill_date: data.first_bill_date,
+            second_bill_date: data.second_bill_date,
+            third_bill_date: data.third_bill_date,
+          })
+        }
+
+        set_data.belong_data = set_data.belong_data.reduce((prev, now) => {
+          if(!prev.some(obj => obj.project_code === now.project_code)){
+            prev.push(now);
+          }
+          return prev;
+        }, [])
+        this.order_code_criterion_data.push(set_data)
+      });
+
+
       this.loading_dialog = false;
     },
     closeProductList(){
       this.order_detail_dialog = false;
     },
     async clickApproveData(item){
+      this.order_detail_data=[];
       this.order_detail_dialog = true;
-      this.order_detail_data = item.belong_data;
+      this.searched_order_data.forEach(data => {
+        if(data.code === item.code){
+          this.order_detail_data.push(...data.belong_data);
+        }
+      });
     },
 
     async searchItemStock(data){

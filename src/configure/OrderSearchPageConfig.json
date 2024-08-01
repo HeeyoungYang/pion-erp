@@ -20,7 +20,7 @@
   "project_code_data_headers": [
     { "text": "승인 요청일", "align": "start", "value": "created_time"},
     { "text": "발주 업체", "align": "start", "value": "company_name"},
-    { "text": "발주일", "align": "start", "value": "ordered_time"},
+    { "text": "발주일", "align": "start", "value": "order_date"},
     { "text": "1차 계산일", "align": "start", "value": "first_bill_date"},
     { "text": "2차 계산일", "align": "start", "value": "second_bill_date"},
     { "text": "3차 계산일", "align": "start", "value": "third_bill_date"}
@@ -28,7 +28,7 @@
   "order_code_data_headers": [
     { "text": "승인 요청일", "align": "start", "value": "created_time"},
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
-    { "text": "발주일", "align": "start", "value": "ordered_time"},
+    { "text": "발주일", "align": "start", "value": "order_date"},
     { "text": "1차 계산일", "align": "start", "value": "first_bill_date"},
     { "text": "2차 계산일", "align": "start", "value": "second_bill_date"},
     { "text": "3차 계산일", "align": "start", "value": "third_bill_date"}
@@ -36,15 +36,7 @@
 
   "order_detail_headers": [
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
-    { "text": "종류", "align": "start", "value": "type"},
-    { "text": "분류", "align": "start", "value": "classification"},
-    { "text": "관리코드", "align": "start", "value": "product_code"},
-    { "text": "제품명", "align": "start", "value": "name"},
-    { "text": "모델명", "align": "start", "value": "model"},
-    { "text": "사양", "align": "start", "value": "spec"},
-    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
-    { "text": "발주 수량", "align": "start", "value": "order_num"},
-    { "text": "비고", "align": "start", "value": "note"}
+    { "text": "발주 수량", "align": "start", "value": "purchase_num"}
   ],
   "survey_cost_headers": [
     { "text": "No.", "align": "start", "value": ""},
@@ -416,6 +408,7 @@
           "rejected_date": "",
           "reject_reason": "",
           "due_date": "2024-08-01",
+          "order_date": "",
           "company_name": "(주)엠코전자",
           "company_manager": "김찬용",
           "company_registration_number": "102-87-00175",
@@ -461,6 +454,7 @@
           "rejected_date": "",
           "reject_reason": "",
           "due_date": "2024-08-01",
+          "order_date": "",
           "company_name": "업체A",
           "company_manager": "양희영",
           "company_registration_number": "123-45-67890",
@@ -484,6 +478,163 @@
           "first_confirm_transfer": "",
           "second_confirm_transfer": "",
           "third_confirm_transfer": ""
+        }
+      ]
+    }
+  ],
+
+  "test_order_code_criterion_data":[
+    {
+      "id": 232,
+      "created_time": "2024-08-01 14:13:22",
+      "modified_time": "2024-08-01 14:35:59",
+      "creater": "heeyoung",
+      "given_name": "양희영",
+      "modifier": "",
+      "deleted_yn": 0,
+      "code": "PE-2024-08-01 14:13:19.013",
+      "approval_phase": "미승인",
+      "checker": "양희영",
+      "checker_id": "heeyoung",
+      "checked_date": "2024-08-01 14:13:19",
+      "approver": "양희영",
+      "approver_id": "heeyoung",
+      "approved_date": "",
+      "rejecter": "",
+      "rejected_date": "",
+      "reject_reason": "",
+      "due_date": "2024-08-01",
+      "order_date": "",
+      "company_name": "(주)엠코전자",
+      "company_manager": "김찬용",
+      "company_registration_number": "102-87-00175",
+      "company_address": "경기도 광명시 일직로 43 GIDC B동 905~908호",
+      "company_phone": "070-4488-7733",
+      "company_fax": "031-731-5117",
+      "payment_terms": "결제조건AAAA",
+      "account_number": "기업 000-000-000000",
+      "order_confirmation_file": "테스트용.pdf",
+      "order_confirmation_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+      "business_registration_file": "테스트용.pdf",
+      "business_registration_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+      "bankbook_file": "테스트용.pdf",
+      "bankbook_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+      "first_bill":"",
+      "first_bill_date":"",
+      "second_bill":"",
+      "second_bill_date":"",
+      "third_bill":"",
+      "third_bill_date":"",
+      "first_confirm_transfer": "",
+      "second_confirm_transfer": "",
+      "third_confirm_transfer": "",
+      "belong_data":[
+        {
+          "id": 361,
+          "created_time": "2024-08-01 14:13:22",
+          "modified_time": "2024-08-01 14:13:22",
+          "creater": "heeyoung",
+          "modifier": null,
+          "deleted_yn": 0,
+          "code": "PE-2024-08-01 14:13:19.013",
+          "project_code": "PROJECT-002",
+          "item_code": "PE-SSM-002",
+          "name": "SSM자재",
+          "spec": "MV-SVC-V3.1",
+          "unit_price": 10000,
+          "ordered_num": 2
+        },
+        {
+          "id": 362,
+          "created_time": "2024-08-01 14:13:22",
+          "modified_time": "2024-08-01 14:13:22",
+          "creater": "heeyoung",
+          "modifier": null,
+          "deleted_yn": 0,
+          "code": "PE-2024-08-01 14:13:19.013",
+          "project_code": "PROJECT-002",
+          "item_code": "PE-SSM-003",
+          "name": "SSM자재",
+          "spec": "DUAL LMC V1.6",
+          "unit_price": 20000,
+          "ordered_num": 4
+        },
+        {
+          "id": 363,
+          "created_time": "2024-08-01 14:13:22",
+          "modified_time": "2024-08-01 14:13:22",
+          "creater": "heeyoung",
+          "modifier": null,
+          "deleted_yn": 0,
+          "code": "PE-2024-08-01 14:13:19.013",
+          "project_code": "Project_test",
+          "item_code": "PE-SSM-002",
+          "name": "SSM자재",
+          "spec": "MV-SVC-V3.1",
+          "unit_price": 10000,
+          "ordered_num": 1
+        }
+      ]
+    },    
+    {
+      "id": 233,
+      "created_time": "2024-08-01 14:37:08",
+      "modified_time": "2024-08-01 14:37:08",
+      "creater": "heeyoung",
+      "given_name": "양희영",
+      "modifier": "",
+      "deleted_yn": 0,
+      "code": "PE-2024-08-01 14:37:05.948",
+      "approval_phase": "미승인",
+      "checker": "양희영",
+      "checker_id": "heeyoung",
+      "checked_date": "2024-08-01 14:37:05",
+      "approver": "양희영",
+      "approver_id": "heeyoung",
+      "approved_date": "",
+      "rejecter": "",
+      "rejected_date": "",
+      "reject_reason": "",
+      "due_date": "2024-08-01",
+      "order_date": "",
+      "company_name": "업체A",
+      "company_manager": "양희영",
+      "company_registration_number": "123-45-67890",
+      "company_address": "경기도 광명시 일직로 43 GIDC B동 905~908호",
+      "company_phone": "070-4488-7733",
+      "company_fax": "031-731-5117",
+      "payment_terms": "결제조건AAAA",
+      "account_number": "기업 000-000-000000",
+      "order_confirmation_file": "테스트용2.pdf",
+      "order_confirmation_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+      "business_registration_file": "테스트용.pdf",
+      "business_registration_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+      "bankbook_file": "테스트용.pdf",
+      "bankbook_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+      "first_bill":"",
+      "first_bill_date":"",
+      "second_bill":"",
+      "second_bill_date":"",
+      "third_bill":"",
+      "third_bill_date":"",
+      "first_confirm_transfer": "",
+      "second_confirm_transfer": "",
+      "third_confirm_transfer": "",
+      "belong_data":[
+        {
+          "id": 364,
+          "created_time": "2024-08-01 14:37:08",
+          "modified_time": "2024-08-01 14:37:08",
+          "creater": "heeyoung",
+          "modifier": null,
+          "deleted_yn": 0,
+          "code": "PE-2024-08-01 14:37:05.948",
+          "project_code": "PROJECT-002",
+          "item_code": "PE-SSM-002",
+          "name": "SSM자재",
+          "spec": "MV-SVC-V3.1",
+          "unit_price": 3000,
+          "ordered_num": 3
         }
       ]
     }
@@ -579,7 +730,7 @@
       ]
     }
   ],
-  "test_order_code_criterion_data":[
+  "old_test_order_code_criterion_data":[
     {
       "order_code": "order-001",
       "order_company": "업체A",
