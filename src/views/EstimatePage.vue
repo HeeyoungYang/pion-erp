@@ -2534,6 +2534,10 @@ export default {
           info.full_created_time = info.created_time + "";
           info.created_time = mux.Date.format(info.created_time, 'yyyy-MM-dd');
         }
+        if (info.modified_time){
+          info.full_modified_time = info.modified_time + "";
+          info.modified_time = mux.Date.format(info.modified_time, 'yyyy-MM-dd');
+        }
 
         searchResult.confirmation.forEach(confirmation => {
           if (confirmation.cost_calc_code === info.cost_calc_code){
@@ -2996,7 +3000,7 @@ export default {
         }
 
         let new_inhouse_bid_number = '';
-        if (this.clickedProductCost.created_time === this.clickedProductCost.modified_time){
+        if (this.clickedProductCost.full_created_time === this.clickedProductCost.full_modified_time){
           new_inhouse_bid_number = this.input_inhouse_bid_number.value + '-1';
         }else {
           let splitted_inhouse_bid_number = this.input_inhouse_bid_number.value.split('-');
@@ -3219,7 +3223,7 @@ export default {
         }
 
         let new_inhouse_bid_number = '';
-        if (this.clickedProductCost.created_time === this.clickedProductCost.modified_time){
+        if (this.clickedProductCost.full_created_time === this.clickedProductCost.full_modified_time){
           new_inhouse_bid_number = this.input_inhouse_bid_number.value + '-1';
         }else {
           let splitted_inhouse_bid_number = this.input_inhouse_bid_number.value.split('-');
@@ -3475,7 +3479,7 @@ export default {
         }
 
         let new_inhouse_bid_number = '';
-        if (this.clickedProductCost.created_time === this.clickedProductCost.modified_time){
+        if (this.clickedProductCost.full_created_time === this.clickedProductCost.full_modified_time){
           new_inhouse_bid_number = this.input_inhouse_bid_number.value + '-1';
         }else {
           let splitted_inhouse_bid_number = this.input_inhouse_bid_number.value.split('-');
