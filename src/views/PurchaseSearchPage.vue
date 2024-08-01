@@ -83,7 +83,7 @@
         class="tab_search"
       >
         <v-btn
-          v-if="tab_search === 0 && show_request_estimate_button"
+          v-if="tab_search === 0 && show_request_estimate_button && creater_authority"
           color="success"
           small
           style="position: absolute;right: 0px;"
@@ -139,16 +139,16 @@
                   </th>
                   <th>
                     <v-icon
-                      v-if="items[0].purchase_estimate_phase === '완료'"
+                      v-if="items[0].purchase_estimate_phase === '완료' && creater_authority"
                       color="primary"
                       small
                       @click="estiamteDialog('added_estimate', items[0].ordered_date, items)"
                     >mdi-file</v-icon>
                     <v-icon
-                      v-if="items[0].purchase_estimate_phase === '요청'"
+                      v-if="items[0].purchase_estimate_phase === '요청' && creater_authority"
                       color="default"
                       small
-                      :disabled="clicked_tr_phase === '진행중' ? false : true"
+                      :disabled="clicked_tr_phase === '진행중' && creater_authority ? false : true"
                       @click="estiamteDialog(false, false, items)"
                     >mdi-file</v-icon>
                   </th>
@@ -157,7 +157,7 @@
                       v-if="items[0].ordered_date === '' && items[0].purchase_estimate_phase === '완료'"
                       color="success"
                       x-small
-                      :disabled="clicked_tr_phase === '진행중' ? false : true"
+                      :disabled="clicked_tr_phase === '진행중' && creater_authority ? false : true"
                       @click="orderRequest(items)"
                     >발주 요청</v-btn>
                     <span v-else>{{ items[0].ordered_date }}</span>
@@ -454,7 +454,7 @@
                   </v-btn>
                   <v-btn
                     color="success"
-                    @click="saveEstimate"
+                    @click="saveEstimate('save')"
                   >
                     저장
                   </v-btn>
@@ -488,55 +488,71 @@
         title-class="pa-0 font-weight-black "
       >
         <div slot="cardTitle">
-          <span>{{ !edit_purchase_estimate ? '업체명AA 견적' : '견적서 수정' }}</span>
+          <span>{{ estimate_company + ' 견적' }}</span>
           <v-btn
-            v-if="!edit_purchase_estimate && check_editable_purchase_estimate"
+            v-if="check_editable_purchase_estimate && creater_authority"
             color="primary"
             fab
             x-small
             class="ml-3"
             elevation="0"
             :disabled="clicked_tr_phase === '진행중' ? false : true"
-            @click="edit_purchase_estimate = true"
+            @click="editPurchaseEstimate"
           >
             <v-icon
               small
             >mdi-pencil</v-icon>
           </v-btn>
+        </div>
+        <div slot="cardText">
+          <v-row>
+            <v-col cols="12">
+              <v-img
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(purchaseEstimateThumbnail)"
+                transition="scale-transition"
+                @click="download('purchase/purchase_estimate', purchaseEstimateFile, purchaseEstimateCode+'_')"
+                style="cursor: pointer; width: 100%;"
+              />
+            </v-col>
+          </v-row>
+        </div>
+      </CardComponent>
+    </ModalDialogComponent>
+
+    <ModalDialogComponent
+      :dialog-value="estimateEditDialog"
+      max-width="700px"
+      title-class="display-none"
+      text-class="pb-0"
+      closeText="닫기"
+      :persistent="true"
+      @close="closeEstimateEditDialog"
+    >
+      <CardComponent
+        elevation="0"
+        text-class="pa-0 pt-4"
+        title-class="pa-0 font-weight-black "
+      >
+        <div slot="cardTitle">
+          <span>견적서 수정</span>
           <v-btn
-            v-if="edit_purchase_estimate && check_editable_purchase_estimate"
-            color="primary"
+            color="success"
             fab
             x-small
             class="ml-3"
             elevation="0"
-            @click="edit_purchase_estimate = false"
+            @click="saveEstimate('edit')"
           >
             <v-icon
               small
-            >mdi-check</v-icon>
-          </v-btn>
-          <v-btn
-            v-if="edit_purchase_estimate && check_editable_purchase_estimate"
-            color="error"
-            fab
-            x-small
-            class="ml-3"
-            elevation="0"
-            @click="edit_purchase_estimate = false"
-          >
-            <v-icon
-              small
-            >mdi-undo-variant</v-icon>
+            >mdi-content-save</v-icon>
           </v-btn>
         </div>
         <div slot="cardText">
-          <v-row v-if="!edit_purchase_estimate">
-            <v-col cols="12">
-              <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-            </v-col>
-          </v-row>
-          <v-row v-else>
+          <v-row>
             <v-col cols="12">
               <InputsFormComponent
                 dense
@@ -545,6 +561,34 @@
                 hide-details
                 :inputs="estimateInfoInputs"
               />
+              <v-btn
+                small
+                color="primary"
+                class="mt-7"
+                @click="check_estimate_list ? check_estimate_list = false : check_estimate_list = true"
+              >{{check_estimate_list ? '견적 항목 닫기': '견적 항목 보기'}}</v-btn>
+            </v-col>
+            <v-col
+              cols="12"
+              v-if="check_estimate_list"
+            >
+              <v-data-table
+                :headers="order_purchase_list_headers"
+                :items="estimate_purchase_list_data"
+                group-by="project_code"
+                dense
+                style="border:1px solid #ccc"
+              >
+                <template v-slot:[`group.header`]="{items, isOpen, toggle}">
+                  <th  @click="toggle" colspan="5">
+                    <v-icon
+                    >
+                      {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                    </v-icon>
+                    {{ items[0].project_code }}
+                  </th>
+                </template>
+              </v-data-table>
             </v-col>
           </v-row>
         </div>
@@ -974,9 +1018,14 @@ export default {
       tab_search: null,
       unestimated_request:'mailed',
       clicked_tr_phase: '',
+      estimate_company: '',
+      estimate_code: '',
+      check_estimate_list:false,
+      creater_authority: false,
       detail_list: false,
       member_dialog: false,
       show_request_estimate_button: false,
+      estimateEditDialog: false,
       orderRequestDialog: false,
       purchase_detail_dialog: false,
       loading_dialog: false,
@@ -986,7 +1035,11 @@ export default {
       show_selected_unestimated_data: false,
       edit_purchase_estimate: false,
       check_editable_purchase_estimate: false,
-      receivingInspectionThumbnail: '',
+
+      purchaseEstimateCode: '',
+      purchaseEstimateThumbnail: '',
+      purchaseEstimateFile: '',
+
       inspectionReportThumbnail: '',
       email_sign:'',
       estimate_request_company: '',
@@ -1002,6 +1055,7 @@ export default {
 
       order_request_data:[],
       order_purchase_list_data:[],
+      estimate_purchase_list_data:[],
       search_other_purchase_data:[],
       check_other_purchase_data:[],
 
@@ -1092,13 +1146,13 @@ export default {
         if (prevURL !== window.location.href) return;
         mux.Util.showAlert(error);
       }
-      mux.Rules.rulesSet(this.orderRequestInfoInputs);
-
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
       this.orderRequestInfoInputs = JSON.parse(JSON.stringify(this.orderRequestInfoInputs));
       this.estimateInfoInputs = JSON.parse(JSON.stringify(this.estimateInfoInputs));
       this.estimateInfoInpuorderRequestInfoInputsts = JSON.parse(JSON.stringify(this.orderRequestInfoInputs));
       this.email_sign =`<div><p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px;"><strong>${this.login_info.name} 파이온 일렉트릭㈜ ${this.login_info.department} ${this.login_info.position} / Pion Electric Co., Ltd. </strong></p><p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;">Home page : www.pionelectric.com<br>E-mail: ${this.login_info.email}  C/P: ${'+82(0)' + this.login_info.phone_number.slice(1)}<br> Tel: ${'+82(0)' + this.login_info.office_phone_number.slice(1)} Fax: +82(0)505-300-4179<br><br> 본사: (03722) 서울특별시 서대문구 연세로 50 연세대학교 공학원 116호<br> Head office: #116, Engineering Research Park, Yonsei University, 50, Yonsei-ro, Seodaemun-gu, Seoul, 03722, Republic of KOREA<br><br> 광명 사무소: (14348) 경기도 광명시 일직로 72  A-1818호<br> Gwangmyeong office: #A-1818, 72, Iljik-ro, Gwangmyeong-si, Gyeonggi-do, Republic of KOREA 14348<br><br> 광주 공장: (47580) 광주광역시 광산구 연산동 1247<br> Gwangju factory: 1247 Yeonsan-dong, Gwangsan-gu, Gwangju, Republic of KOREA 47580<br><br> 보령 공장: (33448) 충청남도 보령시 주교면 관창공단길 266<br> Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheongnam-do, Republic of KOREA 33448<br><br></p> <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;"><strong>제품 및 서비스</strong><br> ∙ 고자기장 기반의 산업용 운용기기 (Development of Operating Device for Industrial Applications based on High Magnetic Field)<br> ∙ 광기기 기반의 전력전자 응용기기 (Development of Power Electronics Application Device based on Optical Device)<br> ∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)<br> ∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)<br> ∙ 전기공사면허</p> </div>`
+
+      mux.Rules.rulesSet(this.orderRequestInfoInputs);
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -1114,6 +1168,17 @@ export default {
       } else {
         this.searchCardInputs.find(x=>x.label === '입고일자').value = [inbound_date, inbound_date];
       }
+    },
+
+    editPurchaseEstimate(){
+      this.estimateEditDialog = true;
+      this.estimatedDialog = false;
+      this.estimateInfoInputs.find(x=>x.label === '견적 확정 업체').value = this.estimate_company;
+    },
+
+    closeEstimateEditDialog(){
+      this.estimateEditDialog = false;
+      delete this.estimateInfoInputs.find(x=>x.label === '견적서 첨부').value;
     },
 
     nextUnestimatedStep (step) {
@@ -1414,6 +1479,7 @@ export default {
       this.setEstimateDialog = false;
       this.set_estimate_steppers = 1;
       this.selected_unestimated_data =[];
+      this.estimateEditDialog = false;
     },
     closeOrderRequestDialog(){
       this.orderRequestDialog = false;
@@ -1452,6 +1518,10 @@ export default {
     async clickApproveData(item){
       this.clicked_tr_phase = item.approval_phase;
       this.purchase_detail_data = item.belong_data;
+
+      if(item.creater === this.$cookies.get(this.$configJson.cookies.id.key)){
+        this.creater_authority = true;
+      }
       this.purchase_detail_data.forEach(data =>{
         data.project_code = item.project_code;
       })
@@ -1696,7 +1766,7 @@ export default {
         this.changePurchaseEstimatePhase();
       }
     },
-    async saveEstimate(){
+    async saveEstimate(type){
       const currDate = new Date();
       const prevURL = window.location.href;
 
@@ -1715,7 +1785,12 @@ export default {
       const getPdfThumbnail = await mux.Util.getPdfThumbnail(estimate_file_value, 1, false);
       let estimate_file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
 
-      let estimate_code = this.selected_estimate_request_list_data[0].purchase_estimate_code;
+      let estimate_code = '';
+      if(type === 'save'){
+        estimate_code = this.selected_estimate_request_list_data[0].purchase_estimate_code;
+      }else{
+        estimate_code = this.estimate_code;
+      }
 
       let sendData = {};
 
@@ -1747,7 +1822,12 @@ export default {
         }
         if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           // console.log('result :>> ', result);
-          mux.Util.showAlert('견적서가 등록되었습니다.', '완료', 3000);
+
+          if(type === 'save')
+            mux.Util.showAlert('견적서가 등록되었습니다.', '완료', 3000);
+          else
+            mux.Util.showAlert('견적서가 수정되었습니다.', '완료', 3000);
+
           this.closePurchaseEstiamtedDialog();
           mux.Util.hideLoading();
         } else {
@@ -1900,19 +1980,46 @@ export default {
         "rollback": "yes"
       }];
 
+      //파일 업로드
+      sendData.path = '/api/multipart_rest_api/';
+      sendData.prefix = code + '_';
+      sendData.files = [];
+
+      //발주 확인서
+      // delete confirmation_data.order_confirmation_file_value;
+      // delete confirmation_data.business_registration_file_value;
+      // delete confirmation_data.bankbook_file_value;
+      sendData.files.push({
+        folder: 'order/confirmation',
+        file: this.order_confirm_data.order_confirmation_file_value,
+        name: this.order_confirm_data.order_confirmation_file_name
+      });
+      //사업자등록증
+      sendData.files.push({
+        folder: 'order/registration',
+        file: this.order_confirm_data.business_registration_file_value,
+        name: this.order_confirm_data.business_registration_file_name
+      });
+      //통장사본
+      sendData.files.push({
+        folder: 'order/bankbook',
+        file: this.order_confirm_data.bankbook_file_value,
+        name: this.order_confirm_data.bankbook_file_name
+      });
+
       const prevURL = window.location.href;
         try {
-          let result = await mux.Server.post({
-            path: '/api/common_rest_api/',
-            params: sendData
-          });
-          // let result = await mux.Server.uploadFile(sendData);
+          // let result = await mux.Server.post({
+          //   path: '/api/common_rest_api/',
+          //   params: sendData
+          // });
+          let result = await mux.Server.uploadFile(sendData);
           if (prevURL !== window.location.href) return;
 
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
-          if(result['code'] == 0){
+          if(result.data['code'] == 0){
             mux.Util.showAlert('발주 요청이 완료되었습니다', '요청 완료', 3000);
             //메일 알림 관련
             let mailTo = [];
@@ -2005,6 +2112,11 @@ export default {
       else{
         if(type === 'added_estimate'){
           this.estimatedDialog = true;
+          this.estimate_company = item[0].purchase_estimate_company;
+          this.estimate_code = item[0].purchase_estimate_code;
+          this.purchaseEstimateThumbnail = item[0].purchase_estimate_thumbnail;
+          this.purchaseEstimateFile = item[0].purchase_estimate_file;
+          this.purchaseEstimateCode = item[0].code;
           if(order !== ""){
             this.check_editable_purchase_estimate = false;
           }else{
