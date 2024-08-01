@@ -77,7 +77,7 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "견적서", "align": "start", "value": "purchase_estimate"},
-    { "text": "발주", "align": "start", "value": "ordered_date"}
+    { "text": "발주", "align": "start", "value": "order_request_date"}
   ],
 
   "order_request_headers": [
@@ -186,7 +186,7 @@
           "purchase_estimate_file": "",
           "purchase_estimate_thumbnail": "null",
           "order_code": "",
-          "ordered_date": ""
+          "order_request_date": ""
         },
         {
           "id": 357,
@@ -212,7 +212,7 @@
           "purchase_estimate_file": "테스트용.pdf",
           "purchase_estimate_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
           "order_code": "",
-          "ordered_date": ""
+          "order_request_date": ""
         },
         {
           "id": 361,
@@ -238,7 +238,7 @@
           "purchase_estimate_file": "테스트용.pdf",
           "purchase_estimate_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
           "order_code": "",
-          "ordered_date": ""
+          "order_request_date": ""
         },
         {
           "id": 362,
@@ -264,7 +264,7 @@
           "purchase_estimate_file": "테스트용.pdf",
           "purchase_estimate_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
           "order_code": "",
-          "ordered_date": ""
+          "order_request_date": ""
         }
       ]
     },
@@ -311,7 +311,7 @@
           "purchase_estimate_file": "",
           "purchase_estimate_thumbnail": "",
           "order_code": "",
-          "ordered_date": ""
+          "order_request_date": ""
         },
         {
           "id": 359,
@@ -337,7 +337,7 @@
           "purchase_estimate_file": "테스트용.pdf",
           "purchase_estimate_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
           "order_code": "",
-          "ordered_date": ""
+          "order_request_date": ""
         },
         {
           "id": 360,
@@ -363,7 +363,7 @@
           "purchase_estimate_file": "",
           "purchase_estimate_thumbnail": null,
           "order_code": "",
-          "ordered_date": ""
+          "order_request_date": ""
         }
       ]
     }
@@ -405,7 +405,7 @@
           "unit_price":"10",
           "purchase_num":"3",
           "purchase_estimate_phase":"완료",
-          "ordered_date":""
+          "order_request_date":""
         },
         {
           "purchase_estimate_company": "업체A",
@@ -419,7 +419,7 @@
           "unit_price":"70",
           "purchase_num":"1",
           "purchase_estimate_phase":"완료",
-          "ordered_date":""
+          "order_request_date":""
         },
         {
           "purchase_estimate_company": "업체B",
@@ -433,7 +433,7 @@
           "unit_price":"10",
           "purchase_num":"3",
           "purchase_estimate_phase":"완료",
-          "ordered_date":"2024-05-21"
+          "order_request_date":"2024-05-21"
         }
       ]
     },
@@ -472,7 +472,7 @@
           "unit_price":"10",
           "purchase_num":"3",
           "purchase_estimate_phase":"완료",
-          "ordered_date":""
+          "order_request_date":""
         },
         {
           "purchase_estimate_company": "업체A",
@@ -486,7 +486,7 @@
           "unit_price":"70",
           "purchase_num":"1",
           "purchase_estimate_phase":"완료",
-          "ordered_date":""
+          "order_request_date":""
         },
         {
           "purchase_estimate_company": "업체B",
@@ -500,7 +500,7 @@
           "unit_price":"10",
           "purchase_num":"3",
           "purchase_estimate_phase":"완료",
-          "ordered_date":"2024-05-21"
+          "order_request_date":"2024-05-21"
         },{
           "purchase_estimate_company": "",
           "type":"원부자재",
@@ -513,7 +513,7 @@
           "unit_price":"10",
           "purchase_num":"3",
           "purchase_estimate_phase":"미요청",
-          "ordered_date":""
+          "order_request_date":""
         },
         {
           "purchase_estimate_company": "",
@@ -527,7 +527,7 @@
           "unit_price":"70",
           "purchase_num":"1",
           "purchase_estimate_phase":"미요청",
-          "ordered_date":""
+          "order_request_date":""
         },
         {
           "purchase_estimate_company": "",
@@ -541,7 +541,7 @@
           "unit_price":"70",
           "purchase_num":"1",
           "purchase_estimate_phase":"요청",
-          "ordered_date":""
+          "order_request_date":""
         },
         {
           "purchase_estimate_company": "",
@@ -555,7 +555,7 @@
           "unit_price":"10",
           "purchase_num":"3",
           "purchase_estimate_phase":"요청",
-          "ordered_date":""
+          "order_request_date":""
         }
       ]
     }

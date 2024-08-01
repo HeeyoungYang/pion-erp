@@ -112,17 +112,15 @@
                 </v-row>
                 <v-row>
                   <v-col cols="12">
-                    <DataTableComponent
+                    <PurchaseDataTableComponent
                       :headers="project_code_data_headers"
                       :items="data.belong_data"
-                      :item-key="data.belong_data.order_company"
-                      approval="inbound"
+                      item-key="id"
+                      approval
                       dense
                       :loginId="login_info.id"
                       @clickTr="clickApproveData"
                       @setApprovalPhase="setApprovalPhase"
-                      @cancleApprove="cancleApprove"
-                      @setCanclePhase="setCanclePhase"
                     />
                   </v-col>
                 </v-row>
@@ -509,6 +507,7 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
+import PurchaseDataTableComponent from "@/components/PurchaseDataTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
@@ -528,6 +527,7 @@ export default {
   components: {
                 NavComponent,
                 DataTableComponent,
+                PurchaseDataTableComponent,
                 ModalDialogComponent,
                 CardComponent,
                 InputsFormComponent,
@@ -1092,7 +1092,7 @@ export default {
                   </tr>
                   <tr>
                     <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.given_name}</td>
                   </tr>
                   <tr>
                     <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
@@ -1384,7 +1384,7 @@ export default {
                     </tr>
                     <tr>
                       <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.given_name}</td>
                     </tr>
                     <tr>
                       <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
@@ -1624,7 +1624,7 @@ export default {
                     </tr>
                     <tr>
                       <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.given_name}</td>
                     </tr>
                     <tr>
                       <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
