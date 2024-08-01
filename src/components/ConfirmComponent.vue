@@ -12,8 +12,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="confirm">확인</v-btn>
-          <v-btn color="secondary" text @click="cancel">취소</v-btn>
+          <v-btn color="primary" text @click="confirm">{{ confirmText }}</v-btn>
+          <v-btn color="secondary" text @click="cancel">{{ cancelText }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -35,6 +35,14 @@ export default {
     useInput: {
       type: Boolean,
       default: false
+    },
+    confirmText: {
+      type: String,
+      default: '확인'
+    },
+    cancelText: {
+      type: String,
+      default: '취소'
     }
   },
   data() {

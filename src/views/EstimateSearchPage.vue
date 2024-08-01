@@ -47,7 +47,7 @@
             title-class="d-none"
           >
             <div slot="cardText">
-              <DataTableComponent
+              <EstimateDataTableComponent
                 :headers="estimate_approve_headers"
                 :items="estimate_approve_data"
                 item-key="product_code"
@@ -56,8 +56,6 @@
                 :loginId="login_info.id"
                 @clickTr="clickApproveData"
                 @setApprovalPhase="setApprovalPhase"
-                @cancleApprove="cancleApprove"
-                @setCanclePhase="setCanclePhase"
               />
             </div>
           </CardComponent>
@@ -285,7 +283,7 @@
               </v-row>
               <CostTableComponent
                 :headers="survey_cost_headers"
-                :items="calc_cost_detail_data"
+                :items="estimate_detail_data"
                 item-key="product_code"
                 :childTrStyle="'background-color:#efefef'"
                 prevent-editable
@@ -501,7 +499,7 @@
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
-import DataTableComponent from "@/components/DataTableComponent";
+import EstimateDataTableComponent from "@/components/EstimateDataTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
@@ -518,7 +516,7 @@ export default {
   },
   components: {
                 NavComponent,
-                DataTableComponent,
+                EstimateDataTableComponent,
                 ModalDialogComponent,
                 CardComponent,
                 InputsFormComponent,
@@ -566,6 +564,7 @@ export default {
       labor_cost_data: [],
       merged_labor_cost_data: [],
       calc_cost_detail_data: JSON.parse(JSON.stringify(EstimateSearchPageConfig.calc_cost_detail_data)),
+      estimate_detail_data: [],
       estimate_approve_data:[],
 
       print_labor_table: false,
@@ -808,6 +807,16 @@ export default {
         this.calc_cost_detail_data_normal_maintenance_fee.cost_unit_price = this.normal_maintenance_fee_unit_price;
         // 조회 - 이윤 적용
         this.calc_cost_detail_data_profite.cost_unit_price = this.profite_unit_price;
+
+        // 비연동 견적서 테이블 데이터 복사
+        this.estimate_detail_data = [];
+        this.estimate_detail_data = JSON.parse(JSON.stringify(this.calc_cost_detail_data));
+        // this.total_labor_cost
+        this.estimate_detail_data.find(x=>x.cost_list === '노무비').cost_unit_price = this.total_labor_cost;
+        this.estimate_detail_data.find(x=>x.cost_list === '노무비').cost_num = this.total_labor_cost === 0 ? 0 : 1;
+        // this.total_expense_fee
+        this.estimate_detail_data.find(x=>x.cost_list === '경비').cost_unit_price = this.total_expense_fee;
+        this.estimate_detail_data.find(x=>x.cost_list === '경비').cost_num = this.total_expense_fee === 0 ? 0 : 1;
       },
       deep: true // 객체 내부 속성 변경 감지
     },
@@ -817,9 +826,10 @@ export default {
     const inhouse_bid_number = this.$route.query.inhouse_bid_number;
     const company_bid_number = this.$route.query.company_bid_number;
     const company_name = this.$route.query.company_name;
-    const created_time = this.$route.query.created_time;
-    if (inhouse_bid_number && company_bid_number && company_name && created_time){
-      this.setSearchCardInputs(inhouse_bid_number, company_bid_number, company_name, created_time);
+    const issue_date = this.$route.query.issue_date;
+    // const created_time = this.$route.query.created_time;
+    if (inhouse_bid_number && company_bid_number && company_name && issue_date){
+      this.setSearchCardInputs(inhouse_bid_number, company_bid_number, company_name, issue_date);
       this.searchButton();
     }
   },
@@ -854,14 +864,14 @@ export default {
       // result.response ==> 세부 정보 포함
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
-    setSearchCardInputs(inhouse_bid_number, company_bid_number, company_name, created_time){
+    setSearchCardInputs(inhouse_bid_number, company_bid_number, company_name, issue_date){
       this.searchCardInputs.find(x=>x.label === '사내 입찰번호').value = inhouse_bid_number;
       this.searchCardInputs.find(x=>x.label === '기업별 입찰번호').value = company_bid_number;
       this.searchCardInputs.find(x=>x.label === '업체명').value = company_name;
-      if (created_time.includes(' ~ ')){
-        this.searchCardInputs.find(x=>x.label === '발행일').value = created_time.split(' ~ ');
+      if (issue_date.includes(' ~ ')){
+        this.searchCardInputs.find(x=>x.label === '발행일').value = issue_date.split(' ~ ');
       } else {
-        this.searchCardInputs.find(x=>x.label === '발행일').value = [created_time, created_time];
+        this.searchCardInputs.find(x=>x.label === '발행일').value = [issue_date, issue_date];
       }
     },
     calcNoTotalAmount(labor){
@@ -976,7 +986,11 @@ export default {
       let inputs = [];
       this.searchCardInputs.forEach((input) => {
         if (input.value && String(input.value).trim()) {
-          inputs.push(String(input.value).trim());
+          let inputValue = String(input.value).trim();
+          if (inputValue === 'All'){
+            inputValue = "%";
+          }
+          inputs.push(inputValue);
         }else {
           inputs.push("%");
         }
@@ -1003,6 +1017,14 @@ export default {
         // if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
         //   const searchResult = result.data;
         const searchResult = JSON.parse(JSON.stringify(EstimateSearchPageConfig.test_estimate_approve_data));
+        
+        // 이력 제거 후 실제 데이터만 남기기
+        searchResult.confirmation = searchResult.confirmation.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+        searchResult.product_cost = searchResult.product_cost.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+        searchResult.labor_cost_calc_detail = searchResult.labor_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+        searchResult.product_cost_calc_detail = searchResult.product_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+        searchResult.construction_materials_data = searchResult.construction_materials_data.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+        
         searchResult.confirmation.reverse(); // 최신순으로 정렬
         this.searchDataCalcProcess(searchResult);
 
@@ -1124,18 +1146,205 @@ export default {
     },
     async setApprovalPhase(item, change, reason){
       console.log(item, change, reason);
-    },
-    async setCanclePhase(item, change, reason){
-      console.log(item, change, reason);
-    },
-    async cancleApprove(item){
-      console.log(item)
+
+      let new_approval_phase = '';
+      let new_checked_date = null;
+      let new_approved_date = null;
+      let new_rejecter = '';
+      let new_rejected_date = null;
+      let new_reject_reason = '';
+
+      if (change === true){
+        if (item.approval_phase === '미확인'){
+          new_approval_phase = '미승인';
+          new_checked_date = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        }else if (item.approval_phase === '미승인'){
+          new_approval_phase = '승인';
+          new_approved_date = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        }
+        
+      }
+      
+      if (change === false){
+        new_approval_phase = '반려';
+        new_rejecter = this.login_info.name;
+        new_rejected_date = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        new_reject_reason = reason.trim();
+      }
+
+      let sendData = {
+        "estimate_confirmation_table-update": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{
+            "approval_phase": new_approval_phase,
+            "approved_date": new_approved_date,
+            "rejecter": new_rejecter,
+            "rejected_date": new_rejected_date,
+            "reject_reason": new_reject_reason,
+          },
+          "update_where": {"cost_calc_code": item.cost_calc_code},
+          "rollback": "yes"
+        }],
+      };
+        
+      if (new_approval_phase === '미승인'){
+        sendData["estimate_confirmation_table-update"][0].data.checked_date = new_checked_date;
+      }
+
+      const prevURL = window.location.href;
+      try {
+        mux.Util.showLoading();
+
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: sendData
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          item.approval_phase = new_approval_phase;
+          item.approved_date = new_approved_date ? new_approved_date : '';
+          item.rejecter = new_rejecter;
+          item.rejected_date = new_rejected_date ? new_rejected_date : '';
+          item.reject_reason = new_reject_reason;
+          if (new_approval_phase === '미승인'){
+            item.checked_date = new_checked_date;
+          }
+
+          this.searched_datas.confirmation.forEach(confirmation => {
+            if (confirmation.cost_calc_code === item.cost_calc_code){
+              confirmation.approval_phase = item.approval_phase;
+              confirmation.checked_date = item.checked_date;
+              confirmation.approved_date = item.approved_date;
+              confirmation.rejecter = item.rejecter;
+              confirmation.rejected_date = item.rejected_date;
+              confirmation.reject_reason = item.reject_reason;
+            }
+          });
+
+          //메일 알림 관련
+          let mailTo = [];
+          let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+          let reject_info;
+          if(item.approval_phase === '미승인'){
+            mailTo.push(creater);
+            mailTo.push(item.approver_id);
+          }else if(item.approval_phase === '승인'){
+            mailTo.push(creater);
+            if(creater !== item.checker_id){
+              mailTo.push(item.checker_id);
+            }
+          }else if(item.approval_phase === '반려' && !item.checked_date){
+            mailTo.push(creater);
+            reject_info=`
+              <tr>
+                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
+                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejecter}</td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
+                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejected_date}</td>
+              </tr>
+            `
+          }else if(item.approval_phase === '반려' && item.checked_date){
+            mailTo.push(creater);
+            mailTo.push(item.checker_id);
+            reject_info=`
+              <tr>
+                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
+                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejecter}</td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
+                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejected_date}</td>
+              </tr>
+            `
+          }
+
+          // 메일 본문 내용
+          let content=`
+          <html>
+            <body>
+              <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                <h2 style="text-align: center; color:#13428a">견적서 ${item.approval_phase === '미승인' ? '확인' : item.approval_phase} 처리 알림</h2>
+                <table style="width: 100%;border-spacing: 10px 10px;">
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inhouse_bid_number}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발행일</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.issue_date}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.given_name}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                  </tr>
+                  ${reject_info ? reject_info : ''}
+                </table>
+                <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${item.inhouse_bid_number}&company_bid_number=${item.company_bid_number}&company_name=${item.company_name}&issue_date=${item.issue_date}">
+                  <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                    확인하기
+                  </p>
+                </a>
+              </div>
+            </body>
+          </html>
+          `;
+
+
+          try {
+            let sendEmailAlam = await mux.Server.post({
+              path: '/api/send_email/',
+              to_addrs: mailTo,
+              subject: "견적서 " + (item.approval_phase === '미승인' ? '확인' : item.approval_phase) + " 처리 알림",
+              content: content
+            });
+            if (prevURL !== window.location.href) return;
+            if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
+              mux.Util.showAlert('저장되었습니다.', '저장 완료', 3000);
+            } else {
+              if (prevURL !== window.location.href) return;
+              console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+              mux.Util.showAlert('저장되었으나 알림 메일 전송에 실패하였습니다.', '저장 완료');
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            console.log('알림 메일 전송에 실패-error :>> ', error);
+            mux.Util.showAlert('저장되었으나 알림 메일 전송에 실패하였습니다.', '저장 완료');
+          }
+          
+        } else {
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.showAlert(error);
+      }
+      mux.Util.hideLoading();
+      
     },
     openEstiamteMailForm(){
       // this.estimate_product_list_dialog = false;
       this.mailDialog = true;
     },
-    async sendEstimteaMail(){
+    async sendEstimateMail(){
       await this.$refs.mailFormComponent.dispatchEnterKeyToAllCombobox();
       const validate = this.$refs.mailForm.validate();
       if (!validate) return;
@@ -1276,31 +1485,36 @@ export default {
     },
     async estimateCheckbox(type, name){
       if(name !== '재료비' && !this.estimate_checkbox[type]){
-        const confirm = await mux.Util.showConfirm('재료비에 ' + name + '을(를) 포함하시겠습니까?', '금액 확인');
-        if (!confirm){
-          this.estimate_checkbox[type] = true;
-          return
-        }
-        switch (name) {
-          case '노무비':
-            // // this.calc_cost_detail_data = JSON.parse(JSON.stringify(this.calc_cost_detail_data));
-            // this.calc_cost_detail_data_product_cost.belong_data.push({
-            //   "cost_list": "노무비",
-            //   "cost_list_colspan": 4,
-            //   "belong_data": this.merged_labor_cost_data
-            // });
-            // this.calc_cost_detail_data = this.calc_cost_detail_data.filter(x=>x.cost_list !== '노무비');
-            break;
+        const confirm = await mux.Util.showConfirm('재료비에 ' + name + '을(를) 포함하시겠습니까?', '금액 확인', false, '예', '아니오');
         
-          default:
-            break;
+        if (confirm){
+          this.estimate_detail_data.find(x=>x.cost_list === name).hidden = true;
+          this.estimate_detail_data.find(x=>x.cost_list === '재료비').belong_data.push(this.estimate_detail_data.find(x=>x.cost_list === name));
+          this.estimate_detail_data = this.estimate_detail_data.filter(x=>x.cost_list !== name);
+        }else {
+
+          this.estimate_detail_data.find(x=>x.cost_list === name).hidden = true;
+
         }
 
-        this.estimate_checkbox.product = false;
-      }else if (name === '재료비' && this.estimate_checkbox[type]){
-        Object.keys(this.estimate_checkbox).forEach(key => {
-          this.estimate_checkbox[key] = true;
-        });
+      }else if (name !== '재료비' && this.estimate_checkbox[type]){
+        let movedData = this.estimate_detail_data.find(x=>x.cost_list === '재료비').belong_data.find(x=>x.cost_list === name);
+        if (movedData){
+          movedData.hidden = false;
+          const productInnerIndex = this.estimate_detail_data.find(x=>x.cost_list === '재료비').belong_data.findIndex(x=>x.cost_list === name);
+
+          const estimate_detail_data_order = ['재료비', '노무비', '경비', '일반관리비', '이윤'];
+          const nameIndex = estimate_detail_data_order.findIndex(x=>x === name);
+          let putIndex = 0;
+          for (let i = 0; i < nameIndex; i++) {
+            if (this.estimate_detail_data.find(x=>x.cost_list === estimate_detail_data_order[i])){
+              putIndex++;
+            }
+          }
+          this.estimate_detail_data.splice(putIndex, 0, this.estimate_detail_data.find(x=>x.cost_list === '재료비').belong_data.splice(productInnerIndex, 1)[0]);
+        }else {
+          this.estimate_detail_data.find(x=>x.cost_list === name).hidden = false;
+        }
       }
       
       if (this.estimate_checkbox.product){
