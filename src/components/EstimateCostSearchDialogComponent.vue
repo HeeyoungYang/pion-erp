@@ -16,7 +16,7 @@
           clearable
           hide-details
           :inputs="searchCardInputs"
-          @enter="searchButton"
+          @enter="search"
         >
           <v-col
             cols="12"
@@ -39,7 +39,6 @@
         <v-data-table
           :headers="headers"
           :items="items"
-          :search="search"
           dense
         >
           <template v-slot:[`item.set`]="{ item }">
