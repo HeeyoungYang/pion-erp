@@ -370,8 +370,8 @@
                         >
                           <v-col cols="12" sm="4">
                             <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
-                            <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                            <!-- <v-img
+                            <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+                            <v-img
                               v-if="clickedProductCost.approval_file"
                               alt="thumbnail"
                               class="shrink mr-2"
@@ -381,11 +381,22 @@
                               width="350"
                               @click="download('estimate/approval', clickedProductCost.approval_file.replace(clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_', ''), clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_')"
                               style="cursor: pointer;"
-                            /> -->
+                            />
                           </v-col>
                           <v-col cols="12" sm="4">
                             <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-                            <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                            <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+                            <v-img
+                              v-if="clickedProductCost.blueprint_file"
+                              alt="thumbnail"
+                              class="shrink mr-2"
+                              contain
+                              :src="mux.Util.imageBinary(clickedProductCost.blueprint_thumbnail)"
+                              transition="scale-transition"
+                              width="350"
+                              @click="download('estimate/blueprint', clickedProductCost.blueprint_file.replace(clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_', ''), clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_')"
+                              style="cursor: pointer;"
+                            />
                           </v-col>
                           <v-col cols="12" sm="4">
                             <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
