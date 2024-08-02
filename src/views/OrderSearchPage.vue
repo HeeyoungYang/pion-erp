@@ -127,7 +127,29 @@
               </template>
             </ExpansionPanelComponent>
           </div>
-          <div
+          <CardComponent
+            v-if="code_criterion === 'order'"
+            elevation="1"
+            card-class="mt-5"
+            text-class="pt-3"
+            title-class="d-none"
+          >
+            <div
+              slot="cardText"
+            >
+              <OrderDataTableComponent
+                :headers="project_code_data_headers"
+                :items="searched_order_data"
+                item-key="code"
+                approval
+                dense
+                :loginId="login_info.id"
+                @clickTr="clickApproveData"
+                @setApprovalPhase="setApprovalPhase"
+              />
+            </div>
+          </CardComponent>
+          <!-- <div
             v-if="code_criterion === 'order'"
           >
             <ExpansionPanelComponent
@@ -150,24 +172,19 @@
                   <v-col
                     cols="12"
                   >
-                    <!-- <v-btn
-                      small
-                      color="default"
-                      class="mr-2"
-                    >일괄 승인</v-btn> -->
                     <v-chip
                       small
                       color="primary"
                       v-bind="attrs"
                       v-on="on"
                     >
-                      승인
+                      {{ data.approval_phase }}
                     </v-chip>
                     <v-btn
                       small
                       color="default"
                       class="ml-2"
-                      @click="clickApproveData"
+                      @click="clickApproveData(data)"
                     >상세 보기</v-btn>
                   </v-col>
                 </v-row>
@@ -178,6 +195,7 @@
                       :items="data.belong_data"
                       item-key="id"
                       approval
+                      dontShowPhase
                       dense
                       :loginId="login_info.id"
                       @setApprovalPhase="setApprovalPhase"
@@ -186,14 +204,14 @@
                 </v-row>
               </template>
             </ExpansionPanelComponent>
-          </div>
+          </div> -->
         </v-col>
       </v-row>
     </v-main>
 
     <ModalDialogComponent
       :dialog-value="order_detail_dialog"
-      max-width="50%"
+      max-width="60%"
       title-class=" "
       :dialog-transition="'slide-x-transition'"
       :dialog-custom="'custom-dialog elevation-0 white'"
@@ -261,7 +279,7 @@
           <div >
             <p class="print_doc_title">발주서</p>
             <v-row style="margin-top:15px">
-              <v-col cols="6">
+              <v-col cols="7">
                 <v-img
                   alt="Pionelectric Logo"
                   class="shrink mr-2"
@@ -271,7 +289,7 @@
                   style="margin-top:10px; width: 150px;"
                 />
               </v-col>
-              <v-col cols="6">
+              <v-col cols="5">
                 <table style="border-spacing: 0;width: 100%; text-align: center;">
                     <tr>
                     <td rowspan="3" class="approve_list_title">결재</td>
@@ -280,14 +298,14 @@
                     <td class="approve_list_title approve_list_title_border">승인</td>
                   </tr>
                   <tr>
-                    <td class="approve_list_name"></td>
-                    <td class="approve_list_name"></td>
-                    <td class="approve_list_name"></td>
+                    <td class="approve_list_name">{{ order_form_info.given_name }}</td>
+                    <td class="approve_list_name">{{ order_form_info.checker }}</td>
+                    <td class="approve_list_name">{{ order_form_info.approver }}</td>
                   </tr>
                   <tr>
-                    <td class="approve_list_date"></td>
-                    <td class="approve_list_date"></td>
-                    <td class="approve_list_date"></td>
+                    <td class="approve_list_date">{{ order_form_info.created_time }}</td>
+                    <td class="approve_list_date">{{ order_form_info.checked_date }}</td>
+                    <td class="approve_list_date">{{ order_form_info.approved_date === '' ? '미승인' : order_form_info.approved_date }}</td>
                   </tr>
                 </table>
               </v-col>
@@ -296,11 +314,11 @@
                 <table style="border-spacing: 0px; width: 100%;">
                   <tr class="text-body-1">
                     <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">관리번호</td>
-                    <td class="order_info">PE-20240425-001</td>
+                    <td class="order_info">{{ order_form_info.code }}</td>
                     <td class="order_info order_title text-center" >발행일</td>
-                    <td class="order_info">2024-00-00</td>
+                    <td class="order_info">{{ order_form_info.created_time.split(' ')[0] }}</td>
                     <td class="order_info order_title text-center">납기일</td>
-                    <td class="order_info">2024-00-00</td>
+                    <td class="order_info">{{ order_form_info.due_date }}</td>
                   </tr>
                 </table>
               </v-col>
@@ -310,33 +328,33 @@
 
                   <tr>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">수신업체</td>
-                    <td colspan="3" class="order_info" style="border-bottom: 0px;"></td>
+                    <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_name }}</td>
                   </tr>
                   <tr class="text-body-1">
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-                    <td class="order_info" style=" style='WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;"></td>
+                    <td class="order_info" style=" style='WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">{{ order_form_info.company_registration_number }}</td>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
-                    <td class="order_info" style="border-bottom: 0px;"></td>
+                    <td class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_manager }}</td>
                   </tr>
                   <tr>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
-                    <td colspan="3" class="order_info" style="border-bottom: 0px;"></td>
+                    <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_address }}</td>
                   </tr>
                   <tr class="text-body-1">
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">전화</td>
-                    <td class="order_info" style="border-bottom: 0px;border-right: 0px;"></td>
+                    <td class="order_info" style="border-bottom: 0px;border-right: 0px;">{{ order_form_info.company_phone }}</td>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">팩스</td>
-                    <td class="order_info" style="border-bottom: 0px;"></td>
+                    <td class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_fax }}</td>
                   </tr>
                   <tr class="text-body-1">
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">결제조건</td>
-                    <td class="order_info" style="border-bottom: 0px;border-right: 0px;"></td>
+                    <td class="order_info" style="border-bottom: 0px;border-right: 0px;">{{ order_form_info.payment_terms }}</td>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트</td>
-                    <td class="order_info" style="border-bottom: 0px;"></td>
+                    <td class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_registration_number }}</td>
                   </tr>
                   <tr>
                     <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">계좌정보</td>
-                    <td colspan="3" class="order_info"></td>
+                    <td colspan="3" class="order_info">{{ order_form_info.account_number }}</td>
                   </tr>
                 </table>
               </v-col>
@@ -362,7 +380,7 @@
                   </tr>
                   <tr>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
-                    <td colspan="3" class="order_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호<br>(연세대학교 공학원)</td>
+                    <td colspan="3" class="order_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호(연세대학교 공학원)</td>
                   </tr>
                   <tr>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업태</td>
@@ -378,11 +396,47 @@
                   </tr>
                   <tr>
                     <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
-                    <td class="order_info" >OOO</td>
+                    <td class="order_info" >{{ order_form_info.given_name }}</td>
                     <td class="order_info order_title text-center" >연락처</td>
                     <td class="order_info">070-1234-5678</td>
                   </tr>
                 </table>
+              </v-col>
+              <v-col cols="12" sm="12">
+                <v-data-table
+                  :headers="order_form_headers"
+                  :items="order_form_data"
+                  group-by="item_code"
+                  item-key="item_code"
+                  hide-default-footer
+                  disable-pagination
+                  dense
+                  disable-sort
+                  style="border:1px solid #ccc"
+                >
+
+                  <template v-slot:[`group.header`]="{items}">
+                    <th
+                      :rowspan="items.length+1"
+                      style="background: white;border-right: thin solid rgba(0, 0, 0, 0.12);"
+                    >
+                      {{ checkNo(items[0].item_code) }}
+                    </th>
+                    <th>{{ items[0].name }}</th>
+                    <th>{{ items[0].spec }}</th>
+                    <th>{{ items[0].unit_price }}</th>
+                    <th>{{ items[0].ordered_num }}</th>
+                    <th>{{ items[0].unit_price * items[0].ordered_num }}</th>
+                    <th>{{ (items[0].unit_price * items[0].ordered_num)*0.1 }}</th>
+                  </template>
+                  <template v-slot:item="{ item }">
+                    <tr>
+                      <td colspan="6">
+                        {{ item.note }}
+                      </td>
+                    </tr>
+                  </template>
+                </v-data-table>
               </v-col>
             </v-row>
           </div>
@@ -413,7 +467,7 @@
                   {{ items[0].item_code }} : {{ items[0].name }} ({{ items[0].spec }})
                 </th>
                 <th @click="toggle">
-                  총 n 개
+                  총 {{ calcTotalNum(items) }}개
                 </th>
               </template>
             </v-data-table>
@@ -705,6 +759,9 @@ export default {
       searched_products:[],
       uploadFilesInputs: [],
 
+      order_form_info:{},
+
+      order_form_headers:OrderSearchPageConfig.order_form_headers,
       purchase_member_info:OrderSearchPageConfig.purchase_member_info,
       login_info: OrderSearchPageConfig.login_info,
       searchCardInputs:OrderSearchPageConfig.searchCardInputs,
@@ -722,8 +779,10 @@ export default {
       calc_cost_detail_data: JSON.parse(JSON.stringify(OrderSearchPageConfig.calc_cost_detail_data)),
       // order_approve_data:[],
       searched_order_data:[],
+      order_form_data:[],
       order_detail_data: [],
       project_code_criterion_data:[],
+      order_notes_data:[],
       order_code_criterion_data:[],
       defaultMailData: OrderSearchPageConfig.default_mail_data,
     }
@@ -799,6 +858,8 @@ export default {
       this.criterion = true;
       this.order_code_criterion_data = [];
       this.searched_order_data = [];
+      //order_product_notes_table 검색
+      this.order_notes_data = OrderSearchPageConfig.test_note_data;
       // 프로젝트 기준 검색
       this.project_code_criterion_data = OrderSearchPageConfig.test_project_code_criterion_data
 
@@ -811,12 +872,12 @@ export default {
         set_data.belong_data = [];
         set_data.code = data.code;
         set_data.company_name = data.company_name;
+        set_data.approval_phase = data.approval_phase;
         for(let i=0; i<data.belong_data.length; i++){
           let belong = data.belong_data[i];
           set_data.belong_data.push({
             project_code : belong.project_code,
             created_time: data.created_time,
-            approval_phase: data.approval_phase,
             given_name: data.given_name,
             approver: data.approver,
             approver_id: data.approver_id,
@@ -840,15 +901,66 @@ export default {
 
       this.loading_dialog = false;
     },
+    checkNo(item_code){
+      let project_code = [];
+      this.order_form_data.forEach(data => {
+        project_code.push(data.item_code);
+      });
+
+      project_code = new Set(project_code);
+      project_code = [ ...project_code]
+
+      let idx= 0;
+      for(let i=0; i<project_code.length; i++){
+        if(project_code[i] === item_code){
+          idx = i+1;
+        }
+      }
+
+      return idx;
+    },
+    calcTotalNum(item){
+      let total = 0;
+      item.forEach(data => {
+        total += data.ordered_num;
+      });
+      return total;
+    },
     closeProductList(){
       this.order_detail_dialog = false;
     },
     async clickApproveData(item){
       this.order_detail_data=[];
+      this.order_form_data = [];
       this.order_detail_dialog = true;
       this.searched_order_data.forEach(data => {
         if(data.code === item.code){
           this.order_detail_data.push(...data.belong_data);
+          this.order_form_info = data;
+        }
+      });
+      let notes = JSON.parse(JSON.stringify(this.order_notes_data))
+      notes.forEach(data => {
+        if(data.code === item.code){
+          this.order_form_data.push(data);
+        }
+      });
+      this.order_detail_data.forEach(item => {
+        for(let o=0; o<this.order_form_data.length; o++){
+          let order = this.order_form_data[o];
+          if(order.item_code === item.item_code && !order.ordered_num){
+            order.ordered_num = item.ordered_num;
+            order.name = item.name;
+            order.spec = item.spec;
+            order.unit_price = item.unit_price;
+            return;
+          }else if(order.item_code === item.item_code && order.ordered_num){
+            order.ordered_num += item.ordered_num;
+            order.name = item.name;
+            order.spec = item.spec;
+            order.unit_price = item.unit_price;
+            return;
+          }
         }
       });
     },

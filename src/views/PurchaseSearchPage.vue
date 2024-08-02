@@ -610,7 +610,7 @@
       max-width="90%"
     >
       <v-row>
-        <v-col cols="12" sm="6">
+        <v-col cols="12" sm="7">
           <v-stepper v-model="order_steppers">
             <v-stepper-header>
               <template v-for="n in order_step">
@@ -738,11 +738,11 @@
                             <table style="border-spacing: 0px; width: 100%;">
                               <tr class="text-body-1">
                                 <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">관리번호</td>
-                                <td class="order_info">PE-20240425-001</td>
+                                <td class="order_info">PE-20240425</td>
                                 <td class="order_info order_title text-center" >발행일</td>
                                 <td class="order_info">2024-00-00</td>
                                 <td class="order_info order_title text-center">납기일</td>
-                                <td class="order_info">2024-00-00</td>
+                                <td class="order_info">{{ order_confirm_data.due_date }}</td>
                               </tr>
                             </table>
                           </v-col>
@@ -804,7 +804,7 @@
                               </tr>
                               <tr>
                                 <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
-                                <td colspan="3" class="order_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호<br>(연세대학교 공학원)</td>
+                                <td colspan="3" class="order_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호 (연세대학교 공학원)</td>
                               </tr>
                               <tr>
                                 <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업태</td>
@@ -820,7 +820,7 @@
                               </tr>
                               <tr>
                                 <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
-                                <td class="order_info" >OOO</td>
+                                <td class="order_info" >{{ login_info.name }}</td>
                                 <td class="order_info order_title text-center" >연락처</td>
                                 <td class="order_info">070-1234-5678</td>
                               </tr>
@@ -962,7 +962,7 @@
             </v-stepper-items>
           </v-stepper>
         </v-col>
-        <v-col cols="12" sm="6">
+        <v-col cols="12" sm="5">
           <!-- mux iframesrc 반영 -->
           <iframe width="100%" style="height: 100%;" src="/forms/테스트용.pdf#toolbar=0&navpanes=0&scrollbar=0"></iframe>
         </v-col>

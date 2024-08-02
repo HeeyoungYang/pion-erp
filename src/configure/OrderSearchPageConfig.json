@@ -26,7 +26,6 @@
     { "text": "3차 계산일", "align": "start", "value": "third_bill_date"}
   ],
   "order_code_data_headers": [
-    { "text": "승인 요청일", "align": "start", "value": "created_time"},
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
     { "text": "발주일", "align": "start", "value": "order_date"},
     { "text": "1차 계산일", "align": "start", "value": "first_bill_date"},
@@ -36,8 +35,22 @@
 
   "order_detail_headers": [
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
-    { "text": "발주 수량", "align": "start", "value": "purchase_num"}
+    { "text": "발주 수량", "align": "start", "value": "ordered_num"}
   ],
+
+  
+
+  "order_form_headers": [
+    { "text": "No.", "align": "start", "value": "no"},
+    { "text": "품명", "align": "start", "value": "name"},
+    { "text": "규격", "align": "start", "value": "spec"},
+    { "text": "단가", "align": "start", "value": "unit_price"},
+    { "text": "수량", "align": "start", "value": "ordered_num"},
+    { "text": "공급가액", "align": "start", "value": "supply_price"},
+    { "text": "부가세", "align": "start", "value": "vat"}
+  ],
+
+
   "survey_cost_headers": [
     { "text": "No.", "align": "start", "value": ""},
     { "text": "항목", "align": "start", "value": "cost_list"},
@@ -384,6 +397,63 @@
     "belong_data":[]
   },
 
+  "test_note_data":[
+    {
+      "id": 366,
+      "created_time": "2024-08-01 14:13:22",
+      "modified_time": "2024-08-01 14:13:22",
+      "creater": "heeyoung",
+      "modifier": null,
+      "deleted_yn": 0,
+      "code": "PE-2024-08-01 14:13:19.013",
+      "item_code": "PE-SSM-002",
+      "note": "MV-SVC-V3.1 비고 입력 TEST1"
+    },
+    {
+      "id": 367,
+      "created_time": "2024-08-01 14:13:22",
+      "modified_time": "2024-08-01 14:13:22",
+      "creater": "heeyoung",
+      "modifier": null,
+      "deleted_yn": 0,
+      "code": "PE-2024-08-01 14:13:19.013",
+      "item_code": "PE-SSM-002",
+      "note": "MV-SVC-V3.1 비고 입력 TEST3"
+    },
+    {
+      "id": 368,
+      "created_time": "2024-08-01 14:13:22",
+      "modified_time": "2024-08-01 14:13:22",
+      "creater": "heeyoung",
+      "modifier": null,
+      "deleted_yn": 0,
+      "code": "PE-2024-08-01 14:13:19.013",
+      "item_code": "PE-SSM-003",
+      "note": "DUAL LMC V1.6 비고 입력 TEST1"
+    },
+    {
+      "id": 369,
+      "created_time": "2024-08-01 14:37:08",
+      "modified_time": "2024-08-01 14:37:08",
+      "creater": "heeyoung",
+      "modifier": null,
+      "deleted_yn": 0,
+      "code": "PE-2024-08-01 14:37:05.948",
+      "item_code": "PE-SSM-002",
+      "note": "품명 별 비고 1"
+    },
+    {
+      "id": 370,
+      "created_time": "2024-08-01 14:37:08",
+      "modified_time": "2024-08-01 14:37:08",
+      "creater": "heeyoung",
+      "modifier": null,
+      "deleted_yn": 0,
+      "code": "PE-2024-08-01 14:37:05.948",
+      "item_code": "PE-SSM-002",
+      "note": "품명 별 비고 2"
+    }
+  ],
   "test_project_code_criterion_data":[
     {
       "project_code": "PROJECT-002",
