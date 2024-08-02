@@ -2984,10 +2984,16 @@ export default {
           }
         }
 
+        let isRejected = false;
+        if (this.clickedProductCost.rejected_date){
+          isRejected = true;
+        }
+        let needReConfirm = false;
         if (this.estimate_member_info[0].user_id !== this.$cookies.get(this.$configJson.cookies.id.key) && this.estimate_member_info[0].checked_date){
           if (!await mux.Util.showConfirm('확인 절차가 다시 진행됩니다. 수정하시겠습니까?')){
             return;
           }
+          needReConfirm = true;
         }
 
         const newDate = new Date();
@@ -3103,6 +3109,10 @@ export default {
             let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.clickedProductCost.cost_calc_code);
             targetConfirmation.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
             targetConfirmation.checked_date = `${this.estimate_member_info[0].checked_date}`;
+            targetConfirmation.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
+            targetConfirmation.rejecter = '';
+            targetConfirmation.rejected_date = '';
+            targetConfirmation.reject_reason = '';
             targetConfirmation.inhouse_bid_number = new_inhouse_bid_number;
             
             this.origin_labor_cost_data = this.labor_cost_data;
@@ -3115,12 +3125,87 @@ export default {
             
             this.clickedProductCost.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
             this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
+            this.clickedProductCost.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
+            this.clickedProductCost.rejecter = '';
+            this.clickedProductCost.rejected_date = '';
+            this.clickedProductCost.reject_reason = '';
             this.input_inhouse_bid_number.value = new_inhouse_bid_number;
             this.clickedProductCost.inhouse_bid_number = this.input_inhouse_bid_number.value;
             this.clickedProductCost.cost_calc_code = new_cost_calc_code;
 
             this.searchDataCalcProcess(this.searched_datas);
-            mux.Util.showAlert('저장되었습니다.', '저장 완료', 3000);
+
+            if (isRejected || needReConfirm){
+              //메일 알림 관련
+              let mailTo = [];
+              // let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+              if(sendDataCheckedDate === null){
+                mailTo.push(this.clickedProductCost.checker_id);
+              }else {
+                mailTo.push(this.clickedProductCost.approver_id);
+              }
+  
+              // 메일 본문 내용
+              let content=`
+              <html>
+                <body>
+                  <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                    <h2 style="text-align: center; color:#13428a">견적서 ${sendDataCheckedDate === null ? '확인' : '승인'} 요청 알림</h2>
+                    <table style="width: 100%;border-spacing: 10px 10px;">
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.inhouse_bid_number}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발행일</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.issue_date}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.given_name}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.checker}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.approver}</td>
+                      </tr>
+                    </table>
+                    <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
+                      <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                        확인하기
+                      </p>
+                    </a>
+                  </div>
+                </body>
+              </html>
+              `;
+  
+              try {
+                let sendEmailAlam = await mux.Server.post({
+                  path: '/api/send_email/',
+                  to_addrs: mailTo,
+                  subject: "견적서 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
+                  content: content
+                });
+                if (prevURL !== window.location.href) return;
+                if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
+                  mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+                  mux.Util.showAlert('수정되었으나 알림 메일 전송에 실패하였습니다.', '수정 완료');
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                console.log('알림 메일 전송에 실패-error :>> ', error);
+                mux.Util.showAlert('수정되었으나 알림 메일 전송에 실패하였습니다.', '수정 완료');
+              }
+            }else {
+              mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+            }
           } else {
             if (prevURL !== window.location.href) return;
             mux.Util.showAlert(result);
@@ -3208,10 +3293,16 @@ export default {
       const validate = this.$refs.estimateInfoForm.validate();
       if(validate) {
 
+        let isRejected = false;
+        if (this.clickedProductCost.rejected_date){
+          isRejected = true;
+        }
+        let needReConfirm = false;
         if (this.estimate_member_info[0].user_id !== this.$cookies.get(this.$configJson.cookies.id.key) && this.estimate_member_info[0].checked_date){
           if (!await mux.Util.showConfirm('확인 절차가 다시 진행됩니다. 수정하시겠습니까?')){
             return;
           }
+          needReConfirm = true;
         }
 
         const newDate = new Date();
@@ -3379,6 +3470,10 @@ export default {
             targetConfirmation.checker_id = `${this.estimate_member_info[0].user_id}`;
             targetConfirmation.approver = `${this.estimate_member_info[1].name}`;
             targetConfirmation.approver_id = `${this.estimate_member_info[1].user_id}`;
+            targetConfirmation.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
+            targetConfirmation.rejecter = '';
+            targetConfirmation.rejected_date = '';
+            targetConfirmation.reject_reason = '';
             targetConfirmation.issue_date = `${this.input_issue_date.value}`;
             targetConfirmation.inhouse_bid_number = `${this.input_inhouse_bid_number.value}`;
             targetConfirmation.company_bid_number = `${this.input_company_bid_number.value}`;
@@ -3408,6 +3503,10 @@ export default {
             this.clickedProductCost.checker_id = this.estimate_member_info[0].user_id;
             this.clickedProductCost.approver = this.estimate_member_info[1].name;
             this.clickedProductCost.approver_id = this.estimate_member_info[1].user_id;
+            this.clickedProductCost.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
+            this.clickedProductCost.rejecter = '';
+            this.clickedProductCost.rejected_date = '';
+            this.clickedProductCost.reject_reason = '';
 
             this.clickedProductCost.issue_date = this.input_issue_date.value;
             this.input_inhouse_bid_number.value = new_inhouse_bid_number;
@@ -3436,15 +3535,81 @@ export default {
 
             this.clickedProductCost.cost_calc_code = new_cost_calc_code;
 
-
-          // const clickedIndex = this.search_estimate_data.findIndex(x => x.cost_calc_code === item.cost_calc_code);
-          // if (clickedIndex !== -1) {
-          //   this.search_estimate_data[clickedIndex] = item;
-          // }
             this.origin_clickedProductCost = this.clickedProductCost;
             this.edit_estimate_info_disabled = true;
             this.during_edit = false;
-            mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+
+            if (isRejected || needReConfirm){
+              //메일 알림 관련
+              let mailTo = [];
+              // let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+              if(sendDataCheckedDate === null){
+                mailTo.push(this.clickedProductCost.checker_id);
+              }else {
+                mailTo.push(this.clickedProductCost.approver_id);
+              }
+  
+              // 메일 본문 내용
+              let content=`
+              <html>
+                <body>
+                  <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                    <h2 style="text-align: center; color:#13428a">견적서 ${sendDataCheckedDate === null ? '확인' : '승인'} 요청 알림</h2>
+                    <table style="width: 100%;border-spacing: 10px 10px;">
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.inhouse_bid_number}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발행일</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.issue_date}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.given_name}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.checker}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.approver}</td>
+                      </tr>
+                    </table>
+                    <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
+                      <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                        확인하기
+                      </p>
+                    </a>
+                  </div>
+                </body>
+              </html>
+              `;
+  
+              try {
+                let sendEmailAlam = await mux.Server.post({
+                  path: '/api/send_email/',
+                  to_addrs: mailTo,
+                  subject: "견적서 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
+                  content: content
+                });
+                if (prevURL !== window.location.href) return;
+                if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
+                  mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+                  mux.Util.showAlert('수정되었으나 알림 메일 전송에 실패하였습니다.', '수정 완료');
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                console.log('알림 메일 전송에 실패-error :>> ', error);
+                mux.Util.showAlert('수정되었으나 알림 메일 전송에 실패하였습니다.', '수정 완료');
+              }
+            }else {
+              mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+            }
           } else {
             if (prevURL !== window.location.href) return;
             mux.Util.showAlert(result);
@@ -3464,10 +3629,16 @@ export default {
       const validate = this.$refs.surveyCostForm.validate();
       if(validate) {
 
+        let isRejected = false;
+        if (this.clickedProductCost.rejected_date){
+          isRejected = true;
+        }
+        let needReConfirm = false;
         if (this.estimate_member_info[0].user_id !== this.$cookies.get(this.$configJson.cookies.id.key) && this.estimate_member_info[0].checked_date){
           if (!await mux.Util.showConfirm('확인 절차가 다시 진행됩니다. 수정하시겠습니까?')){
             return;
           }
+          needReConfirm = true;
         }
 
         const newDate = new Date();
@@ -3637,6 +3808,10 @@ export default {
             let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.clickedProductCost.cost_calc_code);
             targetConfirmation.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
             targetConfirmation.checked_date = `${this.estimate_member_info[0].checked_date}`;
+            targetConfirmation.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
+            targetConfirmation.rejecter = '';
+            targetConfirmation.rejected_date = '';
+            targetConfirmation.reject_reason = '';
             targetConfirmation.inhouse_bid_number = new_inhouse_bid_number;
             
             this.origin_calc_cost_detail_data = JSON.parse(JSON.stringify(this.calc_cost_detail_data));
@@ -3707,6 +3882,10 @@ export default {
 
             this.clickedProductCost.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
             this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
+            this.clickedProductCost.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
+            this.clickedProductCost.rejecter = '';
+            this.clickedProductCost.rejected_date = '';
+            this.clickedProductCost.reject_reason = '';
             this.input_inhouse_bid_number.value = new_inhouse_bid_number;
             this.clickedProductCost.inhouse_bid_number = this.input_inhouse_bid_number.value;
             this.clickedProductCost.employment_insurance_num = this.calc_cost_detail_data_employment_insurance.cost_num;
@@ -3726,7 +3905,79 @@ export default {
 
             this.edit_survey_cost_num_disabled = true;
             this.during_edit = false;
-            mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+            
+            if (isRejected || needReConfirm){
+              //메일 알림 관련
+              let mailTo = [];
+              // let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+              if(sendDataCheckedDate === null){
+                mailTo.push(this.clickedProductCost.checker_id);
+              }else {
+                mailTo.push(this.clickedProductCost.approver_id);
+              }
+  
+              // 메일 본문 내용
+              let content=`
+              <html>
+                <body>
+                  <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                    <h2 style="text-align: center; color:#13428a">견적서 ${sendDataCheckedDate === null ? '확인' : '승인'} 요청 알림</h2>
+                    <table style="width: 100%;border-spacing: 10px 10px;">
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.inhouse_bid_number}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발행일</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.issue_date}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.given_name}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.checker}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.approver}</td>
+                      </tr>
+                    </table>
+                    <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
+                      <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                        확인하기
+                      </p>
+                    </a>
+                  </div>
+                </body>
+              </html>
+              `;
+  
+              try {
+                let sendEmailAlam = await mux.Server.post({
+                  path: '/api/send_email/',
+                  to_addrs: mailTo,
+                  subject: "견적서 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
+                  content: content
+                });
+                if (prevURL !== window.location.href) return;
+                if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
+                  mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+                  mux.Util.showAlert('수정되었으나 알림 메일 전송에 실패하였습니다.', '수정 완료');
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                console.log('알림 메일 전송에 실패-error :>> ', error);
+                mux.Util.showAlert('수정되었으나 알림 메일 전송에 실패하였습니다.', '수정 완료');
+              }
+            }else {
+              mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+            }
+
           } else {
             if (prevURL !== window.location.href) return;
             mux.Util.showAlert(result);
@@ -4001,23 +4252,88 @@ export default {
           result = JSON.parse(result);
         }
 
-        mux.Util.hideLoading();
-
         if (result.code === undefined && result.data !== undefined && result.data.code !== undefined){
           result = result.data;
         }
         if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-          mux.Util.showAlert('등록되었습니다.', '등록 완료', 3000);
+
+            //메일 알림 관련
+            let mailTo = [];
+            // let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+            if(sendDataCheckedDate === null){
+              mailTo.push(this.clickedProductCost.checker_id);
+            }else {
+              mailTo.push(this.clickedProductCost.approver_id);
+            }
+
+            // 메일 본문 내용
+            let content=`
+            <html>
+              <body>
+                <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                  <h2 style="text-align: center; color:#13428a">견적서 ${sendDataCheckedDate === null ? '확인' : '승인'} 요청 알림</h2>
+                  <table style="width: 100%;border-spacing: 10px 10px;">
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.inhouse_bid_number}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발행일</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.issue_date}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.given_name}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.checker}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.approver}</td>
+                    </tr>
+                  </table>
+                  <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
+                    <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                      확인하기
+                    </p>
+                  </a>
+                </div>
+              </body>
+            </html>
+            `;
+
+            try {
+              let sendEmailAlam = await mux.Server.post({
+                path: '/api/send_email/',
+                to_addrs: mailTo,
+                subject: "견적서 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
+                content: content
+              });
+              if (prevURL !== window.location.href) return;
+              if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
+                mux.Util.showAlert('등록되었습니다.', '등록 완료', 3000);
+              } else {
+                if (prevURL !== window.location.href) return;
+                console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+                mux.Util.showAlert('등록되었으나 알림 메일 전송에 실패하였습니다.', '등록 완료');
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              console.log('알림 메일 전송에 실패-error :>> ', error);
+              mux.Util.showAlert('등록되었으나 알림 메일 전송에 실패하였습니다.', '등록 완료');
+            }
         } else {
           if (prevURL !== window.location.href) return;
           mux.Util.showAlert(result);
         }
       } catch (error) {
-        mux.Util.hideLoading();
-
         if (prevURL !== window.location.href) return;
         mux.Util.showAlert(error);
       }
+
+      mux.Util.hideLoading();
     },
     addDatas(){
       if (this.tab_main === 0){
