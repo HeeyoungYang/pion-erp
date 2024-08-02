@@ -394,7 +394,7 @@
                               :src="mux.Util.imageBinary(clickedProductCost.blueprint_thumbnail)"
                               transition="scale-transition"
                               width="350"
-                              @click="download('estimate/blueprint', clickedProductCost.blueprint_file.replace(clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_', ''), clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_')"
+                              @click="download('estimate/blueprint', clickedProductCost.blueprint_file.replace(clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_', ''), clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_')"
                               style="cursor: pointer;"
                             />
                           </v-col>
