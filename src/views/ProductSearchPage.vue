@@ -597,5 +597,5 @@ export default {
     margin: 0;
     min-height: 100%;
 }
-.v-row-group__header{background-color: #fffde9!important;}
+/* .v-row-group__header{background-color: #fffde9!important;} */
 </style>
