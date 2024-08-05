@@ -641,30 +641,6 @@
       persistent
       max-width="1000px"
     >
-      <!-- <MailFormComponent
-        v-model="files"
-        addSystemFiles="order"
-        addCardClass="d-none"
-      >
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            text
-            @click="mailDialog = false"
-          >
-            취소
-          </v-btn>
-          <v-btn
-            color="blue darken-1"
-            text
-            @click="test(), mailDialog = false"
-          >
-            발송
-          </v-btn>
-        </v-card-actions>
-      </MailFormComponent> -->
-
       <v-form ref="mailForm">
         <MailFormComponent
           ref="mailFormComponent"
@@ -685,7 +661,7 @@
             <v-btn
               color="blue darken-1"
               text
-              @click="test()"
+              @click="sendOrderMail()"
             >
               발송
             </v-btn>
@@ -773,6 +749,7 @@ export default {
       uploadFilesDialog: false,
       tab_search: null,
       setPurchase: false,
+      email_sign:'',
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
       uploadFilesTitle: '',
@@ -871,6 +848,7 @@ export default {
         mux.Util.showAlert(error);
       }
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
+      this.email_sign =`<div><p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px;"><strong>${this.login_info.name} 파이온 일렉트릭㈜ ${this.login_info.department} ${this.login_info.position} / Pion Electric Co., Ltd. </strong></p><p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;">Home page : www.pionelectric.com<br>E-mail: ${this.login_info.email}  C/P: ${'+82(0)' + this.login_info.phone_number.slice(1)}<br> Tel: ${'+82(0)' + this.login_info.office_phone_number.slice(1)} Fax: +82(0)505-300-4179<br><br> 본사: (03722) 서울특별시 서대문구 연세로 50 연세대학교 공학원 116호<br> Head office: #116, Engineering Research Park, Yonsei University, 50, Yonsei-ro, Seodaemun-gu, Seoul, 03722, Republic of KOREA<br><br> 광명 사무소: (14348) 경기도 광명시 일직로 72  A-1818호<br> Gwangmyeong office: #A-1818, 72, Iljik-ro, Gwangmyeong-si, Gyeonggi-do, Republic of KOREA 14348<br><br> 광주 공장: (47580) 광주광역시 광산구 연산동 1247<br> Gwangju factory: 1247 Yeonsan-dong, Gwangsan-gu, Gwangju, Republic of KOREA 47580<br><br> 보령 공장: (33448) 충청남도 보령시 주교면 관창공단길 266<br> Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheongnam-do, Republic of KOREA 33448<br><br></p> <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;"><strong>제품 및 서비스</strong><br> ∙ 고자기장 기반의 산업용 운용기기 (Development of Operating Device for Industrial Applications based on High Magnetic Field)<br> ∙ 광기기 기반의 전력전자 응용기기 (Development of Power Electronics Application Device based on Optical Device)<br> ∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)<br> ∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)<br> ∙ 전기공사면허</p> </div>`
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -1394,7 +1372,69 @@ export default {
       this.uploadFilesDialog = false;
       this.save_new_file_info = {};
     },
+    async sendOrderMail(){
+      await this.$refs.mailFormComponent.dispatchEnterKeyToAllCombobox();
+      const validate = this.$refs.mailForm.validate();
+      if (!validate) return;
 
+      mux.Util.showLoading();
+      let mail_data = JSON.parse(JSON.stringify(this.mailData));
+      // mail_data.content = mail_data.content.replaceAll("style=\"", "style="").replaceAll(";\"", ";"")
+
+      mail_data.content += this.email_sign
+
+      let sendData = {};
+      for (let key in mail_data) {
+        if(key === 'content'){
+          sendData[key] = '<html><body>' + mail_data.content  + '</body></html>';
+        }else{
+          sendData[key] = mail_data[key];
+        }
+      }
+      sendData.path = '/api/send_email_extention/';
+      sendData.files = [];
+      for (let i = 0; i < this.mailData.files.length; i++) {
+        const file = this.mailData.files[i];
+        sendData.files.push(file);
+      }
+
+      let orderFile = null;
+      // 발주서 PDF 파일 생성
+      if (sendData.order) {
+        const order = this.$refs.orderForm;
+        try {
+          // await mux.Util.downloadPDF(order, 'order');
+          orderFile = await mux.Util.getPDF(order, '발주서');
+          sendData.files.push(orderFile);
+        } catch (error) {
+          this.mailDialog = true;
+          mux.Util.showAlert('견적서 PDF 파일 생성 중 오류가 발생했습니다.');
+          return;
+        }
+      }
+      delete sendData.order;
+
+
+      // S3에서 찾아서 첨부할 목록
+      let attachment = [];
+
+      if (sendData.business_license) {
+        attachment.push({folder: 'common', fileName: 'business_license_test.pdf', newName: '사업자등록증.pdf'});
+      }
+      delete sendData.business_license;
+
+      sendData.attachment = attachment;
+
+      try {
+        await mux.Server.sendEmail(sendData);
+        mux.Util.showAlert('메일 발송이 완료되었습니다.', '발송 완료', 3000);
+        this.mailDialog = false;
+      } catch (error) {
+        this.mailDialog = true;
+        mux.Util.showAlert(error);
+      }
+      mux.Util.hideLoading();
+    },
 
     openUploadFilesDialog(name, type){
       this.uploadFilesDialog = true;

@@ -93,11 +93,7 @@
     "cc": "",
     "bcc": "",
     "subject": "",
-    "estimate": false,
-    "specification": false,
-    "blueprint": false,
-    "approval": false,
-    "etc": false,
+    "order": false,
     "business_license": false,
     "content": "",
     "files": []

@@ -124,7 +124,7 @@
           <v-col cols="12" v-if="addSystemFiles === 'order'">
             <v-checkbox
               label="발주서"
-              v-model="mailData.estimate"
+              v-model="mailData.order"
               color="primary"
               hide-details
               class="float-left mr-3"
