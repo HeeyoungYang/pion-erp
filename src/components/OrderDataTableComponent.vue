@@ -35,7 +35,7 @@
                   </v-chip>
 
                   <v-chip
-                    v-if="item.approval_phase == '진행중'"
+                    v-if="item.approval_phase == '승인' || item.approval_phase == '진행중'"
                     class="ma-2"
                     small
                     color="primary"
@@ -75,7 +75,6 @@
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-6">
                             <v-row style="width: 250px;">
-                              <v-col cols="12" sm="12" class="pb-0 error--text font-weight-black">진행중으로 상태가 변경됩니다.</v-col>
                               <v-col cols="12" sm="8" align-self="center">승인하시겠습니까?</v-col>
                               <v-col cols="12" sm="4">
                                 <v-btn

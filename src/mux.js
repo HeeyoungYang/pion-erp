@@ -811,7 +811,7 @@ mux.Server = {
         this.post({
           path:'/api/user/login/', user_name:encrypted_id, password:encrypted_pw, salt:salt
         }).then(result => {
-          if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0) 
+          if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)
             || result['code'] == 5031 || (typeof result['data'] === 'object' && result['data']['code'] == 5031) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 5031)
             || result.temporary_password || (typeof result['data'] === 'object' && result['data'].temporary_password) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data'].temporary_password)){
             if (saveIdCheck){
@@ -1623,7 +1623,7 @@ mux.Util = {
         messageStr = message;
       }
     }
-    
+
     if (typeof messageStr !== 'string'){
       messageStr = JSON.stringify(messageStr);
     }

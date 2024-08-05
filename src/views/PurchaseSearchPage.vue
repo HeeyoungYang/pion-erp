@@ -655,7 +655,7 @@
                         v-for="(member, i) in order_member_info"
                         :key="i"
                         :color="member.name ? 'success' : 'default'"
-                        @click="selectMemberDialog(i)"
+                        @click="member.type === '승인' ? selectMemberDialog(i) : ''"
                       >
                         {{ member.type }} : {{ member.name }}
                       </v-chip>
@@ -1563,24 +1563,24 @@ export default {
 
       try {
         this.loading_dialog = true;
-        let resultInbound = await mux.Server.post({
+        let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
         });
         if (prevURL !== window.location.href) return;
 
-        if (typeof resultInbound === 'string'){
-          resultInbound = JSON.parse(resultInbound);
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
         }
-        if(resultInbound['code'] == 0){
+        if(result['code'] == 0){
           item.approval_phase = send_data.approval_phase;
           item.approved_date = send_data.approved_date;
           this.loading_dialog = false;
           mux.Util.showAlert('구매 요청 확인 완료', '완료', 3000);
 
           //메일 알림 관련
-          let creater = this.$cookies.get(this.$configJson.cookies.id.key);
-          let mailTo = [creater];
+
+          let mailTo = [item.creater];
           // mailTo.push(creater);
 
           // 메일 본문 내용
@@ -1641,7 +1641,7 @@ export default {
           }
         } else {
           if (prevURL !== window.location.href) return;
-          mux.Util.showAlert(resultInbound['failed_info']);
+          mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
@@ -2040,12 +2040,8 @@ export default {
                       <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.company_name}</td>
                     </tr>
                     <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">구매 담당자</td>
                       <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.given_name}</td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.checker}</td>
                     </tr>
                     <tr>
                       <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>

@@ -208,9 +208,5 @@ export default {
 }
 </script>
 <style>
-.order_info{border:1px solid #b6b6b6; padding: 2px 10px; font-size: 11px; border-left: 0px; text-overflow: ellipsis;white-space: normal;
-    word-wrap: break-word;
-    word-break: break-all;}
-.order_title{background-color: #efefef; font-weight: bold;}
 
 </style>
