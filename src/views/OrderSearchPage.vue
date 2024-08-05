@@ -161,13 +161,14 @@
       :dialog-transition="'slide-x-transition'"
       :dialog-custom="'custom-dialog elevation-0 white'"
       :card-elevation="'0'"
-      @close="closeProductList"
+      @close="closeOrderDetail"
     >
     <v-container>
       <v-row>
         <v-col cols="12">
 
           <v-btn
+            v-if="order_form_info.approval_phase === '진행중'"
             color="success"
             small
             elevation="0"
@@ -444,6 +445,7 @@
           <p class="font-weight-bold mb-0">
             ▼ 발주 확인서
             <v-btn
+              v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
               outlined
               color="primary"
               x-small
@@ -468,6 +470,7 @@
           <p class="font-weight-bold mb-0">
             ▼ 사업자 등록증
             <v-btn
+              v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
               outlined
               color="primary"
               x-small
@@ -492,6 +495,7 @@
           <p class="font-weight-bold mb-0">
             ▼ 통장 사본
             <v-btn
+              v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
               outlined
               color="primary"
               x-small
@@ -527,6 +531,7 @@
             1차 계산서 {{ firstBillDate === '' ? '' : ' : ' + firstBillDate }}
           </v-chip>
           <v-btn
+            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
             outlined
             color="primary"
             x-small
@@ -544,6 +549,7 @@
             2차 계산서 {{ secondBillDate === '' ? '' : ' : ' + secondBillDate }}
           </v-chip>
           <v-btn
+            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
             outlined
             color="primary"
             x-small
@@ -562,6 +568,7 @@
             3차 계산서 {{ thirdBillDate === '' ? '' : ' : ' + thirdBillDate }}
           </v-chip>
           <v-btn
+            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
             outlined
             color="primary"
             x-small
@@ -587,6 +594,7 @@
             1차 송금 확인증
           </v-chip>
           <v-btn
+            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
             outlined
             color="primary"
             x-small
@@ -605,6 +613,7 @@
             2차 송금 확인증
           </v-chip>
           <v-btn
+            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
             outlined
             color="primary"
             x-small
@@ -623,6 +632,7 @@
             3차 송금 확인증
           </v-chip>
           <v-btn
+            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
             outlined
             color="primary"
             x-small
@@ -737,7 +747,6 @@ export default {
   data(){
     return{
       mux: mux,
-      billNum:3,
       dates: [],
       showEmailIcon: false,
       showSaveIcon: false,
@@ -747,14 +756,8 @@ export default {
       loading_dialog: false,
       mailDialog: false,
       uploadFilesDialog: false,
-      tab_search: null,
-      setPurchase: false,
-      email_sign:'',
-      receivingInspectionThumbnail: '',
-      inspectionReportThumbnail: '',
-      uploadFilesTitle: '',
-      code_criterion: 'project',
 
+      email_sign:'',
       fileCode: '',
       orderConfirmationThumbnail: '',
       orderConfirmationFile: '',
@@ -771,41 +774,24 @@ export default {
       firstConfirmFile:'',
       secondConfirmFile:'',
       thirdConfirmFile:'',
+      code_criterion: 'project',
 
       save_new_file_info:{},
-      inbound_info_data:{},
-      inbound_product_list_data:[],
-
-      change_approve:{},
-
-      searched_products:[],
-      uploadFilesInputs: [],
-
       order_form_info:{},
-
-      save_order: OrderSearchPageConfig.save_order,
-      order_form_headers:OrderSearchPageConfig.order_form_headers,
-      purchase_member_info:OrderSearchPageConfig.purchase_member_info,
-      login_info: OrderSearchPageConfig.login_info,
-      searchCardInputs:OrderSearchPageConfig.searchCardInputs,
-      setPurchaseInputs:OrderSearchPageConfig.setPurchaseInputs,
-      project_code_data_headers:OrderSearchPageConfig.project_code_data_headers,
-      order_code_data_headers:OrderSearchPageConfig.order_code_data_headers,
-      order_detail_headers:OrderSearchPageConfig.order_detail_headers,
-      bom_list_headers: OrderSearchPageConfig.bom_list_headers,
-      bom_list_purchase_headers: OrderSearchPageConfig.bom_list_purchase_headers,
-      bom_list_data: OrderSearchPageConfig.bom_list_test_data,
-      bom_list_purchase_data: OrderSearchPageConfig.bom_list_purchase_test_data,
-      survey_cost_headers: OrderSearchPageConfig.survey_cost_headers,
-      labor_cost_headers: OrderSearchPageConfig.labor_cost_headers,
-      calc_cost_detail_data: JSON.parse(JSON.stringify(OrderSearchPageConfig.calc_cost_detail_data)),
-      // order_approve_data:[],
+      uploadFilesInputs: [],
       searched_order_data:[],
       order_form_data:[],
       order_detail_data: [],
       project_code_criterion_data:[],
       order_notes_data:[],
       order_code_criterion_data:[],
+
+
+      order_form_headers:OrderSearchPageConfig.order_form_headers,
+      login_info: OrderSearchPageConfig.login_info,
+      searchCardInputs:OrderSearchPageConfig.searchCardInputs,
+      project_code_data_headers:OrderSearchPageConfig.project_code_data_headers,
+      order_detail_headers:OrderSearchPageConfig.order_detail_headers,
       defaultMailData: OrderSearchPageConfig.default_mail_data,
     }
   },
@@ -817,7 +803,7 @@ export default {
   },
   watch:{
     order_detail_dialog(val){
-      val || this.closeProductList()
+      val || this.closeOrderDetail()
       this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
     },
   },
@@ -949,12 +935,10 @@ export default {
       });
       return total;
     },
-    closeProductList(){
+    closeOrderDetail(){
       this.order_detail_dialog = false;
     },
     async clickApproveData(item){
-
-
       this.fileCode = item.code
       this.orderConfirmationThumbnail = item.order_confirmation_thumbnail
       this.orderConfirmationFile = item.order_confirmation_file
@@ -976,7 +960,7 @@ export default {
       this.order_form_data = [];
       this.order_detail_dialog = true;
 
-      if(item.approval_phase === '승인'){
+      if(item.approval_phase === '승인' || item.approval_phase === '진행중'){
         this.showEmailIcon = true;
       }
       if(item.approval_phase !== '미승인'){
@@ -1014,59 +998,6 @@ export default {
       });
     },
 
-    async searchItemStock(data){
-      const prevURL = window.location.href;
-      try {
-        data.forEach(async datas => {
-          let stock_check = await mux.Server.post({
-            path: '/api/common_rest_api/',
-            params: [
-              {
-                "product_table.product_code": datas.product_code,
-
-                "module_table.module_code": datas.product_code,
-
-                "material_table.material_code": datas.product_code,
-                "material_table.directly_written": 0,
-              }
-            ],
-            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
-          });
-          if (prevURL !== window.location.href) return;
-
-          if (typeof stock_check === 'string'){
-            stock_check = JSON.parse(stock_check);
-          }
-          if(stock_check['code'] == 0){
-
-            stock_check = stock_check['data'].map(a => {
-              if (!a.stock_num){
-                a.stock_price = 0;
-              }else {
-                a.stock_price = Math.round(a.unit_price * a.stock_num)
-              }
-              return a;
-            });
-
-            console.log(stock_check);
-
-            stock_check.forEach(data => {
-              this.searched_products.push(data);
-            });
-          }
-
-        })
-
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
-      }
-    },
     async batchApprovalPhase(item){
       const currDate = new Date();
       const prevURL = window.location.href;
@@ -1083,24 +1014,32 @@ export default {
       let creater = [];
 
       item.forEach(data=>{
-        update_data.push({
-          "user_info": {
-            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-            "role": "modifier"
-          },
-          "data": send_data,
-          "update_where": {"code": data.code},
-          "rollback": "yes"
-        });
-        content_table += `
-          <tr>
-            <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#efefef">${data.company_name}</td>
-            <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${data.given_name}</td>
-            <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${data.approver}</td>
-          </tr>
-        `
-        creater.push(data.creater);
+        if(data.approval_phase === '미승인'){
+          update_data.push({
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data": send_data,
+            "update_where": {"code": data.code},
+            "rollback": "yes"
+          });
+          content_table += `
+            <tr>
+              <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#efefef">${data.company_name}</td>
+              <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${data.given_name}</td>
+              <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${data.approver}</td>
+            </tr>
+          `
+          creater.push(data.creater);
+        }
+
       })
+
+      if(update_data.length === 0){
+        mux.Util.showAlert('승인할 발주 데이터가 없습니다.');
+        return;
+      }
 
       sendData["order_confirmation_table-update"] = update_data;
       console.log("sendData ::: ", sendData);
@@ -1304,15 +1243,28 @@ export default {
     async saveNewFile(){
       let save_info = this.save_new_file_info
       let file_value = this.uploadFilesInputs.find(x=>x.column_name === save_info.column_file).value;
+      if(file_value === '' || file_value === null || file_value === undefined){
+        mux.Util.showAlert('파일을 선택해주세요');
+        return;
+      }
       let file_name = file_value.name;
       let file_thumbnail;
       let save_data = {};
       save_data[save_info.column_file] = file_name;
 
-      if(save_info.name === '발주 확인서' || save_info.name === 'ㅅ사업자 등록증' || save_info.name === '통장 사본'){
+      if(save_info.name === '발주 확인서' || save_info.name === '사업자 등록증' || save_info.name === '통장 사본'){
         const getPdfThumbnail = await mux.Util.getPdfThumbnail(file_value, 1, false);
         file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
         save_data[save_info.column_thumbnail] = file_thumbnail;
+      }else if(save_info.name.includes('계산서')){
+        let file_date = this.uploadFilesInputs.find(x=>x.column_name === save_info.column_file+'_date').value;
+        if(file_date === '' || file_date === null || file_date === undefined){
+          mux.Util.showAlert(save_info.name.replace('계산서', '계산일')+'을 입력해주세요');
+          return;
+        }else{
+        save_data[save_info.column_file+'_date'] = file_date;
+
+        }
       }
 
 
@@ -1373,6 +1325,8 @@ export default {
       this.save_new_file_info = {};
     },
     async sendOrderMail(){
+      const currDate = new Date();
+
       await this.$refs.mailFormComponent.dispatchEnterKeyToAllCombobox();
       const validate = this.$refs.mailForm.validate();
       if (!validate) return;
@@ -1428,6 +1382,49 @@ export default {
       try {
         await mux.Server.sendEmail(sendData);
         mux.Util.showAlert('메일 발송이 완료되었습니다.', '발송 완료', 3000);
+        // 발주 단계가 승인일 경우 진행중으로 변경
+        if(this.order_form_info.approval_phase === '승인'){
+          let updateData = {
+            "order_confirmation_table-update": [{
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data":{
+                "approval_phase": "진행중",
+                "order_date": mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss')
+              },
+              "update_where": {"code": this.order_form_info.code},
+              "rollback": "yes"
+            }]
+          };
+
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/common_rest_api/',
+              params: updateData
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            if(result['code'] == 0){
+              this.order_form_info.approval_phase = '진행중';
+            } else {
+              if (prevURL !== window.location.href) return;
+              mux.Util.showAlert(result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            this.loading_dialog = false;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
+            else
+              mux.Util.showAlert(error);
+          }
+        }
         this.mailDialog = false;
       } catch (error) {
         this.mailDialog = true;
@@ -1456,7 +1453,14 @@ export default {
       this.save_new_file_info.code = this.order_form_data[0].code;
       this.save_new_file_info.name = name;
       this.save_new_file_info.folder = folder_name;
-      if(name.includes('계산서') || name.includes('송금 확인증')){
+      if(name.includes('계산서')){
+        this.save_new_file_info.column_file = type;
+        let date_name = name.replace('계산서','계산일')
+        this.uploadFilesInputs.push(
+          {"label":date_name, "column_name":type+"_date", "type":"dateSingle", "value": type === 'first_bill' ? this.firstBillDate : (type === 'second_bill' ? this.secondBillDate : this.thirdBillDate), "col":"12", "sm":"12", "lg":"12", "menu":""},
+          {"label":name, "column_name":type, "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip", "accept":".pdf"},
+        )
+      }else if(name.includes('송금 확인증')){
         this.save_new_file_info.column_file = type;
         this.uploadFilesInputs.push(
           {"label":name, "column_name":type, "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip", "accept":".pdf"},
@@ -1481,12 +1485,60 @@ export default {
       }, 500);
     },
     async completeOrder(){
-      mux.Util.showAlert('송금 확인증을 1차 이상 등록해주세요.', '확인');
-      const confirm = await mux.Util.showConfirm('송금 확인증이 1(혹은 2)차만 등록되었습니다. 구매 완료하시겠습니까?', '구매 완료 확인');
-      if (!confirm){
+      let confirm;
+      if(this.firstConfirmFile === ''){
+        mux.Util.showAlert('송금 확인증을 1차 이상 등록해주세요.', '확인');
+        return;
+      }else if(this.secondConfirmFile === ''){
+        confirm = await mux.Util.showConfirm('송금 확인증이 1차만 등록되었습니다.<br>구매 완료 처리를 하시겠습니까?', '확인', false, '예', '아니오');
+
+      }else if(this.thirdConfirmFile === ''){
+        confirm = await mux.Util.showConfirm('송금 확인증이 2차만 등록되었습니다.<br>구매 완료 처리를 하시겠습니까?', '확인', false, '예', '아니오');
+      }
+      if (confirm){
+        let sendData = {};
+
+        sendData["order_confirmation_table-update"] = [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{
+            "approval_phase": "구매완료"
+          },
+          "update_where": {"code": this.order_form_info.code},
+          "rollback": "yes"
+        }];
+
+
+        const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: sendData
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0){
+            mux.Util.showAlert('구매 완료 처리되었습니다.', '완료', 3000);
+          } else {
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          this.loading_dialog = false;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
+          else
+            mux.Util.showAlert(error);
+        }
+      }else {
         return;
       }
-      mux.Util.showAlert('구매 완료 처리되었습니다.', '완료', 3000);
     }
   },
 }

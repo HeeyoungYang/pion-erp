@@ -655,7 +655,7 @@
                         v-for="(member, i) in order_member_info"
                         :key="i"
                         :color="member.name ? 'success' : 'default'"
-                        @click="selectMemberDialog(i)"
+                        @click="member.type === '승인' ? selectMemberDialog(i) : ''"
                       >
                         {{ member.type }} : {{ member.name }}
                       </v-chip>
