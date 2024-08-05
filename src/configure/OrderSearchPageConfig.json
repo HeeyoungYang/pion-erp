@@ -1,4 +1,8 @@
 { 
+  "save_order": [
+    {"title":"출력", "click":"print"},
+    {"title":"PDF", "click":"pdf"}
+  ],
   "searchCardInputs":[
     {"label":"승인", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All","미확인", "미승인", "승인", "반려"]},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"3", "value": ""},

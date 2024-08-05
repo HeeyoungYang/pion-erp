@@ -156,7 +156,7 @@
 
     <ModalDialogComponent
       :dialog-value="order_detail_dialog"
-      max-width="60%"
+      max-width="50%"
       title-class=" "
       :dialog-transition="'slide-x-transition'"
       :dialog-custom="'custom-dialog elevation-0 white'"
@@ -190,6 +190,7 @@
                 elevation="1"
                 v-bind="attrs"
                 v-on="on"
+                data-html2canvas-ignore="true"
               >
                 <v-icon small>mdi-content-save</v-icon>
               </v-btn>
@@ -197,13 +198,13 @@
             <v-list>
               <v-list-item
                 dense
-                @click="printInboundApprove('발주서')"
+                @click="printOrder(mux.Date.format(new Date(), 'yyyy-MM-dd') + '_' + order_form_info.company_name + '_발주서')"
               >
                 <v-list-item-title>PDF</v-list-item-title>
               </v-list-item>
               <v-list-item
                 dense
-                @click="printInboundApprove()"
+                @click="printOrder()"
               >
                 <v-list-item-title>출력</v-list-item-title>
               </v-list-item>
@@ -222,11 +223,16 @@
             <v-icon >mdi-email</v-icon>
           </v-btn>
         </v-col>
-        <v-col
-          v-if="orderPurchase"
-          cols="12"
+      </v-row>
+      <v-row
+        v-if="orderPurchase"
+        style="border: 1px solid #c3c3c3;"
           class="pa-4"
-          style="border: 1px solid #c3c3c3;"
+      >
+        <v-col
+          ref="orderForm"
+          cols="12"
+          sm="12"
         >
           <!-- <orderPurchaseComponent
             ref="orderPurchaseComponent"
@@ -234,7 +240,7 @@
           <div>
             <p class="print_doc_title">발주서</p>
             <v-row style="margin-top:15px">
-              <v-col cols="7">
+              <v-col cols="12" sm="6">
                 <v-img
                   alt="Pionelectric Logo"
                   class="shrink mr-2"
@@ -244,7 +250,7 @@
                   style="margin-top:10px; width: 150px;"
                 />
               </v-col>
-              <v-col cols="5">
+              <v-col cols="12" sm="6">
                 <table style="border-spacing: 0;width: 100%; text-align: center;">
                     <tr>
                     <td rowspan="3" class="approve_list_title">결재</td>
@@ -265,7 +271,7 @@
                 </table>
               </v-col>
 
-              <v-col cols="12" sm="12" class="pb-0">
+              <v-col cols="12" sm="12" style="padding-top:0px;padding-bottom:0px">
                 <table style="border-spacing: 0px; width: 100%;">
                   <tr class="text-body-1">
                     <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">관리번호</td>
@@ -278,7 +284,7 @@
                 </table>
               </v-col>
 
-              <v-col cols="12" sm="6" class="pb-0">
+              <v-col cols="12" sm="6" style="padding-bottom:0px">
                 <table style="table-layout: fixed; border-spacing: 0px; width: 100%; ">
 
                   <tr>
@@ -313,13 +319,13 @@
                   </tr>
                 </table>
               </v-col>
-              <v-col cols="12" sm="6" style="position: relative;" class="pb-0">
+              <v-col cols="12" sm="6" style="position: relative;padding-bottom:0px">
                 <v-img
                   alt="직인"
                   contain
                   src="../assets/img/pion_stamp.png"
                   transition="scale-transition"
-                  width="40"
+                  width="30"
                   style="position: absolute; right:25px; top:25px"
                 />
                 <table style=" border-spacing: 0px; width: 100%;">
@@ -357,7 +363,7 @@
                   </tr>
                 </table>
               </v-col>
-              <v-col cols="12" sm="12">
+              <v-col cols="12" sm="12" style="padding-bottom:0px">
                 <v-data-table
                   :headers="order_form_headers"
                   :items="order_form_data"
@@ -373,20 +379,20 @@
                   <template v-slot:[`group.header`]="{items}">
                     <th
                       :rowspan="items.length+1"
-                      style="background: white;border-right: thin solid rgba(0, 0, 0, 0.12);"
+                      style="background: white;border-right: thin solid rgba(0, 0, 0, 0.12); font-size: 11px;"
                     >
                       {{ checkNo(items[0].item_code) }}
                     </th>
-                    <th>{{ items[0].name }}</th>
-                    <th>{{ items[0].spec }}</th>
-                    <th>{{ items[0].unit_price }}</th>
-                    <th>{{ items[0].ordered_num }}</th>
-                    <th>{{ items[0].unit_price * items[0].ordered_num }}</th>
-                    <th>{{ (items[0].unit_price * items[0].ordered_num)*0.1 }}</th>
+                    <th style="font-size:11px">{{ items[0].name }}</th>
+                    <th style="font-size:11px">{{ items[0].spec }}</th>
+                    <th style="font-size:11px">{{ items[0].unit_price }}</th>
+                    <th style="font-size:11px">{{ items[0].ordered_num }}</th>
+                    <th style="font-size:11px">{{ items[0].unit_price * items[0].ordered_num }}</th>
+                    <th style="font-size:11px">{{ (items[0].unit_price * items[0].ordered_num)*0.1 }}</th>
                   </template>
                   <template v-slot:item="{ item }">
                     <tr>
-                      <td colspan="6">
+                      <td colspan="6"  style="font-size:11px">
                         {{ item.note }}
                       </td>
                     </tr>
@@ -718,72 +724,6 @@
         </InputsFormComponent>
       </CardComponent>
     </ModalDialogComponent>
-    <ModalDialogComponent
-      :dialog-value="orderPurchaseDialog"
-      max-width="900px"
-      title-class="display-none"
-      text-class="pb-0"
-      :persistent="true"
-    >
-      <orderPurchaseComponent
-      ref="orderPurchaseComponent"
-      />
-      <div style="position: sticky; bottom: 60px;">
-        <p style="text-align: right;">
-          <v-menu offset-x>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="success"
-                fab
-                x-small
-                elevation="1"
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon small>mdi-content-save</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                dense
-                @click="printInboundApprove('발주서')"
-              >
-                <v-list-item-title>PDF</v-list-item-title>
-              </v-list-item>
-              <v-list-item
-                dense
-                @click="printInboundApprove()"
-              >
-                <v-list-item-title>출력</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </p>
-        <p style="text-align: right;">
-          <v-btn
-            color="primary"
-            elevation="0"
-            fab
-            x-small
-            @click="mailDialog = true"
-          >
-            <v-icon >mdi-email</v-icon>
-          </v-btn>
-        </p>
-        <p style="text-align: right;">
-          <v-btn
-            fab
-            color="blue-grey darken-1"
-            x-small
-            class="white--text"
-            elevation="1"
-            @click="orderPurchaseDialog=false"
-          >
-            <v-icon> mdi-close-thick </v-icon>
-          </v-btn>
-        </p>
-      </div>
-    </ModalDialogComponent>
   </div>
 </template>
 <script>
@@ -794,7 +734,7 @@ import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
-import orderPurchaseComponent from "@/components/orderPurchaseComponent.vue";
+// import orderPurchaseComponent from "@/components/orderPurchaseComponent.vue";
 import MailFormComponent from "@/components/MailFormComponent.vue";
 import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
 import OrderSearchPageConfig from "@/configure/OrderSearchPageConfig.json";
@@ -814,7 +754,7 @@ export default {
                 CardComponent,
                 InputsFormComponent,
                 LoadingModalComponent,
-                orderPurchaseComponent,
+                // orderPurchaseComponent,
                 MailFormComponent,
                 ExpansionPanelComponent,
               },
@@ -866,6 +806,7 @@ export default {
 
       order_form_info:{},
 
+      save_order: OrderSearchPageConfig.save_order,
       order_form_headers:OrderSearchPageConfig.order_form_headers,
       purchase_member_info:OrderSearchPageConfig.purchase_member_info,
       login_info: OrderSearchPageConfig.login_info,
@@ -1160,7 +1101,8 @@ export default {
       let sendData = {};
       let update_data = [];
 
-      let content_table;
+      let content_table = '';
+      let creater = [];
 
       item.forEach(data=>{
         update_data.push({
@@ -1174,12 +1116,12 @@ export default {
         });
         content_table += `
           <tr>
-            <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">${data.company_name}</td>
+            <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#efefef">${data.company_name}</td>
             <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${data.given_name}</td>
-            <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">${data.approver}</td>
+            <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${data.approver}</td>
           </tr>
-
         `
+        creater.push(data.creater);
       })
 
       sendData["order_confirmation_table-update"] = update_data;
@@ -1203,7 +1145,7 @@ export default {
           mux.Util.showAlert('발주 승인 완료', '완료', 3000);
 
           //메일 알림 관련
-          let mailTo = [item.creater];
+          let mailTo = [...new Set(creater)];
           // mailTo.push(creater);
 
           // 메일 본문 내용
@@ -1396,10 +1338,10 @@ export default {
       }
 
 
-      let file_data = [];
-      file_data.folder = save_info.folder;
-      file_data.file = file_value;
-      file_data.name = file_name;
+      // let file_data = [];
+      // file_data.folder = save_info.folder;
+      // file_data.file = file_value;
+      // file_data.name = file_name;
 
       this.loading_dialog = true;
 
@@ -1415,7 +1357,12 @@ export default {
         }]
       };
 
-      sendData.files = file_data;
+      sendData.files = [];
+      sendData.files.push({
+        folder : save_info.folder,
+        file : file_value,
+        name : file_name
+      })
       sendData.path = '/api/multipart_rest_api/';
       sendData.prefix = save_info.code + '_';
 
@@ -1482,6 +1429,17 @@ export default {
         )
       }
     },
+
+
+    printOrder(fileName){
+      setTimeout(async () => {
+        if (fileName){
+          mux.Util.downloadPDF(this.$refs.orderForm, fileName);
+        }else {
+          mux.Util.print(this.$refs.orderForm);
+        }
+      }, 500);
+    },
     async completeOrder(){
       mux.Util.showAlert('송금 확인증을 1차 이상 등록해주세요.', '확인');
       const confirm = await mux.Util.showConfirm('송금 확인증이 1(혹은 2)차만 등록되었습니다. 구매 완료하시겠습니까?', '구매 완료 확인');
@@ -1494,8 +1452,7 @@ export default {
 }
 </script>
 
-<style lang="">
+<style>
 
 </style>
-
 
