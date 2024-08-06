@@ -52,17 +52,15 @@
               class="mt-5"
               >
                 <v-card-text class=" pt-3">
-                  <DataTableComponent
+                  <ProductionDataTableComponent
                     :headers="production_data_headers"
-                    :items="production_datas"
-                    item-key="product_code"
-                    approval="inbound"
+                    :items="approval_datas"
+                    item-key="code"
+                    approval
                     dense
                     :loginId="login_info.id"
                     @clickTr="clickApproveData"
                     @setApprovalPhase="setApprovalPhase"
-                    @cancleApprove="cancleApprove"
-                    @setCanclePhase="setCanclePhase"
                   />
                 </v-card-text>
               </v-card>
@@ -86,10 +84,10 @@
         <v-row class="mb-4">
           <v-col cols="12" sm="12">
             <v-chip
-              class="font-weight-bold mr-3"
-              color="primary"
+              class="font-weight-bold mr-4"
+              :color="production_details.status === '생산 완료' ? 'primary' : 'default'"
             >
-              생산 완료
+              {{ production_details.status === '생산 완료' ? '생산 완료' : '생산 미완료' }}
             </v-chip>
             <v-btn
               small
@@ -102,87 +100,81 @@
         <v-row>
           <v-col cols="12" sm="4">
             <p class="font-weight-bold primary--text mb-0">▼ 자체시험</p>
-            <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-            <!-- <v-img
+            <v-img
               alt="thumbnail"
               class="shrink mr-2"
               contain
-              :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+              :src="mux.Util.imageBinary(production_details.self_test_thumbnail)"
               transition="scale-transition"
-              width="350"
-              @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+              width="100%"
+              @click="download('production/self_test', production_details.self_test_file, production_details.code+'_')"
               style="cursor: pointer;"
-            /> -->
+            />
           </v-col>
           <v-col cols="12" sm="4">
             <p class="font-weight-bold primary--text mb-0">▼ 공장시험</p>
-            <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-            <!-- <v-img
+            <v-img
               alt="thumbnail"
               class="shrink mr-2"
               contain
-              :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+              :src="mux.Util.imageBinary(production_details.factory_test_thumbnail)"
               transition="scale-transition"
-              width="350"
-              @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+              width="100%"
+              @click="download('production/self_test', production_details.factory_test_file, production_details.code+'_')"
               style="cursor: pointer;"
-            /> -->
+            />
           </v-col>
           <v-col cols="12" sm="4">
             <p class="font-weight-bold primary--text mb-0">▼ 현장시험</p>
-            <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-            <!-- <v-img
+            <v-img
               alt="thumbnail"
               class="shrink mr-2"
               contain
-              :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+              :src="mux.Util.imageBinary(production_details.field_test_thumbnail)"
               transition="scale-transition"
-              width="350"
-              @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+              width="100%"
+              @click="download('production/self_test', production_details.field_test_file, production_details.code+'_')"
               style="cursor: pointer;"
-            /> -->
+            />
           </v-col>
           <v-col cols="12" sm="4">
             <p class="font-weight-bold primary--text mb-0">▼ 시운전</p>
-            <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-            <!-- <v-img
+            <v-img
               alt="thumbnail"
               class="shrink mr-2"
               contain
-              :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+              :src="mux.Util.imageBinary(production_details.trial_run_thumbnail)"
               transition="scale-transition"
-              width="350"
-              @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+              width="100%"
+              @click="download('production/self_test', production_details.trial_run_file, production_details.code+'_')"
               style="cursor: pointer;"
-            /> -->
+            />
           </v-col>
           <v-col cols="12" sm="4">
             <p class="font-weight-bold primary--text mb-0">▼ 전자세금계산서</p>
-            <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-            <!-- <v-img
+            <v-img
               alt="thumbnail"
               class="shrink mr-2"
               contain
-              :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+              :src="mux.Util.imageBinary(production_details.tax_invoice_thumbnail)"
               transition="scale-transition"
-              width="350"
-              @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+              width="100%"
+              @click="download('production/self_test', production_details.tax_invoice_file, production_details.code+'_')"
               style="cursor: pointer;"
-            /> -->
+            />
           </v-col>
           <v-col cols="12" sm="4">
             <p class="font-weight-bold primary--text mb-0">▼ 하자보증증권 </p>
-            <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-            <!-- <v-img
+            <v-img
               alt="thumbnail"
               class="shrink mr-2"
               contain
-              :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+              :src="mux.Util.imageBinary(production_details.defect_warranty_thumbnail)"
               transition="scale-transition"
-              width="350"
-              @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+              width="100%"
+              @click="download('production/self_test', production_details.defect_warranty_file, production_details.code+'_')"
               style="cursor: pointer;"
-            /> -->
+            />
           </v-col>
 
         </v-row>
@@ -195,7 +187,7 @@ import NavComponent from "@/components/NavComponent";
 import CheckPagePermission from "@/common_js/CheckPagePermission";
 import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
-import DataTableComponent from "@/components/DataTableComponent.vue";
+import ProductionDataTableComponent from "@/components/ProductionDataTableComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import ProductionSearchPageConfig from "@/configure/ProductionSearchPageConfig.json";
@@ -209,7 +201,7 @@ export default {
   components: {
                 NavComponent,
                 CardComponent,
-                DataTableComponent,
+                ProductionDataTableComponent,
                 InputsFormComponent,
                 LoadingModalComponent,
                 ModalDialogComponent
@@ -252,24 +244,27 @@ export default {
     },
     clickApproveData(){
       this.production_detail_dialog = true;
+      this.production_details = ProductionSearchPageConfig.test_production_datas[0];
     },
     closeProductList(){
       this.production_detail_dialog = false;
     },
     searchButton(){
       this.loading_dialog = true;
-      this.production_datas = ProductionSearchPageConfig.test_production_datas;
+      this.approval_datas = ProductionSearchPageConfig.test_approval_datas;
       this.loading_dialog = false;
     },
   },
   data(){
     return{
+      mux: mux,
       loading_dialog : false,
       production_detail_dialog: false,
       searchCardInputs: ProductionSearchPageConfig.searchCardInputs,
       login_info: ProductionSearchPageConfig.login_info,
       production_data_headers: ProductionSearchPageConfig.production_data_headers,
-      production_datas: [],
+      approval_datas: [],
+      production_details:{},
     }
   }
 }

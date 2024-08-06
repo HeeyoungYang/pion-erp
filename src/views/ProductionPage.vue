@@ -367,13 +367,14 @@ export default {
     },
     productionDetail(item){
       this.show_detail = true;
-      // this.search_production_data = ProductionPageConfig.test_production_data;
+      this.search_production_data = ProductionPageConfig.test_production_data;
 
       // 데이터가 없을 경우
       if(this.search_production_data.length === 0){
         this.edit_data = true;
         this.production_detail.project_code = item.project_code
         this.production_detail.company_name = item.company_name
+        this.production_detail.obtain_type = item.obtain_type
         this.production_detail.inhouse_bid_number = item.inhouse_bid_number
         this.production_detail.company_bid_number = item.company_bid_number
       }else{// 데이터가 있을 경우
