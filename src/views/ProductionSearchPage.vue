@@ -89,12 +89,71 @@
             >
               {{ production_details.status === '생산 완료' ? '생산 완료' : '생산 미완료' }}
             </v-chip>
-            <v-btn
-              small
-              color="success"
+            <v-menu
+              offset-y
+              :close-on-content-click="false"
             >
-              입고 승인 요청
-            </v-btn>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-if="show_inbound_button"
+                  small
+                  color="success"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  입고 승인 요청
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item>
+                  <v-list-item-content style="width: 250px;">
+                    <v-autocomplete
+                      v-model="inbound_checker"
+                      :items="members"
+                      label="확인"
+                      filled
+                      dense
+                      clearable
+                      hide-details
+                      class="mb-4"
+                    ></v-autocomplete>
+                    <v-autocomplete
+                      v-model="inbound_approver"
+                      :items="members"
+                      label="승인"
+                      filled
+                      dense
+                      clearable
+                      hide-details
+                      class="mb-4"
+                    ></v-autocomplete>
+                    <v-autocomplete
+                      v-model="inbound_material_manager"
+                      :items="members"
+                      label="자재 담당자"
+                      filled
+                      dense
+                      clearable
+                      hide-details
+                      class="mb-4"
+                    ></v-autocomplete>
+                    <InputsFormComponent
+                      dense
+                      clearable
+                      filled
+                      hide-details
+                      :inputs="inboundRequestInputs"
+                    />
+                    <v-btn
+                      small
+                      color="primary"
+                      class="mt-4"
+                      @click="inboundApprovalRequest"
+                    >요청</v-btn>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-col>
         </v-row>
         <v-row>
@@ -227,6 +286,29 @@ export default {
     async initialize () {
       const prevURL = window.location.href;
       try {
+        const result = await mux.Server.get({path:'/api/admin/users/'});
+        if (prevURL !== window.location.href) return;
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+          result.data.Users.map(data => {
+            let id = data.Username;
+            let name = data.Attributes.find(x=>x.Name === 'given_name').Value;
+            let department = data.Attributes.find(x=>x.Name === 'custom:department').Value
+            this.members.push(department + '-' + name + '-' + id);
+          });
+
+        }else {
+          this.loading_dialog = false;
+          mux.Util.showAlert(result.message);
+          return;
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        this.loading_dialog = false;
+        mux.Util.showAlert(error);
+        return;
+      }
+
+      try {
         if (prevURL !== window.location.href) return;
         this.login_info.name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.login_info.email = this.$cookies.get(this.$configJson.cookies.email.key);
@@ -242,9 +324,15 @@ export default {
       }
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
-    clickApproveData(){
+    clickApproveData(item){
       this.production_detail_dialog = true;
       this.production_details = ProductionSearchPageConfig.test_production_datas[0];
+
+      if(item.approval_phase === '승인' && item.obtain_type === '재고'){
+        this.show_inbound_button = true;
+      }
+      this.set_inbound_code = item.code;
+      this.set_project_code = item.project_code;
     },
     closeProductList(){
       this.production_detail_dialog = false;
@@ -467,17 +555,125 @@ export default {
       }
       mux.Util.hideLoading();
     },
+    async inboundApprovalRequest(){
+      const currDate = new Date();
+      if(this.inbound_checker === '' || this.inbound_approver === '' || this.inbound_material_manager === ''){
+        mux.Util.showAlert('입고 승인 요청 정보를 모두 입력해주세요.');
+        return;
+      }
+      console.log(this.inbound_checker + ' / ' + this.inbound_approver + ' / ' + this.inbound_material_manager);
+
+      let insert_data = {};
+      insert_data.code = this.set_inbound_code
+      insert_data.project_code = this.set_project_code
+      insert_data.material_manager = this.inbound_material_manager.split('-')[1]
+      insert_data.checker = this.inbound_checker.split('-')[1]
+      insert_data.checker_id = this.inbound_checker.split('-')[2]
+      insert_data.approver = this.inbound_approver.split('-')[1]
+      insert_data.approver_id = this.inbound_approver.split('-')[2]
+
+      if(insert_data.checker_id == this.login_info.id){
+        insert_data.approval_phase = '미승인';
+        insert_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff')
+      }else{
+        insert_data.approval_phase = '미확인';
+      }
+      insert_data.inbound_date = this.inboundRequestInputs.find(x=>x.column_name === 'inbound_date').value;
+      insert_data.note = this.inboundRequestInputs.find(x=>x.column_name === 'note').value ? this.inboundRequestInputs.find(x=>x.column_name === 'note').value : '';
+      insert_data.add_data = '생산 입고';
+
+
+      //입고 데이터용 파일 정리
+
+      let trial_run_blob = await mux.Server.getFileData('production/trial_run', this.set_inbound_code + '_' + this.production_details.trial_run_file, 'application/pdf');
+      const trial_run_file = new File([trial_run_blob], this.production_details.trial_run_file);
+
+      let tax_invoice_blob = await mux.Server.getFileData('production/tax_invoice', this.set_inbound_code + '_' + this.production_details.tax_invoice_file, 'application/pdf');
+      const tax_invoice_file = new File([tax_invoice_blob], this.production_details.trial_run_file);
+
+      let defect_warranty_blob = await mux.Server.getFileData('production/defect_warranty', this.set_inbound_code + '_' + this.production_details.defect_warranty_file, 'application/pdf');
+      const defect_warranty_file = new File([defect_warranty_blob], this.production_details.trial_run_file);
+
+
+      insert_data.files = this.production_details.trial_run_file + "/" + this.production_details.tax_invoice_file + "/" + this.production_details.defect_warranty_file;
+
+
+      let sendData = {
+        "inbound_confirmation_table-insert": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "creater"
+          },
+          "data":insert_data,
+          "select_where": {"code": insert_data.code},
+          "rollback": "yes"
+        }]
+      };
+
+      sendData.path = '/api/multipart_rest_api/';
+      sendData.prefix = insert_data.code + '_';
+      sendData.files = [];
+      sendData.files.push({
+        folder: 'inbound/files',
+        file: trial_run_file,
+        name: this.production_details.trial_run_file
+      },{
+        folder: 'inbound/files',
+        file: tax_invoice_file,
+        name: this.production_details.tax_invoice_file
+      },{
+        folder: 'inbound/files',
+        file: defect_warranty_file,
+        name: this.production_details.defect_warranty_file
+      });
+
+      const prevURL = window.location.href;
+      try {
+        // let result = await mux.Server.post({
+        //   path: '/api/common_rest_api/',
+        //   params: sendData
+        // });
+        let result = await mux.Server.uploadFile(sendData);
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result.data['code'] == 0){
+          // console.log('result :>> ', result);
+          mux.Util.showAlert('입고 승인 요청이 완료되었습니다', '요청 완료', 3000);
+        } else {
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+
+    }
   },
   data(){
     return{
       mux: mux,
       loading_dialog : false,
       production_detail_dialog: false,
+      show_inbound_button: false,
       searchCardInputs: ProductionSearchPageConfig.searchCardInputs,
       login_info: ProductionSearchPageConfig.login_info,
       production_data_headers: ProductionSearchPageConfig.production_data_headers,
+      inboundRequestInputs: ProductionSearchPageConfig.inboundRequestInputs,
+      members: [],
       approval_datas: [],
       production_details:{},
+      inbound_checker:'',
+      inbound_approver:'',
+      inbound_material_manager:'',
+      set_inbound_code: '',
+      set_project_code: ''
     }
   }
 }

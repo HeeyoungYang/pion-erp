@@ -61,6 +61,7 @@
             <v-row slot="cardTitle">
               <v-col cols="12" sm="12">
                 <v-chip
+                  v-if="production_detail.approval_phase"
                   class="mr-2"
                   outlined
                   :color="production_detail.approval_phase === '작성중' ? 'default': (production_detail.approval_phase === '미승인' || production_detail.approval_phase === '미확인' ? 'amber darken-2' : (production_detail.approval_phase === '승인' ? 'primary' : 'error'))"
@@ -374,7 +375,7 @@ export default {
     },
     productionDetail(item){
       this.show_detail = true;
-      this.search_production_data = ProductionPageConfig.test_production_data;
+      // this.search_production_data = ProductionPageConfig.test_production_data;
 
       // 데이터가 없을 경우
       if(this.search_production_data.length === 0){
@@ -434,6 +435,7 @@ export default {
       }
     },
     async saveProduction(type){
+      mux.Util.showLoading();
       const currDate = new Date();
       let production_data = this.production_detail;
       let checker_info = this.member_info.find(x => x.type === '확인');
@@ -510,7 +512,6 @@ export default {
             });
           }
         })
-        mux.Util.showLoading();
         const prevURL = window.location.href;
         try {
           // let result = await mux.Server.post({
@@ -684,7 +685,6 @@ export default {
             });
           }
         })
-        mux.Util.showLoading();
         const prevURL = window.location.href;
         try {
           // let result = await mux.Server.post({

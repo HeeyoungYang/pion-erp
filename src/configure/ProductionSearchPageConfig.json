@@ -10,13 +10,9 @@
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"2"},
     {"label":"업체명", "col":"12", "sm":"4", "lg":"2", "value": ""}
   ],
-  "editDataInputs":[
-    {"label":"자체시험 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"자체시험 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"현장시험 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"시운전 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"전자세금계산서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"전자세금계산서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"}
+  "inboundRequestInputs":[    
+    {"label":"입고일자", "column_name":"inbound_date", "type":"dateSingle", "value": "", "col":"12", "sm":"12", "lg":"12", "menu":"", "rule_set":true},
+    {"label":"비고", "column_name":"note", "type":"textarea", "col":"12", "sm":"12", "lg":"12", "value": ""}
   ],
   "production_data_headers":[
     { "text": "승인 요청일", "align": "start", "value": "created_time"},
@@ -31,7 +27,7 @@
       "creater":"heeyoung",
       "given_name":"양희영",
       "code":"production2024-08-06 15:36:32",
-      "approval_phase":"미승인",
+      "approval_phase":"승인",
       "checker":"양희영",
       "checker_id":"heeyoung",
       "checked_date":"",
@@ -45,7 +41,7 @@
       "inhouse_bid_number":"2024-0002",
       "company_bid_number":"2024-0003",
       "company_name":"업체A",
-      "obtain_type": "프로젝트"      
+      "obtain_type": "재고"      
     }  
   ],
   
