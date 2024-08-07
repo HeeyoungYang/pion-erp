@@ -35,22 +35,44 @@
                   </v-chip>
 
                   <v-chip
-                    v-if="item.approval_phase == '승인' || item.approval_phase == '진행중'"
+                    v-if="item.approval_phase == '승인'"
                     class="ma-2"
                     small
                     color="primary"
                   >
                     {{ item.approval_phase }}
                   </v-chip>
-
-                  <v-chip
-                    v-if="item.approval_phase == '구매완료'"
-                    class="ma-2"
-                    small
-                    color="success"
+                  <v-menu
+                    v-else-if="item.approval_phase == '반려'"
+                    open-on-hover
+                    :close-on-content-click="false"
+                    :nudge-width="150"
+                    offset-x
                   >
-                    {{ item.approval_phase }}
-                  </v-chip>
+                    <template v-slot:activator="{ on, attrs }">
+
+                      <v-chip
+                        class="ma-2"
+                        small
+                        color="error"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        {{ item.approval_phase }}
+                      </v-chip>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-0">
+                        <v-list-item class="pa-0">
+                          <v-list-item-content class="pa-3">
+                            <v-list-item-subtitle class="error--text font-weight-black">[ 반려사유 ]</v-list-item-subtitle>
+                            <v-list-item-title>{{ item.rejecter }} : {{ item.reject_reason }}</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
                   <!-- 확인 또는 승인자에 해당될 경우 노출되는 list형 chip -->
                   <v-menu
                     v-if="(item.approval_phase == '미확인' || item.approval_phase == '미승인') && item.checker_id == userID"
@@ -73,19 +95,38 @@
                     <v-card class="pa-0">
                       <v-list class="pa-0">
                         <v-list-item class="pa-0">
-                          <v-list-item-content class="pa-6">
-                            <v-row style="width: 250px;">
-                              <v-col cols="12" sm="8" align-self="center">승인하시겠습니까?</v-col>
-                              <v-col cols="12" sm="4">
-                                <v-btn
-                                  small
-                                  color="primary"
-                                  @click="changeApprovalPhase(item)"
-                                >
-                                    확인
-                                </v-btn>
-                              </v-col>
-                            </v-row>
+                          <v-list-item-content class="pa-3">
+                            <v-radio-group
+                              v-model="approve_radio"
+                              dense
+                              hide-details
+                              row
+                              class="mt-0"
+                            >
+                              <v-radio
+                                :label="item.approval_phase == '미승인'? '승인' : '확인'"
+                                :value=true
+                              ></v-radio>
+                              <v-radio
+                                label="반려"
+                                :value=false
+                              ></v-radio>
+                              <v-btn
+                                small
+                                :color="approve_radio ? 'primary' : 'error' "
+                                @click="changeApprovalPhase(item, approve_radio, reject_reason)"
+                              >
+                                저장
+                              </v-btn>
+                            </v-radio-group>
+                            <v-text-field
+                              v-if="!approve_radio"
+                              v-model="reject_reason"
+                              dense
+                              hide-details
+                              filled
+                              label="사유"
+                            ></v-text-field>
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
@@ -94,12 +135,12 @@
 
                 </td>
                 <td v-if="approval && item.given_name">{{ item.given_name }}</td>
-                <!-- <td v-if="approval && item.checker">
+                <td v-if="approval && item.checker">
                   {{ item.checker }}
                   <v-icon
                     :color="item.checked_date ? 'success' : (item.rejected_date && item.rejecter === item.checker ? 'error' : 'grey lighten-1')"
                   > mdi-circle-medium </v-icon>
-                </td> -->
+                </td>
                 <td v-if="approval && item.approver">
                   {{ item.approver }}
                   <v-icon
@@ -272,8 +313,8 @@ export default {
     }
     if (this.approval){
       this.addedHeaders.unshift({ text: '승인', align: 'start', value: 'approver', sortable: false });
-      // this.addedHeaders.unshift({ text: '확인', align: 'start', value: 'checker', sortable: false });
-      this.addedHeaders.unshift({ text: '구매 담당자', align: 'start', value: 'given_name', sortable: false });
+      this.addedHeaders.unshift({ text: '확인', align: 'start', value: 'checker', sortable: false });
+      this.addedHeaders.unshift({ text: '신청자', align: 'start', value: 'given_name', sortable: false });
       this.addedHeaders.unshift({ text: '단계', align: 'center', value: 'approval', sortable: false });
     }
     if (this.groupBy){
@@ -293,92 +334,14 @@ export default {
       this.userID = this.loginId
       console.log(this.userID);
     },
-
-    saveUserAuthority(){
-      this.$emit("changeAuthority", this.authority_list);
-      // this.authority_list : 이 값은 현재 등록되어 있는 모든 그룹 리스트 (array)
-      // 실제 여기서는 this.authority_list 값은 의미가 없고, 권한 설정(pencil 클릭) 박스에서 등록된 그룹 리스트에서 check된
-      // 그룹 리스트와 해당 row에 사용자 정보를 가져와야 함.
-      // 해당 emit는 AuthorizationPage component로 전달 됨.
-      // AuthrizationPage component에서 rest api를 호출하여 선택된 사용자의 변경된 그룹 리스트를 업데이트 함.
-    },
     updateSelectedData(newValue) {
       this.$emit('input', newValue);
-    },
-    deleteGroupItem(item) {
-      this.$emit("deleteGroup", item);
-    },
-    editGroupItem(item) {
-      this.$emit("editGroup", item);
-    },
-    deleteItem(item) {
-      this.$emit("delete", item);
-    },
-    editItem(item) {
-      this.$emit("edit", item);
-    },
-    deleteBelongItem(item) {
-      this.$emit("deleteBelong", item);
-    },
-    editBelongItem(item) {
-      this.$emit("editBelong", item);
     },
     clickTr(item){
       this.$emit("clickTr", item);
     },
-    detailItem(item){
-      this.$emit("itemDetials", item);
-    },
-    checkAddToTableDisalbed(item){
-      if(item.inbound_code){
-        return true;
-      }else{
-        return false;
-      }
-    },
-    addData(item){
-      this.$emit("addDataToTable", item);
-    },
-    addBelongData(item, idx){
-      this.$emit("addBelongToTable", item, idx);
-    },
-    exceptData(index){
-      this.$emit("exceptDataToTable", index);
-    },
-    changeApprovalPhase(item){
-      this.$emit("setApprovalPhase", item);
-    },
-    changeCanclePhase(item, change, reason){
-      this.$emit("setCanclePhase", item, change, reason);
-    },
-    cancle(item){
-      this.$emit("cancleApprove", item)
-    },
-    checkApproveDisabled(item, radio){
-      for(let d=0; d<item.length; d++){
-        if(item[d].ship_num > item[d].stock_num && radio === true){
-          return true;
-        }
-      }
-    },
-    addShipData(item){
-      this.$emit("addShip", item);
-    },
-    closeAll () {
-        Object.keys(this.$refs).forEach(k => {
-            if (this.$refs[k] && this.$refs[k].$attrs['data-open']) {
-                this.$refs[k].$el.click()
-            }
-        })
-        this.button_toggle = false;
-    },
-    openAll () {
-        Object.keys(this.$refs).forEach(k => {
-            if (this.$refs[k] && !this.$refs[k].$attrs['data-open']) {
-                this.$refs[k].$el.click()
-            }
-        })
-        this.button_toggle = true;
+    changeApprovalPhase(item, change, reason){
+      this.$emit("setApprovalPhase", item, change, reason);
     },
 
     toggleExpanded(item, expand) {
@@ -389,41 +352,6 @@ export default {
       } else {
         this.expanded.push(item);
       }
-    },
-    getFileName(item){
-      let files_array = item.split(',');
-      this.files_list = files_array;
-    },
-    confirmationDialogOpen(item){
-      let belong_datas = item.belong_data
-      let belong_files = item.files ? item.files.split('/') : '';
-      this.inbound_approve_belong = [];
-      this.ship_approve_belong = [];
-      this.inbound_approve_files = belong_files;
-      this.ship_approve_files = belong_files;
-      belong_datas.forEach(data =>{
-        this.inbound_approve_belong.push(data);
-        this.ship_approve_belong.push(data);
-      })
-      this.confirmationDialog = true;
-    },
-    printInboundApprove(fileName){
-      setTimeout(async () => {
-        if (fileName){
-          mux.Util.downloadPDF(this.$refs.inboundApproveComponent, fileName);
-        }else {
-          mux.Util.print(this.$refs.inboundApproveComponent);
-        }
-      }, 500);
-    },
-    printShipApprove(fileName){
-      setTimeout(async () => {
-        if (fileName){
-          mux.Util.downloadPDF(this.$refs.shipApproveComponent, fileName);
-        }else {
-          mux.Util.print(this.$refs.shipApproveComponent);
-        }
-      }, 500);
     },
   },
 };
