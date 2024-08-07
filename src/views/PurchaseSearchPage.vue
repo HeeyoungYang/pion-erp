@@ -964,7 +964,8 @@
         </v-col>
         <v-col cols="12" sm="5">
           <!-- mux iframesrc 반영 -->
-          <iframe width="100%" style="height: 100%;" src="/forms/테스트용.pdf#toolbar=0&navpanes=0&scrollbar=0"></iframe>
+          <!-- <iframe width="100%" style="height: 100%;" src="/forms/테스트용.pdf#toolbar=0&navpanes=0&scrollbar=0"></iframe> -->
+          <iframe width="100%" style="height: 100%;" :src="iframeSrc"></iframe>
         </v-col>
       </v-row>
     </v-dialog>
@@ -1027,6 +1028,7 @@ export default {
       check_editable_purchase_estimate: false,
 
       unestimated_request:'mailed',
+      iframeSrc: '',
       clicked_tr_phase: '',
       estimate_company: '',
       estimate_code: '',
@@ -1480,9 +1482,10 @@ export default {
       this.order_purchase_list_data = [];
 
     },
-    orderRequest(item){
+    async orderRequest(item){
       this.orderRequestInfoInputs.find(data => data.label === '수신업체').value = item[0].purchase_estimate_company;
 
+      mux.Util.showLoading();
       //동일한 견적 코드를 가진 데이터 조회
       this.purchase_data.forEach(data => {
         for(let i=0; i<data.belong_data.length; i++){
@@ -1493,6 +1496,9 @@ export default {
         }
       });
       // this.order_request_data = item
+
+      this.iframeSrc = await mux.Server.getFileUrl('purchase/purchase_estimate', item[0].code + '_' + item[0].purchase_estimate_file, 'application/pdf');
+      mux.Util.hideLoading();
       this.orderRequestDialog = true;
     },
     async clickApproveData(item){
