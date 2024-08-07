@@ -60,6 +60,13 @@
           >
             <v-row slot="cardTitle">
               <v-col cols="12" sm="12">
+                <v-chip
+                  class="mr-2"
+                  outlined
+                  :color="production_detail.approval_phase === '작성중' ? 'default': (production_detail.approval_phase === '미승인' || production_detail.approval_phase === '미확인' ? 'amber darken-2' : (production_detail.approval_phase === '승인' ? 'primary' : 'error'))"
+                >
+                  {{ production_detail.approval_phase }}
+                </v-chip>
                 <MemberSearchDialogComponent
                   :dialog-value="member_dialog"
                   :persistent="true"
@@ -619,9 +626,15 @@ export default {
 
             if(checker_info.user_id == this.login_id){
               update_data.approval_phase = '미승인';
+              update_data.rejecter = null;
+              update_data.rejected_date = null;
+              update_data.reject_reason = null;
               update_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
             }else{
               update_data.approval_phase = '미확인';
+              update_data.rejecter = null;
+              update_data.rejected_date = null;
+              update_data.reject_reason = null;
             }
           }
           set = '승인 요청'
