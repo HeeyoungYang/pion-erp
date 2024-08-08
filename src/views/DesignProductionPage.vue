@@ -2178,13 +2178,13 @@ export default {
           });
 
         }else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         mux.Util.showAlert(error);
         return;
       }
@@ -2192,9 +2192,9 @@ export default {
 
     },
     async searchButton(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.search_production_data = DesignProductionPageConfig.test_production_data
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     test(){
       // console.log('test');

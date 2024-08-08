@@ -990,7 +990,7 @@ export default {
 
     },
     async searchProduct(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       // this.product_search_data = InboundRegisterPageConfig.test_product_search_data
 
@@ -1130,7 +1130,7 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -1138,7 +1138,7 @@ export default {
       }
 
 
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -1465,7 +1465,7 @@ export default {
         }
 
         if(success == true){
-          this.loading_dialog = true;
+          mux.Util.showLoading();
           // console.log('입고 정보 : ' + JSON.stringify(item));
           // console.log('입고 제품 : ' + JSON.stringify(inbound_product_data));
 
@@ -1694,7 +1694,7 @@ export default {
             else
               mux.Util.showAlert(error);
           }
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
         }
       }
     },
@@ -1779,7 +1779,7 @@ export default {
 
 
         if(success == true){
-          this.loading_dialog = true;
+          mux.Util.showLoading();
 
           let sendData = {
             "inbound_confirmation_table-insert": [{
@@ -1972,7 +1972,7 @@ export default {
             else
               mux.Util.showAlert(error);
           }
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
         }
       }
     },
@@ -2020,7 +2020,7 @@ export default {
     },
     async searchShipData(){
 
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       let dataInputs
       if(this.add_self === '재입고'){
         dataInputs = this.searchShipCardInputs
@@ -2108,13 +2108,13 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
           mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
       // this.ship_search_data = InboundRegisterPageConfig.test_ship_search_data;
     },
     addShipData(item){

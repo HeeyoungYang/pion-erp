@@ -167,7 +167,7 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         mux.Util.showAlert(error);
       }
 

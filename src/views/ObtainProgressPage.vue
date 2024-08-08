@@ -426,9 +426,9 @@ export default {
       // this.search_estimate_data = ObtainProgressPageConfig.test_estimate_data
     },
     async searchButton(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.search_estimate_data = ObtainProgressPageConfig.test_estimate_data
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     test(){
       // console.log('test');

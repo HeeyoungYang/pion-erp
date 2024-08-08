@@ -964,7 +964,8 @@
         </v-col>
         <v-col cols="12" sm="5">
           <!-- mux iframesrc 반영 -->
-          <iframe width="100%" style="height: 100%;" src="/forms/테스트용.pdf#toolbar=0&navpanes=0&scrollbar=0"></iframe>
+          <!-- <iframe width="100%" style="height: 100%;" src="/forms/테스트용.pdf#toolbar=0&navpanes=0&scrollbar=0"></iframe> -->
+          <iframe width="100%" style="height: 100%;" :src="iframeSrc"></iframe>
         </v-col>
       </v-row>
     </v-dialog>
@@ -1027,6 +1028,7 @@ export default {
       check_editable_purchase_estimate: false,
 
       unestimated_request:'mailed',
+      iframeSrc: '',
       clicked_tr_phase: '',
       estimate_company: '',
       estimate_code: '',
@@ -1410,18 +1412,18 @@ export default {
       this.order_item_note_data.find(data => data.item_code === item).belong_data[idx].note = note;
     },
     async download(foldername, filename, prefix) {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       try {
         await mux.Server.downloadFile(foldername, filename, prefix);
       } catch (error) {
         mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
 
 
     async searchButton(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.purchase_data = PurchaseSearchPageConfig.test_purchase_data
       for(let i=0; i<this.purchase_data.length; i++){
         let check_unestimated = 0;
@@ -1448,7 +1450,7 @@ export default {
         else
           data.order_situation = check_unordered + '건 미발주';
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     closePurchaseDetail(){
       this.purchase_detail_dialog = false;
@@ -1480,9 +1482,10 @@ export default {
       this.order_purchase_list_data = [];
 
     },
-    orderRequest(item){
+    async orderRequest(item){
       this.orderRequestInfoInputs.find(data => data.label === '수신업체').value = item[0].purchase_estimate_company;
 
+      mux.Util.showLoading();
       //동일한 견적 코드를 가진 데이터 조회
       this.purchase_data.forEach(data => {
         for(let i=0; i<data.belong_data.length; i++){
@@ -1493,6 +1496,9 @@ export default {
         }
       });
       // this.order_request_data = item
+
+      this.iframeSrc = await mux.Server.getFileUrl('purchase/purchase_estimate', item[0].code + '_' + item[0].purchase_estimate_file, 'application/pdf');
+      mux.Util.hideLoading();
       this.orderRequestDialog = true;
     },
     async clickApproveData(item){
@@ -1562,7 +1568,7 @@ export default {
       console.log("sendData ::: ", sendData);
 
       try {
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1575,7 +1581,7 @@ export default {
         if(result['code'] == 0){
           item.approval_phase = send_data.approval_phase;
           item.approved_date = send_data.approved_date;
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert('구매 요청 확인 완료', '완료', 3000);
 
           //메일 알림 관련
@@ -1645,7 +1651,7 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -1873,7 +1879,7 @@ export default {
       });
 
 
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       let sendData = {
         "order_confirmation_table-insert": [{
@@ -2089,7 +2095,7 @@ export default {
         else
           mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
 
     },
     estiamteDialog(type, order, item){

@@ -62,7 +62,7 @@
                             dense
                             @edit="editProductInfo"
                             @delete="deleteProductInfo"
-                            
+
                           >
                           </DataTableComponent>
                         </v-col>
@@ -109,7 +109,7 @@
                             dense
                             @edit="editProductInfo"
                             @delete="deleteProductInfo"
-                            
+
                           >
                           </DataTableComponent>
                         </v-col>
@@ -156,7 +156,7 @@
                             dense
                             @edit="editProductInfo"
                             @delete="deleteProductInfo"
-                            
+
                           >
                           </DataTableComponent>
                         </v-col>
@@ -297,7 +297,7 @@ export default {
       // this.classification_data = BasicInfoBackDataPageConfig.test_classification_data
       // this.manufacturer_data = BasicInfoBackDataPageConfig.test_manufacturer_data
       // this.spot_data = BasicInfoBackDataPageConfig.test_spot_data
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.getPionBasicInfo();
@@ -319,10 +319,10 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     registProductInfo(type){
       this.registProductInfoInputs = [];
@@ -786,7 +786,7 @@ export default {
     },
 
     close () {
-      this.loading_dialog = false
+      mux.Util.hideLoading();
       this.productInfoDialog = false
       this.$nextTick(() => {
         this.editedBasicInfo = Object.assign({}, this.defaultBasicInfo)

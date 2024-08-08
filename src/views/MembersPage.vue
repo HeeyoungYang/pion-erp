@@ -121,7 +121,7 @@ export default {
       search: '',
       dialog: false,
       dialogDelete: false,
-      
+
       registMemberInputs:[
         {label:MemberPageConfig.regist_member_inputs[0].label, column_name:MemberPageConfig.regist_member_inputs[0].column_name, col:'12', sm:'6', lg:'6', value: '',
         rules: [
@@ -221,7 +221,7 @@ export default {
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     async initialize () {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.headers = MemberPageConfig.table_header;
       // console.log("MemberPageConfig.table_header=", MemberPageConfig.table_header);
       let memberList = [];
@@ -242,15 +242,15 @@ export default {
             user.department = data.Attributes.find(x=>x.Name === 'custom:department') ? data.Attributes.find(x=>x.Name === 'custom:department').Value : '';
             return user;
           });
-          
+
         }else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         mux.Util.showAlert(error);
         return;
       }
@@ -263,7 +263,7 @@ export default {
       }
 
       this.members = memberList.sort((a, b) => a.name.localeCompare(b.name));
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     registItem(item){
       this.editedIndex = this.members.indexOf(item)
@@ -402,7 +402,7 @@ export default {
       // this.deleteMemeber.user_id = this.editedItem.user_id;
       // // console.log('계정 삭제 : ' + JSON.stringify(this.deleteMemeber));
       // console.log('this.editedItem.user_id :>> ', this.editedItem.user_id);
-      
+
       const prevURL = window.location.href;
       try {
         let result = await mux.Server.delete({
@@ -424,7 +424,7 @@ export default {
     },
 
     close () {
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
       this.dialog = false
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)

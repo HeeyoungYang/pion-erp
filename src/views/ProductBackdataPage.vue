@@ -1517,7 +1517,7 @@ export default {
     },
 
     async searchItem() {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       let searchType;
       let searchClassification;
@@ -1670,7 +1670,7 @@ export default {
         else
           mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
 
       // if(this.tab_main == 1){
       //   this.search_material_for_module_data = ProductBackDataPageConfig.test_search_material_for_module_data;
@@ -1682,7 +1682,7 @@ export default {
     },
     async searchMaterial() {
       //검색 시 총 재고, 총 금액 초기화
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.material_total_stock_num = 0;
       this.material_total_stock_price = 0;
 
@@ -1847,13 +1847,13 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
           mux.Util.showAlert(error);
       }
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
     },
     registMaterialItem(){
       this.materialImg = ''
@@ -1874,7 +1874,7 @@ export default {
         return;
       }
 
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       //material_excel_upload_data : 불러온 엑셀 데이터
       const type = '원부자재';
@@ -1891,12 +1891,12 @@ export default {
         const row = this.material_excel_upload_data[i];
         if (row.photo && !thumbnail_dict[row.photo]) {
           mux.Util.showAlert(`${i+1}번째 행에 등록된 사진이 첨부되지 않았습니다.`);
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           return;
         }
         // if (!row.classification){
         //   mux.Util.showAlert(`${i+1}번째 행의 분류가 입력되지 않았습니다.`);
-        //   this.loading_dialog = false;
+        //   mux.Util.hideLoading();
         //   return;
         // }
         if (!row.classification){
@@ -1904,12 +1904,12 @@ export default {
         }
         if (!row.item_code){
           mux.Util.showAlert(`${i+1}번째 행의 관리코드가 입력되지 않았습니다.`);
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           return;
         }
         if (!row.name){
           mux.Util.showAlert(`${i+1}번째 행의 제품명이 입력되지 않았습니다.`);
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           return;
         }
         if (!row.manufacturer){
@@ -1926,7 +1926,7 @@ export default {
             row.conditions = 'E';
           }else {
             mux.Util.showAlert(`${i+1}번째 행의 상태가 입력되지 않았습니다.`);
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
             return;
           }
         }
@@ -1935,7 +1935,7 @@ export default {
             row.spot = 'EMPTY';
           }else {
             mux.Util.showAlert(`${i+1}번째 행의 위치가 입력되지 않았습니다.`);
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
             return;
           }
         }
@@ -1971,7 +1971,7 @@ export default {
         let duplicateIndex = stock_data.findIndex(x => x.data.product_code === row.item_code && x.data.spot === row.spot);
         if (duplicateIndex !== -1) {
           mux.Util.showAlert(`${duplicateIndex+1}번째 행과 ${i+1}번째 행의 위치가 중복됩니다.`);
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           return;
         }else {
           stock_data.push({
@@ -2017,7 +2017,7 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -2026,7 +2026,7 @@ export default {
       this.close();
     },
     async editMaterialItem (item) {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       const prevURL = window.location.href;
       try {
@@ -2078,17 +2078,17 @@ export default {
 
         } else {
           mux.Util.showAlert(result['failed_info']);
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
           mux.Util.showAlert(error);
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         return;
       }
       this.editedIndex = this.material_data.indexOf(item)
@@ -2121,7 +2121,7 @@ export default {
           }
         }
       })
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
       this.material_dialog = true
     },
 
@@ -2154,7 +2154,7 @@ export default {
           return;
         }
 
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         stock_item = [];
         for(let x=0; x<stock_spot_arr.length; x++){
           if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
@@ -2362,7 +2362,7 @@ export default {
       this.module_total_stock_num = 0;
       this.module_total_stock_price = 0;
 
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       // this.module_data = ProductBackDataPageConfig.test_module_data;
 
@@ -2508,13 +2508,13 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
           mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     registModuleItem(){
       let module_input = this.registModuleInputs;
@@ -2530,7 +2530,7 @@ export default {
     },
 
     async editModuleItem(item){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       const prevURL = window.location.href;
       try {
@@ -2589,17 +2589,17 @@ export default {
 
         } else {
           mux.Util.showAlert(result['failed_info']);
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
           mux.Util.showAlert(error);
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         return;
       }
       this.editedIndex = this.module_data.indexOf(item)
@@ -2639,7 +2639,7 @@ export default {
         }
       }
       // this.module_set_material_data= item.belong_data
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
       this.module_dialog = true;
     },
     async uploadModule(){
@@ -2671,7 +2671,7 @@ export default {
           return;
         }
 
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         stock_item = [];
         for(let x=0; x<stock_spot_arr.length; x++){
           if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
@@ -3040,7 +3040,7 @@ export default {
       // this.product_data = ProductBackDataPageConfig.test_product_data;
 
 
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       let searchProductCode = this.searchProductCardInputs.find(x=>x.label === '제품코드').value;
       if (!searchProductCode)
@@ -3190,13 +3190,13 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
           mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
 
     registProductItem(){
@@ -3277,7 +3277,7 @@ export default {
           return;
         }
 
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         stock_item = [];
         for(let x=0; x<stock_spot_arr.length; x++){
           if(stock_spot_arr[x] === '' && stock_num_arr[x] === 0 && stock_conditions_arr[x] === ''){
@@ -3616,7 +3616,7 @@ export default {
 
       const prevURL = window.location.href;
       try {
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         let params;
         let script_file_name;
         let script_file_path;
@@ -3693,18 +3693,18 @@ export default {
             this.stockDetails.forEach(data => {
               data.stock_num = Number(data.stock_num).toLocaleString();
             });
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
           } else {
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
             mux.Util.showAlert(result2['failed_info']);
           }
         } else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -3778,7 +3778,7 @@ export default {
     },
 
     async deleteItemConfirm () {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       this.deleteItemList = {};
       this.deleteItemList.modifier = this.$cookies.get(this.$configJson.cookies.id.key);
@@ -3990,7 +3990,7 @@ export default {
         }
       }
 
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
       // 삭제 요청 = this.deleteItemList
       this.closeDelete()
     },
@@ -4114,7 +4114,7 @@ export default {
     },
 
     close () {
-      this.loading_dialog = false
+      mux.Util.hideLoading();
       this.material_dialog = false
       this.module_dialog = false
       this.product_dialog = false

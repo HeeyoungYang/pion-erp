@@ -1684,7 +1684,7 @@ export default {
             this.dialog_calculate_labor = false;
             return;
           }
-          this.loading_dialog = true;
+          mux.Util.showLoading();
 
           const prevURL = window.location.href;
           try {
@@ -1721,10 +1721,10 @@ export default {
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
             mux.Util.showAlert(error);
           }
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
 
           this.origin_labor_cost_data = JSON.parse(JSON.stringify(this.labor_cost_data));
         }else {
@@ -2020,7 +2020,7 @@ export default {
     input_blueprint_file2() { return this.estimateWriteFilesInputs.find(x=>x.column_name === 'blueprint')},
     input_etc_file2() { return this.estimateWriteFilesInputs.find(x=>x.column_name === 'files')},
   },
-  
+
   methods:{
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -2255,7 +2255,7 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         mux.Util.showAlert(error);
       }
 
@@ -2299,10 +2299,10 @@ export default {
             estimateProduct.cost_list_sub_editable = true;
             estimateProduct.deletable_row = true;
           }
-          
+
           estimateProduct.cost_unit_price += Math.round(a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
         });
-        
+
         this.calc_cost_detail_data_product_cost2.belong_data[0].belong_data.push(estimateProduct);
       }
       this.labor_cost_list = estimate.labor_cost_calc_detail;
@@ -2439,7 +2439,7 @@ export default {
       this.member_dialog2 = false;
     },
     async searchProduct(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       const product_code = this.search_complete_product_code ? this.search_complete_product_code.trim() : "";
       const product_name = this.search_complete_product_name ? this.search_complete_product_name.trim() : "";
       const product_capacity = this.search_product_capacity ? this.search_product_capacity.trim() : "";
@@ -2499,11 +2499,11 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         // console.error(error);
         mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     searchDataCalcProcess(searchResult, isFirst){
       const productTotalCost = {};
@@ -2708,7 +2708,7 @@ export default {
       if (this.searched_datas.last_confirmation.findIndex(x=>x.cost_calc_code === item.cost_calc_code) > -1){
         this.clickedProductCost.is_last_confirmation = true;
       }
-      
+
     },
     deleteItem () {
       this.dialogDelete = true;
@@ -2788,7 +2788,7 @@ export default {
     },
     clearClicked() {
       this.estimate_member_info = JSON.parse(JSON.stringify(ObtainOrderPageConfig.estimate_member_info));
-      
+
       this.calc_cost_detail_data_product_cost.belong_data = [];
       // 조회 - 직접 노무비 리스트 적용
       this.calc_cost_detail_data_direct_labor.belong_data = [];
@@ -2863,7 +2863,7 @@ export default {
       this.edit_buttons_show = false;
       this.during_edit = false;
       this.labor_cost_data = [];
-      
+
       this.clickedProductCost = {};
     },
     calcNoTotalAmount(labor){
@@ -3146,7 +3146,7 @@ export default {
             targetConfirmation.rejecter = '';
             targetConfirmation.rejected_date = '';
             targetConfirmation.reject_reason = '';
-            
+
             this.origin_labor_cost_data = this.labor_cost_data;
             this.searched_datas.labor_cost_calc_detail = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
             this.labor_cost_data.forEach(data => {
@@ -3154,7 +3154,7 @@ export default {
             });
             targetConfirmation.cost_calc_code = new_cost_calc_code;
             this.searched_datas.last_confirmation.find(x=>x.cost_calc_code === this.clickedProductCost.cost_calc_code).cost_calc_code = new_cost_calc_code;
-            
+
             this.clickedProductCost.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
             this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
             this.clickedProductCost.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
@@ -3164,7 +3164,7 @@ export default {
             this.clickedProductCost.cost_calc_code = new_cost_calc_code;
 
             this.searchDataCalcProcess(this.searched_datas);
-            
+
             if (isRejected || needReConfirm){
               //메일 알림 관련
               let mailTo = [];
@@ -3174,7 +3174,7 @@ export default {
               }else {
                 mailTo.push(this.clickedProductCost.approver_id);
               }
-  
+
               // 메일 본문 내용
               let content=`
               <html>
@@ -3212,7 +3212,7 @@ export default {
                 </body>
               </html>
               `;
-  
+
               try {
                 let sendEmailAlam = await mux.Server.post({
                   path: '/api/send_email/',
@@ -3553,7 +3553,7 @@ export default {
             this.clickedProductCost.company_manager = this.input_company_manager.value;
             this.clickedProductCost.company_manager_email = this.input_company_manager_email.value;
             this.clickedProductCost.company_manager_phone = this.input_company_manager_phone.value;
-            
+
             if (newApprovalFile){
               this.clickedProductCost.approval_file = new_cost_calc_code + '_' + newApprovalFile.name;
               this.clickedProductCost.approval_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(newApprovalFile, 1, false, 1000, 1000));
@@ -3585,7 +3585,7 @@ export default {
               }else {
                 mailTo.push(this.clickedProductCost.approver_id);
               }
-  
+
               // 메일 본문 내용
               let content=`
               <html>
@@ -3623,7 +3623,7 @@ export default {
                 </body>
               </html>
               `;
-  
+
               try {
                 let sendEmailAlam = await mux.Server.post({
                   path: '/api/send_email/',
@@ -3838,10 +3838,10 @@ export default {
             targetConfirmation.rejecter = '';
             targetConfirmation.rejected_date = '';
             targetConfirmation.reject_reason = '';
-            
+
             this.origin_calc_cost_detail_data = JSON.parse(JSON.stringify(this.calc_cost_detail_data));
             // this.clickedProductCost.product = this.calc_cost_detail_data_product_cost.belong_data[0].cost_list;
-            
+
             if (this.clickedProductCost.obtain_type !== '기술료'){
               const product_cost_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('재료'));
               this.searched_datas.product_cost_calc_detail = this.searched_datas.product_cost_calc_detail.filter(item => item.cost_calc_code !== this.clickedProductCost.cost_calc_code);
@@ -3928,7 +3928,7 @@ export default {
 
             this.edit_survey_cost_num_disabled = true;
             this.during_edit = false;
-            
+
             if (isRejected || needReConfirm){
               //메일 알림 관련
               let mailTo = [];
@@ -3938,7 +3938,7 @@ export default {
               }else {
                 mailTo.push(this.clickedProductCost.approver_id);
               }
-  
+
               // 메일 본문 내용
               let content=`
               <html>
@@ -3976,7 +3976,7 @@ export default {
                 </body>
               </html>
               `;
-  
+
               try {
                 let sendEmailAlam = await mux.Server.post({
                   path: '/api/send_email/',
@@ -4083,7 +4083,7 @@ export default {
       }else {
         sendDataCheckedDate = null;
       }
-      
+
       const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
       let sendData = {
         "obtain_confirmation_table-insert": [{
@@ -4295,7 +4295,7 @@ export default {
           result = result.data;
         }
         if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-          
+
           //메일 알림 관련
           let mailTo = [];
             // let creater = this.$cookies.get(this.$configJson.cookies.id.key);

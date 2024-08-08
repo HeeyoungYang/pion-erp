@@ -6,25 +6,95 @@
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "value": ""}
   ],
   "editDataInputs":[
-    {"label":"자체시험 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"자체시험 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"현장시험 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"시운전 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"전자세금계산서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"전자세금계산서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"}
+    {"label":"자체시험 첨부", "column_name":"self_test", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
+    {"label":"공장시험 첨부", "column_name":"factory_test", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
+    {"label":"현장시험 첨부", "column_name":"field_test", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
+    {"label":"시운전 첨부", "column_name":"trial_run", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
+    {"label":"전자세금계산서 첨부", "column_name":"tax_invoice", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
+    {"label":"하자보증증권 첨부", "column_name":"defect_warranty", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"}
   ],
   "search_production_headers":[
     { "text": "작성자", "align": "start", "value": "given_name"},
     { "text": "업체명", "align": "start", "value": "company_name"},
+    { "text": "종류", "align": "start", "value": "obtain_type"},
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
     { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"}
   ],
+  "member_info":[
+    {"type": "확인", "name": "", "user_id": "", "email": ""},
+    {"type": "승인", "name": "", "user_id": "", "email": ""}
+  ],
+  "production_detail":{
+    "code":"",
+    "project_code":"",
+    "company_name":"",
+    "inhouse_bid_number":"",
+    "company_bid_number":"",
+    "approval_phase":"",
+    "checker":"",
+    "checker_id":"",
+    "approver":"",
+    "approver_id":"",
+    "status":"",
+    "self_test_file":"",
+    "self_test_thumbnail":"",
+    "factory_test_file":"",
+    "factory_test_thumbnail":"",
+    "field_test_file":"",
+    "field_test_thumbnail":"",
+    "trial_run_file":"",
+    "trial_run_thumbnail":"",
+    "tax_invoice_file":"",
+    "tax_invoice_thumbnail":"",
+    "defect_warranty_file":"",
+    "defect_warranty_thumbnail":""
+  },
+  "test_obtain_data":[
+    {
+      "created_time":"2024-05-17 08:32:44",
+      "creater":"heeyoung",
+      "given_name":"양희영",
+      "company_name":"업체A",
+      "obtain_type":"프로젝트",
+      "project_code":"2024-0001",
+      "inhouse_bid_number":"2024-0002",
+      "company_bid_number":"2024-0003",
+      "approval_phase":"승인"
+    }
+  ],
   "test_production_data":[
-    {"given_name":"양희영",
-    "company_name":"업체A",
-    "project_code":"2024-0001",
-    "inhouse_bid_number":"2024-0002",
-    "company_bid_number":"2024-0003"}
+    {
+      "created_time":"2024-05-17 08:32:44",
+      "creater":"heeyoung",
+      "code":"production2024-08-06 15:36:32",
+      "project_code":"2024-0001",
+      "inhouse_bid_number":"2024-0002",
+      "company_bid_number":"2024-0003",
+      "approval_phase":"반려",
+      "checker":"양희영",
+      "checker_id":"heeyoung",
+      "checked_date":"2024-08-07 09:15:02",
+      "approver":"양희영",
+      "approver_id":"heeyoung",
+      "approved_date":"",
+      "rejecter":"양희영",
+      "rejected_date":"2024-08-07 09:31:22",
+      "reject_reason":"반려TEST",
+      "status":"생산 완료",
+      "inbound_date":"",
+      "self_test_file":"테스트용2.pdf",
+      "self_test_thumbnail":"89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+      "factory_test_file":"pdf_for_test.pdf",
+      "factory_test_thumbnail":"89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+      "field_test_file":"테스트용2.pdf",
+      "field_test_thumbnail":"89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+      "trial_run_file":"테스트용2.pdf",
+      "trial_run_thumbnail":"89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+      "tax_invoice_file":"테스트용2.pdf",
+      "tax_invoice_thumbnail":"89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+      "defect_warranty_file":"테스트용2.pdf",
+      "defect_warranty_thumbnail":"89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082"
+    }
   ]
 }

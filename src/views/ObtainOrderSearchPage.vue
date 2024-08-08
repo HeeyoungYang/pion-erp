@@ -1768,7 +1768,6 @@ export default {
       const prevURL = window.location.href;
       try {
         mux.Util.showLoading();
-
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData

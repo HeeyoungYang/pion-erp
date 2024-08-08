@@ -94,7 +94,7 @@ export default {
       });
     },
     async initialize () {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.headers = AuthorizationPageConfig.table_header;
       // console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
 
@@ -115,13 +115,13 @@ export default {
             return user;
           });
         }else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         mux.Util.showAlert(error);
         return;
       }
@@ -132,11 +132,11 @@ export default {
       }
 
       this.members = memberList.sort((a, b) => a.name.localeCompare(b.name));
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
 
     /*async initialize () {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.headers = AuthorizationPageConfig.table_header;
       // console.log("AuthorizationPageConfig.table_header=", AuthorizationPageConfig.table_header);
 
@@ -150,7 +150,7 @@ export default {
             this.groups.push({name: data.GroupName, users: []});
           });
         }else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result.message);
           return;
         }
@@ -164,7 +164,7 @@ export default {
               group.users.push(data.Username);
             });
           }else {
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
             mux.Util.showAlert(result.message);
             return;
           }
@@ -183,13 +183,13 @@ export default {
             return user;
           });
         }else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         mux.Util.showAlert(error);
         return;
       }
@@ -199,7 +199,7 @@ export default {
       }
 
       this.members = memberList.sort((a, b) => a.name.localeCompare(b.name));
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     }, */
   },
 
