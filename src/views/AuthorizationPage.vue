@@ -78,14 +78,12 @@ export default {
       // console.log('data :>> ', data);
       mux.Server.put({
         path: '/api/admin/user/groups/',
-        data: {
-          user_name: data.user_id,
-          group_names: data.authCheck
-        }
+        user_name: data.user_id,
+        group_names: data.authCheck
       }).then(result => {
         if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)) {
+          this.members.find(member => member.user_id === data.user_id).authority = data.authCheck;
           mux.Util.showAlert('사용자 권한 변경이 완료되었습니다.', '변경 완료', 3000);
-          data.authority = data.authCheck;
         } else {
           mux.Util.showAlert(result.message);
         }
