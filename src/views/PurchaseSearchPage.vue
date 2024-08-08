@@ -154,7 +154,7 @@
                   </th>
                   <th>
                     <v-btn
-                      v-if="items[0].order_request_date === '' && items[0].purchase_estimate_phase === '완료'"
+                      v-if="(items[0].order_request_date === '' || items[0].order_request_date === null) && items[0].purchase_estimate_phase === '완료'"
                       color="success"
                       x-small
                       :disabled="clicked_tr_phase === '진행중' && creater_authority ? false : true"
@@ -1424,7 +1424,61 @@ export default {
 
     async searchButton(){
       mux.Util.showLoading();
-      this.purchase_data = PurchaseSearchPageConfig.test_purchase_data
+      let searchApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
+      if (searchApprovalPhase === 'All')
+        searchApprovalPhase = '';
+      let searchProjectCode = this.searchCardInputs.find(x=>x.label === '프로젝트 코드').value;
+      if (searchProjectCode)
+        searchProjectCode = searchProjectCode.trim();
+      let searchCompany = this.searchCardInputs.find(x=>x.label === '견적 업체명').value;
+        if (searchCompany)
+        searchCompany = searchCompany.trim();
+      let searchItemCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+      if (searchItemCode)
+      searchItemCode = searchItemCode.trim();
+      let searchItemName = this.searchCardInputs.find(x=>x.label === '제품명').value;
+      if (searchItemName)
+      searchItemName = searchItemName.trim();
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "purchase_product_table.name": searchItemName ? searchItemName : "",
+              "purchase_product_table.item_code": searchItemCode ? searchItemCode : "",
+              "purchase_product_table.purchase_estimate_company": searchCompany ? searchCompany : "",
+              "purchase_confirmation_table.project_code": searchProjectCode ? searchProjectCode: "",
+              "purchase_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : ""
+            }
+          ],
+          "script_file_name": "rooting_구매요청_검색_24_08_08_11_45_79G.json",
+          "script_file_path": "data_storage_pion\\json_sql\\purchase\\구매요청_검색_24_08_08_11_45_QAW"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          if(result.length === 0){
+            mux.Util.showAlert('검색 결과가 없습니다.');
+          }
+          this.purchase_data = result.data;
+        } else {
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      // this.purchase_data = PurchaseSearchPageConfig.test_purchase_data
       for(let i=0; i<this.purchase_data.length; i++){
         let check_unestimated = 0;
         let check_unordered = 0;
@@ -1436,7 +1490,7 @@ export default {
           if(belongs.purchase_estimate_phase !== '완료'){
             check_unestimated++;
           }
-          if(belongs.order_request_date === ''){
+          if(belongs.order_request_date === '' || belongs.order_request_date === null){
             check_unordered++;
           }
         });
@@ -1502,14 +1556,68 @@ export default {
       this.orderRequestDialog = true;
     },
     async clickApproveData(item){
+      this.purchase_detail_data = [];
       this.clicked_tr_phase = item.approval_phase;
       this.purchase_detail_data = item.belong_data;
+
+      let thumbnails = [];
+      mux.Util.showLoading();
+      const prevURL = window.location.href;
+      //thumbnail
+      try {
+        let thumbnail_result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "purchase_product_table.code": item.code
+            }
+          ],
+          "script_file_name": "rooting_구매요청_thumbnail_검색_24_08_08_11_54_DGS.json",
+          "script_file_path": "data_storage_pion\\json_sql\\purchase\\구매요청_thumbnail_검색_24_08_08_11_54_2RS"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof thumbnail_result === 'string'){
+          thumbnail_result = JSON.parse(thumbnail_result);
+        }
+        if(thumbnail_result['code'] == 0 || (typeof thumbnail_result['data'] === 'object' && thumbnail_result['data']['code'] == 0) || (typeof thumbnail_result['response'] === 'object' && typeof thumbnail_result['response']['data'] === 'object' && thumbnail_result['response']['data']['code'] == 0)){
+
+          thumbnails = thumbnail_result.data;
+        } else {
+          mux.Util.showAlert(thumbnail_result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      console.log(JSON.stringify(thumbnails));
+
+
+      let set_thumbnails = thumbnails.reduce((prev, now) => {
+        if(!prev.some(obj => obj.purchase_estimate_code === now.purchase_estimate_code)){
+          prev.push(now);
+        }
+        return prev;
+      }, [])
+
+      this.purchase_detail_data.forEach(data => {
+        for(let i=0; i<set_thumbnails.length; i++){
+          if(data.purchase_estimate_code === set_thumbnails[i].purchase_estimate_code){
+            data.purchase_estimate_thumbnail = set_thumbnails[i].purchase_estimate_thumbnail;
+          }
+        }
+      });
 
       if(item.creater === this.$cookies.get(this.$configJson.cookies.id.key)){
         this.creater_authority = true;
       }
       this.purchase_detail_data.forEach(data =>{
         data.project_code = item.project_code;
+        data.code = item.code;
       })
       let unestimated = 0;
       for(let i=0; i<item.belong_data.length; i++){
@@ -1522,6 +1630,7 @@ export default {
       }else{
         this.show_request_estimate_button = true;
       }
+      mux.Util.hideLoading();
       this.purchase_detail_dialog = true;
     },
 
