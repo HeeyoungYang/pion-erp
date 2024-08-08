@@ -716,6 +716,8 @@ export default {
       estimate_product_list_headers:ObtainOrderSearchPageConfig.estimate_product_list_headers,
       // inbound_approve_data:[],
       survey_cost_headers: ObtainOrderSearchPageConfig.survey_cost_headers,
+      bom_list_headers: ObtainOrderSearchPageConfig.bom_list_headers,
+      purchase_detail_headers: ObtainOrderSearchPageConfig.purchase_detail_headers,
       search_tab_items: ObtainOrderSearchPageConfig.search_tab_items,
       labor_cost_headers: ObtainOrderSearchPageConfig.labor_cost_headers,
       labor_cost_data: [],
