@@ -71,7 +71,7 @@
                   dense
                   @edit="editLaborItem"
                   @delete="deleteItem"
-                  
+
                 >
                 </DataTableComponent>
                 <ModalDialogComponent
@@ -145,7 +145,7 @@
                   editable
                   deletable
                   dense
-                  
+
                   @edit="editWageItem"
                   @delete="deleteItem"
                 >
@@ -200,7 +200,7 @@
                   :search="search_ratio"
                   editable
                   dense
-                  
+
                   @edit="editRatioItem"
                 >
                 </DataTableComponent>
@@ -351,7 +351,7 @@ export default {
     },
     async initialize () {
 
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       const prevURL = window.location.href;
       try {
@@ -383,13 +383,13 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
           mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
 
     registLaborItem(item){
@@ -899,7 +899,7 @@ export default {
     },
 
     close () {
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
       this.laborDialog = false
       this.wageDialog = false
       this.ratioDialog = false

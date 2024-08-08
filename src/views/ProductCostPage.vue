@@ -932,7 +932,7 @@ export default {
             this.dialog_calculate_labor = false;
             return;
           }
-          this.loading_dialog = true;
+          mux.Util.showLoading();
 
           const prevURL = window.location.href;
           try {
@@ -969,13 +969,13 @@ export default {
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
               mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
               mux.Util.showAlert(error);
           }
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
 
           this.origin_labor_cost_data = JSON.parse(JSON.stringify(this.labor_cost_data));
         }else {
@@ -1304,7 +1304,7 @@ export default {
 
     async search(){
 
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       let searchProductName = this.searching_product_name;
       if (searchProductName)
@@ -1338,17 +1338,17 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
           mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
 
     },
     async searchProduct(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       const product_code = this.search_complete_product_code ? this.search_complete_product_code.trim() : "";
       const product_name = this.search_complete_product_name ? this.search_complete_product_name.trim() : "";
       const product_capacity = this.search_product_capacity ? this.search_product_capacity.trim() : "";
@@ -1408,14 +1408,14 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         // console.error(error);
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
           mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     searchDataCalcProcess(searchResult, isFirst){
       const productTotalCost = {};

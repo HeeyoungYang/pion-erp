@@ -133,7 +133,7 @@ export default {
       // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
     },
     async initialize () {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.headers = PageSettingPageConfig.table_header;
       this.page_resources = [];
 
@@ -155,19 +155,19 @@ export default {
             });
           }
         }else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         mux.Util.showAlert(error);
         return;
       }
       this.page_resources = page_resourceList.sort(
         (a, b) => b.page_name.localeCompare(a.page_name));
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     addPageResource(item){
       this.editedLaborIndex = this.page_resources.indexOf(item)
@@ -238,13 +238,13 @@ export default {
             this.close();
             this.initialize ();
           }else {
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
             mux.Util.showAlert(result.message);
             return;
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(error);
           return;
         }
@@ -270,13 +270,13 @@ export default {
         if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)) {
           this.initialize ();
         }else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         mux.Util.showAlert(error);
         return;
       }
@@ -284,7 +284,7 @@ export default {
       this.closeDelete()
     },
     close () {
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
       this.dialog = false
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)

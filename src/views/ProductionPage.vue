@@ -369,9 +369,9 @@ export default {
       this.production_detail = JSON.parse(JSON.stringify(ProductionPageConfig.production_detail));
     },
     searchButton(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.search_obtain_data = ProductionPageConfig.test_obtain_data;
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     productionDetail(item){
       this.show_detail = true;

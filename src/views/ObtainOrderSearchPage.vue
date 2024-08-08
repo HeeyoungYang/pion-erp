@@ -709,20 +709,20 @@ export default {
       }
     },
     async download(foldername, filename, prefix) {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       try {
         await mux.Server.downloadFile(foldername, filename, prefix);
       } catch (error) {
         mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
 
 
     searchButton(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.obtain_approve_data = ObtainOrderSearchPageConfig.test_obtain_approve_data
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     closeProductList(){
       this.obtain_order_detail_dialog = false;
@@ -779,7 +779,7 @@ export default {
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -1073,7 +1073,7 @@ export default {
       console.log("sendData ::: ", sendData);
 
       try {
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         let resultInbound = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1101,7 +1101,7 @@ export default {
             default:
               break;
           }
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert('입고 ' + phase + ' 완료', '완료', 3000);
 
           //메일 알림 관련
@@ -1210,7 +1210,7 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -1357,7 +1357,7 @@ export default {
       console.log(sendData);
 
       try {
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         let resultInbound = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1393,7 +1393,7 @@ export default {
               break;
           }
 
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert('입고 ' + phase + ' 완료', '완료', 3000);
 
           //메일 알림 관련
@@ -1501,7 +1501,7 @@ export default {
           mux.Util.showAlert(resultInbound['failed_info']);
         }
       } catch (error) {
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
@@ -1619,7 +1619,7 @@ export default {
       }];
 
       try {
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1655,7 +1655,7 @@ export default {
           }
 
           mux.Util.showAlert(send_confirmation_data.approval_phase === '취소' ? '취소 완료' : '취소 요청 완료', '완료', 3000);
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
 
           //메일 알림 관련
           let mailTo = [];
@@ -1741,7 +1741,7 @@ export default {
           mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);

@@ -255,7 +255,7 @@ export default {
     async detailInfoItem(item){
       const prevURL = window.location.href;
       try {
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         let params;
         let script_file_name;
         let script_file_path;
@@ -332,18 +332,18 @@ export default {
             this.stockDetails.forEach(data => {
               data.stock_num = Number(data.stock_num).toLocaleString();
             });
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
           } else {
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
             mux.Util.showAlert(result2['failed_info']);
           }
         } else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -355,7 +355,7 @@ export default {
     },
     async searchButton() {
 
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       //검색 시 총 재고, 총 금액 초기화
       this.total_stock_num = 0;
       this.total_stock_price = 0;
@@ -509,13 +509,13 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
           mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
       // this.product_data = MaterialSearchPageConfig.test_product_data;
     },
     downloadToExcel(){

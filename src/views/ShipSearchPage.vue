@@ -337,16 +337,16 @@ export default {
       }
     },
     async download(foldername, filename, prefix) {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       try {
         await mux.Server.downloadFile(foldername, filename, prefix);
       } catch (error) {
         mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     async searchButton(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       let searchApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
       if (searchApprovalPhase === 'All')
@@ -419,13 +419,13 @@ export default {
 
 
           this.ship_approve_data  = result.data.reverse(); // 최신순으로 정렬
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
         }else{
           mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -448,7 +448,7 @@ export default {
       }
       let belong_datas = item.belong_data
 
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
       this.ship_product_list_data = [];
       this.ship_info_data = {};
       belong_datas.forEach(data =>{
@@ -470,7 +470,7 @@ export default {
 
       const prevURL = window.location.href;
       try {
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         // 제품의 썸네일
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
@@ -493,14 +493,14 @@ export default {
             inspection_report_thumbnail = result['data'][0].inspection_report_thumbnail;
           }
           this.inspectionReportThumbnail = inspection_report_thumbnail;
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
         } else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -617,7 +617,7 @@ export default {
           console.log(sendData);
 
           try {
-            this.loading_dialog = true;
+            mux.Util.showLoading();
             let resultShip = await mux.Server.post({
               path: '/api/common_rest_api/',
               params: sendData
@@ -631,7 +631,7 @@ export default {
               item.approval_phase = send_data.approval_phase;
               item.approved_date = send_data.approved_date;
 
-              this.loading_dialog = false;
+              mux.Util.hideLoading();
               mux.Util.showAlert('출고 승인 완료', '승인 완료', 3000)
 
               //메일 알림 관련
@@ -705,7 +705,7 @@ export default {
               mux.Util.showAlert(resultShip['failed_info']);
             }
           } catch (error) {
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
             if (prevURL !== window.location.href) return;
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
               mux.Util.showAlert(error.response['data']['failed_info'].msg);
@@ -729,7 +729,7 @@ export default {
 
         try {
 
-          this.loading_dialog = true;
+          mux.Util.showLoading();
           let resultShip = await mux.Server.post({
             path: '/api/common_rest_api/',
             params: sendData
@@ -745,7 +745,7 @@ export default {
             item.approved_date = send_data.approved_date;
 
             mux.Util.showAlert('출고 ' + phase + ' 완료', '완료', 3000);
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
 
             //메일 알림 관련
             let mailTo = [];
@@ -846,7 +846,7 @@ export default {
             mux.Util.showAlert(resultShip['failed_info']);
           }
         } catch (error) {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           if (prevURL !== window.location.href) return;
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
             mux.Util.showAlert(error.response['data']['failed_info'].msg);
@@ -994,7 +994,7 @@ export default {
       console.log(sendData);
 
       try {
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1031,7 +1031,7 @@ export default {
           }
           // console.log('result :>> ', result);
           mux.Util.showAlert('출고 ' + phase + ' 완료', '완료', 3000);
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
 
           //메일 알림 관련
           let mailTo = [];
@@ -1137,7 +1137,7 @@ export default {
           mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
@@ -1254,7 +1254,7 @@ export default {
       }];
 
       try {
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1290,7 +1290,7 @@ export default {
           }
           // console.log('result :>> ', result);
           mux.Util.showAlert(send_confirmation_data.approval_phase === '취소' ? '취소 완료' : '취소 요청 완료', '완료', 3000);
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
 
 
           //메일 알림 관련
@@ -1375,7 +1375,7 @@ export default {
           mux.Util.showAlert(result['failed_info']);
         }
       } catch (error) {
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if (prevURL !== window.location.href) return;
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
@@ -1513,7 +1513,7 @@ export default {
           if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             mux.Util.showAlert('추가 출고 승인 요청이 완료되었습니다', '요청 완료', 3000);
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
 
             //메일 알림 관련
             let mailTo = [];

@@ -852,18 +852,18 @@ export default {
       }
     },
     async download(foldername, filename, prefix) {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       try {
         await mux.Server.downloadFile(foldername, filename, prefix);
       } catch (error) {
         mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
 
 
     searchButton(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.criterion = true;
       this.order_code_criterion_data = [];
       this.searched_order_data = [];
@@ -908,7 +908,7 @@ export default {
       });
 
 
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     checkNo(item_code){
       let project_code = [];
@@ -1045,7 +1045,7 @@ export default {
       console.log("sendData ::: ", sendData);
 
       try {
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1058,7 +1058,7 @@ export default {
         if(result['code'] == 0){
           item.approval_phase = send_data.approval_phase;
           item.approved_date = send_data.approved_date;
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert('발주 승인 완료', '완료', 3000);
 
           //메일 알림 관련
@@ -1121,7 +1121,7 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -1154,7 +1154,7 @@ export default {
       console.log("sendData ::: ", sendData);
 
       try {
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1167,7 +1167,7 @@ export default {
         if(result['code'] == 0){
           item.approval_phase = send_data.approval_phase;
           item.approved_date = send_data.approved_date;
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert('발주 승인 완료', '완료', 3000);
 
           //메일 알림 관련
@@ -1232,7 +1232,7 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -1273,7 +1273,7 @@ export default {
       // file_data.file = file_value;
       // file_data.name = file_name;
 
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       let sendData = {
         "order_confirmation_table-update": [{
@@ -1320,7 +1320,7 @@ export default {
         else
           mux.Util.showAlert(error);
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
       this.uploadFilesDialog = false;
       this.save_new_file_info = {};
     },
@@ -1418,7 +1418,7 @@ export default {
             }
           } catch (error) {
             if (prevURL !== window.location.href) return;
-            this.loading_dialog = false;
+            mux.Util.hideLoading();
             if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
               mux.Util.showAlert(error.response['data']['failed_info'].msg);
             else
@@ -1530,7 +1530,7 @@ export default {
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
             mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else

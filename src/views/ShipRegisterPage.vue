@@ -277,7 +277,7 @@ export default {
     },
 
     async searchProduct(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       // this.product_search_data = InboundRegisterPageConfig.test_product_search_data
 
@@ -390,7 +390,7 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
@@ -398,7 +398,7 @@ export default {
       }
 
 
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     // eslint-disable-next-line no-unused-vars
     handleResultCheckPagePermission(result) {
@@ -546,7 +546,7 @@ export default {
         }
 
         if(success == true){
-          this.loading_dialog = true;
+          mux.Util.showLoading();
           // console.log('출고 정보 : ' + JSON.stringify(item));
           // console.log('출고 제품 : ' + JSON.stringify(ship_product_data));
 
@@ -642,7 +642,7 @@ export default {
             if(result.data['code'] == 0){
               // console.log('result :>> ', result);
               mux.Util.showAlert('출고 승인 요청이 완료되었습니다', '승인 완료', 3000);
-              this.loading_dialog = false;
+              mux.Util.hideLoading();
 
               //메일 알림 관련
               let mailTo = [];

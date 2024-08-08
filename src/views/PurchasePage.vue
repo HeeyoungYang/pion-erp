@@ -711,13 +711,13 @@ export default {
           });
 
         }else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         mux.Util.showAlert(error);
         return;
       }
@@ -747,7 +747,7 @@ export default {
       });
     },
     async searchProduct() {
-      this.loading_dialog = true;
+      mux.Util.showLoading();
 
       if(this.add_data_type === '완제품자재'){
         let searchProductCode = this.searchProductCardInputs.find(x=>x.label === '제품코드').value;
@@ -845,7 +845,7 @@ export default {
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           // console.error(error);
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
             mux.Util.showAlert(error.response['data']['failed_info'].msg);
@@ -991,14 +991,14 @@ export default {
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
             mux.Util.showAlert(error.response['data']['failed_info'].msg);
           else
             mux.Util.showAlert(error);
         }
       }
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
       // this.product_data = ProductSearchPageConfig.test_product_data;
     },
     addProductData(item){
@@ -1255,7 +1255,7 @@ export default {
 
 
       if(success == true){
-        this.loading_dialog = true;
+        mux.Util.showLoading();
         let sendData = {
           "purchase_confirmation_table-insert": [{
             "user_info": {
@@ -1448,7 +1448,7 @@ export default {
           else
             mux.Util.showAlert(error);
         }
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         this.bom_list_purchase_data=[];
         this.bom_list_purchase_items_data=[];
       }

@@ -322,13 +322,13 @@ export default {
           });
 
         }else {
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert(result.message);
           return;
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         mux.Util.showAlert(error);
         return;
       }
@@ -363,9 +363,9 @@ export default {
       this.production_detail_dialog = false;
     },
     searchButton(){
-      this.loading_dialog = true;
+      mux.Util.showLoading();
       this.approval_datas = ProductionSearchPageConfig.test_approval_datas;
-      this.loading_dialog = false;
+      mux.Util.hideLoading();
     },
     async setApprovalPhase(item, change, reason){
       const currDate = new Date();
@@ -456,7 +456,7 @@ export default {
             default:
               break;
           }
-          this.loading_dialog = false;
+          mux.Util.hideLoading();
           mux.Util.showAlert('생산 ' + phase + ' 완료', '완료', 3000);
 
           //메일 알림 관련
@@ -572,7 +572,7 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        this.loading_dialog = false;
+        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
