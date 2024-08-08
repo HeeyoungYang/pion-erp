@@ -1650,7 +1650,23 @@ mux.Util = {
     }
     if (typeof message === 'object') {
       if (message.response){
-        if (message.response.data){
+        if (message.response.response){
+          if (message.response.response.data.message){
+            messageStr = message.response.response.data.message;
+          }else if (message.response.response.data.msg){
+            messageStr = message.response.response.data.msg;
+          }else if (message.response.response.data.failed_info){
+            if (message.response.response.data.failed_info.message){
+              messageStr = message.response.response.data.failed_info.message;
+            }else if (message.response.response.data.failed_info.msg){
+              messageStr = message.response.response.data.failed_info.msg;
+            }else {
+              messageStr = message.response.response.data.failed_info;
+            }
+          }else {
+            messageStr = message.response.response.data;
+          }
+        }else if (message.response.data){
           if (message.response.data.message){
             messageStr = message.response.data.message;
           }else if (message.response.data.msg){
