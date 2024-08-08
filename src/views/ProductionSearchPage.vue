@@ -158,7 +158,7 @@
 
             <span
               v-if="production_details.inbound_date !== '' && production_details.inbound_approval_phase !== '승인'"
-              class="ml-4"
+              class="ml-2"
             >
               : 입고 요청 완료
               <span class="success--text font-weight-bold">( {{ production_details.inbound_approval_phase }} 상태 )</span>
@@ -166,7 +166,7 @@
 
             <span
               v-if="production_details.inbound_date !== '' && production_details.inbound_approval_phase === '승인'"
-              class="ml-4"
+              class="ml-2"
             >
               : <span class="success--text font-weight-bold"> {{ production_details.inbound_date }} </span> 입고
 
@@ -358,9 +358,78 @@ export default {
       }
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
-    clickApproveData(item){
+    async clickApproveData(item){
+      this.production_details = {};
+      mux.Util.showLoading();
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "production_confirmation_table.code": item.code
+            }
+          ],
+          "script_file_name": "rooting_생산_thumbnail_데이터_검색_24_08_08_14_19_37H.json",
+          "script_file_path": "data_storage_pion\\json_sql\\production\\생산_thumbnail_데이터_검색_24_08_08_14_19_TDF"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          if(result.length === 0){
+            mux.Util.showAlert('검색 결과가 없습니다.');
+          }
+          this.production_details = result.data[0];
+
+          //thumbnail
+          try {
+            let thumbnail_result = await mux.Server.post({
+              path: '/api/common_rest_api/',
+              params: [
+                {
+                  "production_confirmation_table.code": item.code
+                }
+              ],
+              "script_file_name": "rooting_생산_thumbnaile_검색_24_08_08_14_21_IIN.json",
+              "script_file_path": "data_storage_pion\\json_sql\\production\\생산_thumbnaile_검색_24_08_08_14_21_NAM"
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof thumbnail_result === 'string'){
+              thumbnail_result = JSON.parse(thumbnail_result);
+            }
+            if(thumbnail_result['code'] == 0 || (typeof thumbnail_result['data'] === 'object' && thumbnail_result['data']['code'] == 0) || (typeof thumbnail_result['response'] === 'object' && typeof thumbnail_result['response']['data'] === 'object' && thumbnail_result['response']['data']['code'] == 0)){
+
+              let thumbnail = thumbnail_result.data[0];
+              this.production_details = Object.assign(this.production_details, thumbnail);
+            } else {
+              mux.Util.showAlert(thumbnail_result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            mux.Util.hideLoading();
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
+            else
+              mux.Util.showAlert(error);
+          }
+        } else {
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      mux.Util.hideLoading();
       this.production_detail_dialog = true;
-      this.production_details = ProductionSearchPageConfig.test_production_datas[0];
 
       if(item.approval_phase === '승인' && item.obtain_type === '재고'){
         this.show_inbound_button = true;
@@ -371,9 +440,62 @@ export default {
     closeProductList(){
       this.production_detail_dialog = false;
     },
-    searchButton(){
+    async searchButton(){
       mux.Util.showLoading();
-      this.approval_datas = ProductionSearchPageConfig.test_approval_datas;
+      let searchProjectCode = this.searchCardInputs.find(x=>x.label === '프로젝트 코드').value;
+      if (searchProjectCode)
+        searchProjectCode = searchProjectCode.trim();
+      let searchInhouseNumber = this.searchCardInputs.find(x=>x.label === '사내 입찰번호').value;
+      if (searchInhouseNumber)
+        searchInhouseNumber = searchInhouseNumber.trim();
+      let searchCompanyNumber = this.searchCardInputs.find(x=>x.label === '기업별 입찰번호').value;
+      if (searchCompanyNumber)
+        searchCompanyNumber = searchCompanyNumber.trim();
+      let searchCompany = this.searchCardInputs.find(x=>x.label === '업체명').value;
+      if (searchCompany)
+      searchCompany = searchCompany.trim();
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "production_confirmation_table.inhouse_bid_number": searchInhouseNumber ? searchInhouseNumber : "",
+              "production_confirmation_table.company_name": searchCompany ? searchCompany : "",
+              "production_confirmation_table.company_bid_number": searchCompanyNumber ? searchCompanyNumber : "",
+              "production_confirmation_table.project_code": searchProjectCode ? searchProjectCode : "",
+            "production_confirmation_table.approval_phase": ""
+            }
+          ],
+          "script_file_name": "rooting_생산_데이터_검색_24_08_08_14_50_844.json",
+          "script_file_path": "data_storage_pion\\json_sql\\production\\생산_데이터_검색_24_08_08_14_51_36C"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          if(result.length === 0){
+            mux.Util.showAlert('검색 결과가 없습니다.');
+          }
+          this.approval_datas = result.data;
+        } else {
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+
+
+      // this.approval_datas = ProductionSearchPageConfig.test_approval_datas;
       mux.Util.hideLoading();
     },
     async setApprovalPhase(item, change, reason){
