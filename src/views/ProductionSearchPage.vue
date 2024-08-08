@@ -157,12 +157,21 @@
             </v-menu>
 
             <span
-              v-if="production_details.inbound_date !== ''"
+              v-if="production_details.inbound_date !== '' && production_details.inbound_approval_phase !== '승인'"
               class="ml-4"
             >
               : 입고 요청 완료
+              <span class="success--text font-weight-bold">( {{ production_details.inbound_approval_phase }} 상태 )</span>
             </span>
-            <span class="success--text font-weight-bold">( {{ production_details.inbound_approval_phase }} 상태 )</span>
+
+            <span
+              v-if="production_details.inbound_date !== '' && production_details.inbound_approval_phase === '승인'"
+              class="ml-4"
+            >
+              : <span class="success--text font-weight-bold"> {{ production_details.inbound_date }} </span> 입고
+
+            </span>
+
           </v-col>
         </v-row>
         <v-row>

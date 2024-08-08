@@ -45,7 +45,7 @@
                     dense
                     :headers="search_estimate_headers"
                     :items="search_estimate_data"
-                    @clickTr="clickApproveData"
+                    @clickTr="clickEstimateData"
                     item-key="estimate_code"
                   />
                 </v-col>
@@ -329,7 +329,7 @@
                     <DataTableComponent
                       dense
                       :headers="purchase_detail_headers"
-                      :items="search_estimate_data"
+                      :items="search_purchase_data"
                       item-key="estimate_code"
                     />
                   </v-card-text>
@@ -342,36 +342,104 @@
                     <v-row>
                       <v-col cols="12" sm="412">
                         <v-chip
-                          class="font-weight-bold mr-3"
-                          color="primary"
+                          class="font-weight-bold"
+                          :color="search_production_data.status === '생산 완료' ? 'primary' : 'default'"
                         >
-                          생산 완료
+                          {{ search_production_data.status === '생산 완료' ? '생산 완료' : '생산 미완료' }}
                         </v-chip>
-                        <span>입고일 : </span>
+                        <span
+                          v-if="search_production_data.inbound_date !== '' && search_production_data.inbound_approval_phase !== '승인'"
+                          class="ml-1"
+                        >
+                          : 입고 요청 완료
+                          <span class="success--text font-weight-bold">( {{ search_production_data.inbound_approval_phase }} 상태 )</span>
+                        </span>
+
+                        <span
+                          v-if="search_production_data.inbound_date !== '' && search_production_data.inbound_approval_phase === '승인'"
+                          class="ml-1"
+                        >
+                          : <span class="success--text font-weight-bold"> {{ search_production_data.inbound_date }} </span> 입고
+
+                        </span>
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 자체시험</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(search_production_data.self_test_thumbnail)"
+                          transition="scale-transition"
+                          width="100%"
+                          @click="download('production/self_test', search_production_data.self_test_file, search_production_data.code+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 공장시험</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(search_production_data.factory_test_thumbnail)"
+                          transition="scale-transition"
+                          width="100%"
+                          @click="download('production/self_test', search_production_data.factory_test_file, search_production_data.code+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 현장시험</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(search_production_data.field_test_thumbnail)"
+                          transition="scale-transition"
+                          width="100%"
+                          @click="download('production/self_test', search_production_data.field_test_file, search_production_data.code+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 시운전</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(search_production_data.trial_run_thumbnail)"
+                          transition="scale-transition"
+                          width="100%"
+                          @click="download('production/self_test', search_production_data.trial_run_file, search_production_data.code+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 전자세금계산서</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(search_production_data.tax_invoice_thumbnail)"
+                          transition="scale-transition"
+                          width="100%"
+                          @click="download('production/self_test', search_production_data.tax_invoice_file, search_production_data.code+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 하자보증증권 </p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(search_production_data.defect_warranty_thumbnail)"
+                          transition="scale-transition"
+                          width="100%"
+                          @click="download('production/self_test', search_production_data.defect_warranty_file, search_production_data.code+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
 
                     </v-row>
@@ -430,22 +498,38 @@ export default {
       this.search_estimate_data = ObtainProgressPageConfig.test_estimate_data
       mux.Util.hideLoading();
     },
-    test(){
-      // console.log('test');
-      // mux.Server.uploadFile({path: '/', folder:'somefolder', file: this.files[0]});
-      mux.Server.uploadFile({path: '/', folder:'somefolder', files: this.files});
-    },
-    clickApproveData(item){
+    clickEstimateData(item){
       console.log(item);
       this.tab_progress = 0;
+
+      //구매,발주 탭 데이터
+      let purchase_result = ObtainProgressPageConfig.test_purchase_data
+      let set_data = []
+      purchase_result.forEach(item =>{
+        for(let p=0; p<item.belong_data.length; p++){
+          let belongs = item.belong_data[p];
+          if(belongs.order_code === ""){
+            belongs.purchase_phase = item.approval_phase
+            belongs.order_phase = "미요청"
+          }else{
+            belongs.purchase_phase = "발주요청"
+          }
+        }
+        set_data.push(...item.belong_data);
+      })
+      this.search_purchase_data = set_data
+
+      //생산 탭 데이터
+      this.search_production_data = ObtainProgressPageConfig.test_production_data[0];
       this.show_detail = true;
     },
   },
   data(){
     return{
+      mux: mux,
       show_detail: false,
       tab_progress: null,
-      versions:['수주 원본', '1차 수주 설계', '2차 수주 설계', '3차 수주 설계'],
+      versions:['1차 수주 설계', '2차 수주 설계', '3차 수주 설계'],
 
       save_costs: ObtainProgressPageConfig.save_costs,
       search_estimate_headers: ObtainProgressPageConfig.search_estimate_headers,
@@ -458,6 +542,8 @@ export default {
       progress_tab_items: ObtainProgressPageConfig.progress_tab_items,
       searchCardInputs: ObtainProgressPageConfig.searchCardInputs,
       search_estimate_data: [],
+      search_purchase_data: [],
+      search_production_data: [],
     }
   },
 }
