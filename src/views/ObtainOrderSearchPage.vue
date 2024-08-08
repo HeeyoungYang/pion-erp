@@ -91,8 +91,8 @@
         class="tab_search"
       >
         <v-tab
-          v-for="sub_item in (clickedProductCost.obtain_file 
-                              ? search_tab_items.filter(item => item !== 'BOM LIST' && item !== '구매 요청 내역') 
+          v-for="sub_item in (clickedProductCost.obtain_file
+                              ? search_tab_items.filter(item => item !== 'BOM LIST' && item !== '구매 요청 내역')
                               : search_tab_items.filter(item => item !== '수주서' && item !== '생산 의뢰서'))"
           :key="sub_item"
         >
@@ -283,7 +283,7 @@
                 width="350"
                 @click="download('obtain/blueprint', clickedProductCost.blueprint_file.replace(clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_', ''), clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_')"
                 style="cursor: pointer;"
-              />  
+              />
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
@@ -479,13 +479,13 @@
           </v-card>
         </v-tab-item>
         <!-- 생산 의뢰서 -->
-        <v-tab-item key="생산 의뢰서" v-if="clickedProductCost.obtain_file 
-                    && searched_datas.last_confirmation 
+        <v-tab-item key="생산 의뢰서" v-if="clickedProductCost.obtain_file
+                    && searched_datas.last_confirmation
                     && searched_datas.last_confirmation.find(item => item.cost_calc_code === clickedProductCost.cost_calc_code)">
           <v-card style="border: 1px solid #ccc;" elevation="0">
             <v-menu
-              v-if="searched_datas.last_confirmation 
-              && searched_datas.last_confirmation.find(item => item.cost_calc_code === clickedProductCost.cost_calc_code) 
+              v-if="searched_datas.last_confirmation
+              && searched_datas.last_confirmation.find(item => item.cost_calc_code === clickedProductCost.cost_calc_code)
               && searched_datas.approved_date
               && clickedProductCost.creater === login_info.id"
               offset-y
@@ -991,7 +991,7 @@ export default {
         this.clickedProductCost = this.relatedClickedProductCost[Number(version.substring(0,1))];
       }
     },
-    
+
   },
   created () {
     this.initialize()
@@ -1234,7 +1234,7 @@ export default {
         searchResult.labor_cost_calc_detail = searchResult.labor_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
         searchResult.product_cost_calc_detail = searchResult.product_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
         searchResult.construction_materials_data = searchResult.construction_materials_data.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
-        
+
         // 최신 순으로 정렬
         searchResult.confirmation.sort((a, b) => new Date(b.created_time) - new Date(a.created_time));
 
@@ -1259,7 +1259,7 @@ export default {
           const searchDesignResult = JSON.parse(JSON.stringify(ObtainOrderSearchPageConfig.test_design_data));
           // 오래된 순으로 정렬
           searchDesignResult.confirmation.sort((a, b) => new Date(a.created_time) - new Date(b.created_time));
-          
+
           // 설계 이력 추가하기
           searchResult.design_confirmation = searchDesignResult.confirmation;
           if (searchDesignResult.product_cost && searchDesignResult.product_cost.length > 0){
@@ -1274,7 +1274,7 @@ export default {
           if (searchDesignResult.construction_materials_data && searchDesignResult.construction_materials_data.length > 0){
             searchResult.construction_materials_data = [...searchResult.construction_materials_data, ...searchDesignResult.construction_materials_data];
           }
-          
+
           this.searchDataCalcProcess(searchResult);
 
           // }else{
@@ -1548,9 +1548,9 @@ export default {
           new_approval_phase = '승인';
           new_approved_date = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
         }
-        
+
       }
-      
+
       if (change === false){
         new_approval_phase = '반려';
         new_rejecter = this.login_info.name;
@@ -1579,7 +1579,7 @@ export default {
           "rollback": "yes"
         }],
       };
-        
+
       if (new_approval_phase === '미승인'){
         sendData["obtain_confirmation_table-update"][0].data.checked_date = new_checked_date;
       }
@@ -1718,7 +1718,7 @@ export default {
             console.log('알림 메일 전송에 실패-error :>> ', error);
             mux.Util.showAlert('저장되었으나 알림 메일 전송에 실패하였습니다.', '저장 완료');
           }
-          
+
         } else {
           if (prevURL !== window.location.href) return;
           mux.Util.showAlert(result);
@@ -1728,7 +1728,7 @@ export default {
         mux.Util.showAlert(error);
       }
       mux.Util.hideLoading();
-      
+
     },
     async sendProductionRequestMail(){
       if (!this.selectDesigner || this.selectDesigner.split('-').length !== 3){
@@ -1740,7 +1740,7 @@ export default {
         mux.Util.showAlert('담당자 정보가 없습니다.');
         return;
       }
-      
+
       const requestedDate = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
 
       const item = this.clickedProductCost;
@@ -1760,7 +1760,7 @@ export default {
           "rollback": "yes"
         }],
       };
-        
+
       // if (new_approval_phase === '미승인'){
       //   sendData["estimate_confirmation_table-update"][0].data.checked_date = new_checked_date;
       // }
