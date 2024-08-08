@@ -170,7 +170,7 @@
                       :key="index"
                       dense
                       @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                              : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                              : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '견적서') : ''"
                     >
                       <v-list-item-title>{{ item.title }}</v-list-item-title>
                     </v-list-item>
@@ -1170,6 +1170,10 @@ export default {
         new_rejecter = this.login_info.name;
         new_rejected_date = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
         new_reject_reason = reason.trim();
+        if(new_reject_reason === ''){
+          mux.Util.showAlert('반려 사유 필수 기입');
+          return;
+        }
       }
 
       let sendData = {

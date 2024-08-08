@@ -3420,7 +3420,7 @@ export default {
           });
         }
         if (this.input_etc_file.value && this.input_etc_file.value.length > 0){
-          sendData['estimate_confirmation_table-update'][0].etc_files = new_cost_calc_code + '_' + this.input_etc_file.value.map(x=>x.name).join('/');
+          sendData['estimate_confirmation_table-update'][0].etc_files = this.input_etc_file.value.map(x=>new_cost_calc_code + '_' + x.name).join('/');
           this.input_etc_file.value.forEach(file => {
             sendData.files.push({
               "column_name": "files",
@@ -4090,7 +4090,7 @@ export default {
             blueprint_file: new_cost_calc_code + '_' + this.input_blueprint_file2.value.name,
             blueprint_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_blueprint_file2.value, 1, false, 1000, 1000)),
             etc_files: this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value && this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value.length > 0
-            ? new_cost_calc_code + '_' + this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value.map(x=>x.name).join('/')
+            ? this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value.map(x=>new_cost_calc_code + '_' + x.name).join('/')
             : '',
           },
           "select_where": {"cost_calc_code": new_cost_calc_code},
