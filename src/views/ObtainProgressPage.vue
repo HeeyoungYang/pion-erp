@@ -64,8 +64,11 @@
                 v-for="sub_item in progress_tab_items"
                 :key="sub_item"
               >
-                {{ sub_item }}
-                <span class="ml-2 error--text">●</span>
+                {{ sub_item.tab_name }}
+                <v-icon
+                  :color="sub_item.tab_color"
+                  class="ml-2"
+                > mdi-circle-medium </v-icon>
               </v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab_progress" class="pb-1">
@@ -522,6 +525,9 @@ export default {
       //생산 탭 데이터
       this.search_production_data = ObtainProgressPageConfig.test_production_data[0];
       this.show_detail = true;
+
+
+      this.progress_tab_items.find(x=> x.tab_name === '수주서').tab_color = 'success';
     },
   },
   data(){

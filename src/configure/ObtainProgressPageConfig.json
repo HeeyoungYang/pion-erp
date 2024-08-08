@@ -4,7 +4,11 @@
     {"title":"PDF", "click":"pdf"}
   ],
   "progress_tab_items": [
-    "수주서", "수주 확인서", "설계", "구매/발주", "생산"
+    {"tab_name": "수주서", "tab_color": "grey lighten-1"},
+    {"tab_name": "수주 확인서", "tab_color": "grey lighten-1"},
+    {"tab_name": "설계", "tab_color": "grey lighten-1"},
+    {"tab_name": "구매/발주", "tab_color": "grey lighten-1"},
+    {"tab_name": "생산", "tab_color": "grey lighten-1"}
   ],
   "searchCardInputs":[
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4"}
