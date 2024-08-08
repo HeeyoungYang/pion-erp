@@ -1170,6 +1170,10 @@ export default {
         new_rejecter = this.login_info.name;
         new_rejected_date = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
         new_reject_reason = reason.trim();
+        if(new_reject_reason === ''){
+          mux.Util.showAlert('반려 사유 필수 기입');
+          return;
+        }
       }
 
       let sendData = {
