@@ -50,8 +50,8 @@
     {
       "code":"production2024-08-06 15:36:32",
       "status":"생산 완료",
-      "inbound_approval_phase":"미승인",
-      "inbound_date":"sdfsdf",
+      "inbound_approval_phase":"승인",
+      "inbound_date":"2024-08-08",
       "self_test_file":"테스트용2.pdf",
       "self_test_thumbnail":"89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
       "factory_test_file":"pdf_for_test.pdf",
