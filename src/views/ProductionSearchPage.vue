@@ -100,6 +100,7 @@
                   color="success"
                   v-bind="attrs"
                   v-on="on"
+                  :disabled="production_details.inbound_date === '' ? false : true"
                 >
                   입고 승인 요청
                 </v-btn>
@@ -154,6 +155,14 @@
                 </v-list-item>
               </v-list>
             </v-menu>
+
+            <span
+              v-if="production_details.inbound_date !== ''"
+              class="ml-4"
+            >
+              : 입고 요청 완료
+            </span>
+            <span class="success--text font-weight-bold">( {{ production_details.inbound_approval_phase }} 상태 )</span>
           </v-col>
         </v-row>
         <v-row>
@@ -251,6 +260,7 @@ import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import ProductionSearchPageConfig from "@/configure/ProductionSearchPageConfig.json";
 import mux from "@/mux";
+import { PDFDocument } from 'pdf-lib'
 
 export default {
   mixins: [CheckPagePermission('/api/check_page_permission?page_name=ProductionPage')],
@@ -285,6 +295,21 @@ export default {
     },
     async initialize () {
       const prevURL = window.location.href;
+
+      try {
+        let result = await mux.Server.getPionBasicInfo();
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        this.spot_list = result.spot;
+
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.showAlert(error);
+      }
+      this.inboundRequestInputs.find(x=>x.column_name === 'spot').list = this.spot_list;
       try {
         const result = await mux.Server.get({path:'/api/admin/users/'});
         if (prevURL !== window.location.href) return;
@@ -561,30 +586,71 @@ export default {
         mux.Util.showAlert('입고 승인 요청 정보를 모두 입력해주세요.');
         return;
       }
+
+      mux.Util.showLoading();
       console.log(this.inbound_checker + ' / ' + this.inbound_approver + ' / ' + this.inbound_material_manager);
 
-      let insert_data = {};
-      insert_data.code = this.set_inbound_code
-      insert_data.project_code = this.set_project_code
-      insert_data.material_manager = this.inbound_material_manager.split('-')[1]
-      insert_data.checker = this.inbound_checker.split('-')[1]
-      insert_data.checker_id = this.inbound_checker.split('-')[2]
-      insert_data.approver = this.inbound_approver.split('-')[1]
-      insert_data.approver_id = this.inbound_approver.split('-')[2]
+      let confirmation_data = {};
+      confirmation_data.code = this.set_inbound_code
+      confirmation_data.project_code = this.set_project_code
+      confirmation_data.material_manager = this.inbound_material_manager.split('-')[1]
+      confirmation_data.checker = this.inbound_checker.split('-')[1]
+      confirmation_data.checker_id = this.inbound_checker.split('-')[2]
+      confirmation_data.approver = this.inbound_approver.split('-')[1]
+      confirmation_data.approver_id = this.inbound_approver.split('-')[2]
 
-      if(insert_data.checker_id == this.login_info.id){
-        insert_data.approval_phase = '미승인';
-        insert_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff')
+      if(confirmation_data.checker_id == this.login_info.id){
+        confirmation_data.approval_phase = '미승인';
+        confirmation_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff')
       }else{
-        insert_data.approval_phase = '미확인';
+        confirmation_data.approval_phase = '미확인';
       }
-      insert_data.inbound_date = this.inboundRequestInputs.find(x=>x.column_name === 'inbound_date').value;
-      insert_data.note = this.inboundRequestInputs.find(x=>x.column_name === 'note').value ? this.inboundRequestInputs.find(x=>x.column_name === 'note').value : '';
-      insert_data.add_data = '생산 입고';
+      confirmation_data.inbound_date = this.inboundRequestInputs.find(x=>x.column_name === 'inbound_date').value;
+      confirmation_data.note = this.inboundRequestInputs.find(x=>x.column_name === 'note').value ? this.inboundRequestInputs.find(x=>x.column_name === 'note').value : '';
+      confirmation_data.add_data = '생산 입고';
+
+
+
+      let product_data = {};
+      product_data.spot = this.inboundRequestInputs.find(x=>x.column_name === 'spot').value;
 
 
       //입고 데이터용 파일 정리
+      // 시험서 3종 병합 (PDF-LIB 라이브러리 사용)
+      let self_test_file = await mux.Server.getFileUrl('production/self_test', this.set_inbound_code + '_' + this.production_details.self_test_file, 'application/pdf');
+      let factory_test_file = await mux.Server.getFileUrl('production/factory_test', this.set_inbound_code + '_' + this.production_details.factory_test_file, 'application/pdf');
+      let field_test_file = await mux.Server.getFileUrl('production/field_test', this.set_inbound_code + '_' + this.production_details.field_test_file, 'application/pdf');
 
+      let urls = [self_test_file, factory_test_file, field_test_file];
+      console.log(urls)
+      const pdfDoc = await PDFDocument.create()
+      for(let u = 0; u < urls.length; u++) {
+        const donorPdfBytes = await fetch(urls[u]).then(res => res.arrayBuffer());
+        // load/convert the document into a PDFDocument object
+        const donorPdfDoc = await PDFDocument.load(donorPdfBytes);
+        // iterate over the document's pages
+        const docLength = donorPdfDoc.getPageCount();
+        for(let k = 0; k < docLength; k++) {
+            // extract the page to copy
+            const [donorPage] = await pdfDoc.copyPages(donorPdfDoc, [k]);
+
+            // add the page to the overall merged document
+            pdfDoc.addPage(donorPage);
+        }
+      }
+
+      const pdfBytes  = await pdfDoc.save();
+      const pdfByteArray = new Uint8Array(pdfBytes);
+      const pdfBlob = new Blob([pdfByteArray], { type: 'application/octet-stream' });
+
+      const inspection_report_file = new File([pdfBlob], '시험 성적서');
+      console.log(inspection_report_file);
+      const getPdfThumbnail = await mux.Util.getPdfThumbnail(inspection_report_file, 1, false, 1000, 1000);
+      let inspection_report_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+
+
+
+      // 시험서 3종 외 파일들 inbound_confirmation_table의 files에 저장하기 위한 설정
       let trial_run_blob = await mux.Server.getFileData('production/trial_run', this.set_inbound_code + '_' + this.production_details.trial_run_file, 'application/pdf');
       const trial_run_file = new File([trial_run_blob], this.production_details.trial_run_file);
 
@@ -595,8 +661,9 @@ export default {
       const defect_warranty_file = new File([defect_warranty_blob], this.production_details.trial_run_file);
 
 
-      insert_data.files = this.production_details.trial_run_file + "/" + this.production_details.tax_invoice_file + "/" + this.production_details.defect_warranty_file;
-
+      confirmation_data.files = this.production_details.trial_run_file + "/" + this.production_details.tax_invoice_file + "/" + this.production_details.defect_warranty_file;
+      confirmation_data.inspection_report_file = '시험성적서.pdf';
+      confirmation_data.inspection_report_thumbnail = inspection_report_thumbnail;
 
       let sendData = {
         "inbound_confirmation_table-insert": [{
@@ -604,16 +671,37 @@ export default {
             "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
             "role": "creater"
           },
-          "data":insert_data,
-          "select_where": {"code": insert_data.code},
+          "data":confirmation_data,
+          "select_where": {"code": confirmation_data.code},
           "rollback": "yes"
         }]
       };
 
+      let update_production_data = [];
+      update_production_data.push({
+        "user_info": {
+          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+          "role": "modifier"
+        },
+        "data": {
+          "inbound_date": confirmation_data.inbound_date,
+          "inbound_approval_phase": confirmation_data.approval_phase
+        },
+        "update_where": {"code": confirmation_data.code},
+        "rollback": "yes"
+      })
+
+      sendData["production_confirmation_table-update"] = update_production_data;
+
+
       sendData.path = '/api/multipart_rest_api/';
-      sendData.prefix = insert_data.code + '_';
+      sendData.prefix = confirmation_data.code + '_';
       sendData.files = [];
       sendData.files.push({
+        folder: 'inbound/inspection_report',
+        file: inspection_report_file,
+        name: confirmation_data.inspection_report_file
+      },{
         folder: 'inbound/files',
         file: trial_run_file,
         name: this.production_details.trial_run_file
@@ -629,10 +717,6 @@ export default {
 
       const prevURL = window.location.href;
       try {
-        // let result = await mux.Server.post({
-        //   path: '/api/common_rest_api/',
-        //   params: sendData
-        // });
         let result = await mux.Server.uploadFile(sendData);
         if (prevURL !== window.location.href) return;
 
@@ -642,6 +726,76 @@ export default {
         if(result.data['code'] == 0){
           // console.log('result :>> ', result);
           mux.Util.showAlert('입고 승인 요청이 완료되었습니다', '요청 완료', 3000);
+
+          //메일 알림 관련
+          let mailTo = [];
+          let phase;
+          if(confirmation_data.approval_phase === '미확인'){
+            mailTo.push(confirmation_data.checker_id);
+            phase = '확인'
+          }else if(confirmation_data.approval_phase === '미승인'){
+            mailTo.push(confirmation_data.approver_id);
+            phase = '승인'
+          }
+
+          // 메일 본문 내용
+          let content=`
+            <html>
+              <body>
+                <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                  <h2 style="text-align: center; color:#13428a">입고 ${phase} 요청 알림</h2>
+                  <table style="width: 100%;border-spacing: 10px 10px;">
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.project_code}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">입고 일자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.inbound_date}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.checker}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
+                    </tr>
+                  </table>
+                  <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/inbound-search?inbound_date=${confirmation_data.inbound_date}">
+                    <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                      확인하기
+                    </p>
+                  </a>
+                </div>
+              </body>
+            </html>
+          `;
+          try {
+            let sendEmailAlam = await mux.Server.post({
+              path: '/api/send_email/',
+              to_addrs: mailTo,
+              subject: "입고 " + phase + " 요청 알림",
+              content: content
+            });
+            if (prevURL !== window.location.href) return;
+            if(sendEmailAlam['code'] == 0){
+              console.log(sendEmailAlam['message']);
+            } else {
+              if (prevURL !== window.location.href) return;
+              mux.Util.showAlert(sendEmailAlam['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
+            else
+              mux.Util.showAlert(error);
+          }
         } else {
           if (prevURL !== window.location.href) return;
           mux.Util.showAlert(result['failed_info']);
@@ -653,6 +807,7 @@ export default {
         else
           mux.Util.showAlert(error);
       }
+      mux.Util.hideLoading();
 
     }
   },
@@ -667,6 +822,8 @@ export default {
       production_data_headers: ProductionSearchPageConfig.production_data_headers,
       inboundRequestInputs: ProductionSearchPageConfig.inboundRequestInputs,
       members: [],
+      classification_list: [],
+      spot_list: [],
       approval_datas: [],
       production_details:{},
       inbound_checker:'',
