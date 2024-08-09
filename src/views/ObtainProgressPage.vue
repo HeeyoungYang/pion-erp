@@ -504,26 +504,35 @@ export default {
       this.search_estimate_data = ObtainProgressPageConfig.test_estimate_data
       mux.Util.hideLoading();
     },
-    clickEstimateData(item){
+    async clickEstimateData(item){
       mux.Util.showLoading();
-
-      console.log(item);
       this.tab_progress = 0;
 
       //구매,발주 탭 데이터
-      this.searchPurchaseData(item.project_code);
+      await this.searchPurchaseData(item.project_code);
 
       //생산 탭 데이터
-      this.searchProductionData(item.project_code, item.company_name, item.company_bid_number, item.inhouse_bid_number);
+      await this.searchProductionData(item.project_code, item.company_name, item.company_bid_number, item.inhouse_bid_number);
       // this.search_production_data = ObtainProgressPageConfig.test_production_data[0];
 
 
 
-      this.show_detail = true;
 
       //승인 상태에 따른 탭 아이콘 색상
+      let order_count = 0;
+      this.search_purchase_data.forEach(item => {
+        if(item.purchase_phase === '구매 완료')
+        order_count++
+      })
+
+      if(order_count === this.search_purchase_data.length)
+        this.progress_tab_items.find(x=> x.tab_name === '구매/발주').tab_color = 'success';
+      if(this.search_production_data.status === '생산 완료')
+        this.progress_tab_items.find(x=> x.tab_name === '생산').tab_color = 'success';
+
       this.progress_tab_items.find(x=> x.tab_name === '수주서').tab_color = 'success';
       mux.Util.hideLoading();
+      this.show_detail = true;
     },
 
     async searchPurchaseData(pjt_code){
@@ -657,9 +666,6 @@ export default {
               }
               if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
 
-                if(result.length === 0){
-                  mux.Util.showAlert('검색 결과가 없습니다.');
-                }
                 info = result.data[0];
 
                 //thumbnail
@@ -688,7 +694,6 @@ export default {
                   }
                 } catch (error) {
                   if (prevURL !== window.location.href) return;
-                  mux.Util.hideLoading();
                   if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
                     mux.Util.showAlert(error.response['data']['failed_info'].msg);
                   else
@@ -699,7 +704,6 @@ export default {
               }
             } catch (error) {
               if (prevURL !== window.location.href) return;
-              mux.Util.hideLoading();
               if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
                 mux.Util.showAlert(error.response['data']['failed_info'].msg);
               else
@@ -712,7 +716,6 @@ export default {
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
-        mux.Util.hideLoading();
         if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
           mux.Util.showAlert(error.response['data']['failed_info'].msg);
         else
