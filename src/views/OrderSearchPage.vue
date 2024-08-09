@@ -862,21 +862,162 @@ export default {
     },
 
 
-    searchButton(){
+    async searchButton(){
       mux.Util.showLoading();
       this.criterion = true;
       this.order_code_criterion_data = [];
       this.searched_order_data = [];
-      //order_product_notes_table 검색
-      this.order_notes_data = OrderSearchPageConfig.test_note_data;
-      // 프로젝트 기준 검색
-      this.project_code_criterion_data = OrderSearchPageConfig.test_project_code_criterion_data
+
+      let searchApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
+      if (searchApprovalPhase === 'All')
+        searchApprovalPhase = '';
+      let searchProjectCode = this.searchCardInputs.find(x=>x.label === '프로젝트 코드').value;
+      if (searchProjectCode)
+        searchProjectCode = searchProjectCode.trim();
+      let searchCompany = this.searchCardInputs.find(x=>x.label === '발주 업체명').value;
+        if (searchCompany)
+        searchCompany = searchCompany.trim();
+      let searchItemCode = this.searchCardInputs.find(x=>x.label === '관리코드').value;
+      if (searchItemCode)
+      searchItemCode = searchItemCode.trim();
+      let searchItemName = this.searchCardInputs.find(x=>x.label === '제품명').value;
+      if (searchItemName)
+      searchItemName = searchItemName.trim();
+
+      let searchBillDate = this.searchCardInputs.find(x=>x.label === '계산일').value;
+      let searchBillStartDate = searchBillDate[0];
+      let searchBillEndDate = searchBillDate[1];
 
       // 발주 기준 검색
-      let result = OrderSearchPageConfig.test_order_code_criterion_data;
+      let order_result = [];
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "order_confirmation_table.company_name": searchCompany ?  searchCompany :"",
+              "order_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
+              "order_product_table.name": searchItemName ? searchItemName : "",
+              "order_product_table.item_code": searchItemCode ? searchItemCode : "",
+              "order_product_table.project_code": searchProjectCode ? searchProjectCode :"",
+              "order_confirmation_table.third_bill_date_start_date": searchBillStartDate ? searchBillStartDate : "",
+              "order_confirmation_table.third_bill_date_end_date": searchBillEndDate ? searchBillEndDate : "",
+              "order_confirmation_table.second_bill_date_start_date": searchBillStartDate ? searchBillStartDate : "",
+              "order_confirmation_table.second_bill_date_end_date": searchBillEndDate ? searchBillEndDate : "",
+              "order_confirmation_table.first_bill_date_start_date": searchBillStartDate ? searchBillStartDate : "",
+              "order_confirmation_table.first_bill_date_end_date": searchBillEndDate ? searchBillEndDate : ""
+            }
+          ],
+          "script_file_name": "rooting_발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_OKJ.json",
+          "script_file_path": "data_storage_pion\\json_sql\\order\\발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_3Q8"
+        });
+        if (prevURL !== window.location.href) return;
 
-      this.searched_order_data = result;
-      result.forEach( data => {
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          if(result.length === 0){
+            mux.Util.showAlert('검색 결과가 없습니다.');
+          }
+          order_result = result.data;
+
+          order_result.forEach(async order => {
+            try {
+              let note_result = await mux.Server.post({
+                path: '/api/common_rest_api/',
+                params: [
+                  {
+                    "order_product_notes_table.code": order.code
+                  }
+                ],
+                "script_file_name": "rooting_발주_데이터_order_prodct_notes_table_검색_24_08_08_09_00_ANX.json",
+                "script_file_path": "data_storage_pion\\json_sql\\order\\발주_데이터_order_prodct_notes_table_검색_24_08_08_09_01_4AI"
+              });
+              if (prevURL !== window.location.href) return;
+
+              if (typeof note_result === 'string'){
+                note_result = JSON.parse(note_result);
+              }
+              if(note_result['code'] == 0 || (typeof note_result['data'] === 'object' && note_result['data']['code'] == 0) || (typeof note_result['response'] === 'object' && typeof note_result['response']['data'] === 'object' && note_result['response']['data']['code'] == 0)){
+                //order_product_notes_table 검색
+                this.order_notes_data.push(...note_result.data);
+              } else {
+                mux.Util.showAlert(note_result['failed_info']);
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              mux.Util.hideLoading();
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                mux.Util.showAlert(error.response['data']['failed_info'].msg);
+              else
+                mux.Util.showAlert(error);
+            }
+          })
+        } else {
+        mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      //order_product_notes_table 검색
+      // this.order_notes_data = OrderSearchPageConfig.test_note_data;
+
+      // 프로젝트 기준 검색
+      // this.project_code_criterion_data = OrderSearchPageConfig.test_project_code_criterion_data
+      try {
+        let project_result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "order_confirmation_table.company_name": searchCompany ?  searchCompany :"",
+              "order_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
+              "order_product_table.name": searchItemName ? searchItemName : "",
+              "order_product_table.item_code": searchItemCode ? searchItemCode : "",
+              "order_product_table.project_code": searchProjectCode ? searchProjectCode :"",
+              "order_confirmation_table.third_bill_date_start_date": searchBillStartDate ? searchBillStartDate : "",
+              "order_confirmation_table.third_bill_date_end_date": searchBillEndDate ? searchBillEndDate : "",
+              "order_confirmation_table.second_bill_date_start_date": searchBillStartDate ? searchBillStartDate : "",
+              "order_confirmation_table.second_bill_date_end_date": searchBillEndDate ? searchBillEndDate : "",
+              "order_confirmation_table.first_bill_date_start_date": searchBillStartDate ? searchBillStartDate : "",
+              "order_confirmation_table.first_bill_date_end_date": searchBillEndDate ? searchBillEndDate : ""
+            }
+          ],
+          "script_file_name": "rooting_발주_데이터_order_product_confirm_snd_검색_24_08_09_15_18_5I4.json",
+          "script_file_path": "data_storage_pion\\json_sql\\order\\발주_데이터_order_product_confirm_snd_검색_24_08_09_15_19_NQB"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof project_result === 'string'){
+          project_result = JSON.parse(project_result);
+        }
+        if(project_result['code'] == 0 || (typeof project_result['data'] === 'object' && project_result['data']['code'] == 0) || (typeof project_result['response'] === 'object' && typeof project_result['response']['data'] === 'object' && project_result['response']['data']['code'] == 0)){
+
+          if(project_result.length === 0){
+            mux.Util.showAlert('검색 결과가 없습니다.');
+          }
+          this.project_code_criterion_data = project_result.data;
+        } else {
+          mux.Util.showAlert(project_result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+
+      this.searched_order_data = order_result;
+      order_result.forEach( data => {
         let set_data = [];
         set_data.belong_data = [];
         set_data.code = data.code;
