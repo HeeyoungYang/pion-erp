@@ -457,71 +457,74 @@ export default {
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
           confirm = result.data[0];
-          try {
-            let result = await mux.Server.post({
-              path: '/api/common_rest_api/',
-              params: [
-                {
-                  "production_confirmation_table.code": confirm.code
-                }
-              ],
-              "script_file_name": "rooting_생산_thumbnail_데이터_검색_24_08_08_14_19_37H.json",
-              "script_file_path": "data_storage_pion\\json_sql\\production\\생산_thumbnail_데이터_검색_24_08_08_14_19_TDF"
-            });
-            if (prevURL !== window.location.href) return;
+          if(confirm !== undefined){
 
-            if (typeof result === 'string'){
-              result = JSON.parse(result);
-            }
-            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+            try {
+              let result = await mux.Server.post({
+                path: '/api/common_rest_api/',
+                params: [
+                  {
+                    "production_confirmation_table.code": confirm.code
+                  }
+                ],
+                "script_file_name": "rooting_생산_thumbnail_데이터_검색_24_08_08_14_19_37H.json",
+                "script_file_path": "data_storage_pion\\json_sql\\production\\생산_thumbnail_데이터_검색_24_08_08_14_19_TDF"
+              });
+              if (prevURL !== window.location.href) return;
 
-              if(result.length === 0){
-                mux.Util.showAlert('검색 결과가 없습니다.');
+              if (typeof result === 'string'){
+                result = JSON.parse(result);
               }
-              info = result.data[0];
+              if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
 
-              //thumbnail
-              try {
-                let thumbnail_result = await mux.Server.post({
-                  path: '/api/common_rest_api/',
-                  params: [
-                    {
-                      "production_confirmation_table.code": confirm.code
-                    }
-                  ],
-                  "script_file_name": "rooting_생산_thumbnaile_검색_24_08_08_14_21_IIN.json",
-                  "script_file_path": "data_storage_pion\\json_sql\\production\\생산_thumbnaile_검색_24_08_08_14_21_NAM"
-                });
-                if (prevURL !== window.location.href) return;
-
-                if (typeof thumbnail_result === 'string'){
-                  thumbnail_result = JSON.parse(thumbnail_result);
+                if(result.length === 0){
+                  mux.Util.showAlert('검색 결과가 없습니다.');
                 }
-                if(thumbnail_result['code'] == 0 || (typeof thumbnail_result['data'] === 'object' && thumbnail_result['data']['code'] == 0) || (typeof thumbnail_result['response'] === 'object' && typeof thumbnail_result['response']['data'] === 'object' && thumbnail_result['response']['data']['code'] == 0)){
+                info = result.data[0];
 
-                  let thumbnail = thumbnail_result.data[0];
-                  info = Object.assign(info, thumbnail);
-                } else {
-                  mux.Util.showAlert(thumbnail_result['failed_info']);
+                //thumbnail
+                try {
+                  let thumbnail_result = await mux.Server.post({
+                    path: '/api/common_rest_api/',
+                    params: [
+                      {
+                        "production_confirmation_table.code": confirm.code
+                      }
+                    ],
+                    "script_file_name": "rooting_생산_thumbnaile_검색_24_08_08_14_21_IIN.json",
+                    "script_file_path": "data_storage_pion\\json_sql\\production\\생산_thumbnaile_검색_24_08_08_14_21_NAM"
+                  });
+                  if (prevURL !== window.location.href) return;
+
+                  if (typeof thumbnail_result === 'string'){
+                    thumbnail_result = JSON.parse(thumbnail_result);
+                  }
+                  if(thumbnail_result['code'] == 0 || (typeof thumbnail_result['data'] === 'object' && thumbnail_result['data']['code'] == 0) || (typeof thumbnail_result['response'] === 'object' && typeof thumbnail_result['response']['data'] === 'object' && thumbnail_result['response']['data']['code'] == 0)){
+
+                    let thumbnail = thumbnail_result.data[0];
+                    info = Object.assign(info, thumbnail);
+                  } else {
+                    mux.Util.showAlert(thumbnail_result['failed_info']);
+                  }
+                } catch (error) {
+                  if (prevURL !== window.location.href) return;
+                  mux.Util.hideLoading();
+                  if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                    mux.Util.showAlert(error.response['data']['failed_info'].msg);
+                  else
+                    mux.Util.showAlert(error);
                 }
-              } catch (error) {
-                if (prevURL !== window.location.href) return;
-                mux.Util.hideLoading();
-                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
-                else
-                  mux.Util.showAlert(error);
+              } else {
+                mux.Util.showAlert(result['failed_info']);
               }
-            } else {
-              mux.Util.showAlert(result['failed_info']);
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              mux.Util.hideLoading();
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                mux.Util.showAlert(error.response['data']['failed_info'].msg);
+              else
+                mux.Util.showAlert(error);
             }
-          } catch (error) {
-            if (prevURL !== window.location.href) return;
-            mux.Util.hideLoading();
-            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              mux.Util.showAlert(error.response['data']['failed_info'].msg);
-            else
-              mux.Util.showAlert(error);
           }
         } else {
           mux.Util.showAlert(result['failed_info']);
@@ -540,7 +543,9 @@ export default {
       console.log('confirm : ' + confirm);
       console.log('info : ' + info);
 
-      this.search_production_data = Object.assign(confirm, info);
+      if(confirm !== undefined && info !== undefined){
+        this.search_production_data = Object.assign(confirm, info);
+      }
 
       mux.Util.hideLoading();
 
