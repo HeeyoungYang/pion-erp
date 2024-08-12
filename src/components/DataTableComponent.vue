@@ -663,7 +663,7 @@
                     color="primary"
                     style="display:table"
                     small
-                    v-for="(auth, i) in item.authority"
+                    v-for="(auth, i) in JSON.parse(JSON.stringify(item.authority)).filter((auth) => auth !== 'default')"
                     :key="i"
                   >
                       {{ auth }}
