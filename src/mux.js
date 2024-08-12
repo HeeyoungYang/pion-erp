@@ -911,6 +911,7 @@ mux.Server = {
                           allowed_urls = allowed_urls.join(',');
 
                           Vue.$cookies.set(configJson.cookies.allowed_urls.key, allowed_urls, configJson.cookies.allowed_urls.expiration);
+                          Vue.$cookies.set(configJson.cookies.permission_group_ids.key, user_group_info.map(group => group.group_table_id).join(','), configJson.cookies.permission_group_ids.expiration);
 
       
                           resolve();
@@ -1150,9 +1151,83 @@ mux.Server.axiosInstance.interceptors.response.use(
               Vue.$cookies.set(configJson.cookies.position.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:position').Value, configJson.cookies.position.expiration);
               Vue.$cookies.set(configJson.cookies.department.key, result.data.UserAttributes.find(attr => attr.Name === 'custom:department').Value, configJson.cookies.department.expiration);
 
-              // 기존 요청을 재시도합니다.
-              originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-              return axios(originalRequest);
+              mux.Server.get({path:'/api/admin/user/groups/'}).then(result2 => {
+                if (result2['code'] == 0 || (typeof result2['data'] === 'object' && result2['data']['code'] == 0) || (typeof result2['response'] === 'object' && typeof result2['response']['data'] === 'object' && result2['response']['data']['code'] == 0)){
+                  if( result2.data.length > 0) {
+                    mux.Server.get({path:'/api/admin/page_resources/'}).then(result3 => {
+                      if (result3['code'] == 0 || (typeof result3['data'] === 'object' && result3['data']['code'] == 0) || (typeof result3['response'] === 'object' && typeof result3['response']['data'] === 'object' && result3['response']['data']['code'] == 0)){
+                        if( result3.data.length > 0) {
+                          let page_resourceList = result3.data.map(data => {
+                            let page_resource = {};
+                            page_resource.page_name = data.page_name;
+                            page_resource.page_alias = data.page_alias
+                            page_resource.page_url = data.page_url;
+                            return page_resource;
+                          });
+                          page_resourceList.sort((a, b) => b.page_name.localeCompare(a.page_name));
+              
+                          mux.Server.get({path: '/api/admin/page_permission/'}).then(result4 => {
+                            if (result4['code'] == 0 || (typeof result4['data'] === 'object' && result4['data']['code'] == 0) || (typeof result4['response'] === 'object' && typeof result4['response']['data'] === 'object' && result4['response']['data']['code'] == 0)){
+                              let user_group_info = result2.data;
+                              let page_resource_info = result3.data;
+                              let page_permission_info = result4.data;
+    
+                              let user_allowed_resource_table_id_arr = [];
+                              let allowed_urls = [];
+    
+                              user_group_info.forEach(group => {
+                                page_permission_info.forEach(permission => {
+                                  if (permission.group_table_id === group.group_table_id){
+                                    if (user_allowed_resource_table_id_arr.indexOf(permission.page_resource_table_id) === -1){
+                                      user_allowed_resource_table_id_arr.push(permission.page_resource_table_id);
+                                    }
+                                  }
+                                });
+                              });
+    
+                              page_resource_info.forEach(resource => {
+                                if (user_allowed_resource_table_id_arr.indexOf(resource.id) !== -1){
+                                  allowed_urls.push(resource.page_url);
+                                }
+                              });
+    
+                              allowed_urls = allowed_urls.sort((a, b) => a.localeCompare(b));
+                              allowed_urls = allowed_urls.join(',');
+    
+                              Vue.$cookies.set(configJson.cookies.permission_group_ids.key, user_group_info.map(group => group.group_table_id).join(','), configJson.cookies.permission_group_ids.expiration);
+                              Vue.$cookies.set(configJson.cookies.allowed_urls.key, allowed_urls, configJson.cookies.allowed_urls.expiration);
+                              
+                              // 기존 요청을 재시도합니다.
+                              originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                              return axios(originalRequest);
+
+                            }else {
+                              // console.log('get page_permission fail: ', response);
+                              // reject(result4.message);
+                            }
+                          }).catch (error => {
+                            // console.log('get page_permission error: ', error);
+                            return Promise.reject(error);
+                          });
+                        }
+                      }else {
+                        // console.log('get page_resources fail: ', result);
+                        // reject(result3.message);
+                      }
+                    }).catch(error => {
+                      // console.log('get page_resources error :>> ', error);
+                      return Promise.reject(error);
+                    });
+                  }
+                }else {
+                  // console.log('get user groups fail: ', result);
+                  // reject(result2.message);
+                }
+              }).catch(error => {
+                // console.log('get user groups error :>> ', error);
+                return Promise.reject(error);
+              });
+
             } else {
               // console.error('AccessToken 갱신 후 사용자 정보 저장 실패:', result.message);
             }

@@ -109,7 +109,7 @@
                     :item-key="product_data._code"
                     dense
                     stockNumInfo
-                    stockPriceInfo
+                    :stockPriceInfo="pricePermission"
                     show-item-details
                     @itemDetials="detailInfoItem"
                   />
@@ -211,7 +211,14 @@ export default {
   },
 
   computed: {
-
+    pricePermission(){
+      const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+      if (permission_group_ids.includes('1') || permission_group_ids.includes('2') || permission_group_ids.includes('11')){ // 1: admin, 2: material_unit_cost_management_group, 11: master
+        return true;
+      }else {
+        return false;
+      }
+    }
   },
 
   watch: {

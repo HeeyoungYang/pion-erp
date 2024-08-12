@@ -12,6 +12,7 @@
     "office_internal_number": {"key": "office_internal_number", "expiration": "120m"},
     "position": {"key": "position", "expiration": "120m"},
     "department": {"key": "department", "expiration": "120m"},
+    "permission_group_ids": {"key": "permission_group_ids", "expiration": "120m"},
     "allowed_urls": {"key": "allowed_urls", "expiration": "120m"}
   }
 }
