@@ -24,7 +24,7 @@
 
 
       <v-list-item
-        v-for="([title, icon, to], i) in dashboardPagesInfo"
+        v-for="([title, icon, to], i) in pagesInfo(dashboardPages)"
         :key="i"
         link
         :to="to"
@@ -37,7 +37,7 @@
       </v-list-item>
 
         <v-list-group
-          v-if="productPagesInfo.length > 0 || inboundPagesInfo.length > 0 || shipPagesInfo.length > 0"
+          v-if="pagesInfo(productPages).length > 0 || pagesInfo(inboundPages).length > 0 || pagesInfo(shipPages).length > 0"
           :value="productMenu"
           prepend-icon="mdi-archive-search"
         >
@@ -46,7 +46,7 @@
           </template>
 
           <v-list-item
-              v-for="([title, icon, to], i) in productPagesInfo"
+              v-for="([title, icon, to], i) in pagesInfo(productPages)"
               :key="i"
               link
               :to="to"
@@ -60,7 +60,7 @@
           </v-list-item>
 
           <v-list-group
-            v-if="inboundPagesInfo.length > 0"
+            v-if="pagesInfo(inboundPages).length > 0"
             no-action
             sub-group
             :value="inboundMenu"
@@ -72,7 +72,7 @@
             </template>
 
             <v-list-item
-              v-for="([title, icon, to], i) in inboundPagesInfo"
+              v-for="([title, icon, to], i) in pagesInfo(inboundPages)"
               :key="i"
               link
               :to="to"
@@ -87,7 +87,7 @@
           </v-list-group>
 
           <v-list-group
-            v-if="shipPagesInfo.length > 0"
+            v-if="pagesInfo(shipPages).length > 0"
             no-action
             sub-group
             :value="shipMenu"
@@ -99,7 +99,7 @@
             </template>
 
             <v-list-item
-              v-for="([title, icon, to], i) in shipPagesInfo"
+              v-for="([title, icon, to], i) in pagesInfo(shipPages)"
               :key="i"
               link
               :to="to"
@@ -115,7 +115,7 @@
         </v-list-group>
 
         <v-list-group
-          v-if="estimatePagesInfo.length > 0 || obtainOrderPagesInfo.length > 0"
+          v-if="pagesInfo(estimatePages).length > 0 || pagesInfo(obtainOrderPages).length > 0"
           :value="salesMenu"
           prepend-icon="mdi-clipboard-text"
         >
@@ -124,7 +124,7 @@
           </template>
 
           <v-list-group
-            v-if="estimatePagesInfo.length > 0"
+            v-if="pagesInfo(estimatePages).length > 0"
             no-action
             sub-group
             :value="estimateMenu"
@@ -136,7 +136,7 @@
             </template>
 
             <v-list-item
-              v-for="([title, icon, to], i) in estimatePagesInfo"
+              v-for="([title, icon, to], i) in pagesInfo(estimatePages)"
               :key="i"
               link
               :to="to"
@@ -151,7 +151,7 @@
           </v-list-group>
 
           <v-list-group
-            v-if="obtainOrderPagesInfo.length > 0"
+            v-if="pagesInfo(obtainOrderPages).length > 0"
             no-action
             sub-group
             :value="obtainOrderMenu"
@@ -163,7 +163,7 @@
             </template>
 
             <v-list-item
-              v-for="([title, icon, to], i) in obtainOrderPagesInfo"
+              v-for="([title, icon, to], i) in pagesInfo(obtainOrderPages)"
               :key="i"
               link
               :to="to"
@@ -179,7 +179,7 @@
         </v-list-group>
 
         <v-list-group
-          v-if="designProductionPagesInfo.length > 0"
+          v-if="pagesInfo(designProductionPages).length > 0"
           :value="designProductionMenu"
           prepend-icon="mdi-message-cog"
         >
@@ -188,7 +188,7 @@
           </template>
 
           <v-list-item
-              v-for="([title, icon, to], i) in designProductionPagesInfo"
+              v-for="([title, icon, to], i) in pagesInfo(designProductionPages)"
               :key="i"
               link
               :to="to"
@@ -203,7 +203,7 @@
         </v-list-group>
 
         <v-list-group
-          v-if="purchasePagesInfo.length > 0"
+          v-if="pagesInfo(purchasePages).length > 0"
           :value="purchaseMenu"
           prepend-icon="mdi-account-cash"
         >
@@ -212,7 +212,7 @@
           </template>
 
           <v-list-item
-              v-for="([title, icon, to], i) in purchasePagesInfo"
+              v-for="([title, icon, to], i) in pagesInfo(purchasePages)"
               :key="i"
               link
               :to="to"
@@ -227,7 +227,7 @@
         </v-list-group>
 
         <v-list-group
-          v-if="productionPagesInfo.length > 0"
+          v-if="pagesInfo(productionPages).length > 0"
           :value="productionMenu"
           prepend-icon="mdi-wrench-cog"
         >
@@ -236,7 +236,7 @@
           </template>
 
           <v-list-item
-              v-for="([title, icon, to], i) in productionPagesInfo"
+              v-for="([title, icon, to], i) in pagesInfo(productionPages)"
               :key="i"
               link
               :to="to"
@@ -273,7 +273,7 @@
           </v-list-item>
         </v-list-group> -->
         <v-list-group
-          v-if="backDataPagesInfo.length > 0"
+          v-if="pagesInfo(backDataPages).length > 0"
           :value="backDataMenu"
           prepend-icon="mdi-file-cog"
         >
@@ -282,7 +282,7 @@
           </template>
 
           <v-list-item
-              v-for="([title, icon, to], i) in backDataPagesInfo"
+              v-for="([title, icon, to], i) in pagesInfo(backDataPages)"
               :key="i"
               link
               :to="to"
@@ -296,7 +296,7 @@
           </v-list-item>
         </v-list-group>
         <v-list-group
-          v-if="adminPagesInfo.length > 0"
+          v-if="pagesInfo(adminPages).length > 0"
           :value="userMenu"
           prepend-icon="mdi-account-circle"
         >
@@ -305,7 +305,7 @@
           </template>
 
           <v-list-item
-              v-for="([title, icon, to], i) in adminPagesInfo"
+              v-for="([title, icon, to], i) in pagesInfo(adminPages)"
               :key="i"
               link
               :to="to"
@@ -393,48 +393,48 @@ import mux from '@/mux';
         right: null,
 
       dashboardPages: [
-        ['DashBoard', 'mdi-chart-areaspline', '/dashboard', ['master']],
+        ['DashBoard', 'mdi-chart-areaspline', '/dashboard'],
       ],
 
       productPages: [
-        ['재고 현황', '', '/stock-search', []],
-        ['원부자재', '', '/material-search', []],
-        ['반제품', '', '/module-search', []],
-        ['완제품', '', '/product-search', []],
-        ['원가', '', '/product-cost', []],
+        ['재고 현황', '', '/stock-search'],
+        ['원부자재', '', '/material-search'],
+        ['반제품', '', '/module-search'],
+        ['완제품', '', '/product-search'],
+        ['원가', '', '/product-cost'],
       ],
 
       inboundPages: [
-        ['입고 현황', '', '/inbound-search', []],
-        ['입고 신청', '', '/inbound-register', []],
+        ['입고 현황', '', '/inbound-search'],
+        ['입고 신청', '', '/inbound-register'],
       ],
 
       shipPages: [
-        ['출고 현황', '', '/ship-search', []],
-        ['출고 신청', '', '/ship-register', []],
+        ['출고 현황', '', '/ship-search'],
+        ['출고 신청', '', '/ship-register'],
       ],
 
       estimatePages: [
-        ['견적서', '', '/estimate', ['master', '매니저']],
-        ['견적서 현황', '', '/estimate-search', ['master', '매니저']],
+        ['견적서', '', '/estimate'],
+        ['견적서 현황', '', '/estimate-search'],
       ],
       obtainOrderPages: [
-        ['수주서 및 확인서', '', '/obtain-order', ['master', '매니저']],
-        ['수주 현황', '', '/obtain-order-search', ['master', '매니저']],
-        ['진행 사항', '', '/obtain-progress', ['master', '매니저']],
+        ['수주서 및 확인서', '', '/obtain-order'],
+        ['수주 현황', '', '/obtain-order-search'],
+        ['진행 사항', '', '/obtain-progress'],
       ],
       designProductionPages: [
-        ['설계', '', '/design-production', ['master', '매니저']],
-        ['설계 현황', '', '/design-production-search', ['master', '매니저']],
+        ['설계', '', '/design-production'],
+        ['설계 현황', '', '/design-production-search'],
       ],
       purchasePages: [
-        ['구매 요청', '', '/purchase-request', ['master', '매니저']],
-        ['구매 요청 현황', '', '/purchase-search', ['master', '매니저']],
-        ['발주 현황', '', '/order-search', ['master', '매니저']],
+        ['구매 요청', '', '/purchase-request'],
+        ['구매 요청 현황', '', '/purchase-search'],
+        ['발주 현황', '', '/order-search'],
       ],
       productionPages: [
-        ['생산', '', '/production-request', ['master', '매니저']],
-        ['생산 현황', '', '/production-search', ['master', '매니저']],
+        ['생산', '', '/production-request'],
+        ['생산 현황', '', '/production-search'],
       ],
       // estimatePages: [
       //   ['견적 작성', '', '/home'],
@@ -442,218 +442,33 @@ import mux from '@/mux';
       // ],
 
       backDataPages: [
-        ['재고 정보', '', '/product-backdata', ['master', '매니저']],
-        ['노무비 정보', '', '/labor-cost-backdata', ['master', '매니저']],
-        ['기본 정보', '', '/basic-info-backdata', ['master', '매니저']],
+        ['재고 정보', '', '/product-backdata'],
+        ['노무비 정보', '', '/labor-cost-backdata'],
+        ['기본 정보', '', '/basic-info-backdata'],
       ],
 
       adminPages: [
-        ['계정 목록', '', '/member-list', ['master', '매니저']],
-        ['권한 설정', '', '/member-authorization', ['master']],
-        ['페이지 설정', '', '/page-setting', ['master']],
+        ['계정 목록', '', '/member-list'],
+        ['권한 설정', '', '/member-authorization'],
+        ['페이지 설정', '', '/page-setting'],
       ],
     }),
     computed: {
-      dashboardPagesInfo() {
-        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let dashboardPagesInfo = [];
-        this.dashboardPages.forEach(data => {
-          if (data[data.length-1].length === 0){
-            dashboardPagesInfo.push(data);
-          } else {
-            data[data.length-1].forEach(permission => {
-              if (permissionArr.includes(permission)){
-                dashboardPagesInfo.push(data);
-              }
-            });
-          }
-        });
-        return dashboardPagesInfo;
-      },
-      productPagesInfo() {
-        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let productPagesInfo = [];
-        this.productPages.forEach(data => {
-          if (data[data.length-1].length === 0){
-            productPagesInfo.push(data);
-          } else {
-            data[data.length-1].forEach(permission => {
-              if (permissionArr.includes(permission)){
-                productPagesInfo.push(data);
-              }
-            });
-          }
-        });
-        return productPagesInfo;
-      },
-      designProductionPagesInfo() {
-        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let designProductionPagesInfo = [];
-        this.designProductionPages.forEach(data => {
-          if (data[data.length-1].length === 0){
-            designProductionPagesInfo.push(data);
-          } else {
-            data[data.length-1].forEach(permission => {
-              if (permissionArr.includes(permission)){
-                designProductionPagesInfo.push(data);
-              }
-            });
-          }
-        });
-        return designProductionPagesInfo;
-      },
-      purchasePagesInfo() {
-        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let purchasePagesInfo = [];
-        this.purchasePages.forEach(data => {
-          if (data[data.length-1].length === 0){
-            purchasePagesInfo.push(data);
-          } else {
-            data[data.length-1].forEach(permission => {
-              if (permissionArr.includes(permission)){
-                purchasePagesInfo.push(data);
-              }
-            });
-          }
-        });
-        return purchasePagesInfo;
-      },
-      productionPagesInfo() {
-        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let productionPagesInfo = [];
-        this.productionPages.forEach(data => {
-          if (data[data.length-1].length === 0){
-            productionPagesInfo.push(data);
-          } else {
-            data[data.length-1].forEach(permission => {
-              if (permissionArr.includes(permission)){
-                productionPagesInfo.push(data);
-              }
-            });
-          }
-        });
-        return productionPagesInfo;
-      },
-      inboundPagesInfo() {
-        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let inboundPagesInfo = [];
-        this.inboundPages.forEach(data => {
-          if (data[data.length-1].length === 0){
-            inboundPagesInfo.push(data);
-          } else {
-            data[data.length-1].forEach(permission => {
-              if (permissionArr.includes(permission)){
-                inboundPagesInfo.push(data);
-              }
-            });
-          }
-        });
-        return inboundPagesInfo;
-      },
-      shipPagesInfo() {
-        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let shipPagesInfo = [];
-        this.shipPages.forEach(data => {
-          if (data[data.length-1].length === 0){
-            shipPagesInfo.push(data);
-          } else {
-            data[data.length-1].forEach(permission => {
-              if (permissionArr.includes(permission)){
-                shipPagesInfo.push(data);
-              }
-            });
-          }
-        });
-        return shipPagesInfo;
-      },
-      estimatePagesInfo() {
-        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let estimatePagesInfo = [];
-        this.estimatePages.forEach(data => {
-          if (data[data.length-1].length === 0){
-            estimatePagesInfo.push(data);
-          } else {
-            data[data.length-1].forEach(permission => {
-              if (permissionArr.includes(permission)){
-                estimatePagesInfo.push(data);
-              }
-            });
-          }
-        });
-        return estimatePagesInfo;
-      },
-      obtainOrderPagesInfo() {
-        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let obtainOrderPagesInfo = [];
-        this.obtainOrderPages.forEach(data => {
-          if (data[data.length-1].length === 0){
-            obtainOrderPagesInfo.push(data);
-          } else {
-            data[data.length-1].forEach(permission => {
-              if (permissionArr.includes(permission)){
-                obtainOrderPagesInfo.push(data);
-              }
-            });
-          }
-        });
-        return obtainOrderPagesInfo;
-      },
-      backDataPagesInfo() {
-        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let backDataPagesInfo = [];
-        this.backDataPages.forEach(data => {
-          if (data[data.length-1].length === 0){
-            backDataPagesInfo.push(data);
-          } else {
-            data[data.length-1].forEach(permission => {
-              if (permissionArr.includes(permission)){
-                backDataPagesInfo.push(data);
-              }
-            });
-          }
-        });
-        return backDataPagesInfo;
-      },
-      adminPagesInfo() {
-        const permissionArr = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-        permissionArr.push(this.$cookies.get(this.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-        let adminPagesInfo = [];
-        this.adminPages.forEach(data => {
-          if (data[data.length-1].length === 0){
-            adminPagesInfo.push(data);
-          } else {
-            data[data.length-1].forEach(permission => {
-              if (permissionArr.includes(permission)){
-                adminPagesInfo.push(data);
-              }
-            });
-          }
-        });
-        return adminPagesInfo;
-      },
+      
     },
     methods: {
+      pagesInfo(pages) {
+        let allowed_urls = this.$cookies.get(this.$configJson.cookies.allowed_urls.key).split(',');
+
+        let pagesInfo = [];
+        pages.forEach(data => {
+          let info = allowed_urls.indexOf(data[2]);
+          if (info !== -1){
+            pagesInfo.push(data);
+          }
+        });
+        return pagesInfo;
+      },
       clickUserMenu(item) {
         if (!item.to){
           mux.Server.logOut();

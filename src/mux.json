@@ -11,6 +11,7 @@
     "office_phone_number": {"key": "office_phone_number", "expiration": "120m"},
     "office_internal_number": {"key": "office_internal_number", "expiration": "120m"},
     "position": {"key": "position", "expiration": "120m"},
-    "department": {"key": "department", "expiration": "120m"}
+    "department": {"key": "department", "expiration": "120m"},
+    "allowed_urls": {"key": "allowed_urls", "expiration": "120m"}
   }
 }

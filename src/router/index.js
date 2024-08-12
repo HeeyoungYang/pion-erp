@@ -139,7 +139,7 @@ const routes = [
     name: 'EstimatePage',
     component: EstimatePage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -147,7 +147,7 @@ const routes = [
     name: 'EstimateSearchPage',
     component: EstimateSearchPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -155,7 +155,7 @@ const routes = [
     name: 'PurchasePage',
     component: PurchasePage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -163,7 +163,7 @@ const routes = [
     name: 'PurchaseSearchPage',
     component: PurchaseSearchPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -171,7 +171,7 @@ const routes = [
     name: 'ProductionPage',
     component: ProductionPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -179,7 +179,7 @@ const routes = [
     name: 'ProductionSearchPage',
     component: ProductionSearchPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -187,7 +187,7 @@ const routes = [
     name: 'OrderSearchPage',
     component: OrderSearchPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -195,7 +195,7 @@ const routes = [
     name: 'DesignProductionPage',
     component: DesignProductionPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -203,7 +203,7 @@ const routes = [
     name: 'DesignProductionSearchPage',
     component: DesignProductionSearchPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -211,7 +211,7 @@ const routes = [
     name: 'ObtainOrderPage',
     component: ObtainOrderPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -219,7 +219,7 @@ const routes = [
     name: 'ObtainProgressPage',
     component: ObtainProgressPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -227,7 +227,7 @@ const routes = [
     name: 'ObtainOrderSearchPage',
     component: ObtainOrderSearchPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -235,7 +235,7 @@ const routes = [
     name: 'ProductBackdataPage',
     component: ProductBackdataPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -243,7 +243,7 @@ const routes = [
     name: 'LaborCostBackdataPage',
     component: LaborCostBackdataPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -251,7 +251,7 @@ const routes = [
     name: 'BasicInfoBackdataPage',
     component: BasicInfoBackdataPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -259,7 +259,7 @@ const routes = [
     name: 'MembersPage',
     component: MembersPage,
     meta: {
-      permission: ['매니저', 'admin', 'master']
+      permission: []
     }
   },
   {
@@ -267,7 +267,7 @@ const routes = [
     name: 'AuthorizationPage',
     component: AuthorizationPage,
     meta: {
-      permission: ['admin', 'master']
+      permission: []
     }
   },
   {
@@ -275,7 +275,7 @@ const routes = [
     name: 'PageSettingPage',
     component: PageSettingPage,
     meta: {
-      permission: ['admin', 'master']
+      permission: []
     }
   },
   {
@@ -318,39 +318,67 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // 유저 권한 목록 가져오기
-  let checkResult = {};
-  // try {
-  //   checkResult = mux.Server.get({path:'/checkPermission/'});
-  // } catch (error) {
-  //   // 에러 발생 시 로그아웃
-  //   mux.Server.logOut();
-  //   return;
-  // }
-  // // 결과 없으면 로그아웃
-  // if (!checkResult || !checkResult.permissions){
-  //   mux.Server.logOut();
-  //   return;
-  // }
-  checkResult.permissions = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-  checkResult.permissions.push(Vue.$cookies.get(Vue.prototype.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
-  checkResult.permissions.push(Vue.$cookies.get(Vue.prototype.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
-
   // meta.permission 에 guest 혹은 member 가 있으면 페이지 이동
   if (permissions.includes('guest') || permissions.includes('member')) {
     return next();
   }
-  // meta.permission 중 하나라도 권한자라면 페이지 이동
-  const userPermissionArr = checkResult.permissions;
-  for (let i = 0; i < userPermissionArr.length; i++) {
-    if (permissions.includes(userPermissionArr[i])){
-      return next();
+
+  // 유저 권한 목록 가져오기
+  try {
+    let result = await mux.Server.get({path:'/api/admin/page_resources/'});
+    if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+      if( result.data.length > 0) {
+        let page_resourceList = result.data.map(data => {
+          let page_resource = {};
+          page_resource.page_name = data.page_name;
+          page_resource.page_alias = data.page_alias
+          page_resource.page_url = data.page_url;
+          return page_resource;
+        });
+        page_resourceList.sort((a, b) => b.page_name.localeCompare(a.page_name));
+
+        try {
+          let response = await mux.Server.get({
+            path: `/api/check_page_permission?page_name=${page_resourceList.find(page => page.page_url === to.path).page_name}`
+          });
+          if (response.code === 0){
+            return next();
+          }else {
+            // 권한 없을 경우 홈 화면으로 보냄
+            mux.Util.showAlert('페이지 접근 권한이 없습니다.');
+            return next({ name: 'MainPage' });
+          }
+        } catch (error) {
+          mux.Util.showAlert('페이지 권한을 확인할 수 없습니다.');
+          return next({ name: 'MainPage' });
+        }
+      }
+    }else {
+      mux.Util.showAlert('페이지 권한을 확인할 수 없습니다.');
+      return next({ name: 'MainPage' });
     }
+  } catch(error) {
+    mux.Util.showAlert('페이지 권한을 확인할 수 없습니다.');
+    return next({ name: 'MainPage' });
   }
 
-  // 권한 없을 경우 홈 화면으로 보냄
-  mux.Util.showAlert('페이지 접근 권한이 없습니다.');
-  return next({ name: 'MainPage' });
+  
+
+  // checkResult.permissions = []; // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+  // checkResult.permissions.push(Vue.$cookies.get(Vue.prototype.$configJson.cookies.department.key)); // 현재 권한 체계 안되어 있기에 임시로 부서를 배열에 넣음
+  // checkResult.permissions.push(Vue.$cookies.get(Vue.prototype.$configJson.cookies.position.key)); // 현재 권한 체계 안되어 있기에 임시로 직책을 배열에 넣음
+
+  // // meta.permission 중 하나라도 권한자라면 페이지 이동
+  // const userPermissionArr = checkResult.permissions;
+  // for (let i = 0; i < userPermissionArr.length; i++) {
+  //   if (permissions.includes(userPermissionArr[i])){
+  //     return next();
+  //   }
+  // }
+
+  // // 권한 없을 경우 홈 화면으로 보냄
+  // mux.Util.showAlert('페이지 접근 권한이 없습니다.');
+  // return next({ name: 'MainPage' });
 });
 
 export default router
