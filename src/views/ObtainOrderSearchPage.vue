@@ -687,11 +687,9 @@ export default {
       estimate_product_list_dialog: false,
       clickedProductCost: {},
       relatedClickedProductCost: [],
-      mailDialog: false,
       tab_search: null,
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
-      email_sign:'',
       estimate_checkbox:{
         product:true,
         labor_cost:true,
@@ -701,15 +699,12 @@ export default {
       },
       show_childs_parent_index_arr: [0],
       show_grand_childs_parent_index_arr: [0, 1],
-      estimate_info_data:{},
-      estimate_product_list_data:[],
 
       change_approve:{},
 
       searched_products:[],
 
       save_estimates: ObtainOrderSearchPageConfig.save_estimates,
-      defaultMailData: ObtainOrderSearchPageConfig.default_mail_data,
       login_info: ObtainOrderSearchPageConfig.login_info,
       searchCardInputs:ObtainOrderSearchPageConfig.searchCardInputs,
       estimate_approve_headers:ObtainOrderSearchPageConfig.estimate_approve_headers,
