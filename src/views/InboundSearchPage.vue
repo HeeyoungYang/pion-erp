@@ -104,7 +104,7 @@
         <v-row>
           <v-col cols="12">
             <v-data-table
-              :headers="inbound_product_list_headers"
+              :headers="pricePermission ? inbound_product_list_headers : inbound_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'inbound_price')"
               :items="inbound_product_list_data"
               :item-key="inbound_product_list_data.product_code"
               class="elevation-1"
@@ -240,6 +240,14 @@ export default {
     dateRangeText () {
       return this.dates.join(' ~ ')
     },
+    pricePermission(){
+      const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){ 
+        return true;
+      }else {
+        return false;
+      }
+    }
   },
   watch:{
     inbound_product_list_dialog(val){
@@ -353,17 +361,19 @@ export default {
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
           result.data.forEach(datas =>{
-            for(let d=0; d<datas.belong_data.length; d++){
-              datas.belong_data[d].inbound_num = Number(datas.belong_data[d].inbound_num).toLocaleString();
-              datas.belong_data[d].unit_price = '₩ ' + Number(datas.belong_data[d].unit_price).toLocaleString();
-
-              // 테스트용
-              // datas.belong_data[d].ship_code = 'ㅈㅂㄷㄷㅂㅈㄷ:2024-06-04 10:18:44.818/TESTPJT-00:2024-06-04 10:09:05.080'
-              if(datas.belong_data[d].belong_data){
-                for(let dd=0; dd<datas.belong_data[d].belong_data.length; dd++){
-                  datas.belong_data[d].belong_data[dd].inbound_num="";
-                  datas.belong_data[d].belong_data[dd].unit_price = '₩ ' + Number(datas.belong_data[d].belong_data[dd].unit_price).toLocaleString();
-                  datas.belong_data[d].ship_date="";
+            if (datas.belong_data){
+              for(let d=0; d<datas.belong_data.length; d++){
+                datas.belong_data[d].inbound_num = Number(datas.belong_data[d].inbound_num).toLocaleString();
+                datas.belong_data[d].unit_price = '₩ ' + Number(datas.belong_data[d].unit_price).toLocaleString();
+  
+                // 테스트용
+                // datas.belong_data[d].ship_code = 'ㅈㅂㄷㄷㅂㅈㄷ:2024-06-04 10:18:44.818/TESTPJT-00:2024-06-04 10:09:05.080'
+                if(datas.belong_data[d].belong_data){
+                  for(let dd=0; dd<datas.belong_data[d].belong_data.length; dd++){
+                    datas.belong_data[d].belong_data[dd].inbound_num="";
+                    datas.belong_data[d].belong_data[dd].unit_price = '₩ ' + Number(datas.belong_data[d].belong_data[dd].unit_price).toLocaleString();
+                    datas.belong_data[d].ship_date="";
+                  }
                 }
               }
             }

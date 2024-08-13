@@ -14,5 +14,7 @@
     "department": {"key": "department", "expiration": "120m"},
     "permission_group_ids": {"key": "permission_group_ids", "expiration": "120m"},
     "allowed_urls": {"key": "allowed_urls", "expiration": "120m"}
-  }
+  },
+
+  "pricePermissionGroupIds": ["1", "2", "11"]
 }

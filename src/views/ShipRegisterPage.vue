@@ -55,7 +55,7 @@
                   dense
                   class="elevation-1"
                   v-model="selected_product_data"
-                  :headers="product_search_headers"
+                  :headers="pricePermission ? product_search_headers : product_search_headers.filter(x => x.value !== 'unit_price')"
                   :items="product_search_data"
                   item-key="stock_code"
                   show-select
@@ -122,7 +122,7 @@
                 >
                   <v-data-table
                     dense
-                    :headers="product_ship_headers"
+                    :headers="pricePermission ? product_ship_headers : product_ship_headers.filter(x => x.value !== 'unit_price')"
                     :items="product_ship_data"
                     hide-default-footer
                     disable-pagination
@@ -153,7 +153,7 @@
                         <td align="center">{{  item.manufacturer }}</td>
                         <td align="center">{{  item.spot }}</td>
                         <td align="center">{{  item.stock_num }}</td>
-                        <td align="center">{{  item.unit_price }}</td>
+                        <td v-if="pricePermission" align="center">{{  item.unit_price }}</td>
                         <td align="center">
                           <v-icon small color="default" style="cursor:pointer" @click="deleteShipDataRow(index)">mdi-minus-thick</v-icon>
                         </td>
@@ -745,6 +745,14 @@ export default {
     dateRangeText () {
       return this.dates.join(' ~ ')
     },
+    pricePermission(){
+      const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){ 
+        return true;
+      }else {
+        return false;
+      }
+    }
   },
 }
 </script>

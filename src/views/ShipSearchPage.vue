@@ -86,7 +86,9 @@
         <v-row>
           <v-col cols="12">
             <v-data-table
-              :headers="phase_check ? ship_approved_product_list_headers : ship_product_list_headers"
+              :headers="phase_check 
+                        ? (pricePermission ? ship_approved_product_list_headers : ship_approved_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price')) 
+                        : (pricePermission ? ship_product_list_headers : ship_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price'))"
               :items="ship_product_list_data"
               item-key="product_code"
               class="elevation-1"
@@ -188,7 +190,7 @@
         <v-row>
           <v-col cols="12">
             <v-data-table
-              :headers="ship_product_list_headers"
+              :headers="pricePermission ? ship_product_list_headers : ship_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price')"
               :items="ship_product_list_data"
               item-key="product_code"
               class="elevation-1"
@@ -278,6 +280,14 @@ export default {
     dateRangeText () {
       return this.dates.join(' ~ ')
     },
+    pricePermission(){
+      const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){ 
+        return true;
+      }else {
+        return false;
+      }
+    }
   },
   watch:{
     ship_product_list_dialog(val){
@@ -402,15 +412,17 @@ export default {
           }
 
           result.data.forEach(datas =>{
-            for(let d=0; d<datas.belong_data.length; d++){
-              // datas.belong_data[d].ship_num = Number(datas.belong_data[d].ship_num).toLocaleString();
-              // datas.belong_data[d].stock_num = Number(datas.belong_data[d].stock_num).toLocaleString();
-              datas.belong_data[d].unit_price = '₩ ' + Number(datas.belong_data[d].unit_price).toLocaleString();
-              if(datas.belong_data[d].belong_data){
-                for(let dd=0; dd<datas.belong_data[d].belong_data.length; dd++){
-                  datas.belong_data[d].belong_data[dd].ship_num="";
-                  datas.belong_data[d].belong_data[dd].unit_price = '₩ ' + Number(datas.belong_data[d].belong_data[dd].unit_price).toLocaleString();
-                  datas.belong_data[d].ship_date="";
+            if (datas.belong_data){
+              for(let d=0; d<datas.belong_data.length; d++){
+                // datas.belong_data[d].ship_num = Number(datas.belong_data[d].ship_num).toLocaleString();
+                // datas.belong_data[d].stock_num = Number(datas.belong_data[d].stock_num).toLocaleString();
+                datas.belong_data[d].unit_price = '₩ ' + Number(datas.belong_data[d].unit_price).toLocaleString();
+                if(datas.belong_data[d].belong_data){
+                  for(let dd=0; dd<datas.belong_data[d].belong_data.length; dd++){
+                    datas.belong_data[d].belong_data[dd].ship_num="";
+                    datas.belong_data[d].belong_data[dd].unit_price = '₩ ' + Number(datas.belong_data[d].belong_data[dd].unit_price).toLocaleString();
+                    datas.belong_data[d].ship_date="";
+                  }
                 }
               }
             }

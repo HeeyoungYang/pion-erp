@@ -79,6 +79,7 @@
                     총 재고 : {{ Number(total_stock_num).toLocaleString() }}
                   </v-chip>
                   <v-chip
+                    v-if="pricePermission"
                     color="indigo"
                     text-color="white"
                     small
@@ -104,7 +105,7 @@
                   cols="12"
                 >
                   <DataTableComponent
-                    :headers="headers"
+                    :headers="pricePermission ? headers : headers.filter(x => x.value !== 'unit_price')"
                     :items="product_data"
                     :item-key="product_data._code"
                     dense
@@ -204,7 +205,7 @@ export default {
       stock_detail_header:StockSearchPageConfig.stock_detail_header,
       inbound_detail_header:StockSearchPageConfig.inbound_detail_header,
       searchCardInputs:StockSearchPageConfig.searchCardInputs,
-      headers:StockSearchPageConfig.headers,
+      headers: StockSearchPageConfig.headers,
       product_data:[],
       // product_data:StockSearchPageConfig.test_product_data,
     }
@@ -213,7 +214,7 @@ export default {
   computed: {
     pricePermission(){
       const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
-      if (permission_group_ids.includes('1') || permission_group_ids.includes('2') || permission_group_ids.includes('11')){ // 1: admin, 2: material_unit_cost_management_group, 11: master
+      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){ 
         return true;
       }else {
         return false;
@@ -532,11 +533,21 @@ export default {
       excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" })
       excelHeaders.unshift({ "text": "No.", "align": "center", "value": "no" });
 
+      if (!this.pricePermission){
+        excelHeaders = excelHeaders.filter(x => x.value !== 'unit_price');
+        excelHeaders = excelHeaders.filter(x => x.value !== 'stock_price');
+      }
+
       let items = [];
       this.product_data.forEach((data, index) => {
         data.no = index+1;
         data.stock_num = typeof data.stock_num === "number" ? Number(data.stock_num).toLocaleString() : data.stock_num;
         data.stock_price = typeof data.stock_price === "number" ? '₩ '+ Number(data.stock_price).toLocaleString() : data.stock_price;
+
+        if (!this.pricePermission){
+          delete data.unit_price;
+          delete data.stock_price;
+        }
 
         items.push(data)
       });

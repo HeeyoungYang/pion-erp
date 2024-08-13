@@ -72,6 +72,7 @@
                   :id="'stock_price_'+data.item_code"
                 >
                   <v-chip
+                    v-if="pricePermission"
                     class="mr-2 font-weight-bold white--text float-right"
                     color="indigo"
                     small
@@ -109,6 +110,7 @@
                       총 재고 : {{ data.total_stock }}개
                     </v-chip>
                     <v-chip
+                      v-if="pricePermission"
                       class="mr-2 font-weight-bold white--text"
                       color="indigo"
                       small
@@ -128,7 +130,7 @@
                   <v-col cols="12">
                     <DataTableComponent
                       v-if="data.belong_data"
-                      :headers="headers"
+                      :headers="pricePermission ? headers : headers.filter(x => x.value !== 'unit_price')"
                       :items="data.belong_data"
                       :item-key="data.belong_data.item_code"
                       hide-default-footer
@@ -138,8 +140,8 @@
                       dense
                       itemNumInfo
                       itemNumInfoBelong
-                      itemPriceInfo
-                      itemPriceInfoBelong
+                      :itemPriceInfo="pricePermission"
+                      :itemPriceInfoBelong="pricePermission"
                       show-item-details
                       @itemDetials="detailInfoItem"
                     />
@@ -248,6 +250,17 @@ export default {
       headers:ProductSearchPageConfig.headers,
       product_data: []
       // product_data:ProductSearchPageConfig.test_product_data
+    }
+  },
+
+  computed: {
+    pricePermission(){
+      const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){ 
+        return true;
+      }else {
+        return false;
+      }
     }
   },
 
@@ -489,13 +502,15 @@ export default {
             }
 
 
-            data.belong_data.push({
-              item_code: '총 재료비',
-              unit_price: '',
-              total_stock: 0,
-              stock_price: '',
-              num_price: data.unit_price
-            })
+            if (data.belong_data && this.pricePermission){
+              data.belong_data.push({
+                item_code: '총 재료비',
+                unit_price: '',
+                total_stock: 0,
+                stock_price: '',
+                num_price: data.unit_price
+              })
+            }
             // this.total_stock_num += data.total_stock
             // this.total_stock_price += data.item_price
           })
@@ -531,6 +546,12 @@ export default {
       excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" });
       excelHeaders.unshift({ "text": "No.", "align": "center", "value": "no" });
 
+      if (!this.pricePermission){
+        excelHeaders = excelHeaders.filter(x => x.value !== 'unit_price');
+        excelHeaders = excelHeaders.filter(x => x.value !== 'num_price');
+        excelHeaders = excelHeaders.filter(x => x.value !== 'stock_price');
+      }
+
       let items = [];
       this.product_data.forEach((data, index) => {
         let total_stock_calc = 0;
@@ -538,19 +559,28 @@ export default {
         if(data.belong_data){
           for(let i=0; i<data.belong_data.length; i++){
             if(data.belong_data[i].item_code !== '총 재료비'){
-              for(let s=0; s<data.belong_data[i].spot_stock.length; s++){
-                total_stock_calc += data.belong_data[i].spot_stock[s].stock_num
+              if(data.belong_data[i].spot_stock){
+                for(let s=0; s<data.belong_data[i].spot_stock.length; s++){
+                  total_stock_calc += data.belong_data[i].spot_stock[s].stock_num
+                }
               }
               if(data.belong_data[i].belong_data){
                 for(let b=0; b<data.belong_data[i].belong_data.length; b++){
-                  for(let bs=0; bs<data.belong_data[i].belong_data[b].spot_stock.length; bs++){
-                    belong_total_stock_calc += data.belong_data[i].belong_data[b].spot_stock[bs].stock_num
+                  if (data.belong_data[i].belong_data[b].spot_stock){
+                    for(let bs=0; bs<data.belong_data[i].belong_data[b].spot_stock.length; bs++){
+                      belong_total_stock_calc += data.belong_data[i].belong_data[b].spot_stock[bs].stock_num
+                    }
                   }
                   data.belong_data[i].belong_data[b].total_stock = Number(belong_total_stock_calc).toLocaleString();
                   data.belong_data[i].belong_data[b].stock_price = '₩ '+ Number(belong_total_stock_calc* data.belong_data[i].belong_data[b].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
                   data.belong_data[i].belong_data[b].num_price = '₩ '+ Number(data.belong_data[i].belong_data[b].num* data.belong_data[i].belong_data[b].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
                   data.belong_data[i].belong_data[b].no = (index+1)+'-'+(i+1)+'-'+(b+1)
                   belong_total_stock_calc = 0;
+
+                  if (!this.pricePermission){
+                    delete data.belong_data[i].belong_data[b].num_price;
+                    delete data.belong_data[i].belong_data[b].stock_price;
+                  }
                 }
               }
               data.belong_data[i].total_stock = Number(total_stock_calc).toLocaleString();
@@ -558,22 +588,36 @@ export default {
               data.belong_data[i].num_price = '₩ '+ Number(data.belong_data[i].num* data.belong_data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
               data.belong_data[i].no = (index+1)+'-'+(i+1)
               total_stock_calc = 0;
+
+              if (!this.pricePermission){
+                delete data.belong_data[i].num_price;
+                delete data.belong_data[i].stock_price;
+              }
             }
 
           }
-        }
-        for(let i=0; i<data.belong_data.length; i++){
-          if(data.belong_data[i].item_code === '총 재료비'){
-            data.belong_data.splice(i, 1);
+          
+          for(let i=0; i<data.belong_data.length; i++){
+            if(data.belong_data[i].item_code === '총 재료비'){
+              data.belong_data.splice(i, 1);
+            }
           }
         }
+
+        if (!this.pricePermission){
+          delete data.unit_price;
+          delete data.stock_price;
+        }
+
         data.no = index+1;
         items.push(data)
       })
 
       items.forEach(data =>{
         data.total_stock = typeof data.total_stock === "number" ? Number(data.total_stock).toLocaleString() : data.total_stock;
-        data.stock_price = '₩ '+ Number(data.total_stock.replace(/,/g,'') * data.unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
+        if (this.pricePermission){
+          data.stock_price = '₩ '+ Number(data.total_stock.replace(/,/g,'') * data.unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
+        }
       })
       mux.Excel.downloadTable(excelHeaders, items, items[0].name+'_엑셀다운로드');
     },
@@ -585,8 +629,6 @@ export default {
         header_stock_info.classList.add('d-none');
       }
     }
-  },
-  computed: {
   },
 }
 </script>

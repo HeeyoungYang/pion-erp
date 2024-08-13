@@ -79,6 +79,7 @@
                     총 재고 : {{ Number(total_stock_num).toLocaleString() }}
                   </v-chip>
                   <v-chip
+                    v-if="pricePermission"
                     color="indigo"
                     text-color="white"
                     small
@@ -104,16 +105,16 @@
                   cols="12"
                 >
                   <DataTableComponent
-                    :headers="headers"
+                    :headers="pricePermission ? headers : headers.filter(x => x.value !== 'unit_price')"
                     :items="product_data"
                     :item-key="product_data.item_code"
 
                     children-key="belong_data"
                     table-style=""
                     stockNumInfo
-                    moduleStockPriceInfo
+                    :moduleStockPriceInfo="pricePermission"
                     itemNumInfoBelong
-                    itemPriceInfoBelong
+                    :itemPriceInfoBelong="pricePermission"
                     show-item-details
                     @itemDetials="detailInfoItem"
                     dense
@@ -214,6 +215,16 @@ export default {
     }
   },
 
+  computed: {
+    pricePermission(){
+      const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){ 
+        return true;
+      }else {
+        return false;
+      }
+    }
+  },
 
   watch: {
     detail_dialog (val) {
@@ -532,28 +543,49 @@ export default {
       excelHeaders.push({ "text": "총 재고금액", "align": "center", "value": "stock_price" });
       excelHeaders.unshift({ "text": "No.", "align": "center", "value": "no" });
 
+      if (!this.pricePermission){
+        excelHeaders = excelHeaders.filter(x => x.value !== 'unit_price');
+        excelHeaders = excelHeaders.filter(x => x.value !== 'num_price');
+        excelHeaders = excelHeaders.filter(x => x.value !== 'stock_price');
+      }
+
       let items = [];
       this.product_data.forEach((data, index) => {
         let total_stock_calc = 0;
         if(data.belong_data){
           for(let i=0; i<data.belong_data.length; i++){
-            for(let s=0; s<data.belong_data[i].spot_stock.length; s++){
-              total_stock_calc += data.belong_data[i].spot_stock[s].stock_num
+            if (data.belong_data[i].spot_stock){
+              for(let s=0; s<data.belong_data[i].spot_stock.length; s++){
+                total_stock_calc += data.belong_data[i].spot_stock[s].stock_num
+              }
             }
             data.belong_data[i].total_stock = Number(total_stock_calc).toLocaleString();
             data.belong_data[i].stock_price = Number(total_stock_calc* data.belong_data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
             data.belong_data[i].num_price = Number(data.belong_data[i].num* data.belong_data[i].unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
             data.belong_data[i].no = (index+1)+'-'+(i+1)
             total_stock_calc = 0;
+
+            if (!this.pricePermission){
+              delete data.belong_data[i].num_price;
+              delete data.belong_data[i].stock_price;
+            }
           }
         }
+
+        if (!this.pricePermission){
+          delete data.unit_price;
+          delete data.stock_price;
+        }
+
         data.no = index+1;
         items.push(data)
       })
 
       items.forEach(data =>{
         data.total_stock = typeof data.total_stock === "number" ? Number(data.total_stock).toLocaleString() : data.total_stock;
-        data.stock_price = '₩ '+Number(data.total_stock.replace(/,/g,'') * data.unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
+        if (this.pricePermission){
+          data.stock_price = '₩ '+Number(data.total_stock.replace(/,/g,'') * data.unit_price.replace(/,/g,'').replace(/₩ /g,'')).toLocaleString();
+        }
       })
       mux.Excel.downloadTable(excelHeaders, items, '반제품_엑셀다운로드');
     }

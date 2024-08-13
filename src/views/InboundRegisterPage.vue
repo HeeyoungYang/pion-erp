@@ -66,7 +66,7 @@
                       class="elevation-1"
                       dense
                       v-model="selected_product_data"
-                      :headers="product_search_headers"
+                      :headers="pricePermission ? product_search_headers : product_search_headers.filter(x => x.value !== 'unit_price')"
                       :items="product_search_data"
                       item-key="_code"
                       show-select
@@ -187,7 +187,7 @@
                     >
                       <v-data-table
                         dense
-                        :headers="product_inbound_headers"
+                        :headers="pricePermission ? product_inbound_headers : product_inbound_headers.filter(x => x.value !== 'unit_price')"
                         :items="product_inbound_data"
                         hide-default-footer
                         disable-pagination
@@ -226,7 +226,7 @@
                             <td align="center">{{  item.spec  }}</td>
                             <td align="center">{{  item.model }}</td>
                             <td align="center">{{  item.manufacturer }}</td>
-                            <td align="center">{{  item.unit_price }}</td>
+                            <td v-if="pricePermission" align="center">{{  item.unit_price }}</td>
                             <td align="center" style="min-width: 160px;">
                             </td>
                             <td align="center">
@@ -304,7 +304,7 @@
                       class="elevation-1"
                       dense
                       v-model="selected_product_data"
-                      :headers="product_search_headers"
+                      :headers="pricePermission ? product_search_headers : product_search_headers.filter(x => x.value !== 'unit_price')"
                       :items="product_search_data"
                       item-key="_code"
                       show-select
@@ -520,7 +520,7 @@
                     >
                       <v-data-table
                         dense
-                        :headers="product_inbound_headers"
+                        :headers="pricePermission || add_self === '직접기입' ? product_inbound_headers : product_inbound_headers.filter(x => x.value !== 'unit_price')"
                         :items="product_inbound_data"
                         hide-default-footer
                         disable-pagination
@@ -562,7 +562,7 @@
                             <td align="center">{{  item.spec  }}</td>
                             <td align="center">{{  item.model }}</td>
                             <td align="center">{{  item.manufacturer }}</td>
-                            <td align="center">{{  item.unit_price }}</td>
+                            <td v-if="pricePermission" align="center">{{  item.unit_price }}</td>
                             <td align="center" style="min-width: 160px;">
                               <v-checkbox
                                 v-if="item.type !== '원부자재'"
@@ -2166,6 +2166,14 @@ export default {
     dateRangeText () {
       return this.dates.join(' ~ ')
     },
+    pricePermission(){
+      const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){ 
+        return true;
+      }else {
+        return false;
+      }
+    }
   },
 }
 </script>
