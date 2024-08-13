@@ -724,13 +724,13 @@ import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import MailFormComponent from "@/components/MailFormComponent.vue";
 import ExpansionPanelComponent from "@/components/ExpansionPanelComponent.vue";
 import OrderSearchPageConfig from "@/configure/OrderSearchPageConfig.json";
-import CheckPagePermission from "@/common_js/CheckPagePermission";
+
 import mux from "@/mux";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=OrderSearchPage')],
+  
   mounted() {
-    this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
+    
   },
   components: {
                 NavComponent,
@@ -837,12 +837,7 @@ export default {
       this.email_sign =`<div><p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px;"><strong>${this.login_info.name} 파이온 일렉트릭㈜ ${this.login_info.department} ${this.login_info.position} / Pion Electric Co., Ltd. </strong></p><p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;">Home page : www.pionelectric.com<br>E-mail: ${this.login_info.email}  C/P: ${'+82(0)' + this.login_info.phone_number.slice(1)}<br> Tel: ${'+82(0)' + this.login_info.office_phone_number.slice(1)} Fax: +82(0)505-300-4179<br><br> 본사: (03722) 서울특별시 서대문구 연세로 50 연세대학교 공학원 116호<br> Head office: #116, Engineering Research Park, Yonsei University, 50, Yonsei-ro, Seodaemun-gu, Seoul, 03722, Republic of KOREA<br><br> 광명 사무소: (14348) 경기도 광명시 일직로 72  A-1818호<br> Gwangmyeong office: #A-1818, 72, Iljik-ro, Gwangmyeong-si, Gyeonggi-do, Republic of KOREA 14348<br><br> 광주 공장: (47580) 광주광역시 광산구 연산동 1247<br> Gwangju factory: 1247 Yeonsan-dong, Gwangsan-gu, Gwangju, Republic of KOREA 47580<br><br> 보령 공장: (33448) 충청남도 보령시 주교면 관창공단길 266<br> Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheongnam-do, Republic of KOREA 33448<br><br></p> <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;"><strong>제품 및 서비스</strong><br> ∙ 고자기장 기반의 산업용 운용기기 (Development of Operating Device for Industrial Applications based on High Magnetic Field)<br> ∙ 광기기 기반의 전력전자 응용기기 (Development of Power Electronics Application Device based on Optical Device)<br> ∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)<br> ∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)<br> ∙ 전기공사면허</p> </div>`
     },
     // eslint-disable-next-line no-unused-vars
-    handleResultCheckPagePermission(result) {
-      // 사용자 페이지 권한 결과를 확인하여 처리한다.
-      // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
-      // result.response ==> 세부 정보 포함
-      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
-    },
+    
     setSearchCardInputs(order_code, inbound_date){
       this.searchCardInputs.find(x=>x.label === '발주번호').value = order_code;
       if (inbound_date.includes(' ~ ')){

@@ -192,13 +192,13 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import InboundSearchPageConfig from "@/configure/InboundSearchPageConfig.json";
-import CheckPagePermission from "@/common_js/CheckPagePermission";
+
 import mux from "@/mux";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=InboundSearchPage')],
+  
   mounted() {
-    this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
+    
   },
   components: {
                 NavComponent,
@@ -286,12 +286,7 @@ export default {
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
     // eslint-disable-next-line no-unused-vars
-    handleResultCheckPagePermission(result) {
-      // 사용자 페이지 권한 결과를 확인하여 처리한다.
-      // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
-      // result.response ==> 세부 정보 포함
-      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
-    },
+    
     setSearchCardInputs(order_code, inbound_date){
       this.searchCardInputs.find(x=>x.label === '발주번호').value = order_code;
       if (inbound_date.includes(' ~ ')){

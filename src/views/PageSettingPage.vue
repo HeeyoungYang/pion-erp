@@ -95,14 +95,14 @@ import NavComponent from "@/components/NavComponent";
 import DataTableComponent from "@/components/DataTableComponent";
 import PageSettingPageConfig from "@/configure/PageSettingPageConfig.json";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
-import CheckPagePermission from "@/common_js/CheckPagePermission";
+
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=PageSettingPageConfig')],
+  
   mounted() {
-    this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
+    
   },
   created () {
     this.initialize()
@@ -126,12 +126,7 @@ export default {
   },
   methods: {
     // eslint-disable-next-line no-unused-vars
-    handleResultCheckPagePermission(result) {
-      // 사용자 페이지 권한 결과를 확인하여 처리한다.
-      // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
-      // result.response ==> 세부 정보 포함
-      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
-    },
+    
     async initialize () {
       mux.Util.showLoading();
       this.headers = PageSettingPageConfig.table_header;

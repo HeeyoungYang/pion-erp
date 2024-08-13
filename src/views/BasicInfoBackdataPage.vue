@@ -220,12 +220,12 @@ import CardComponent from "@/components/CardComponent.vue";
 import BasicInfoBackDataPageConfig from "@/configure/BasicInfoBackDataPageConfig.json";
 import mux from "@/mux";
 
-import CheckPagePermission from "@/common_js/CheckPagePermission";
+
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=BaseicInfoBackdataPage')],
+  
   mounted() {
-    this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
+    
   },
   components: {
     NavComponent,
@@ -287,12 +287,7 @@ export default {
 
   methods: {
     // eslint-disable-next-line no-unused-vars
-    handleResultCheckPagePermission(result) {
-      // 사용자 페이지 권한 결과를 확인하여 처리한다.
-      // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
-      // result.response ==> 세부 정보 포함
-      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
-    },
+    
     async initialize () {
       // this.classification_data = BasicInfoBackDataPageConfig.test_classification_data
       // this.manufacturer_data = BasicInfoBackDataPageConfig.test_manufacturer_data

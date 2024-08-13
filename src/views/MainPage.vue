@@ -51,13 +51,13 @@
 <script>
 import NavComponent from "@/components/NavComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
-import CheckPagePermission from "@/common_js/CheckPagePermission";
+
 import mux from "@/mux";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=MainPage')],
+  
   mounted() {
-    this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
+    
     // router.push()로 이동할 때, query로 전달된 key 에 temporary_password 가 있으면, 최초 로그인 시 비밀번호 변경 모달을 띄운다.
     if (this.$route.query.temporary_password) {
       this.first_login_dialog = true;
@@ -65,12 +65,7 @@ export default {
   },
   methods: {
     // eslint-disable-next-line no-unused-vars
-    handleResultCheckPagePermission(result) {
-      // 사용자 페이지 권한 결과를 확인하여 처리한다.
-      // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
-      // result.response ==> 세부 정보 포함
-      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
-    },
+    
     save() {
       const validate = this.$refs.pwForm.validate();
       if(!validate) return;

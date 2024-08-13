@@ -868,13 +868,13 @@ import CardComponent from "@/components/CardComponent.vue";
 import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import InboundRegisterPageConfig from "@/configure/InboundRegisterPageConfig.json";
-import CheckPagePermission from "@/common_js/CheckPagePermission";
+
 import mux from "@/mux";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=InboundRegisterPage')],
+  
   mounted() {
-    this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
+    
   },
   components: {
                 NavComponent,
@@ -1141,12 +1141,7 @@ export default {
       mux.Util.hideLoading();
     },
     // eslint-disable-next-line no-unused-vars
-    handleResultCheckPagePermission(result) {
-      // 사용자 페이지 권한 결과를 확인하여 처리한다.
-      // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
-      // result.response ==> 세부 정보 포함
-      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
-    },
+    
     addItems(){
       let check_duplicate=[];
       let set_item = this.product_inbound_data

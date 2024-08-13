@@ -724,13 +724,13 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import CostTableComponent from "@/components/CostTableComponent.vue";
 import DesignProductionSearchPageConfig from "@/configure/DesignProductionSearchPageConfig.json";
-import CheckPagePermission from "@/common_js/CheckPagePermission";
+
 import mux from "@/mux";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=DesignProductionSearchPage')],
+  
   mounted() {
-    this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
+    
   },
   components: {
                 NavComponent,
@@ -1137,12 +1137,7 @@ export default {
       }
     },
     // eslint-disable-next-line no-unused-vars
-    handleResultCheckPagePermission(result) {
-      // 사용자 페이지 권한 결과를 확인하여 처리한다.
-      // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
-      // result.response ==> 세부 정보 포함
-      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
-    },
+    
     setSearchCardInputs(project_code, inhouse_bid_number, company_bid_number, company_name, issue_date){
       this.searchCardInputs.find(x=>x.label === '프로젝트 코드').value = project_code;
       this.searchCardInputs.find(x=>x.label === '사내 입찰번호').value = inhouse_bid_number;

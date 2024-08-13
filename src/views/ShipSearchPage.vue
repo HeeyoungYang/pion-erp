@@ -226,11 +226,11 @@ import CardComponent from "@/components/CardComponent.vue";
 import InputsFormComponent from "@/components/InputsFormComponent.vue";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 import ShipSearchPageConfig from "@/configure/ShipSearchPageConfig.json";
-import CheckPagePermission from "@/common_js/CheckPagePermission";
+
 import mux from "@/mux";
 
 export default {
-  mixins: [CheckPagePermission('/api/check_page_permission?page_name=ShipSearchPage')],
+  
   components: {
                 NavComponent,
                 DataTableComponent,
@@ -240,7 +240,7 @@ export default {
                 LoadingModalComponent,
               },
   mounted(){
-    this.$on('resultCheckPagePermission', this.handleResultCheckPagePermission);
+    
     // this.closeAll()
   },
   data(){
@@ -331,12 +331,7 @@ export default {
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
     // eslint-disable-next-line no-unused-vars
-    handleResultCheckPagePermission(result) {
-      // 사용자 페이지 권한 결과를 확인하여 처리한다.
-      // result.code ==> 0 : 권한 있음, 0이 아니면 : 권한 없음
-      // result.response ==> 세부 정보 포함
-      // console.log('사용자 페이지 권한 확인 결과:', JSON.stringify(result));
-    },
+    
     setSearchCardInputs(project_code, purpose, ship_date){
       this.searchCardInputs.find(x=>x.label === '프로젝트').value = project_code;
       this.searchCardInputs.find(x=>x.label === '출고목적').value = purpose;
