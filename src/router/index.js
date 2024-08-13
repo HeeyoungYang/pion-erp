@@ -91,7 +91,7 @@ const routes = [
     name: 'ProductCostPage',
     component: ProductCostPage,
     meta: {
-      permission: ['member']
+      permission: []
     }
   },
   {
@@ -131,7 +131,7 @@ const routes = [
     name: 'DashboardPage',
     component: DashboardPage,
     meta: {
-      permission: ['master']
+      permission: []
     }
   },
   {
