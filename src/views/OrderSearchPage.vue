@@ -294,7 +294,7 @@
                   </tr>
                   <tr class="text-body-1">
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-                    <td class="order_info" style=" style='WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">{{ order_form_info.company_registration_number }}</td>
+                    <td class="order_info" style="WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">{{ order_form_info.company_registration_number }}</td>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
                     <td class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_manager }}</td>
                   </tr>
