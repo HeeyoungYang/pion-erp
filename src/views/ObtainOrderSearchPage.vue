@@ -52,7 +52,7 @@
                 :headers="estimate_approve_headers"
                 :items="estimate_approve_data"
                 item-key="product_code"
-                approval="inbound"
+                :approval="true"
                 dense
                 :loginId="login_info.id"
                 @clickTr="clickApproveData"
@@ -657,6 +657,7 @@
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
+import DataTableComponent from "@/components/DataTableComponent";
 import EstimateDataTableComponent from "@/components/EstimateDataTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
@@ -673,6 +674,7 @@ export default {
   },
   components: {
                 NavComponent,
+                DataTableComponent,
                 EstimateDataTableComponent,
                 ModalDialogComponent,
                 CardComponent,
@@ -712,7 +714,9 @@ export default {
       // inbound_approve_data:[],
       survey_cost_headers: ObtainOrderSearchPageConfig.survey_cost_headers,
       bom_list_headers: ObtainOrderSearchPageConfig.bom_list_headers,
+      bom_list_data: [],
       purchase_detail_headers: ObtainOrderSearchPageConfig.purchase_detail_headers,
+      purchase_detail_data: [],
       search_tab_items: ObtainOrderSearchPageConfig.search_tab_items,
       labor_cost_headers: ObtainOrderSearchPageConfig.labor_cost_headers,
       labor_cost_data: [],
