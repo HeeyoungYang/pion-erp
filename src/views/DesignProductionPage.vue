@@ -475,8 +475,8 @@
                         <v-col cols="12" sm="12" v-else>
                           <v-data-table
                             dense
-                            :headers="dialog_product_details_headers"
-                            :items="dialog_search_product_data"
+                            :headers="set_bom_list_headers"
+                            :items="searched_product_data"
                             item-key="product_code"
                             class="elevation-1"
                           >
@@ -823,7 +823,7 @@
                         small
                         color="success"
                         class="mt-5 elevation-0"
-                        @click="production_steppers = 2"
+                        @click="nextStep(n)"
                       >
                         다음 ▶
                       </v-btn>
@@ -866,8 +866,8 @@
                         <v-col cols="12">
                           <v-data-table
                             dense
-                            :headers="dialog_search_product_headers"
-                            :items="dialog_search_product_data"
+                            :headers="search_product_headers"
+                            :items="searched_product_data"
                             item-key="product_code"
                             class="elevation-1"
                           >
@@ -877,7 +877,7 @@
                                 x-small
                                 class="ml-3"
                                 elevation="0"
-                                @click="addCostList(item)"
+                                @click="addBomList(item)"
                               >선택
                               </v-btn>
                             </template>
@@ -889,15 +889,15 @@
                       <p class="font-weight-black primary--text text-h6 mb-0">선택 구성</p>
                       <v-data-table
                         dense
-                        :headers="dialog_product_details_headers"
-                        :items="dialog_search_product_data"
+                        :headers="set_bom_list_headers"
+                        :items="set_bom_list_data"
                         item-key="product_code"
                         class="elevation-1"
                       >
-                        <template v-slot:[`item.actions`]>
+                        <template v-slot:[`item.actions`]="{ item }">
 
                           <v-icon
-                            @click="dialog_bom_detail = true"
+                            @click="showBomDetail(item)"
                           >mdi-magnify</v-icon>
                         </template>
                         <template v-slot:[`item.cancle`]>
@@ -912,7 +912,7 @@
                         small
                         color="grey lighten-2"
                         class="mt-5 mr-2 elevation-0"
-                        @click="production_steppers = 1"
+                        @click="previousStep(n)"
                       >
                         ◀ 이전
                       </v-btn>
@@ -920,7 +920,7 @@
                         small
                         color="success"
                         class="mt-5 elevation-0"
-                        @click="production_steppers = 3"
+                        @click="nextStep(n)"
                       >
                         다음 ▶
                       </v-btn>
@@ -1057,7 +1057,7 @@
                         small
                         color="grey lighten-2"
                         class="mt-5 mr-2 elevation-0"
-                        @click="production_steppers = 2"
+                        @click="previousStep(n)"
                       >
                         ◀ 이전
                       </v-btn>
@@ -1065,7 +1065,7 @@
                         small
                         color="success"
                         class="mt-5 elevation-0"
-                        @click="production_steppers = 4"
+                        @click="nextStep(n)"
                       >
                         다음 ▶
                       </v-btn>
@@ -1288,6 +1288,7 @@
               x-small
               elevation="1"
               class="float-right ml-2"
+              @click="saveBomDetail"
             >
               <v-icon small>mdi-content-save</v-icon>
             </v-btn>
@@ -1367,7 +1368,7 @@
               v-model="selected_items_for_product_data"
               :headers="product_item_setting_headers"
               :items="setting_item_data"
-              item-key="_code"
+              item-key="item_code"
               dense
               disable-sort
             >
@@ -1398,13 +1399,13 @@
                   <td class="text-center">
                     <v-text-field
                       v-if="item.data_type === 'added'"
-                      v-model="item.product_code"
+                      v-model="item.item_code"
                       dense
                       hide-details
                       filled
                       style="width:200px; font-size:12px">
                     </v-text-field>
-                    {{ item.data_type === 'selected' ? item.product_code : '' }}
+                    {{ item.data_type === 'selected' ? item.item_code : '' }}
                   </td>
                   <td class="text-center">
                     <v-text-field
@@ -2127,9 +2128,9 @@ import EstimateSearchDialogComponent from "@/components/EstimateSearchDialogComp
 import mux from "@/mux";
 
 export default {
-  
+
   mounted() {
-    
+
   },
   components: {
                 NavComponent,
@@ -2148,7 +2149,7 @@ export default {
 
   methods:{
     // eslint-disable-next-line no-unused-vars
-    
+
     async initialize(){
       const prevURL = window.location.href;
       try {
@@ -2183,13 +2184,264 @@ export default {
         mux.Util.showAlert(error);
         return;
       }
-
-
     },
     async searchButton(){
       mux.Util.showLoading();
       this.search_production_data = DesignProductionPageConfig.test_production_data
       mux.Util.hideLoading();
+    },
+    async searchProduct() {
+      mux.Util.showLoading();
+
+      let searchProductCode = this.bomProductSearchInputs.find(x=>x.label === '제품코드').value;
+      if (!searchProductCode)
+        searchProductCode = '%';
+      let searchName = this.bomProductSearchInputs.find(x=>x.label === '제품명').value;
+      if (searchName)
+        searchName = searchName.trim();
+      let searchSpec = this.bomProductSearchInputs.find(x=>x.label === '사양').value;
+      if (searchSpec)
+        searchSpec = searchSpec.trim();
+
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          "params": [
+              {
+                "product_table.name": searchName ? searchName : "",
+                "product_table.product_code": searchProductCode ? searchProductCode : "",
+                "product_table.spec": searchSpec ? searchSpec : ""
+              }
+          ],
+          "script_file_name": "rooting_완제품_검색_24_05_16_13_52_1IN.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+          if(result['data'].length === 0){
+            mux.Util.showAlert('검색 결과가 없습니다.');
+          }
+          this.searched_product_data = result['data'];
+          this.searched_product_data.forEach(data =>{
+            data.product_code = data.code;
+            delete data.code;
+            let stock_calc = 0;
+            if (data.spot_stock){
+              for(let d=0; d<data.spot_stock.length; d++){
+                if (typeof data.spot_stock[d].stock_num === 'number'){
+                  stock_calc += data.spot_stock[d].stock_num;
+                }
+              }
+            }
+            data.total_stock = stock_calc
+
+            if(data.belong_data){
+              for(let b=0; b<data.belong_data.length; b++){
+                data.belong_data[b].product_code = data.product_code;
+                data.belong_data[b].item_code = data.belong_data[b].code;
+                data.belong_data[b].used_num = data.total_stock * data.belong_data[b].num
+                delete data.belong_data[b].code;
+
+
+                // let total_item_unit_price = 0;
+                // data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
+                if(data.belong_data[b].belong_data){
+                  delete data.belong_data[b].belong_data;
+                }
+                  data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
+              }
+              console.log(JSON.stringify(data.belong_data) )
+              data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
+            }
+
+
+            if (typeof data.unit_price === 'number'){
+              data.item_price = data.unit_price * data.total_stock
+              let total_unit_price = 0;
+              if(data.belong_data){
+                for(let b=0; b<data.belong_data.length; b++){
+                  total_unit_price += (data.belong_data[b].unit_price).replace(/,/g,'').replace(/₩ /g,'') * data.belong_data[b].num;
+                }
+                data.total_stock_price = '₩ '+ Number(data.total_stock * total_unit_price).toLocaleString();
+                data.unit_price = '₩ '+ Number(total_unit_price).toLocaleString()
+              }else{
+                data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString()
+              }
+            }else {
+              data.item_price = 0;
+            }
+
+
+            if (data.belong_data && this.pricePermission){
+              data.belong_data.push({
+                item_code: '총 재료비',
+                unit_price: '',
+                total_stock: 0,
+                stock_price: '',
+                num_price: data.unit_price
+              })
+            }
+            // this.total_stock_num += data.total_stock
+            // this.total_stock_price += data.item_price
+          })
+        }else{
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        // console.error(error);
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      mux.Util.hideLoading();
+      // this.product_data = ProductSearchPageConfig.test_product_data;
+    },
+
+    async searchItem() {
+      mux.Util.showLoading();
+
+      let searchType;
+      let searchClassification;
+      let searchProductCode;
+      let searchProductName ;
+      let searchModelName;
+      let searchProductSpec;
+      let searchManufacturer;
+      let searchStockMoreZero = '';
+
+      searchType = this.productSearchItemInputs.find(x=>x.label === '종류').value;
+      searchClassification = this.productSearchItemInputs.find(x=>x.label === '분류').value;
+      if (searchClassification === 'All')
+        searchClassification = '%';
+      searchProductCode = this.productSearchItemInputs.find(x=>x.label === '관리코드').value;
+      searchProductName = this.productSearchItemInputs.find(x=>x.label === '제품명').value;
+      searchModelName = this.productSearchItemInputs.find(x=>x.label === '모델명').value;
+      searchProductSpec = this.productSearchItemInputs.find(x=>x.label === '사양').value;
+      searchManufacturer = this.productSearchItemInputs.find(x=>x.label === '제조사').value;
+
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "product_table.classification": searchClassification ? searchClassification : "",
+              "product_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "product_table.model": searchModelName ? searchModelName : "",
+              "product_table.name": searchProductName ? searchProductName : "",
+              "product_table.product_code": searchProductCode ? searchProductCode : "",
+              "product_table.spec": searchProductSpec ? searchProductSpec : "",
+              "product_table.type": searchType ? searchType : "",
+
+              "module_table.classification": searchClassification ? searchClassification : "",
+              "module_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "module_table.model": searchModelName ? searchModelName : "",
+              "module_table.name": searchProductName ? searchProductName : "",
+              "module_table.module_code": searchProductCode ? searchProductCode : "",
+              "module_table.spec": searchProductSpec ? searchProductSpec : "",
+              "module_table.type": searchType ? searchType : "",
+
+              "material_table.classification": searchClassification ? searchClassification : "",
+              "material_table.manufacturer": searchManufacturer ? searchManufacturer : "",
+              "material_table.model": searchModelName ? searchModelName : "",
+              "material_table.name": searchProductName ? searchProductName : "",
+              "material_table.material_code": searchProductCode ? searchProductCode : "",
+              "material_table.spec": searchProductSpec ? searchProductSpec : "",
+              "material_table.type": searchType ? searchType : "",
+              "material_table.directly_written": 0,
+
+              "stock_table.conditions": "",
+              "stock_table.stock_num": searchStockMoreZero
+            }
+          ],
+          "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+          "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+          if(result['data'].length === 0){
+            mux.Util.showAlert('검색 결과가 없습니다.');
+          }
+          result = result['data'].map(a => {
+            if (!a.stock_num){
+              a.stock_price = 0;
+            }else {
+              a.stock_price = Math.round(a.unit_price * a.stock_num)
+            }
+            return a;
+          });
+          let product_data_arr = [];
+          result.forEach(data => {
+            // data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString();
+            // product_data_arr.push(data);
+            let isExist = false;
+            if (data.type !== '완제품'){
+              for (let i = 0; i < product_data_arr.length; i++) {
+                if (product_data_arr[i]._code === data._code) {
+                  if (data.stock_num){
+                    if (product_data_arr[i].spot_stock !== undefined){
+                      product_data_arr[i].spot_stock.push({product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)});
+                    }else {
+                      product_data_arr[i].spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
+                    }
+                  }
+                  isExist = true;
+                  break;
+                }
+              }
+              if (!isExist) {
+                if (data.stock_num){
+                  data.spot_stock = [{product_code: data._code, spot: data.spot, stock_num: data.stock_num, conditions: data.conditions, stock_price: Math.round(data.unit_price * data.stock_num)}];
+                }
+                data.unit_price = '₩ '+ Number(data.unit_price).toLocaleString();
+                product_data_arr.push(data);
+              }
+            }
+          });
+
+          this.search_items_for_product_data = product_data_arr;
+          this.selected_items_for_product_data = []
+        }else{
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result['failed_info']);
+        }
+
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      mux.Util.hideLoading();
+    },
+    addItems(){
+      let product_code = this.setting_item_data[0].product_code;
+      let selected = this.selected_items_for_product_data;
+      selected.forEach(data => {
+        data.data_type = 'selected';
+        data.product_code = product_code;
+        data.item_code = data._code;
+        delete data._code;
+      })
+      this.setting_item_data.push(...selected);
+
+      selected = [];
     },
     test(){
       // console.log('test');
@@ -2204,7 +2456,7 @@ export default {
         {
           "type":"",
           "classification":"",
-          "product_code":"",
+          "item_code":"",
           "name":"",
           "model":"",
           "spec":"",
@@ -2230,7 +2482,141 @@ export default {
     close(){
       this.member_dialog = false;
     },
+    showBomDetail(item){
+      item.belong_data.forEach(data =>{
+        data.data_type = 'selected'
+        data.product_code = item.product_code
+      })
+      this.setting_item_data = item.belong_data;
+      this.dialog_bom_detail = true;
+    },
+    previousStep(step){
+      this.production_steppers = step-1;
+    },
+    async nextStep(step){
+      if(step === 2){
+        // 사용가능수량 검색 및 적용
+        await this.setPurchaseRequest();
+      }
+      this.production_steppers = step+1;
+    },
+    async setPurchaseRequest(){
+      mux.Util.showLoading();
 
+      let bom_data = JSON.parse(JSON.stringify(this.set_bom_list_data));
+      let product_code_for_search = [];
+      bom_data.forEach(data =>{
+        for(let i=0; i<data.belong_data.length; i++){
+          product_code_for_search.push(data.belong_data[i].product_code);
+          product_code_for_search.push(data.belong_data[i].item_code);
+        }
+      })
+
+      console.log(product_code_for_search);
+
+      const set = new Set(product_code_for_search);
+      const set_for_search = [...set];
+      const prevURL = window.location.href;
+
+      let usable_num_searched = [];
+      // set_for_search.forEach(async code => {
+
+      // })
+
+      for(let i=0; i<set_for_search.length; i++){
+        let code = set_for_search[i];
+        try {
+          let result = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: [
+              {
+                "product_table.product_code": code,
+                "module_table.module_code": code,
+                "material_table.material_code": code
+              }
+            ],
+            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+
+            result = result['data'].map(a => {
+              if (!a.stock_num){
+                a.stock_price = 0;
+              }else {
+                a.stock_price = Math.round(a.unit_price * a.stock_num)
+              }
+              return a;
+            });
+
+            result.forEach(data => {
+              if(data.usable_num === null){
+                data.usable_num = 0;
+              }
+              usable_num_searched.push({product_code: data._code, usable_num: data.usable_num});
+            })
+
+          } else {
+            mux.Util.showAlert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          mux.Util.hideLoading();
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
+          else
+            mux.Util.showAlert(error);
+        }
+      }
+      usable_num_searched = usable_num_searched.reduce((prev, now) => {
+        if(!prev.some(obj => obj.product_code === now.product_code)){
+          prev.push(now);
+        }
+        return prev;
+      }, [])
+
+      for(let b=0; b<bom_data.length; b++){
+        let bom = bom_data[b];
+        for(let u=0; u<usable_num_searched.length; u++){
+          let usable_num = usable_num_searched[u];
+          if(bom.product_code === usable_num.product_code){
+            bom.usable_num = usable_num.usable_num;
+          }else{
+            if(bom.belong_data){
+              for(let i=0; i<bom.belong_data.length; i++){
+                let belong_data = bom.belong_data[i];
+                if(belong_data.item_code === usable_num.product_code){
+                  belong_data.usable_num = usable_num.usable_num;
+                }else{
+                  belong_data.usable_num = 0;
+                }
+              }
+            }
+            bom.usable_num = 0;
+          }
+        }
+      }
+      console.log(bom_data);
+      mux.Util.hideLoading();
+    },
+    addBomList(item){
+      this.set_bom_list_data.push(item);
+    },
+    saveBomDetail(){
+      let product_code = this.setting_item_data[0].product_code;
+      this.set_bom_list_data.forEach(data =>{
+        if(data.product_code === product_code){
+          data.belong_data = this.setting_item_data;
+        }
+      })
+      this.dialog_bom_detail = false;
+    },
     searchPreOdered(type){
       let headers = this.purchase_detail_headers
       let index = headers.findIndex(e => e.text === '선택');
@@ -2286,18 +2672,20 @@ export default {
       survey_cost_headers: DesignProductionPageConfig.survey_cost_headers,
       labor_cost_headers: DesignProductionPageConfig.labor_cost_headers,
       labor_list_headers: DesignProductionPageConfig.labor_list_headers,
-      dialog_product_details_headers: DesignProductionPageConfig.dialog_product_details_headers,
-      dialog_search_product_headers: DesignProductionPageConfig.dialog_search_product_headers,
+      set_bom_list_headers: DesignProductionPageConfig.set_bom_list_headers,
+      search_product_headers: DesignProductionPageConfig.search_product_headers,
       construction_materials_headers: DesignProductionPageConfig.construction_materials_headers,
       purchase_detail_headers: DesignProductionPageConfig.purchase_detail_headers,
       purchase_requested_headers: DesignProductionPageConfig.purchase_requested_headers,
       bom_list_headers: DesignProductionPageConfig.bom_list_headers,
       bom_list_purchase_headers: DesignProductionPageConfig.bom_list_purchase_headers,
 
-      dialog_search_product_data: DesignProductionPageConfig.dialog_search_product_test_data,
+      searched_product_data: [],
+      search_items_for_product_data: [],
+      set_bom_list_data: DesignProductionPageConfig.set_bom_list_test_data,
       product_search_item_headers: DesignProductionPageConfig.product_search_item_headers,
       product_item_setting_headers: DesignProductionPageConfig.product_item_setting_headers,
-      setting_item_data: DesignProductionPageConfig.setting_item_test_data,
+      setting_item_data: [],
       purchase_detail_data: DesignProductionPageConfig.test_purchase_detail_data,
       bom_list_data: DesignProductionPageConfig.bom_list_test_data,
       bom_list_purchase_data: DesignProductionPageConfig.bom_list_purchase_test_data,

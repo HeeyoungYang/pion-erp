@@ -104,9 +104,9 @@ import mux from "@/mux";
 import LoadingModalComponent from "@/components/LoadingModalComponent.vue";
 
 export default {
-  
+
   mounted() {
-    
+
   },
   components: {
     NavComponent,
@@ -214,7 +214,7 @@ export default {
 
   methods: {
     // eslint-disable-next-line no-unused-vars
-    
+
     async initialize () {
       mux.Util.showLoading();
       this.headers = MemberPageConfig.table_header;

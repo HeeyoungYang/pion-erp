@@ -32,7 +32,7 @@
   "bomProductSearchInputs":[
     {"label":"제품코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"용량", "col":"12", "sm":"4", "lg":"3", "value": ""}
+    {"label":"사양", "col":"12", "sm":"4", "lg":"3", "value": ""}
   ],
 
   "searchPurchaseInputs":[
@@ -101,7 +101,7 @@
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "단가", "align": "start", "value": "unit_price"},
     { "text": "필요수량", "align": "start", "value": "item_num"},
-    { "text": "재고", "align": "start", "value": "stock_num"}
+    { "text": "사용 가능 수량", "align": "start", "value": "usable_num"}
   ],
   
   "bom_list_purchase_headers": [
@@ -114,7 +114,7 @@
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "단가", "align": "start", "value": "unit_price"},
     { "text": "필요수량", "align": "start", "value": "item_num"},
-    { "text": "사용 가능 수량", "align": "start", "value": "stock_num"},
+    { "text": "사용 가능 수량", "align": "start", "value": "usable_num"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "견적/선주문", "align": "start", "value": "estimate"},
     { "text": "제외", "align": "start", "value": "cancle"}
@@ -132,7 +132,7 @@
   "product_item_setting_headers": [
     { "text": "종류", "align": "center", "value": "type"},
     { "text": "분류", "align": "center", "value": "classification"},
-    { "text": "관리코드", "align": "center", "value": "_code"},
+    { "text": "관리코드", "align": "center", "value": "item_code"},
     { "text": "자재명", "align": "center", "value": "name"},
     { "text": "모델명", "align": "center", "value": "model"},
     { "text": "사양", "align": "center", "value": "spec"},
@@ -200,19 +200,19 @@
     { "text": "금액", "align": "center", "value": "total_amount"},
     { "text": "추가", "align": "center", "value": ""}
   ],
-  "dialog_search_product_headers":[
+  "search_product_headers":[
     { "text": "", "align": "center", "value":"actions"},
     { "text": "제품코드", "align": "center", "value": "product_code"},
-    { "text": "제품명", "align": "center", "value": "complete_product_name"},
-    { "text": "모델명", "align": "center", "value": "product_model"},
-    { "text": "사양", "align": "center", "value": "product_spec"},
+    { "text": "제품명", "align": "center", "value": "name"},
+    { "text": "모델명", "align": "center", "value": "model"},
+    { "text": "사양", "align": "center", "value": "spec"},
     { "text": "제조사", "align": "center", "value": "manufacturer"}
   ],
-  "dialog_product_details_headers":[
+  "set_bom_list_headers":[
     { "text": "제품코드", "align": "center", "value": "product_code"},
-    { "text": "제품명", "align": "center", "value": "complete_product_name"},
-    { "text": "모델명", "align": "center", "value": "product_model"},
-    { "text": "사양", "align": "center", "value": "product_spec"},
+    { "text": "제품명", "align": "center", "value": "name"},
+    { "text": "모델명", "align": "center", "value": "model"},
+    { "text": "사양", "align": "center", "value": "spec"},
     { "text": "제조사", "align": "center", "value": "manufacturer"},
     { "text": "상세/수정", "align": "center", "value":"actions"},
     { "text": "제외", "align": "center", "value":"cancle"}
@@ -438,11 +438,33 @@
   ],
   "dialog_search_product_test_data":[
     {
-      "product_code": "TEST-01",
-      "complete_product_name": "제품명",
-      "product_model": "모델명",
-      "product_spec": "사양",
+      "product_code": "TEST-02",
+      "name": "제품명",
+      "model": "모델명",
+      "spec": "사양",
       "manufacturer": "제조사"
+    }
+  ],
+  "set_bom_list_test_data":[
+    {
+      "product_code": "TEST-01",
+      "name": "제품명",
+      "model": "모델명",
+      "spec": "사양",
+      "manufacturer": "제조사",
+      "belong_data":[
+        {
+          "type":"원부자재",
+          "classification":"전력변환기",
+          "item_code":"TEST-01-001",
+          "name":"제품명A",
+          "model":"모델명A",
+          "spec":"사양A",
+          "manufacturer":"제조사A",
+          "unit_price":"10",
+          "data_type": "selected"
+        }
+      ]
     }
   ],
   "setting_item_test_data":[
@@ -528,7 +550,7 @@
       "manufacturer":"PIONELECTRIC",
       "unit_price":"100",
       "item_num":"1",
-      "stock_num":"0",
+      "usable_num":"0",
       "belong_data":[
         {
           "type":"원부자재",
@@ -540,7 +562,7 @@
           "manufacturer":"PIONELECTRIC",
           "unit_price":"10",
           "item_num":"3",
-          "stock_num":"0"
+          "usable_num":"0"
         },
         {
           "type":"반제품",
@@ -552,7 +574,7 @@
           "manufacturer":"PIONELECTRIC",
           "unit_price":"70",
           "item_num":"1",
-          "stock_num":"1"
+          "usable_num":"1"
         }
       ]
     }
@@ -571,7 +593,7 @@
       "unit_price":"10",
       "item_num":"3",
       "purchase_num":"3",
-      "stock_num":"0"
+      "usable_num":"0"
     },
     {
       "type":"반제품",
@@ -585,7 +607,7 @@
       "unit_price":"70",
       "item_num":"1",
       "purchase_num":"0",
-      "stock_num":"1"
+      "usable_num":"1"
     }
   ]
 }
