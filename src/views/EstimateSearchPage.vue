@@ -51,7 +51,7 @@
                 :headers="estimate_approve_headers"
                 :items="estimate_approve_data"
                 item-key="product_code"
-                approval="inbound"
+                :approval="true"
                 dense
                 :loginId="login_info.id"
                 @clickTr="clickApproveData"

@@ -52,7 +52,7 @@
                 :headers="estimate_approve_headers"
                 :items="estimate_approve_data"
                 item-key="product_code"
-                approval="inbound"
+                :approval="true"
                 dense
                 :loginId="login_info.id"
                 @clickTr="clickApproveData"
@@ -718,6 +718,7 @@
 </template>
 <script>
 import NavComponent from "@/components/NavComponent";
+import DataTableComponent from "@/components/DataTableComponent";
 import EstimateDataTableComponent from "@/components/EstimateDataTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent.vue";
 import CardComponent from "@/components/CardComponent.vue";
@@ -734,6 +735,7 @@ export default {
   },
   components: {
                 NavComponent,
+                DataTableComponent,
                 EstimateDataTableComponent,
                 ModalDialogComponent,
                 CardComponent,
