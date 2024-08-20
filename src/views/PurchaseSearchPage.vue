@@ -988,9 +988,9 @@ import PurchaseSearchPageConfig from "@/configure/PurchaseSearchPageConfig.json"
 import mux from "@/mux";
 
 export default {
-  
+
   mounted() {
-    
+
   },
   components: {
                 NavComponent,
@@ -1141,7 +1141,7 @@ export default {
       mux.Rules.rulesSet(this.orderRequestInfoInputs);
     },
     // eslint-disable-next-line no-unused-vars
-    
+
     setSearchCardInputs(project_code){
       this.searchCardInputs.find(x=>x.label === '발주번호').value = project_code;
     },
@@ -1461,7 +1461,7 @@ export default {
           if(result.length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
-          this.purchase_data = result.data;
+          this.purchase_data = result.data.filter(data => data.approval_phase !== '설계미승인');
         } else {
           mux.Util.showAlert(result['failed_info']);
         }

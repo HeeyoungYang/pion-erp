@@ -19,7 +19,7 @@
     { "text": "작성자", "align": "start", "value": "given_name"},
     { "text": "업체명", "align": "start", "value": "company_name"},
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
-    { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
+    { "text": "사내 견적번호", "align": "start", "value": "inhouse_bid_number"},
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"}
   ],
   "survey_cost_headers": [

@@ -1485,9 +1485,9 @@ import EstimateCostSearchDialogComponent from "@/components/EstimateCostSearchDi
 import mux from "@/mux";
 
 export default {
-  
+
   mounted() {
-    
+
   },
   components: {
                 NavComponent,
@@ -1750,7 +1750,7 @@ export default {
         input.disabled = disable;
       });
       this.estimateSearchDefaultInfoInputs.forEach(input => {
-        if (input.label !== '프로젝트 코드' && input.label !== '사내 입찰번호'){
+        if (input.label !== '프로젝트 코드' && input.label !== '사내 견적번호'){
           input.disabled = disable;
         }
       });
@@ -1934,7 +1934,7 @@ export default {
 
     input_issue_date() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '발행일') },
     input_project_code() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '프로젝트 코드') },
-    input_inhouse_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '사내 입찰번호') },
+    input_inhouse_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '사내 견적번호') },
     input_company_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '기업별 입찰번호') },
     input_due_date() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '납기') },
     input_delivery_condition() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '인도조건') },
@@ -2004,7 +2004,7 @@ export default {
 
     input_issue_date2() { return this.estimateWriteDefaultInfoInputs.find(x=>x.label === '발행일') },
     input_project_code2() { return this.estimateWriteDefaultInfoInputs.find(x=>x.label === '프로젝트 코드') },
-    input_inhouse_bid_number2() { return this.estimateWriteDefaultInfoInputs.find(x=>x.label === '사내 입찰번호') },
+    input_inhouse_bid_number2() { return this.estimateWriteDefaultInfoInputs.find(x=>x.label === '사내 견적번호') },
     input_company_bid_number2() { return this.estimateWriteDefaultInfoInputs.find(x=>x.label === '기업별 입찰번호') },
     input_due_date2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '납기') },
     input_delivery_condition2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '인도조건') },
@@ -2023,7 +2023,7 @@ export default {
 
   methods:{
     // eslint-disable-next-line no-unused-vars
-    
+
     async initialize(){
       this.calc_cost_detail_data2 = ObtainOrderPageConfig.calc_cost_detail_data.map(x => {
         let new_x = JSON.parse(JSON.stringify(x));
@@ -3178,7 +3178,7 @@ export default {
                     <h2 style="text-align: center; color:#13428a">수주 확인서 ${sendDataCheckedDate === null ? '확인' : '승인'} 요청 알림</h2>
                     <table style="width: 100%;border-spacing: 10px 10px;">
                       <tr>
-                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
                         <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.inhouse_bid_number}</td>
                       </tr>
                       <tr>
@@ -3589,7 +3589,7 @@ export default {
                     <h2 style="text-align: center; color:#13428a">수주 확인서 ${sendDataCheckedDate === null ? '확인' : '승인'} 요청 알림</h2>
                     <table style="width: 100%;border-spacing: 10px 10px;">
                       <tr>
-                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
                         <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.inhouse_bid_number}</td>
                       </tr>
                       <tr>
@@ -3942,7 +3942,7 @@ export default {
                     <h2 style="text-align: center; color:#13428a">수주 확인서 ${sendDataCheckedDate === null ? '확인' : '승인'} 요청 알림</h2>
                     <table style="width: 100%;border-spacing: 10px 10px;">
                       <tr>
-                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
                         <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.inhouse_bid_number}</td>
                       </tr>
                       <tr>
@@ -4308,7 +4308,7 @@ export default {
                   <h2 style="text-align: center; color:#13428a">수주 확인서 ${sendDataCheckedDate === null ? '확인' : '승인'} 요청 알림</h2>
                   <table style="width: 100%;border-spacing: 10px 10px;">
                     <tr>
-                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
                       <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.inhouse_bid_number}</td>
                     </tr>
                     <tr>

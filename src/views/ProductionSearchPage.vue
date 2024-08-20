@@ -272,9 +272,9 @@ import mux from "@/mux";
 import { PDFDocument } from 'pdf-lib'
 
 export default {
-  
+
   mounted() {
-    
+
   },
   components: {
                 NavComponent,
@@ -296,7 +296,7 @@ export default {
   },
   methods:{
     // eslint-disable-next-line no-unused-vars
-    
+
     async initialize () {
       const prevURL = window.location.href;
 
@@ -440,7 +440,7 @@ export default {
       let searchProjectCode = this.searchCardInputs.find(x=>x.label === '프로젝트 코드').value;
       if (searchProjectCode)
         searchProjectCode = searchProjectCode.trim();
-      let searchInhouseNumber = this.searchCardInputs.find(x=>x.label === '사내 입찰번호').value;
+      let searchInhouseNumber = this.searchCardInputs.find(x=>x.label === '사내 견적번호').value;
       if (searchInhouseNumber)
         searchInhouseNumber = searchInhouseNumber.trim();
       let searchCompanyNumber = this.searchCardInputs.find(x=>x.label === '기업별 입찰번호').value;
@@ -635,7 +635,7 @@ export default {
                     <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.project_code}</td>
                   </tr>
                   <tr>
-                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
                     <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inhouse_bid_number}</td>
                   </tr>
                   <tr>

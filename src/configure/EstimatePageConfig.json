@@ -25,14 +25,14 @@
     {"type": "승인", "name": "", "user_id": "", "email": "", "checked_date": ""}
   ],
   "searchCardInputs":[
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"사내 견적번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"발행일", "type": "dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"8"}
   ],
   "estimateSearchDefaultInfoInputs":[    
     {"label":"발행일", "type": "dateSingle", "menu":"","col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
+    {"label":"사내 견적번호", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true}
   ],
   "estimateSearchDefaultInfoInputs2":[
@@ -43,7 +43,7 @@
   ],
   "estimateWriteDefaultInfoInputs":[    
     {"label":"발행일", "type": "dateSingle", "menu": "", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"사내 견적번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": ""}
   ],
   "estimateWriteDefaultInfoInputs2":[
@@ -70,7 +70,7 @@
     {"label":"기타", "column_name":"files", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true}
   ],
   "search_estimate_headers":[
-    { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
+    { "text": "사내 견적번호", "align": "start", "value": "inhouse_bid_number"},
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"},
     { "text": "작성자", "align": "start", "value": "given_name"},
     { "text": "업체명", "align": "start", "value": "company_name"},

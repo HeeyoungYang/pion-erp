@@ -324,7 +324,7 @@
                 width="350"
                 @click="download('estimate/blueprint', clickedProductCost.blueprint_file.replace(clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_', ''), clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_')"
                 style="cursor: pointer;"
-              />  
+              />
             </v-col>
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
@@ -510,9 +510,9 @@ import EstimateSearchPageConfig from "@/configure/EstimateSearchPageConfig.json"
 import mux from "@/mux";
 
 export default {
-  
+
   mounted() {
-    
+
   },
   components: {
                 NavComponent,
@@ -628,7 +628,7 @@ export default {
     calc_cost_detail_data_profite(){ return this.calc_cost_detail_data.find(x=>x.cost_list==='이윤')},
 
     // input_issue_date() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '발행일') },
-    // input_inhouse_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '사내 입찰번호') },
+    // input_inhouse_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '사내 견적번호') },
     // input_company_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '기업별 입찰번호') },
     // input_due_date() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '납기') },
     // input_service_name() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '용역명') },
@@ -858,9 +858,9 @@ export default {
       this.email_sign =`<div><p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px;"><strong>${this.login_info.name} 파이온 일렉트릭㈜ ${this.login_info.department} ${this.login_info.position} / Pion Electric Co., Ltd. </strong></p><p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;">Home page : www.pionelectric.com<br>E-mail: ${this.login_info.email}  C/P: ${'+82(0)' + this.login_info.phone_number.slice(1)}<br> Tel: ${'+82(0)' + this.login_info.office_phone_number.slice(1)} Fax: +82(0)505-300-4179<br><br> 본사: (03722) 서울특별시 서대문구 연세로 50 연세대학교 공학원 116호<br> Head office: #116, Engineering Research Park, Yonsei University, 50, Yonsei-ro, Seodaemun-gu, Seoul, 03722, Republic of KOREA<br><br> 광명 사무소: (14348) 경기도 광명시 일직로 72  A-1818호<br> Gwangmyeong office: #A-1818, 72, Iljik-ro, Gwangmyeong-si, Gyeonggi-do, Republic of KOREA 14348<br><br> 광주 공장: (47580) 광주광역시 광산구 연산동 1247<br> Gwangju factory: 1247 Yeonsan-dong, Gwangsan-gu, Gwangju, Republic of KOREA 47580<br><br> 보령 공장: (33448) 충청남도 보령시 주교면 관창공단길 266<br> Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheongnam-do, Republic of KOREA 33448<br><br></p> <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;"><strong>제품 및 서비스</strong><br> ∙ 고자기장 기반의 산업용 운용기기 (Development of Operating Device for Industrial Applications based on High Magnetic Field)<br> ∙ 광기기 기반의 전력전자 응용기기 (Development of Power Electronics Application Device based on Optical Device)<br> ∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)<br> ∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)<br> ∙ 전기공사면허</p> </div>`
     },
     // eslint-disable-next-line no-unused-vars
-    
+
     setSearchCardInputs(inhouse_bid_number, company_bid_number, company_name, issue_date){
-      this.searchCardInputs.find(x=>x.label === '사내 입찰번호').value = inhouse_bid_number;
+      this.searchCardInputs.find(x=>x.label === '사내 견적번호').value = inhouse_bid_number;
       this.searchCardInputs.find(x=>x.label === '기업별 입찰번호').value = company_bid_number;
       this.searchCardInputs.find(x=>x.label === '업체명').value = company_name;
       if (issue_date.includes(' ~ ')){
@@ -1012,14 +1012,14 @@ export default {
         // if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
         //   const searchResult = result.data;
         const searchResult = JSON.parse(JSON.stringify(EstimateSearchPageConfig.test_estimate_approve_data));
-        
+
         // 이력 제거 후 실제 데이터만 남기기
         searchResult.confirmation = searchResult.confirmation.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
         searchResult.product_cost = searchResult.product_cost.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
         searchResult.labor_cost_calc_detail = searchResult.labor_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
         searchResult.product_cost_calc_detail = searchResult.product_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
         searchResult.construction_materials_data = searchResult.construction_materials_data.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
-        
+
         searchResult.confirmation.reverse(); // 최신순으로 정렬
         this.searchDataCalcProcess(searchResult);
 
@@ -1157,9 +1157,9 @@ export default {
           new_approval_phase = '승인';
           new_approved_date = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
         }
-        
+
       }
-      
+
       if (change === false){
         new_approval_phase = '반려';
         new_rejecter = this.login_info.name;
@@ -1188,7 +1188,7 @@ export default {
           "rollback": "yes"
         }],
       };
-        
+
       if (new_approval_phase === '미승인'){
         sendData["estimate_confirmation_table-update"][0].data.checked_date = new_checked_date;
       }
@@ -1275,7 +1275,7 @@ export default {
                 <h2 style="text-align: center; color:#13428a">견적서 ${item.approval_phase === '미승인' ? '확인' : item.approval_phase} 처리 알림</h2>
                 <table style="width: 100%;border-spacing: 10px 10px;">
                   <tr>
-                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
                     <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inhouse_bid_number}</td>
                   </tr>
                   <tr>
@@ -1327,7 +1327,7 @@ export default {
             console.log('알림 메일 전송에 실패-error :>> ', error);
             mux.Util.showAlert('저장되었으나 알림 메일 전송에 실패하였습니다.', '저장 완료');
           }
-          
+
         } else {
           if (prevURL !== window.location.href) return;
           mux.Util.showAlert(result);
@@ -1337,7 +1337,7 @@ export default {
         mux.Util.showAlert(error);
       }
       mux.Util.hideLoading();
-      
+
     },
     openEstiamteMailForm(){
       // this.estimate_product_list_dialog = false;
@@ -1485,7 +1485,7 @@ export default {
     async estimateCheckbox(type, name){
       if(name !== '재료비' && !this.estimate_checkbox[type]){
         const confirm = await mux.Util.showConfirm('재료비에 ' + name + '을(를) 포함하시겠습니까?', '금액 확인', false, '예', '아니오');
-        
+
         if (confirm){
           this.estimate_detail_data.find(x=>x.cost_list === name).hidden = true;
           this.estimate_detail_data.find(x=>x.cost_list === '재료비').belong_data.push(this.estimate_detail_data.find(x=>x.cost_list === name));
@@ -1515,7 +1515,7 @@ export default {
           this.estimate_detail_data.find(x=>x.cost_list === name).hidden = false;
         }
       }
-      
+
       if (this.estimate_checkbox.product){
         this.show_childs_parent_index_arr = [0];
         this.show_grand_childs_parent_index_arr = [0, 1];

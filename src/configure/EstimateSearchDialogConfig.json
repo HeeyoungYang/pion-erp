@@ -7,7 +7,7 @@
     {"text": "", "align": "center", "value": "set", "sortable":false}
   ],
   "searchCardInputs":[
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"사내 견적번호", "col":"12", "sm":"4", "lg":"4"},
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4"},
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"발행일", "type": "dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"8"}

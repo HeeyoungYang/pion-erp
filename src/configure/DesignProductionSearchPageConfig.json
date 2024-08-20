@@ -10,7 +10,7 @@
   "searchCardInputs":[
     {"label":"승인", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All","미확인", "미승인", "승인", "반려"]},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"사내 견적번호", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"업체명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"발행일", "type":"dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"3"}
@@ -43,7 +43,7 @@
     { "text": "발행일", "align": "start", "value": "issue_date"},
     { "text": "업체명", "align": "start", "value": "company_name"},
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
-    { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
+    { "text": "사내 견적번호", "align": "start", "value": "inhouse_bid_number"},
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"},
     { "text": "총액", "align": "start", "value": "cost_total_amount"},
     { "text": "생산 의뢰", "align": "start", "value": "send_production_request"}
@@ -79,7 +79,7 @@
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "단가", "align": "start", "value": "unit_price"},
     { "text": "필요수량", "align": "start", "value": "item_num"},
-    { "text": "재고", "align": "start", "value": "stock_num"}
+    { "text": "사용 가능 수량", "align": "start", "value": "usable_num"}
   ],
   "purchase_detail_headers": [
     { "text": "종류", "align": "start", "value": "type"},
@@ -89,7 +89,7 @@
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "필요 수량", "align": "start", "value": ""},
-    { "text": "사용 가능 수량", "align": "start", "value": ""},
+    { "text": "사용 가능 수량", "align": "start", "value": "usable_num"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "견적서", "align": "start", "value": ""}
   ],

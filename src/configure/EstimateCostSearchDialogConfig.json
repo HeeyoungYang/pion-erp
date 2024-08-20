@@ -1,11 +1,11 @@
 {  
   "searchCardInputs":[
-    {"label":"사내 입찰번호", "col":"12", "sm":"3", "lg":"3"},
+    {"label":"사내 견적번호", "col":"12", "sm":"3", "lg":"3"},
     {"label":"기업별 입찰번호", "col":"12", "sm":"3", "lg":"3"},
     {"label":"업체명", "col":"12", "sm":"3", "lg":"3", "value": ""}
   ],
   "table_header": [
-    { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
+    { "text": "사내 견적번호", "align": "start", "value": "inhouse_bid_number"},
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"},
     { "text": "작성자", "align": "start", "value": "given_name"},
     { "text": "업체명", "align": "start", "value": "company_name"},

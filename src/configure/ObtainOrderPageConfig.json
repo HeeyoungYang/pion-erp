@@ -26,7 +26,7 @@
   ],
   "searchCardInputs":[
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"사내 견적번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"발행일", "type": "dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"8"}
@@ -34,7 +34,7 @@
   "estimateSearchDefaultInfoInputs":[    
     {"label":"발행일", "type": "dateSingle", "menu":"", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4", "disabled":true},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4", "disabled":true},
+    {"label":"사내 견적번호", "col":"12", "sm":"4", "lg":"4", "disabled":true},
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4", "disabled":true}
   ],
   "estimateSearchDefaultInfoInputs2":[
@@ -47,7 +47,7 @@
   "estimateWriteDefaultInfoInputs":[    
     {"label":"발행일", "type": "dateSingle", "menu": "", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"사내 견적번호", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4", "value": ""}
   ],
   "estimateWriteDefaultInfoInputs2":[
@@ -86,7 +86,7 @@
     { "text": "작성자", "align": "start", "value": "given_name"},
     { "text": "업체명", "align": "start", "value": "company_name"},
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
-    { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
+    { "text": "사내 견적번호", "align": "start", "value": "inhouse_bid_number"},
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"},
     { "text": "총액", "align": "start", "value": "cost_total_amount"}
   ],

@@ -328,9 +328,9 @@ import ProductionPageConfig from "@/configure/ProductionPageConfig.json";
 import mux from "@/mux";
 
 export default {
-  
+
   mounted() {
-    
+
   },
   components: {
                 NavComponent,
@@ -346,7 +346,7 @@ export default {
 
   methods:{
     // eslint-disable-next-line no-unused-vars
-    
+
     initialize(){
       // this.search_obtain_data = ProductionPageConfig.test_estimate_data
       const prevURL = window.location.href;
@@ -369,7 +369,7 @@ export default {
       let searchProjectCode = this.searchCardInputs.find(x=>x.label === '프로젝트 코드').value;
       if (searchProjectCode)
         searchProjectCode = searchProjectCode.trim();
-      let searchInhouseNumber = this.searchCardInputs.find(x=>x.label === '사내 입찰번호').value;
+      let searchInhouseNumber = this.searchCardInputs.find(x=>x.label === '사내 견적번호').value;
       if (searchInhouseNumber)
         searchInhouseNumber = searchInhouseNumber.trim();
       let searchCompanyNumber = this.searchCardInputs.find(x=>x.label === '기업별 입찰번호').value;
@@ -722,7 +722,7 @@ export default {
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.project_code}</td>
                         </tr>
                         <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.inhouse_bid_number}</td>
                         </tr>
                         <tr>
@@ -895,7 +895,7 @@ export default {
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.project_code}</td>
                         </tr>
                         <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 입찰번호</td>
+                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.inhouse_bid_number}</td>
                         </tr>
                         <tr>
