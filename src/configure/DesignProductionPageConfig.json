@@ -17,7 +17,7 @@
   ],
   "searchCardInputs":[
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4"},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4"},
+    {"label":"사내 견적번호", "col":"12", "sm":"4", "lg":"4"},
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4"},
     {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"발행일", "type": "dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"8"}
@@ -25,6 +25,11 @@
 
 
   "approval_member_info":[
+    {"type": "확인", "name": "", "user_id": "", "email": ""},
+    {"type": "승인", "name": "", "user_id": "", "email": ""}
+  ],
+
+  "purchase_member_info":[
     {"type": "확인", "name": "", "user_id": "", "email": ""},
     {"type": "승인", "name": "", "user_id": "", "email": ""}
   ],
@@ -54,7 +59,7 @@
   "estimateDefaultInfoInputs":[    
     {"label":"발행일", "col":"12", "sm":"4", "lg":"4", "disabled":true},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4", "disabled":true},
-    {"label":"사내 입찰번호", "col":"12", "sm":"4", "lg":"4", "disabled":true},
+    {"label":"사내 견적번호", "col":"12", "sm":"4", "lg":"4", "disabled":true},
     {"label":"기업별 입찰번호", "col":"12", "sm":"4", "lg":"4", "disabled":true},
     {"label":"납기", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
     {"label":"인도조건", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
@@ -81,29 +86,32 @@
     {"label":"회로도", "column_name":"blueprint_circuit", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"}
   ],
   
-  "setPurchaseInputs":[
-    {"label":"견적서 첨부", "type":"file", "col":"12", "sm":"4", "lg":"4"},
-    {"label":"업체명", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"담당자", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"연락처", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"email", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"결제조건", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"리드타임", "col":"12", "sm":"4", "lg":"4", "value": ""}
+  "estimateInfoInputs":[
+    {"label":"견적 확정 업체", "column_name":"purchase_estimate_company", "col":"12", "sm":"4", "lg":"4", "value": "", "rule_set":true},
+    {"label":"견적서 첨부", "column_name":"purchase_estimate_file", "type":"file", "col":"12", "sm":"8", "lg":"8", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"}
   ],
 
   "bom_list_headers": [
     { "text": "종류", "align": "start", "value": "type"},
     { "text": "분류", "align": "start", "value": "classification"},
-    { "text": "관리코드", "align": "start", "value": "product_code"},
+    { "text": "관리코드", "align": "start", "value": "item_code"},
     { "text": "제품명", "align": "start", "value": "name"},
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "제조사", "align": "start", "value": "manufacturer"},
-    { "text": "단가", "align": "start", "value": "unit_price"},
-    { "text": "필요수량", "align": "start", "value": "item_num"},
+    { "text": "필요수량", "align": "start", "value": "num"},
     { "text": "사용 가능 수량", "align": "start", "value": "usable_num"}
   ],
-  
+  "selected_unestimated_headers": [
+    { "text": "완제품 코드", "align": "start", "value": "product_code"},
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "item_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"}
+  ],
   "bom_list_purchase_headers": [
     { "text": "종류", "align": "start", "value": "type"},
     { "text": "분류", "align": "start", "value": "classification"},
@@ -113,7 +121,7 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "단가", "align": "start", "value": "unit_price"},
-    { "text": "필요수량", "align": "start", "value": "item_num"},
+    { "text": "필요수량", "align": "start", "value": "num"},
     { "text": "사용 가능 수량", "align": "start", "value": "usable_num"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "견적/선주문", "align": "start", "value": "estimate"},
@@ -138,6 +146,7 @@
     { "text": "사양", "align": "center", "value": "spec"},
     { "text": "제조사", "align": "center", "value": "manufacturer"},
     { "text": "단가", "align": "center", "value": "unit_price"},
+    { "text": "필요수량", "align": "center", "value": "num"},
     { "text": "제외", "align": "center", "value": "actions"}
   ],
   "search_estimate_headers":[
@@ -145,7 +154,7 @@
     { "text": "작성자", "align": "start", "value": "given_name"},
     { "text": "업체명", "align": "start", "value": "company_name"},
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
-    { "text": "사내 입찰번호", "align": "start", "value": "inhouse_bid_number"},
+    { "text": "사내 견적번호", "align": "start", "value": "inhouse_bid_number"},
     { "text": "기업별 입찰번호", "align": "start", "value": "company_bid_number"},
     { "text": "총액", "align": "start", "value": "cost_total_amount"}
   ],
@@ -214,6 +223,7 @@
     { "text": "모델명", "align": "center", "value": "model"},
     { "text": "사양", "align": "center", "value": "spec"},
     { "text": "제조사", "align": "center", "value": "manufacturer"},
+    { "text": "수량", "align": "center", "value": "product_num"},
     { "text": "상세/수정", "align": "center", "value":"actions"},
     { "text": "제외", "align": "center", "value":"cancle"}
   ],
@@ -221,14 +231,15 @@
   "purchase_detail_headers": [
     { "text": "선택", "align": "start", "value": "select_purchase"},
     { "text": "구매요청일", "align": "start", "value": "created_time"},
-    { "text": "발주일", "align": "start", "value": "ordered_time"},
+    { "text": "발주일", "align": "start", "value": "order_request_date"},
     { "text": "종류", "align": "start", "value": "type"},
     { "text": "분류", "align": "start", "value": "classification"},
     { "text": "관리코드", "align": "start", "value": "product_code"},
     { "text": "제품명", "align": "start", "value": "name"},
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
-    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"}
+    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
+    { "text": "비고", "align": "start", "value": "note"}
   ],
   
   "purchase_requested_headers": [
@@ -447,26 +458,46 @@
   ],
   "set_bom_list_test_data":[
     {
-      "product_code": "TEST-01",
-      "name": "제품명",
-      "model": "모델명",
-      "spec": "사양",
-      "manufacturer": "제조사",
+      "type":"완제품",
+      "classification":"전력변환기",
+      "name":"asdasd222",
+      "model":"",
+      "spec":"xzczxc",
+      "manufacturer":"(주)현대전기산전",
+      "product_code":"qwewqe222",
+      "product_num":"2",
       "belong_data":[
         {
           "type":"원부자재",
           "classification":"전력변환기",
-          "item_code":"TEST-01-001",
-          "name":"제품명A",
-          "model":"모델명A",
-          "spec":"사양A",
-          "manufacturer":"제조사A",
-          "unit_price":"10",
-          "data_type": "selected"
+          "name":"SSM자재",
+          "model":"인터페이스 보드",
+          "spec":"DC 5V",
+          "manufacturer":"액트솔루션/라온코리아",
+          "unit_price":"₩ 147,000",
+          "num":1,
+          "condition":"G",
+          "product_code":"qwewqe222",
+          "item_code":"PE-SSM-001",
+          "used_num":1
+        },
+        {
+          "type":"원부자재",
+          "classification":"전력변환기",
+          "name":"SSM자재",
+          "model":"3상통합메인보드",
+          "spec":"MV-SVC-V3.1",
+          "manufacturer":"액트솔루션/라온코리아",
+          "unit_price":"₩ 8,250,000",            
+          "num":1,            
+          "product_code":"qwewqe222",
+          "item_code":"PE-SSM-002",
+          "used_num":1
         }
       ]
     }
   ],
+  
   "setting_item_test_data":[
     {
       "type":"원부자재",

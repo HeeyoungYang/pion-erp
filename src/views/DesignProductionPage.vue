@@ -900,11 +900,21 @@
                             @click="showBomDetail(item)"
                           >mdi-magnify</v-icon>
                         </template>
-                        <template v-slot:[`item.cancle`]>
-
+                        <template v-slot:[`item.product_num`] = "{ item }">
+                          <v-text-field
+                            dense
+                            hide-details
+                            v-model="item.product_num"
+                            style="width:100px;font-size: 0.775rem !important;"
+                            filled
+                            :oninput="!item.product_num ? 0 : item.product_num = item.product_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+                          ></v-text-field>
+                        </template>
+                        <template v-slot:[`item.cancle`] = "{ index }">
                           <v-icon
                             color="grey"
                             small
+                            @click="deleteItem(set_bom_list_data, index)"
                           >mdi-minus-thick</v-icon>
                         </template>
                       </v-data-table>
@@ -941,18 +951,6 @@
                           </v-btn>
                         </v-col>
                         <v-col cols="12" sm="12">
-                          <v-checkbox
-                            hide-details
-                            class="mt-0 mr-4 float-left"
-                            label="필요수량 > 재고수량"
-                          ></v-checkbox>
-                          <v-checkbox
-                            hide-details
-                            class="mt-0 mr-4 float-left"
-                            label="필요수량 ≤ 재고수량"
-                          ></v-checkbox>
-                        </v-col>
-                        <v-col cols="12" sm="12">
                           <DataTableComponent
                             :headers="bom_list_headers"
                             :items="bom_list_data"
@@ -962,7 +960,8 @@
                             tableClass="elevation-0"
                             addToTable
                             addBelongToTable
-                            @addDataToTable="addShipData"
+                            @addDataToTable="addProductData"
+                            @addBelongToTable="addBelongData"
                           />
                         </v-col>
                       </v-row>
@@ -1001,7 +1000,7 @@
                               <v-icon
                                 color="grey"
                                 small
-                                @click="deleteItem(items[0].product_code)"
+                                @click="cancleItem(items[0].product_code, false)"
                               >mdi-minus-thick</v-icon>
                             </th>
                           </template>
@@ -1012,6 +1011,7 @@
                               v-model="item.purchase_num"
                               style="width:100px;font-size: 0.775rem !important;"
                               filled
+                              :oninput="!item.purchase_num ? 0 : item.purchase_num = item.purchase_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                             ></v-text-field>
                           </template>
                           <template v-slot:[`item.estimate`] = "{ item }">
@@ -1020,34 +1020,36 @@
                                 label="미선택"
                                 color="primary"
                                 hide-details
-                                class="float-left mr-3 mt-0"
-                                v-model="item.estimate"
+                                class="float-left mr-3 mt-0 pt-0"
+                                v-model="item.purchase_estimate_check"
+                                @click="clickDontSelect(item.product_code, item.item_code)"
                               ></v-checkbox>
                               <v-btn
-                                color="primary"
-                                class="float-left"
+                                :color="item.purchase_estimate_company === '' ?'grey' : 'primary' "
+                                :class="item.purchase_estimate_company === '' ? 'float-left white--text':'float-left mr-3'"
                                 x-small
                                 elevation="0"
-                                @click="estimateDialog = true"
+                                @click="estimateDialog(item)"
                               >
                                 견적서
                               </v-btn>
                               <v-btn
-                                color="success"
+                                :color="!item.belong_data ?'grey' : 'success' "
+                                :class="!item.belong_data ? 'float-left white--text':'float-left mr-3'"
                                 class="float-left"
                                 x-small
                                 elevation="0"
-                                @click="searchPreOdered('select')"
+                                @click="searchPreOdered('select', item)"
                               >
                                 선주문
                               </v-btn>
                             </div>
                           </template>
-                          <template v-slot:[`item.cancle`] = "{ index }">
+                          <template v-slot:[`item.cancle`] = "{ item }">
                             <v-icon
                               color="grey"
                               small
-                              @click="deleteItem(index)"
+                              @click="cancleItem(item.product_code, item.item_code)"
                             >mdi-minus-thick</v-icon>
                           </template>
                           </v-data-table>
@@ -1278,7 +1280,7 @@
               x-small
               class="float-right white--text ml-2"
               elevation="1"
-              @click="dialog_bom_detail=false"
+              @click="colseBomDetail"
             >
               <v-icon> mdi-close-thick </v-icon>
             </v-btn>
@@ -1334,14 +1336,6 @@
               </InputsFormComponent>
             </v-col>
             <v-col cols="12">
-              <!-- <DataTableComponent
-                v-model="selected_items_for_product_data"
-                :headers="product_search_item_headers"
-                :items="search_items_for_product_data"
-                item-key="_code"
-                show-select
-                dense
-              /> -->
 
               <v-data-table
                 v-model="selected_items_for_product_data"
@@ -1355,13 +1349,14 @@
           </v-col>
           <v-col cols="12" sm="12">
 
-            <p class="font-weight-black primary--text text-h6 mb-2">
-              TEST-01 구성 자재
+            <p class="mb-2">
+              <span class="font-weight-black primary--text text-h6">{{ item_setting_product_code }} 구성 자재</span>
               <v-btn
                 small
-                class="ml-2"
+                class="ml-2 mr-5"
                 @click="addItemSetting"
               >입력 행 +</v-btn>
+              <span>*하단 표의 필요 수량은 완제품 1개를 만드는데 필요한 수량입니다.</span>
             </p>
 
             <v-data-table
@@ -1372,103 +1367,111 @@
               dense
               disable-sort
             >
-              <template v-slot:item = "{ item }">
+              <template v-slot:item = "{ item, index }">
                 <tr>
                   <td class="text-center">
                     <v-text-field
-                      v-if="item.data_type === 'added'"
+                      v-if="item.data_type === 'written'"
                       v-model="item.type"
                       dense
                       hide-details
                       filled
                       style="width:200px; font-size:12px">
                     </v-text-field>
-                    {{ item.data_type === 'selected' ? item.type : '' }}
+                    {{ item.data_type !== 'written' ? item.type : '' }}
                   </td>
                   <td class="text-center">
                     <v-text-field
-                      v-if="item.data_type === 'added'"
+                      v-if="item.data_type === 'written'"
                       v-model="item.classification"
                       dense
                       hide-details
                       filled
                       style="width:200px; font-size:12px">
                     </v-text-field>
-                    {{ item.data_type === 'selected' ? item.classification : '' }}
+                    {{ item.data_type !== 'written' ? item.classification : '' }}
                   </td>
                   <td class="text-center">
                     <v-text-field
-                      v-if="item.data_type === 'added'"
+                      v-if="item.data_type === 'written'"
                       v-model="item.item_code"
                       dense
                       hide-details
                       filled
                       style="width:200px; font-size:12px">
                     </v-text-field>
-                    {{ item.data_type === 'selected' ? item.item_code : '' }}
+                    {{ item.data_type !== 'written' ? item.item_code : '' }}
                   </td>
                   <td class="text-center">
                     <v-text-field
-                      v-if="item.data_type === 'added'"
+                      v-if="item.data_type === 'written'"
                       v-model="item.name"
                       dense
                       hide-details
                       filled
                       style="width:200px; font-size:12px">
                     </v-text-field>
-                    {{ item.data_type === 'selected' ? item.name : '' }}
+                    {{ item.data_type !== 'written' ? item.name : '' }}
                   </td>
                   <td class="text-center">
                     <v-text-field
-                      v-if="item.data_type === 'added'"
+                      v-if="item.data_type === 'written'"
                       v-model="item.model"
                       dense
                       hide-details
                       filled
                       style="width:200px; font-size:12px">
                     </v-text-field>
-                    {{ item.data_type === 'selected' ? item.model : '' }}
+                    {{ item.data_type !== 'written' ? item.model : '' }}
                   </td>
                   <td class="text-center">
                     <v-text-field
-                      v-if="item.data_type === 'added'"
+                      v-if="item.data_type === 'written'"
                       v-model="item.spec"
                       dense
                       hide-details
                       filled
                       style="width:200px; font-size:12px">
                     </v-text-field>
-                    {{ item.data_type === 'selected' ? item.spec : '' }}
+                    {{ item.data_type !== 'written' ? item.spec : '' }}
                   </td>
                   <td class="text-center">
                     <v-text-field
-                      v-if="item.data_type === 'added'"
+                      v-if="item.data_type === 'written'"
                       v-model="item.manufacturer"
                       dense
                       hide-details
                       filled
                       style="width:200px; font-size:12px">
                     </v-text-field>
-                    {{ item.data_type === 'selected' ? item.manufacturer : '' }}
+                    {{ item.data_type !== 'written' ? item.manufacturer : '' }}
                   </td>
                   <td class="text-center">
                     <v-text-field
-                      v-if="item.data_type === 'added'"
+                      v-if="item.data_type === 'written'"
                       v-model="item.unit_price"
                       dense
                       hide-details
                       filled
                       style="width:200px; font-size:12px">
                     </v-text-field>
-                    {{ item.data_type === 'selected' ? item.unit_price : '' }}
+                    {{ item.data_type !== 'written' ? item.unit_price : '' }}
+                  </td>
+                  <td class="text-center">
+                    <v-text-field
+                      v-model="item.num"
+                      dense
+                      hide-details
+                      filled
+                      style="width:100px; font-size:12px">
+                    </v-text-field>
                   </td>
                   <td class="text-center">
                     <v-icon
                       color="grey"
                       small
-                    >
-                      mdi-minus-thick
-                    </v-icon>
+                      @click="deleteItem(setting_item_data, index)"
+                    >mdi-minus-thick</v-icon>
                   </td>
                 </tr>
               </template>
@@ -1780,18 +1783,6 @@
               </v-btn>
             </v-col>
             <v-col cols="12" sm="12">
-              <v-checkbox
-                hide-details
-                class="mt-0 mr-4 float-left"
-                label="필요수량 > 재고수량"
-              ></v-checkbox>
-              <v-checkbox
-                hide-details
-                class="mt-0 mr-4 float-left"
-                label="필요수량 ≤ 재고수량"
-              ></v-checkbox>
-            </v-col>
-            <v-col cols="12" sm="12">
               <DataTableComponent
                 :headers="bom_list_headers"
                 :items="bom_list_data"
@@ -1841,7 +1832,7 @@
                   <v-icon
                     color="grey"
                     small
-                    @click="deleteItem(items[0].product_code)"
+                    @click="cancleItem(items[0].product_code, false)"
                   >mdi-minus-thick</v-icon>
                 </th>
               </template>
@@ -1868,7 +1859,7 @@
                     class="float-left"
                     x-small
                     elevation="0"
-                    @click="estimateDialog = true"
+                    @click="unestimatedMailDialog = true"
                   >
                     견적서
                   </v-btn>
@@ -1883,11 +1874,11 @@
                   </v-btn>
                 </div>
               </template>
-              <template v-slot:[`item.cancle`] = "{ index }">
+              <template v-slot:[`item.cancle`] = "{ item }">
                 <v-icon
                   color="grey"
                   small
-                  @click="deleteItem(index)"
+                  @click="cancleItem(item.product_code, item.item_code)"
                 >mdi-minus-thick</v-icon>
               </template>
               </v-data-table>
@@ -1897,12 +1888,12 @@
       </ModalDialogComponent>
       <ModalDialogComponent
         :dialog-value="pre_ordered_dialog"
-        max-width="900px"
+        max-width="80%"
         title-class="display-none"
         text-class="pb-0"
         closeText="닫기"
         :persistent="true"
-        @close="pre_ordered_dialog = false"
+        @close="closePreOrderDialog"
       >
         <CardComponent
           elevation="0"
@@ -1931,6 +1922,7 @@
                   <v-btn
                     color="primary"
                     elevation="2"
+                    @click="searchPurchaseData"
                   >
                     <v-icon>mdi-magnify</v-icon>검색
                   </v-btn>
@@ -1942,17 +1934,17 @@
                   :headers="purchase_detail_headers"
                   :items="purchase_detail_data"
                   :item-key="purchase_detail_data.product_code"
-                  group-by="estimate_company"
+                  group-by="purchase_estimate_company"
                   dense
                 >
 
                   <template v-slot:[`group.header`]="{items, isOpen, toggle}">
-                    <th  @click="toggle" colspan="10">
+                    <th  @click="toggle" colspan="11">
                       <v-icon
                       >
                         {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                       </v-icon>
-                      {{ items[0].estimate_company }}
+                      {{ items[0].purchase_estimate_company }}
                     </th>
                   </template>
                   <template v-slot:[`item.select_purchase`] = "{ item }">
@@ -1972,24 +1964,24 @@
         </CardComponent>
       </ModalDialogComponent>
       <v-dialog
-        v-model="estimateDialog"
+        v-model="unestimatedMailDialog"
         persistent
         max-width="1000px"
       >
-        <v-stepper v-model="estimate_steppers">
+      <v-stepper v-model="unestimated_steppers">
           <v-stepper-header>
-            <template v-for="n in estimated_step">
+            <template v-for="n in unestimated_step">
               <v-stepper-step
                 :key="`${n}-step`"
-                :complete="estimate_steppers > n"
+                :complete="unestimated_steppers > n"
                 :step="n"
                 editable
               >
-                {{ n ===  1 ? '관련 자재 선택' : '견적 정보 입력'}}
+                {{ n ===  1 ? '관련 자재 선택' : '견적 등록'}}
               </v-stepper-step>
 
               <v-divider
-                v-if="n !== estimated_step"
+                v-if="n !== unestimated_step"
                 :key="n"
               ></v-divider>
             </template>
@@ -1997,94 +1989,99 @@
 
           <v-stepper-items>
             <v-stepper-content
-              v-for="n in estimated_step"
+              v-for="n in unestimated_step"
               :key="`${n}-content`"
               :step="n"
             >
               <div v-if="n === 1">
                 <v-row>
                   <v-col cols="12">
-                    <v-data-table
-                      v-model="selected_estimate_data"
-                      :headers="bom_list_headers"
-                      :items="bom_list_purchase_data"
-                      item-key="product_code"
-                      dense
+                    <DataTableComponent
+                      v-model="selected_unestimated_data"
+                      :headers="selected_unestimated_headers"
+                      :items="bom_list_need_estiamte_data"
+                      :item-key="add_data_type === '완제품자재' ? 'item_id' : 'item_code'"
+                      table-class="elevation-0"
                       show-select
-                    ></v-data-table>
+                      dense
+                    />
                   </v-col>
                 </v-row>
                 <v-btn
                   color="primary"
-                  @click="estimate_steppers = 2"
+                  @click="unestimated_steppers = 2"
                 >
                   다음 ▶
                 </v-btn>
 
                 <v-btn
-                  text
-                  color="error"
-                  @click="estimateDialog = false"
+                  text color="error"
+                  @click="closeUnestimatedMailDialog"
                 >
                   취소
                 </v-btn>
               </div>
               <div v-if="n === 2">
                 <v-card class="elevation-0">
-                  <v-card-text>
+                  <v-card-text class="pb-0">
                     <v-row>
                       <v-col cols="12">
                         <v-btn
                           x-small
                           color="primary"
-                          @click="!show_selected_estimate_data ? show_selected_estimate_data = true :  show_selected_estimate_data = false"
+                          @click="!show_selected_unestimated_data ? show_selected_unestimated_data = true :  show_selected_unestimated_data = false"
                         >관련 자재</v-btn>
                       </v-col>
-                      <v-col cols="12" v-if="show_selected_estimate_data">
+                      <v-col cols="12" v-if="show_selected_unestimated_data">
                         <v-data-table
                         style="border:1px solid #c0c0c0"
-                          :headers="bom_list_headers"
-                          :items="selected_estimate_data"
-                          item-key="product_code"
+                          :headers="selected_unestimated_headers"
+                          :items="selected_unestimated_data"
+                          :item-key="add_data_type === '완제품자재' ? 'item_id' : 'item_code'"
                           dense
                         ></v-data-table>
                       </v-col>
                     </v-row>
-
-                    <v-row>
-                      <v-col cols="12" sm="12">
-                        <InputsFormComponent
-                          dense
-                          clearable
-                          filled
-                          hide-details
-                          :inputs="setPurchaseInputs"
-                        >
-                          <v-col cols="12" sm="4">
-                            <v-btn
-                              color="success"
-                              @click="test(), estimateDialog = false"
-                            >
-                              저장
-                            </v-btn>
-                          </v-col>
-                        </InputsFormComponent>
-                      </v-col>
-                    </v-row>
                   </v-card-text>
                 </v-card>
+                <CardComponent
+                  title-class="d-none"
+                  class="elevation-0"
+                >
+                  <div slot="cardText">
+                    <v-form
+                      ref="estimateForm"
+                    >
+                      <InputsFormComponent
+                        dense
+                        clearable
+                        filled
+                        hide-details
+                        :inputs="estimateInfoInputs"
+                      ></InputsFormComponent>
+                    </v-form>
+                  </div>
+                </CardComponent>
+
                 <v-card class="elevation-0">
                   <v-card-text>
                     <v-btn
                       color="primary"
-                      @click="estimate_steppers = 1"
+                      @click="unestimated_steppers = 1"
                     >
                       ◀ 이전
                     </v-btn>
                     <v-btn
+                      color="success"
+                      @click="savePurchaseEstimate"
+                    >
+                      저장
+                    </v-btn>
+
+                    <v-btn
                       text
                       color="error"
-                      @click="estimateDialog = false"
+                      @click="closeUnestimatedMailDialog"
                     >
                       취소
                     </v-btn>
@@ -2143,6 +2140,20 @@ export default {
                 MemberSearchDialogComponent,
               },
 
+
+  watch: {
+    select_purchase_manager(val){
+      if(val !== null) {
+        let user_id = val.split('(')[1].split(')')[0];
+        let user_name = val.split('(')[0];
+        this.purchase_member_info[1].name = user_name;
+        this.purchase_member_info[1].user_id =  user_id;
+      }else{
+        this.purchase_member_info[1].name = '';
+        this.purchase_member_info[1].user_id =  '';
+      }
+    }
+  },
   created () {
     this.initialize()
   },
@@ -2157,6 +2168,9 @@ export default {
         this.approval_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.approval_member_info[0].email = this.$cookies.get(this.$configJson.cookies.email.key);
         this.approval_member_info[0].id = this.$cookies.get(this.$configJson.cookies.id.key);
+        this.purchase_member_info[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+        this.purchase_member_info[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
+        this.purchase_member_info[0].user_id =  this.$cookies.get(this.$configJson.cookies.id.key);
       } catch (error) {
         if (prevURL !== window.location.href) return;
         mux.Util.showAlert(error);
@@ -2184,7 +2198,27 @@ export default {
         mux.Util.showAlert(error);
         return;
       }
+      this.estimateInfoInputs = JSON.parse(JSON.stringify(this.estimateInfoInputs));
+      mux.Rules.rulesSet(this.estimateInfoInputs);
     },
+
+    selectMemberDialog(idx){
+      this.member_type_index = idx
+      this.member_dialog = true;
+    },
+    setMember(item){
+      this.approval_member_info[this.member_type_index].name = item.name.trim()
+      this.approval_member_info[this.member_type_index].user_id = item.user_id
+      this.close();
+    },
+    members(data){
+      this.members_list=data;
+    },
+    close(){
+      this.member_dialog = false;
+    },
+
+
     async searchButton(){
       mux.Util.showLoading();
       this.search_production_data = DesignProductionPageConfig.test_production_data
@@ -2245,7 +2279,6 @@ export default {
               for(let b=0; b<data.belong_data.length; b++){
                 data.belong_data[b].product_code = data.product_code;
                 data.belong_data[b].item_code = data.belong_data[b].code;
-                data.belong_data[b].used_num = data.total_stock * data.belong_data[b].num
                 delete data.belong_data[b].code;
 
 
@@ -2434,22 +2467,15 @@ export default {
       let product_code = this.setting_item_data[0].product_code;
       let selected = this.selected_items_for_product_data;
       selected.forEach(data => {
-        data.data_type = 'selected';
+        data.data_type = 'added';
         data.product_code = product_code;
         data.item_code = data._code;
+        data.num = 0;
         delete data._code;
       })
       this.setting_item_data.push(...selected);
 
       selected = [];
-    },
-    test(){
-      // console.log('test');
-      // mux.Server.uploadFile({path: '/', folder:'somefolder', file: this.files[0]});
-      mux.Server.uploadFile({path: '/', folder:'somefolder', files: this.files});
-    },
-    closEstimateSearch(){
-      this.estimate_dialog = false;
     },
     addItemSetting(){
       this.setting_item_data.push(
@@ -2462,33 +2488,32 @@ export default {
           "spec":"",
           "manufacturer":"",
           "unit_price":"",
-          "data_type": "added"
+          "data_type": "written"
         }
       )
     },
+    closEstimateSearch(){
+      this.estimate_dialog = false;
+    },
 
-    selectMemberDialog(idx){
-      this.member_type_index = idx
-      this.member_dialog = true;
-    },
-    setMember(item){
-      this.approval_member_info[this.member_type_index].name = item.name.trim()
-      this.approval_member_info[this.member_type_index].user_id = item.user_id
-      this.close();
-    },
-    members(data){
-      this.members_list=data;
-    },
-    close(){
-      this.member_dialog = false;
+    closeUnestimatedMailDialog(){
+      this.unestimatedMailDialog = false;
+      this.unestimated_steppers = 1;
+      this.estimateInfoInputs.forEach(input => {
+        input.value = '';
+        if(input.type === 'file'){
+          input.value.name = '';
+        }
+      });
     },
     showBomDetail(item){
       item.belong_data.forEach(data =>{
         data.data_type = 'selected'
         data.product_code = item.product_code
       })
-      this.setting_item_data = item.belong_data;
+      this.setting_item_data = JSON.parse(JSON.stringify(item.belong_data));
       this.dialog_bom_detail = true;
+      this.item_setting_product_code = item.product_code
     },
     previousStep(step){
       this.production_steppers = step-1;
@@ -2496,21 +2521,29 @@ export default {
     async nextStep(step){
       if(step === 2){
         // 사용가능수량 검색 및 적용
-        await this.setPurchaseRequest();
+        await this.setPurchaseRequest(step);
+      }else if(step === 3){
+        // 유효성 검사 및 데이터 정리
+        await this.checkPurchaseRequest(step);
+      }else{
+        this.production_steppers = step+1;
       }
-      this.production_steppers = step+1;
     },
-    async setPurchaseRequest(){
-      mux.Util.showLoading();
-
+    async setPurchaseRequest(step){
       let bom_data = JSON.parse(JSON.stringify(this.set_bom_list_data));
       let product_code_for_search = [];
-      bom_data.forEach(data =>{
-        for(let i=0; i<data.belong_data.length; i++){
-          product_code_for_search.push(data.belong_data[i].product_code);
-          product_code_for_search.push(data.belong_data[i].item_code);
+      for(let bom=0; bom<bom_data.length; bom++){
+        let data = bom_data[bom];
+        if(data.product_num < 1){
+          mux.Util.showAlert('완제품 수량을 확인해주세요.');
+          return;
+        }else{
+          for(let i=0; i<data.belong_data.length; i++){
+            product_code_for_search.push(data.belong_data[i].product_code);
+            product_code_for_search.push(data.belong_data[i].item_code);
+          }
         }
-      })
+      }
 
       console.log(product_code_for_search);
 
@@ -2519,10 +2552,8 @@ export default {
       const prevURL = window.location.href;
 
       let usable_num_searched = [];
-      // set_for_search.forEach(async code => {
 
-      // })
-
+      mux.Util.showLoading();
       for(let i=0; i<set_for_search.length; i++){
         let code = set_for_search[i];
         try {
@@ -2581,35 +2612,123 @@ export default {
         return prev;
       }, [])
 
-      for(let b=0; b<bom_data.length; b++){
-        let bom = bom_data[b];
-        for(let u=0; u<usable_num_searched.length; u++){
-          let usable_num = usable_num_searched[u];
-          if(bom.product_code === usable_num.product_code){
-            bom.usable_num = usable_num.usable_num;
-          }else{
-            if(bom.belong_data){
-              for(let i=0; i<bom.belong_data.length; i++){
-                let belong_data = bom.belong_data[i];
-                if(belong_data.item_code === usable_num.product_code){
-                  belong_data.usable_num = usable_num.usable_num;
-                }else{
-                  belong_data.usable_num = 0;
-                }
-              }
+      bom_data.forEach(bom =>{
+        bom.num = bom.product_num;
+        bom.usable_num = usable_num_searched.find(x=>x.product_code === bom.product_code).usable_num;
+        for(let i=0; i<bom.belong_data.length; i++){
+          let belong_data = bom.belong_data[i];
+          belong_data.num = belong_data.num * bom.num;
+          belong_data.usable_num = usable_num_searched.find(x=>x.product_code === belong_data.item_code).usable_num;
+        }
+      })
+      console.log(bom_data);
+
+      //필요 수량이 사용 가능 수량보다 클 경우 bom_list_purchase_data에 추가
+      bom_data.forEach(data =>{
+        for(let bd=0; bd<data.belong_data.length; bd++){
+          let belong_data = data.belong_data[bd];
+          if(belong_data.usable_num < belong_data.num){
+            belong_data.purchase_estimate_check = false;
+            belong_data.purchase_estimate_company = '';
+            belong_data.purchase_estimate_file_name = '';
+            belong_data.purchase_estimate_thumbnail = '';
+            belong_data.purchase_num = 0;
+            this.bom_list_purchase_data.push(belong_data);
+          }
+        }
+      })
+      this.bom_list_data = bom_data;
+      this.production_steppers = step+1;
+      mux.Util.hideLoading();
+    },
+    checkPurchaseRequest(step){
+
+      let confirmation_data = {};
+      let member_input = this.purchase_member_info;
+
+      //confirmation_data에 cost_calc_code와 project_code 정보 추가 필요
+
+      // 구매 요청할 내역이 있을 경우
+      if(this.bom_list_purchase_data.length > 0){
+        //구매 담당자가 설정되었는지 확인
+        if(this.select_purchase_manager === ''){
+          mux.Util.showAlert('구매 담당자를 선택해주세요.');
+          return;
+        }else{
+          confirmation_data.approval_phase = '요청';
+          member_input.forEach(mem => {
+            if(mem.type === '확인'){
+              confirmation_data.checker = mem.name;
+              confirmation_data.checker_id = mem.user_id;
+            }else if(mem.type === '승인'){
+              confirmation_data.approver = mem.name;
+              confirmation_data.approver_id = mem.user_id;
             }
-            bom.usable_num = 0;
+          })
+        }
+
+        for(let i=0; i<this.bom_list_purchase_data.length; i++){
+          let data = this.bom_list_purchase_data[i];
+
+          // 미선택 선택, 견적서 첨부, 선주문 첨부 중 하나가 설정되었는지 확인
+          if(!data.purchase_estimate_check && data.purchase_estimate_company === '' && !data.belong_data){
+            mux.Util.showAlert(data.item_code + '의 견적/주문 항목을 확안해주세요.<br> 미선택, 견적서, 선주문 중 택 1');
+            return;
+          }
+
+          if(data.belong_data){
+          // 선주문을 선택한 경우 선주문한 수량이 필요수량-사용가능수량 보다 많은지 확인
+            if( data.num - data.usable_num > Number(data.belong_data[0].purchase_num) + Number(data.purchase_num)){
+              mux.Util.showAlert(
+                `필요수량 및 사용 가능 수량 대비
+                구매 요청 수량이 부족합니다.
+
+                · 필요 수량 : ${data.num}
+                · 사용 가능 수량 : ${data.usable_num}
+                · 선주문 수량 : ${data.belong_data[0].purchase_num}
+                · 구매 요청 수량 : ${data.purchase_num}`
+              );
+              return;
+            }
+          }else{
+
+          // 구매요청 수량이  0 이상인지
+          if(data.purchase_num < 1){
+            mux.Util.showAlert(data.item_code + '의 구매 요청 수량을 입력해주세요.');
+            return;
+          }
+
+          // 선주문을 선택하지 않은 경우 구매 요청 수량이 필요수량-사용가능수량 보다 많은지 확인
+          if (data.num - data.usable_num > Number(data.purchase_num)){
+            mux.Util.showAlert(
+                `필요수량 및 사용 가능 수량 대비
+                구매 요청 수량이 부족합니다.
+
+                · 필요 수량 : ${data.num}
+                · 사용 가능 수량 : ${data.usable_num}
+                · 구매 요청 수량 : ${data.purchase_num}`
+              );
+            return;
+            }
           }
         }
       }
-      console.log(bom_data);
-      mux.Util.hideLoading();
+      this.purchase_confirmation_data.push(confirmation_data);
+      this.production_steppers = step+1;
+
     },
     addBomList(item){
+      item.product_num = 0;
       this.set_bom_list_data.push(item);
     },
     saveBomDetail(){
       let product_code = this.setting_item_data[0].product_code;
+      for(let i=0; i<this.setting_item_data.length; i++){
+        if(this.setting_item_data[i].num < 1){
+          mux.Util.showAlert('필요 수량을 확인해주세요.');
+          return;
+        }
+      }
       this.set_bom_list_data.forEach(data =>{
         if(data.product_code === product_code){
           data.belong_data = this.setting_item_data;
@@ -2617,29 +2736,301 @@ export default {
       })
       this.dialog_bom_detail = false;
     },
-    searchPreOdered(type){
+    colseBomDetail(){
+      this.setting_item_data = [];
+      this.search_items_for_product_data = [];
+      this.selected_items_for_product_data = [];
+      this.productSearchItemInputs.forEach(input => {
+        if(input.label !== '종류')
+          input.value = '';
+      });
+      this.dialog_bom_detail=false
+    },
+    addProductData(item){
+      if(item.belong_data){
+        item.belong_data.forEach(data => {
+          data.purchase_estimate_check = false;
+          data.purchase_estimate_company = '';
+          data.purchase_estimate_file_name = '';
+          data.purchase_estimate_thumbnail = '';
+          data.purchase_num = 0;
+        })
+        this.bom_list_purchase_data = this.bom_list_purchase_data.filter(param => param.product_code != item.product_code);
+        this.bom_list_purchase_data.push(...item.belong_data);
+      }
+    },
+    addBelongData(item, idx){
+      if(this.bom_list_purchase_data.length === 0){
+        item.belong_data[idx].purchase_estimate_check = false;
+        item.belong_data[idx].purchase_estimate_company = '';
+        item.belong_data[idx].purchase_estimate_file_name = '';
+        item.belong_data[idx].purchase_estimate_thumbnail = '';
+        item.belong_data[idx].purchase_num = 0;
+        this.bom_list_purchase_data.push(item.belong_data[idx]);
+      }else{
+        let add_data = {};
+        for(let i=0; i<this.bom_list_purchase_data.length; i++){
+          if(this.bom_list_purchase_data[i].product_code === item.product_code && this.bom_list_purchase_data[i].item_code === item.belong_data[idx].item_code){
+            mux.Util.showAlert('이미 추가된 제품입니다.');
+            return;
+          }else{
+            item.belong_data[idx].purchase_estimate_check = false;
+            item.belong_data[idx].purchase_estimate_company = '';
+            item.belong_data[idx].purchase_estimate_file_name = '';
+            item.belong_data[idx].purchase_estimate_thumbnail = '';
+            item.belong_data[idx].purchase_num = 0;
+            add_data=item.belong_data[idx];
+          }
+        }
+        this.bom_list_purchase_data.push(add_data);
+      }
+    },
+
+    cancleItem(product_code, item_code){
+      if(item_code === false){
+        this.bom_list_purchase_data = this.bom_list_purchase_data.filter(param => param.product_code != product_code);
+      }else if(product_code === false){
+        this.bom_list_purchase_items_data = this.bom_list_purchase_items_data.filter(param => param.item_code != item_code);
+      }else{
+        this.bom_list_purchase_data.forEach((data, index) => {
+          if(data.product_code === product_code && data.item_code === item_code){
+            this.bom_list_purchase_data.splice(index, 1);
+          }
+        })
+      }
+    },
+
+    deleteItem(table, idx){
+      if(table.length === 1){
+        mux.Util.showAlert('행이 한 개 이상 존재해야 합니다.');
+        return;
+      }else{
+        table.splice(idx, 1);
+      }
+    },
+    async clickDontSelect(product_code, item_code){
+      let bom_data  = this.bom_list_purchase_data;
+
+      for(let i=0; i<bom_data.length; i++){
+        if(bom_data[i].product_code === product_code && bom_data[i].item_code === item_code){
+          if(bom_data[i].purchase_estimate_company !== ''){
+            const confirm = await mux.Util.showConfirm('미선택 체크 시 적용한 견적서는 초기화됩니다.  ', '선택 확인');
+              if (!confirm){
+                return;
+              }
+            bom_data[i].purchase_estimate_company = '';
+            bom_data[i].purchase_estimate_file_name = '';
+            bom_data[i].purchase_estimate_thumbnail = '';
+          }
+          if(bom_data[i].belong_data){
+            const confirm = await mux.Util.showConfirm('미선택 체크 시 적용한 선택한 선주문 내역은 초기화됩니다.  ', '선택 확인');
+              if (!confirm){
+                bom_data[i].purchase_estimate_check = false;
+                return;
+              }
+            delete bom_data[i].belong_data;
+          }
+        }
+
+      }
+      this.selected_unestimated_data = []
+    },
+    async estimateDialog(item){
+      let bom_data = this.bom_list_purchase_data;
+
+      this.bom_list_need_estiamte_data = [];
+      this.selected_unestimated_data = [];
+
+      for(let i=0; i<bom_data.length; i++){
+        if(bom_data[i].product_code === item.product_code && bom_data[i].item_code === item.item_code){
+          if(bom_data[i].purchase_estimate_check){
+            const confirm = mux.Util.showAlert('미선택이 체크되어 있습니다. <br> 체크 해제 후 출하 선택이 가능합니다.', '선택 확인');
+            if (!confirm){
+              return;
+            }
+            return;
+          }
+          if(bom_data[i].belong_data){
+            const confirm = await mux.Util.showConfirm('견적서를 설정하려면 선택한 선주문 내역은 초기화됩니다.  ', '선택 확인');
+              if (!confirm){
+                return;
+              }
+            delete bom_data[i].belong_data;
+          }
+          this.unestimatedMailDialog = true;
+          this.selected_unestimated_data.push(item);
+          this.bom_list_need_estiamte_data.push(item);
+        }else{
+          if(!bom_data[i].purchase_estimate_check && !bom_data[i].belong_data){
+            this.bom_list_need_estiamte_data.push(bom_data[i]);
+          }
+        }
+      }
+    },
+    async searchPreOdered(type, item){
       let headers = this.purchase_detail_headers
       let index = headers.findIndex(e => e.text === '선택');
+
       if(type === 'search'){
         if(index !== -1){
           headers.splice(index, 1);
         }
       }else{
-        if(index === -1){
-          headers.unshift({ "text": "선택", "align": "start", "value": "select_purchase"});
+        let item_code = item.item_code;
+        let product_code = item.product_code;
+        this.pre_ordered_product_code = product_code;
+
+        if(item.purchase_estimate_check){
+          const confirm = mux.Util.showAlert('미선택이 체크되어 있습니다. <br> 체크 해제 후 선주문 선택이 가능합니다.', '선택 확인');
+          if (!confirm){
+            return;
+          }
+          return;
+        }else{
+          if(index === -1){
+            headers.unshift({ "text": "선택", "align": "start", "value": "select_purchase"});
+          }
+          this.searchPurchaseInputs.find(x=>x.label === '관리코드').value = item_code;
+        }
+
+        if(item.purchase_estimate_company !== ''){
+          const confirm = await mux.Util.showConfirm('선주문 내역을 선택하려면 적용한 견적서는 초기화됩니다.  ', '선택 확인');
+          if (!confirm){
+            return;
+          }
+          item.purchase_estimate_company = '';
+          item.purchase_estimate_file_name = '';
+          item.purchase_estimate_thumbnail = '';
+          this.searchPurchaseInputs.find(x=>x.label === '관리코드').value = item_code;
         }
       }
+
+      await this.searchPurchaseData();
       this.pre_ordered_dialog = true;
+    },
+    selectPurchase(item){
+      this.bom_list_purchase_data.forEach(data => {
+        if(data.product_code === this.pre_ordered_product_code && data.item_code === item.item_code){
+          data.belong_data = [];
+          data.belong_data.push(item);
+        }
+      })
+      this.closePreOrderDialog();
+    },
+    closePreOrderDialog(){
+      this.searchPurchaseInputs.forEach(data => {
+        data.value = '';
+      })
+      this.purchase_detail_data = [];
+      this.pre_ordered_dialog = false
+    },
+    async searchPurchaseData(){
+      mux.Util.showLoading();
+      let searchCompany = this.searchPurchaseInputs.find(x=>x.label === '구매 업체명').value;
+        if (searchCompany)
+        searchCompany = searchCompany.trim();
+      let searchItemCode = this.searchPurchaseInputs.find(x=>x.label === '관리코드').value;
+      if (searchItemCode)
+      searchItemCode = searchItemCode.trim();
+      let searchItemName = this.searchPurchaseInputs.find(x=>x.label === '제품명').value;
+      if (searchItemName)
+      searchItemName = searchItemName.trim();
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "purchase_product_table.name": searchItemName ? searchItemName : "",
+              "purchase_product_table.item_code": searchItemCode ? searchItemCode : "",
+              "purchase_product_table.purchase_estimate_company": searchCompany ? searchCompany : ""
+            }
+          ],
+          "script_file_name": "rooting_구매요청_검색_24_08_08_11_45_79G.json",
+          "script_file_path": "data_storage_pion\\json_sql\\purchase\\구매요청_검색_24_08_08_11_45_QAW"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          if(result.length === 0){
+            mux.Util.showAlert('검색 결과가 없습니다.');
+          }
+          let searched_data = result.data.filter(data => data.cost_calc_code === '' || data.cost_calc_code === null);
+
+          let set_purchase_data = [];
+          searched_data.forEach(data =>{
+            for(let i=0; i<data.belong_data.length; i++){
+              let belong_data = data.belong_data[i];
+              if(belong_data.purchase_estimate_phase === '미요청'){
+                belong_data.purchase_estimate_company = '*견적서 미요청';
+              }
+              belong_data.created_time = data.created_time;
+              belong_data.note = data.note;
+              belong_data.given_name = data.given_name;
+              belong_data.creater = data.creater;
+              set_purchase_data.push(belong_data);
+            }
+          })
+          console.log(set_purchase_data);
+          this.purchase_detail_data = set_purchase_data;
+        } else {
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      mux.Util.hideLoading();
+    },
+    async savePurchaseEstimate(){
+      let selected_data = this.selected_unestimated_data;
+      let estimate_info = this.estimateInfoInputs;
+      let product_data = this.bom_list_purchase_data;
+
+
+      const validate = this.$refs.estimateForm[0].validate();
+      if(validate){
+        let estimate_company = estimate_info.find(x=>x.column_name === 'purchase_estimate_company').value
+        let estimate_file_value = estimate_info.find(x=>x.column_name === 'purchase_estimate_file').value;
+        let estimate_file_name = estimate_file_value.name;
+        const getPdfThumbnail = await mux.Util.getPdfThumbnail(estimate_file_value, 1, false);
+        let estimate_file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+        let estimate_thumbnail_img = mux.Util.imageBinary(estimate_file_thumbnail);
+
+        selected_data.forEach(selected => {
+          for(let i=0; i<product_data.length; i++){
+            if(selected.item_code === product_data[i].item_code){
+              product_data[i].purchase_estimate_company = estimate_company;
+              product_data[i].purchase_estimate_file_value = estimate_file_value;
+              product_data[i].purchase_estimate_file_name = estimate_file_name;
+              product_data[i].purchase_estimate_thumbnail = estimate_file_thumbnail;
+              product_data[i].purchase_estimate_thumbnail_img = estimate_thumbnail_img;
+            }
+          }
+        })
+        product_data.push();
+        this.closeUnestimatedMailDialog()
+      }
     },
   },
   data(){
     return{
       purchasers: [],
       select_purchase_manager: '',
+      pre_ordered_product_code: '',
       production_steppers: 1,
       production_step: 4,
-      estimate_steppers: 1,
-      estimated_step: 2,
+      unestimated_steppers: 1,
+      unestimated_step: 2,
 
       estimate_dialog: false,
       edit_survey_cost_num_disabled: true,
@@ -2648,9 +3039,7 @@ export default {
 
       tab_main: null,
       tab_search: null,
-      tab_dialog_search_product: null,
       tab_main_items: DesignProductionPageConfig.tab_main_items,
-      dialog_search_product_items: DesignProductionPageConfig.dialog_search_product_items,
       dialog_search_product: false,
       dialog_bom_detail: false,
       dialog_calculate_labor: false,
@@ -2658,8 +3047,8 @@ export default {
       blueprint_inputs_show: false,
       bom_product_search: false,
       pre_ordered_dialog: false,
-      estimateDialog: false,
-      show_selected_estimate_data: false,
+      unestimatedMailDialog: false,
+      show_selected_unestimated_data: false,
       edit_production_files: false,
       member_dialog: false,
       member_type_index:0,
@@ -2681,14 +3070,17 @@ export default {
       bom_list_purchase_headers: DesignProductionPageConfig.bom_list_purchase_headers,
 
       searched_product_data: [],
+      purchase_confirmation_data: [],
       search_items_for_product_data: [],
       set_bom_list_data: DesignProductionPageConfig.set_bom_list_test_data,
       product_search_item_headers: DesignProductionPageConfig.product_search_item_headers,
       product_item_setting_headers: DesignProductionPageConfig.product_item_setting_headers,
       setting_item_data: [],
-      purchase_detail_data: DesignProductionPageConfig.test_purchase_detail_data,
-      bom_list_data: DesignProductionPageConfig.bom_list_test_data,
-      bom_list_purchase_data: DesignProductionPageConfig.bom_list_purchase_test_data,
+      purchase_detail_data: [],
+      bom_list_data: [],
+      bom_list_purchase_data: [],
+      selected_unestimated_data:[],
+      bom_list_need_estiamte_data:[],
 
       construction_materials_data: JSON.parse(JSON.stringify(DesignProductionPageConfig.construction_materials_data)),
       calc_cost_detail_data: JSON.parse(JSON.stringify(DesignProductionPageConfig.calc_cost_detail_data)),
@@ -2737,8 +3129,10 @@ export default {
       blueprintDetailInputs: DesignProductionPageConfig.blueprintDetailInputs,
       bomProductSearchInputs: DesignProductionPageConfig.bomProductSearchInputs,
       searchPurchaseInputs: DesignProductionPageConfig.searchPurchaseInputs,
-      setPurchaseInputs: DesignProductionPageConfig.setPurchaseInputs,
+      selected_unestimated_headers: DesignProductionPageConfig.selected_unestimated_headers,
+      estimateInfoInputs:DesignProductionPageConfig.estimateInfoInputs,
       search_production_data: [],
+      purchase_member_info:DesignProductionPageConfig.purchase_member_info,
     }
   },
 }
