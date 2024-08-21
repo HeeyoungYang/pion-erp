@@ -249,8 +249,8 @@
     { "text": "제품명", "align": "start", "value": "name"},
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
-    { "text": "필요 수량", "align": "start", "value": ""},
-    { "text": "사용 가능 수량", "align": "start", "value": ""},
+    { "text": "필요 수량", "align": "start", "value": "num"},
+    { "text": "사용 가능 수량", "align": "start", "value": "usable_num"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "견적서", "align": "start", "value": ""}
   ],
@@ -614,7 +614,7 @@
   "bom_list_purchase_test_data":[
     {
       "type":"원부자재",
-      "classification":"GFM",
+      "classification":"전력변환기",
       "product_code":"완제품AA",
       "item_code":"원부자재BB",
       "name":"원부자재B",
@@ -622,7 +622,7 @@
       "spec":"SPEC-002",
       "manufacturer":"PIONELECTRIC",
       "unit_price":"10",
-      "item_num":"3",
+      "num":"3",
       "purchase_num":"3",
       "usable_num":"0"
     },
@@ -636,7 +636,7 @@
       "spec":"SPEC-003",
       "manufacturer":"PIONELECTRIC",
       "unit_price":"70",
-      "item_num":"1",
+      "num":"1",
       "purchase_num":"0",
       "usable_num":"1"
     }

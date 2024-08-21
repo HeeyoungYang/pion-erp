@@ -46,7 +46,7 @@
           dense
         >
           <template v-slot:[`item.set`]="{ item }">
-            <v-btn x-small color="primary" @click="setMember(item)">적용</v-btn>
+            <v-btn x-small color="primary" @click="setEstimate(item)">적용</v-btn>
           </template>
         </v-data-table>
       </v-card-text>
@@ -134,8 +134,8 @@ export default {
       this.$emit("update:dialogValue", false);
       this.$emit("close");
     },
-    setMember(item) {
-      this.$emit("setMember",item);
+    setEstimate(item) {
+      this.$emit("setEstimate",item);
     },
     save() {
       this.$emit("save");

@@ -60,7 +60,7 @@
                         :headers="search_estimate_headers"
                         :items="search_production_data"
                         item-key="estimate_code"
-                        deletable
+                        @clickTr="clickSearchedData"
                       />
                     </v-col>
                   </v-row>
@@ -450,6 +450,26 @@
                               small
                             >mdi-pencil</v-icon>
                           </v-btn>
+                        </v-col>
+                        <v-col cols="12" sm="12" v-if="!editable_bom_list">
+                          <DataTableComponent
+                            :headers="bom_list_headers"
+                            :items="set_bom_list_data"
+                            item-key="product_code"
+                            children-key="belong_data"
+                            dense
+                            tableClass="elevation-0"
+                          />
+                        </v-col>
+                        <v-col cols="12" sm="12" v-else>
+                          <span class="font-weight-black primary--text text-h6 mr-2">완제품 조회</span>
+                          <v-btn
+                            x-small
+                            @click="!bom_product_search ? bom_product_search = true : bom_product_search = false"
+                          >
+                            {{ !bom_product_search ? '펼치기' : '접기' }}
+                          </v-btn>
+
                           <v-btn
                             v-if="editable_bom_list"
                             color="primary"
@@ -457,40 +477,88 @@
                             x-small
                             class="mr-3 float-right"
                             elevation="0"
+                            @click="saveEditData"
                           >
                             <v-icon
                               small
                             >mdi-check</v-icon>
                           </v-btn>
-                        </v-col>
-                        <v-col cols="12" sm="12" v-if="!editable_bom_list">
-                          <v-data-table
-                            v-model="selected_items_for_product_data"
-                            :headers="product_item_setting_headers"
-                            :items="search_items_for_product_data"
-                            item-key="_code"
+                          <InputsFormComponent
                             dense
-                          ></v-data-table>
-                        </v-col>
-                        <v-col cols="12" sm="12" v-else>
+                            clearable
+                            hide-details
+                            filled
+                            :inputs="bomProductSearchInputs"
+                            v-if="bom_product_search"
+                            class="mt-3"
+                          >
+                            <v-col
+                              cols="6"
+                              sm="4"
+                              lg="3"
+                              align-self="center"
+                            >
+                              <v-btn
+                                color="primary"
+                                elevation="2"
+                                small
+                                @click="searchProduct"
+                              >
+                                <v-icon>mdi-magnify</v-icon>검색
+                              </v-btn>
+                            </v-col>
+                            <v-col cols="12">
+                              <v-data-table
+                                dense
+                                :headers="search_product_headers"
+                                :items="searched_product_data"
+                                item-key="product_code"
+                                class="elevation-1"
+                              >
+                                <template v-slot:[`item.actions`]="{ item }">
+                                  <v-btn
+                                    color="success"
+                                    x-small
+                                    class="ml-3"
+                                    elevation="0"
+                                    @click="addBomList(item)"
+                                  >선택
+                                  </v-btn>
+                                </template>
+                              </v-data-table>
+                            </v-col>
+                          </InputsFormComponent>
+                          <v-divider class="my-7"></v-divider>
+
+                          <p class="font-weight-black primary--text text-h6 mb-0">선택 구성</p>
                           <v-data-table
                             dense
                             :headers="set_bom_list_headers"
-                            :items="searched_product_data"
+                            :items="set_bom_list_data"
                             item-key="product_code"
                             class="elevation-1"
                           >
-                            <template v-slot:[`item.actions`]>
+                            <template v-slot:[`item.actions`]="{ item }">
 
                               <v-icon
-                                @click="dialog_bom_detail = true"
+                                @click="showBomDetail(item)"
                               >mdi-magnify</v-icon>
                             </template>
-                            <template v-slot:[`item.cancle`]>
-
+                            <template v-slot:[`item.product_num`] = "{ item }">
+                              <v-text-field
+                                dense
+                                hide-details
+                                v-model="item.product_num"
+                                style="width:100px;font-size: 0.775rem !important;"
+                                filled
+                                :oninput="!item.product_num ? 0 : item.product_num = item.product_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
+                              ></v-text-field>
+                            </template>
+                            <template v-slot:[`item.cancle`] = "{ index }">
                               <v-icon
                                 color="grey"
                                 small
+                                @click="deleteItem(set_bom_list_data, index)"
                               >mdi-minus-thick</v-icon>
                             </template>
                           </v-data-table>
@@ -499,10 +567,9 @@
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
-                <!-- 구매요청내역 -->
+                <!-- 구매 요청 내역 -->
                 <v-tab-item>
                   <v-card>
-
                     <v-card-title>
                       <v-row>
                         <v-col v-show="edit_buttons_show" cols="12" sm="12">
@@ -525,7 +592,7 @@
                     <v-card-text>
                       <DataTableComponent
                         :headers="purchase_requested_headers"
-                        :items="purchase_requested_data"
+                        :items="bom_list_purchase_data"
                         item-key="item_code"
                         dense
                       />
@@ -1778,6 +1845,7 @@
                 small
                 class="mr-2 float-right"
                 elevation="2"
+                @click="saveEditData"
               >
                 저장
               </v-btn>
@@ -1792,28 +1860,28 @@
                 tableClass="elevation-0"
                 addToTable
                 addBelongToTable
-                @addDataToTable="addShipData"
+                @addDataToTable="addProductData"
+                @addBelongToTable="addBelongData"
               />
             </v-col>
           </v-row>
           <v-divider class="my-6"></v-divider>
           <v-row>
-            <v-col
-              cols="12"
-            ><span class="font-weight-black primary--text text-h6 mr-4">구매 요청 내역 수정</span>
-            </v-col>
-            <v-col cols="12" sm="12">
+            <v-col cols="12" sm="12" >
+              <p class="mb-5">
+                <span class="text-h6 primary--text font-weight-bold">구매 요청</span>
+              </p>
               <v-autocomplete
                 v-model="select_purchase_manager"
                 :items="purchasers"
                 label="구매 담당자"
                 dense
                 clearable
-                filled
-                class="mb-4"
                 hide-details
                 style="width:200px"
               ></v-autocomplete>
+            </v-col>
+            <v-col cols="12" sm="12">
               <v-data-table
                 :headers="bom_list_purchase_headers"
                 :items="bom_list_purchase_data"
@@ -1843,6 +1911,7 @@
                   v-model="item.purchase_num"
                   style="width:100px;font-size: 0.775rem !important;"
                   filled
+                  :oninput="!item.purchase_num ? 0 : item.purchase_num = item.purchase_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                 ></v-text-field>
               </template>
               <template v-slot:[`item.estimate`] = "{ item }">
@@ -1851,24 +1920,26 @@
                     label="미선택"
                     color="primary"
                     hide-details
-                    class="float-left mr-3 mt-0"
-                    v-model="item.estimate"
+                    class="float-left mr-3 mt-0 pt-0"
+                    v-model="item.purchase_estimate_check"
+                    @click="clickDontSelect(item.product_code, item.item_code)"
                   ></v-checkbox>
                   <v-btn
-                    color="primary"
-                    class="float-left"
+                    :color="item.purchase_estimate_company === '' ?'grey' : 'primary' "
+                    :class="item.purchase_estimate_company === '' ? 'float-left white--text':'float-left mr-3'"
                     x-small
                     elevation="0"
-                    @click="unestimatedMailDialog = true"
+                    @click="estimateDialog(item)"
                   >
                     견적서
                   </v-btn>
                   <v-btn
-                    color="success"
+                    :color="!item.belong_data ?'grey' : 'success' "
+                    :class="!item.belong_data ? 'float-left white--text':'float-left mr-3'"
                     class="float-left"
                     x-small
                     elevation="0"
-                    @click="searchPreOdered('select')"
+                    @click="searchPreOdered('select', item)"
                   >
                     선주문
                   </v-btn>
@@ -2132,6 +2203,7 @@
       <EstimateSearchDialogComponent
         :dialog-value="estimate_dialog"
         :persistent="true"
+        @setEstimate = "setEstimate"
         @close="closEstimateSearch"
       >
       </EstimateSearchDialogComponent>
@@ -2187,6 +2259,13 @@ export default {
         this.purchase_member_info[1].name = '';
         this.purchase_member_info[1].user_id =  '';
       }
+    },
+    tab_main(val){
+      if(val === 0){
+        this.bom_list_headers = DesignProductionPageConfig.bom_list_headers.filter(x=>x.text !== '사용 가능 수량')
+      }else{
+        this.bom_list_headers = JSON.parse(JSON.stringify(DesignProductionPageConfig.bom_list_headers));
+      }
     }
   },
   created () {
@@ -2241,6 +2320,11 @@ export default {
       this.member_type_index = idx
       this.member_dialog = true;
     },
+    setEstimate(item){
+      console.log(item)
+      this.set_bom_list_data = DesignProductionPageConfig.set_bom_list_test_data
+      this.estimate_dialog = false;
+    },
     setMember(item){
       this.approval_member_info[this.member_type_index].name = item.name.trim()
       this.approval_member_info[this.member_type_index].user_id = item.user_id
@@ -2258,6 +2342,10 @@ export default {
       mux.Util.showLoading();
       this.search_production_data = DesignProductionPageConfig.test_production_data
       mux.Util.hideLoading();
+    },
+    clickSearchedData(){
+      this.set_bom_list_data = DesignProductionPageConfig.set_bom_list_test_data;
+      this.bom_list_purchase_data = DesignProductionPageConfig.bom_list_purchase_test_data;
     },
     async searchProduct() {
       mux.Util.showLoading();
@@ -2498,6 +2586,29 @@ export default {
       }
       mux.Util.hideLoading();
     },
+    async saveEditData(){
+      if(this.tab_search === 2){
+        await this.setPurchaseRequest(false);
+        mux.Util.showAlert('구매 요청 내역으로 이동합니다.', '확인', 2000);
+        this.tab_search = 3;
+        this.dialog_edit_purchase_requested = true
+        this.editable_bom_list = false;
+      }else if(this.tab_search ===3){
+        let test = await this.checkPurchaseRequest(false);
+        if(test){
+          const confirm = await mux.Util.showConfirm('수정한 내용을 최종 업데이트 하시겠습니까?', '확인', false, '업데이트', '수정 진행');
+          if (confirm){
+            // 수정 내용 업데이트 진행
+          }
+          this.dialog_edit_purchase_requested = false;
+        }
+      }else{
+        const confirm = await mux.Util.showConfirm('수정한 내용을 최종 업데이트 하시겠습니까?', '확인', false, '업데이트', '수정 진행');
+        if (confirm){
+          // 수정 내용 업데이트 진행
+        }
+      }
+    },
     addItems(){
       let product_code = this.setting_item_data[0].product_code;
       let selected = this.selected_items_for_product_data;
@@ -2673,7 +2784,9 @@ export default {
         }
       })
       this.bom_list_data = bom_data;
-      this.production_steppers = step+1;
+      if(step){
+        this.production_steppers = step+1;
+      }
       mux.Util.hideLoading();
     },
     async checkPurchaseRequest(step){
@@ -2762,7 +2875,11 @@ export default {
         }
       }
       this.purchase_confirmation_data.push(confirmation_data);
-      this.production_steppers = step+1;
+      if(step){
+        this.production_steppers = step+1;
+      }else{
+        return true;
+      }
 
     },
     addBomList(item){
@@ -3368,7 +3485,7 @@ export default {
       searched_product_data: [],
       purchase_confirmation_data: [],
       search_items_for_product_data: [],
-      set_bom_list_data: DesignProductionPageConfig.set_bom_list_test_data,
+      set_bom_list_data: [],
       product_search_item_headers: DesignProductionPageConfig.product_search_item_headers,
       product_item_setting_headers: DesignProductionPageConfig.product_item_setting_headers,
       setting_item_data: [],
