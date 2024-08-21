@@ -351,14 +351,27 @@
         <!-- 구매요청내역 -->
         <v-tab-item v-if="!clickedProductCost.obtain_file" key="구매 요청 내역">
           <v-card style="border: 1px solid #ccc;" class="pa-4 elevation-0">
-            <DataTableComponent
+            <v-data-table
               :headers="purchase_detail_headers"
               :items="purchase_detail_data"
               item-key="product_code"
-              children-key="belong_data"
               dense
-              tableClass="elevation-0"
-            />
+              class="elevation-0"
+            >
+              <template v-slot:item="{ item }">
+                <tr>
+                  <td v-for="header in purchase_detail_headers" :key="header.text">
+                    {{ header.value == 'estimate' ? '' : item[header.value] }}
+                    <v-icon
+                      v-if="header.value == 'estimate' && item.purchase_estimate_file"
+                      color="primary"
+                      small
+                      @click="estiamteDialog(item)"
+                    >mdi-file</v-icon>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
           </v-card>
         </v-tab-item>
         <!-- 산출내역서 -->
@@ -653,6 +666,41 @@
       </v-tabs-items>
     </ModalDialogComponent>
 
+    <ModalDialogComponent
+      :dialog-value="estimatedDialog"
+      max-width="600px"
+      title-class="display-none"
+      text-class="pb-0"
+      closeText="닫기"
+      :persistent="true"
+      @close="estimatedDialog = false"
+    >
+      <CardComponent
+        elevation="0"
+        text-class="pa-0 pt-4"
+        title-class="pa-0 font-weight-black "
+      >
+        <div slot="cardTitle">
+          <span>{{ estimate_company + ' 견적' }}</span>
+        </div>
+        <div slot="cardText">
+          <v-row>
+            <v-col cols="12">
+              <v-img
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(purchaseEstimateThumbnail)"
+                transition="scale-transition"
+                @click="download('purchase/purchase_estimate', purchaseEstimateFile, purchaseEstimateCode+'_')"
+                style="cursor: pointer; width: 100%;"
+              />
+            </v-col>
+          </v-row>
+        </div>
+      </CardComponent>
+    </ModalDialogComponent>
+
   </div>
 </template>
 <script>
@@ -733,6 +781,12 @@ export default {
       selectDesigner: '',
       member_list: [],
       designer_list: [],
+
+      estimatedDialog: false,
+      estimate_company: '',
+      purchaseEstimateThumbnail: '',
+      purchaseEstimateFile: '',
+      purchaseEstimateCode: ''
     }
   },
 
@@ -820,6 +874,61 @@ export default {
           // this.estimate_member_info[1].name = item.approver;
           // this.estimate_member_info[1].user_id = item.approver_id;
           // this.estimate_member_info[1].checked_date = item.approved_date;
+          this.bom_list_data = [];
+          this.purchase_detail_data = [];
+          if (!item.obtain_file){
+            if (this.searched_datas.product_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code).length > 0){
+              this.bom_list_data = [
+                  ...this.searched_datas.product_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
+                    a.type = '완제품';
+                    a.classification = a.product_classification;
+                    // a.product_code = a.product_code;
+                    a.name = a.product_name;
+                    a.model = a.product_model;
+                    a.spec = a.product_spec;
+                    // a.manufacturer = a.manufacturer;
+                    a.unit_price = a.product_unit_price;
+                    a.item_num = a.product_num;
+                    a.belong_data = [
+                      ...a.belong_data.map((b) => {
+                        b.type = b.module_type;
+                        b.classification = b.module_classification;
+                        b.product_code = b.module_code;
+                        b.name = b.module_name;
+                        b.model = b.module_model;
+                        b.spec = b.module_spec;
+                        b.manufacturer = b.module_manufacturer;
+                        b.unit_price = b.module_unit_price;
+                        b.item_num = b.module_num;
+                        return b;
+                      })
+                    ];
+                    return a;
+                  })
+                ];
+            }
+
+            if (this.searched_datas.purchase_detail_data.filter(x=>x.cost_calc_code === item.cost_calc_code).length > 0){
+              this.purchase_detail_data = [
+                  ...this.searched_datas.purchase_detail_data.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
+                    let item_num = 0;
+                    if (this.bom_list_data.find(x=>x.product_code === a.item_code)){
+                      item_num = this.bom_list_data.find(x=>x.product_code === a.item_code).item_num;
+                    }else if (this.bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code))){
+                      item_num = this.bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).belong_data.find(y=>y.product_code === a.item_code).item_num;
+                    }else if (this.bom_list_data.find(x=>x.belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code)))){
+                      item_num = this.bom_list_data.find(x=>x.belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code))).belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code)).belong_data.find(z=>z.product_code === a.item_code).item_num;
+                    }
+
+                    a.item_num = item_num;
+
+                    a.purchase_estimate_file = a.purchase_estimate_file ? a.purchase_estimate_file : '';
+                    a.purchase_estimate_thumbnail = a.purchase_estimate_thumbnail ? a.purchase_estimate_thumbnail : '';
+                    return a;
+                  })
+                ];
+            }
+          }
 
           this.labor_cost_data = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code);
           this.calc_cost_detail_data_product_cost.belong_data = [];
@@ -1271,6 +1380,8 @@ export default {
             searchResult.construction_materials_data = [...searchResult.construction_materials_data, ...searchDesignResult.construction_materials_data];
           }
 
+          searchResult.purchase_detail_data = searchDesignResult.purchase_detail_data;
+
           this.searchDataCalcProcess(searchResult);
 
           // }else{
@@ -1296,10 +1407,33 @@ export default {
     searchDataCalcProcess(searchResult, isFirst){
       const productTotalCost = {};
       searchResult.product_cost_calc_detail.forEach(a=>{
+        if ((a.product_num && !a.product_unit_price) && a.belong_data && a.belong_data.length > 0){
+          a.product_unit_price = 0;
+          for (let i = 0; i < a.belong_data.length; i++) {
+            const belongData = a.belong_data[i];
+
+            if ((belongData.module_num && !belongData.module_unit_price) && belongData.belong_data && belongData.belong_data.length > 0){
+              belongData.module_unit_price = 0;
+              for (let i = 0; i < belongData.belong_data.length; i++) {
+                const belongBelongData = belongData.belong_data[i];
+                if (belongBelongData.material_num && belongBelongData.material_unit_price){
+                  belongData.module_unit_price += belongBelongData.material_num * belongBelongData.material_unit_price;
+                }
+              }
+              belongData.module_unit_price = Math.round(belongData.module_unit_price / belongData.module_num);
+            }
+            
+            if (belongData.module_num && belongData.module_unit_price){
+              a.product_unit_price += belongData.module_num * belongData.module_unit_price;
+            }
+          }
+          a.product_unit_price = Math.round(a.product_unit_price / a.product_num);
+        }
+        
         if (!productTotalCost[a.cost_calc_code]){
-          productTotalCost[a.cost_calc_code] = Math.round(a.product_num > 0 ? a.product_num * a.product_unit_price : a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
+          productTotalCost[a.cost_calc_code] = Math.round(a.product_num && a.product_unit_price ? a.product_num * a.product_unit_price : a.module_num && a.module_unit_price ? a.module_num * a.module_unit_price : a.material_num && a.material_unit_price ? a.material_num * a.material_unit_price : 0);
         }else {
-          productTotalCost[a.cost_calc_code] += Math.round(a.product_num > 0 ? a.product_num * a.product_unit_price : a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
+          productTotalCost[a.cost_calc_code] += Math.round(a.product_num && a.product_unit_price ? a.product_num * a.product_unit_price : a.module_num && a.module_unit_price ? a.module_num * a.module_unit_price : a.material_num && a.material_unit_price ? a.material_num * a.material_unit_price : 0);
         }
       });
       searchResult.construction_materials_data.forEach(a=>{
@@ -1401,9 +1535,9 @@ export default {
       const productTotalCost = {};
       searchResult.product_cost_calc_detail.forEach(a=>{
         if (!productTotalCost[a.cost_calc_code]){
-          productTotalCost[a.cost_calc_code] = Math.round(a.product_num > 0 ? a.product_num * a.product_unit_price : a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
+          productTotalCost[a.cost_calc_code] = Math.round(a.product_num && a.product_unit_price ? a.product_num * a.product_unit_price : a.module_num && a.module_unit_price ? a.module_num * a.module_unit_price : a.material_num && a.material_unit_price ? a.material_num * a.material_unit_price : 0);
         }else {
-          productTotalCost[a.cost_calc_code] += Math.round(a.product_num > 0 ? a.product_num * a.product_unit_price : a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
+          productTotalCost[a.cost_calc_code] += Math.round(a.product_num && a.product_unit_price ? a.product_num * a.product_unit_price : a.module_num && a.module_unit_price ? a.module_num * a.module_unit_price : a.material_num && a.material_unit_price ? a.material_num * a.material_unit_price : 0);
         }
       });
       searchResult.construction_materials_data.forEach(a=>{
@@ -1943,6 +2077,14 @@ export default {
         mux.Util.showAlert(error);
       }
       mux.Util.hideLoading();
+    },
+
+    estiamteDialog(item){
+      this.estimatedDialog = true;
+      this.estimate_company = item.purchase_estimate_company;
+      this.purchaseEstimateThumbnail = item.purchase_estimate_thumbnail;
+      this.purchaseEstimateFile = item.purchase_estimate_file;
+      this.purchaseEstimateCode = item.code;
     },
 
     // async searchItemStock(data){
