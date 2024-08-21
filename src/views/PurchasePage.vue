@@ -595,9 +595,9 @@ import mux from "@/mux";
 
 
 export default {
-  
+
   mounted(){
-    
+
     // this.closeAll()
   },
   components: {
@@ -729,7 +729,7 @@ export default {
       mux.Rules.rulesSet(this.estimateInfoInputs);
     },
     // eslint-disable-next-line no-unused-vars
-    
+
 
     close(){
       this.unestimatedMailDialog = false;
@@ -1195,7 +1195,7 @@ export default {
       let member_input = this.purchase_member_info;
       let success = true;
 
-      let code = 'PE-' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
+      let code = 'PEPR_' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
 
       confirmation_data.project_code = this.purchaseInfoInputs.find(x=>x.label === '프로젝트 코드').value;
       confirmation_data.note = this.purchaseInfoInputs.find(x=>x.label === '비고').value;
