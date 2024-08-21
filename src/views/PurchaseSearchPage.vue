@@ -139,7 +139,7 @@
                   </th>
                   <th>
                     <v-icon
-                      v-if="items[0].purchase_estimate_phase === '완료' && creater_authority"
+                      v-if="items[0].purchase_estimate_phase === '완료'"
                       color="primary"
                       small
                       @click="estiamteDialog('added_estimate', items[0].order_request_date, items)"
