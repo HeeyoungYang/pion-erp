@@ -2461,9 +2461,9 @@ export default {
       const productTotalCost = {};
       searchResult.product_cost_calc_detail.forEach(a=>{
         if (!productTotalCost[a.cost_calc_code]){
-          productTotalCost[a.cost_calc_code] = Math.round(a.product_num > 0 ? a.product_num * a.product_unit_price : a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
+          productTotalCost[a.cost_calc_code] = Math.round(a.product_num && a.product_unit_price ? a.product_num * a.product_unit_price : a.module_num && a.module_unit_price ? a.module_num * a.module_unit_price : a.material_num && a.material_unit_price ? a.material_num * a.material_unit_price : 0);
         }else {
-          productTotalCost[a.cost_calc_code] += Math.round(a.product_num > 0 ? a.product_num * a.product_unit_price : a.module_num > 0 ? a.module_num * a.module_unit_price : a.material_num * a.material_unit_price);
+          productTotalCost[a.cost_calc_code] += Math.round(a.product_num && a.product_unit_price ? a.product_num * a.product_unit_price : a.module_num && a.module_unit_price ? a.module_num * a.module_unit_price : a.material_num && a.material_unit_price ? a.material_num * a.material_unit_price : 0);
         }
       });
       searchResult.construction_materials_data.forEach(a=>{
