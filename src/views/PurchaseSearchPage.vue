@@ -2218,10 +2218,10 @@ export default {
           this.purchaseEstimateThumbnail = item[0].purchase_estimate_thumbnail;
           this.purchaseEstimateFile = item[0].purchase_estimate_file;
           this.purchaseEstimateCode = item[0].code;
-          if(order !== ""){
-            this.check_editable_purchase_estimate = false;
-          }else{
+          if(order === "" || order === null){
             this.check_editable_purchase_estimate = true;
+          }else{
+            this.check_editable_purchase_estimate = false;
           }
         }else{
           this.setEstimateDialog = true;
