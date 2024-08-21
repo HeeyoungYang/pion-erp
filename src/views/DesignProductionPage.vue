@@ -1099,7 +1099,7 @@
                         small
                         color="success"
                         class="mt-5 elevation-0"
-                        @click="save()"
+                        @click="saveData()"
                       >
                         저장
                       </v-btn>
@@ -1948,14 +1948,49 @@
                     </th>
                   </template>
                   <template v-slot:[`item.select_purchase`] = "{ item }">
-                    <v-btn
+                    <!-- <v-btn
                       color="success"
                       x-small
                       elevation="0"
                       @click="selectPurchase(item)"
                     >
                       선택
-                    </v-btn>
+                    </v-btn> -->
+                    <v-menu
+                      offset-y
+                      :close-on-content-click="false"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          color="success"
+                          x-small
+                          elevation="0"
+                          v-bind="attrs"
+                          v-on="on"
+                        >
+                          선택
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item>
+                          <v-list-item-content style="width: 150px;">
+                            <v-text-field
+                              v-model="pre_order_set_num"
+                              dense
+                              hide-details
+                              filled
+                              label="사용 수량"
+                            ></v-text-field>
+                            <v-btn
+                              small
+                              color="primary"
+                              class="mt-4"
+                              @click="selectPurchase(item)"
+                            >적용</v-btn>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                   </template>
                 </v-data-table>
               </v-col>
@@ -2641,7 +2676,7 @@ export default {
       this.production_steppers = step+1;
       mux.Util.hideLoading();
     },
-    checkPurchaseRequest(step){
+    async checkPurchaseRequest(step){
 
       let confirmation_data = {};
       let member_input = this.purchase_member_info;
@@ -2669,46 +2704,59 @@ export default {
 
         for(let i=0; i<this.bom_list_purchase_data.length; i++){
           let data = this.bom_list_purchase_data[i];
-
+          if(data.purchase_num === ''){
+            data.purchase_num = 0;
+          }
           // 미선택 선택, 견적서 첨부, 선주문 첨부 중 하나가 설정되었는지 확인
           if(!data.purchase_estimate_check && data.purchase_estimate_company === '' && !data.belong_data){
             mux.Util.showAlert(data.item_code + '의 견적/주문 항목을 확안해주세요.<br> 미선택, 견적서, 선주문 중 택 1');
             return;
           }
 
-          if(data.belong_data){
-          // 선주문을 선택한 경우 선주문한 수량이 필요수량-사용가능수량 보다 많은지 확인
-            if( data.num - data.usable_num > Number(data.belong_data[0].purchase_num) + Number(data.purchase_num)){
+          if(data.belong_data){// 선주문을 선택한 경우
+            // 구매 요청 수량을 추가 기입하였는지 확인
+            if(data.purchase_num > 0){
+              let message = `선주문 사용 수량 ${data.belong_data[0].purchase_set_num}개에
+              추가로 ${data.purchase_num}개를 구매 요청 하시겠습니까?
+              아니오 선택 시 구매 요청 수량은 0이 됩니다.`
+
+              const confirm = await mux.Util.showConfirm(message, '구매 요청 확인', false, '예', '아니오');
+              if (!confirm){
+                data.purchase_num = 0;
+              }
+            }
+            // 선주문한 수량이 필요수량-사용가능수량 보다 많은지 확인
+            if( data.num - data.usable_num > Number(data.belong_data[0].purchase_set_num) + Number(data.purchase_num)){
               mux.Util.showAlert(
                 `필요수량 및 사용 가능 수량 대비
-                구매 요청 수량이 부족합니다.
+                선주문 사용 수량과 구매 요청 수량이 부족합니다.
 
                 · 필요 수량 : ${data.num}
                 · 사용 가능 수량 : ${data.usable_num}
                 · 선주문 수량 : ${data.belong_data[0].purchase_num}
+                · 선주문 사용 수량 : ${data.belong_data[0].purchase_set_num}
                 · 구매 요청 수량 : ${data.purchase_num}`
               );
               return;
             }
-          }else{
+          }else{ // 선주문을 선택하지 않은 경우
+            // 구매요청 수량이  0 이상인지
+            if(data.purchase_num < 1){
+              mux.Util.showAlert(data.item_code + '의 구매 요청 수량을 입력해주세요.');
+              return;
+            }
 
-          // 구매요청 수량이  0 이상인지
-          if(data.purchase_num < 1){
-            mux.Util.showAlert(data.item_code + '의 구매 요청 수량을 입력해주세요.');
-            return;
-          }
+            // 구매 요청 수량이 필요수량-사용가능수량 보다 많은지 확인
+            if (data.num - data.usable_num > Number(data.purchase_num)){
+              mux.Util.showAlert(
+                  `필요수량 및 사용 가능 수량 대비
+                  구매 요청 수량이 부족합니다.
 
-          // 선주문을 선택하지 않은 경우 구매 요청 수량이 필요수량-사용가능수량 보다 많은지 확인
-          if (data.num - data.usable_num > Number(data.purchase_num)){
-            mux.Util.showAlert(
-                `필요수량 및 사용 가능 수량 대비
-                구매 요청 수량이 부족합니다.
-
-                · 필요 수량 : ${data.num}
-                · 사용 가능 수량 : ${data.usable_num}
-                · 구매 요청 수량 : ${data.purchase_num}`
-              );
-            return;
+                  · 필요 수량 : ${data.num}
+                  · 사용 가능 수량 : ${data.usable_num}
+                  · 구매 요청 수량 : ${data.purchase_num}`
+                );
+              return;
             }
           }
         }
@@ -2909,6 +2957,15 @@ export default {
       this.pre_ordered_dialog = true;
     },
     selectPurchase(item){
+      if(this.pre_order_set_num < 1){
+        mux.Util.showAlert('사용할 수량을 입력해주세요.');
+        return;
+      }else if(this.pre_order_set_num > item.purchase_num){
+        mux.Util.showAlert('사용할 수량이 선주문 수량보다 많습니다.');
+        return;
+      }else{
+        item.purchase_set_num = Number(this.pre_order_set_num);
+      }
       this.bom_list_purchase_data.forEach(data => {
         if(data.product_code === this.pre_ordered_product_code && data.item_code === item.item_code){
           data.belong_data = [];
@@ -2923,6 +2980,7 @@ export default {
       })
       this.purchase_detail_data = [];
       this.pre_ordered_dialog = false
+      this.pre_order_set_num = 0;
     },
     async searchPurchaseData(){
       mux.Util.showLoading();
@@ -2969,10 +3027,8 @@ export default {
               if(belong_data.purchase_estimate_phase === '미요청'){
                 belong_data.purchase_estimate_company = '*견적서 미요청';
               }
-              belong_data.created_time = data.created_time;
-              belong_data.note = data.note;
-              belong_data.given_name = data.given_name;
-              belong_data.creater = data.creater;
+              Object.assign(belong_data, data);
+              delete belong_data.belong_data
               set_purchase_data.push(belong_data);
             }
           })
@@ -3021,6 +3077,245 @@ export default {
         this.closeUnestimatedMailDialog()
       }
     },
+    async saveData(){
+      // BOM LIST
+      this.saveBomListData();
+
+      // 구매 요청
+      this.savePurchaseData();
+
+    },
+    saveBomListData(){
+      // BOM LIST(design_cost_calc_detail_table) : bom_list_data
+      let sendData = {};
+      let bom_insert = [];
+      this.bom_list_data.forEach(data => {
+        for(let i=0; i<data.belong_data.length; i++){
+          bom_insert.push({
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "creater"
+            },
+            "data": {
+              "cost_calc_code": "",
+              "product_classification": data.classification,
+              "product_code": data.product_code,
+              "product_name": data.name,
+              "product_model": data.model,
+              "product_spec": data.spec,
+              "manufacturer": data.manufacturer,
+              "product_num": data.num,
+              "item_type": data.belong_data[i].type,
+              "item_classification": data.belong_data[i].classification,
+              "item_code": data.belong_data[i].item_code,
+              "item_name": data.belong_data[i].name,
+              "item_model": data.belong_data[i].model,
+              "item_spec": data.belong_data[i].spec,
+              "item_manufacturer": data.belong_data[i].manufacturer,
+              "item_unit_price": data.belong_data[i].unit_price,
+              "item_num": data.belong_data[i].num
+            },
+            "select_where": {"cost_calc_code": "", "product_code": data.product_code, "item_code": data.belong_data[i].item_code},
+            "rollback": "yes"
+          })
+        }
+      })
+      sendData['design_cost_calc_detail_table'] = bom_insert;
+      console.log("sendData BOM : ", sendData);
+    },
+    savePurchaseData(){
+      // DB의 purchase_confirmation_table = purchase_confirmation_data
+      // DB의 purchase_product_table = bom_list_purchase_data
+      const currDate = new Date();
+      let sendData = {};
+      let purchase_confirmation_insert = [];
+      let purchase_product_insert = [];
+      let purchase_confirmation_update = [];
+      let purchase_product_update = [];
+      let purchase_code = 'PEPR_' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
+
+      this.bom_list_purchase_data.forEach(data => {
+        if(data.belong_data){ //선주문일 경우
+          let belong_data = data.belong_data[0];
+          // 선주문 수량과 선주문 사용 수량이 동일할 경우 기존 선주문 데이터의 project_code, cost_calc_code, note만 update
+          if(belong_data.purchase_num === belong_data.purchase_set_num){
+            purchase_confirmation_update.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data":{
+                "project_code": "",
+                "cost_calc_code": "",
+                "note": belong_data.note + ' :: 프로젝트 코드와 연결 완료(' + belong_data.purchase_set_num + '개)'
+              },
+              "update_where": {"id": belong_data.id },
+              "rollback": "yes"
+            })
+          }else{// 다를 경우 기존 선주문 데이터의 선주문 수량 update 및 구매 요청에 데이터 복사 & 선주문 사용 수량 설정
+            purchase_confirmation_insert.push({
+              "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "code" : belong_data.code +'-'+ mux.Date.format(currDate, 'yyyyMMdd HH:mm:ss'),
+                  "cost_calc_code" : data.cost_calc_code ,
+                  "project_code" : data.project_code ,
+                  "approval_phase": belong_data.approval_phase,
+                  "checker" : belong_data.checker,
+                  "checker_id" : belong_data.checker_id,
+                  "checked_date" : belong_data.checked_date,
+                  "approver" : belong_data.approver,
+                  "approver_id" : belong_data.approver_id
+                },
+                "select_where": {"code": belong_data.code +'-'+ mux.Date.format(currDate, 'yyyyMMdd HH:mm:ss')},
+                "rollback": "yes"
+            })
+
+            purchase_product_update.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data":{
+                "purchase_num": belong_data.purchase_num - belong_data.purchase_set_num,
+              },
+              "update_where": {"code": belong_data.code, "product_code": belong_data.product_code, "item_code": belong_data.item_code },
+              "rollback": "yes"
+            })
+            purchase_product_insert.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "code" : belong_data.code +'-'+ mux.Date.format(currDate, 'yyyyMMdd HH:mm:ss'),
+                "type" : belong_data.type,
+                "classification" : belong_data.classification,
+                "product_code" : belong_data.product_code,
+                "item_code" : belong_data.item_code,
+                "name" : belong_data.name,
+                "model" : belong_data.model,
+                "spec" : belong_data.spec,
+                "manufacturer" : belong_data.manufacturer,
+                "unit_price" : belong_data.unit_price,
+                "purchase_num" : belong_data.purchase_set_num,
+                "purchase_estimate_phase" : belong_data.purchase_estimate_company === '' ? '미요청' : '완료',
+                "purchase_estimate_company" : belong_data.purchase_estimate_company,
+                "purchase_estimate_file" : belong_data.purchase_estimate_file_name,
+                "purchase_estimate_thumbnail" : belong_data.purchase_estimate_thumbnail,
+              },
+              "select_where": {"code": belong_data.code +'-'+ mux.Date.format(currDate, 'yyyyMMdd HH:mm:ss'), "product_code": data.product_code, "item_code": data.item_code},
+              "rollback": "yes"
+            })
+          }
+
+          // 선주문을 연결했지만 구매 요청 수량을 입력하여 추가 구매 요청을 하는 경우
+          if(data.purchase_num > 0){
+            purchase_confirmation_insert.push({
+              "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "code" : purchase_code,
+                  "cost_calc_code" : data.cost_calc_code ,
+                  "project_code" : data.project_code ,
+                  "approval_phase": data.approval_phase,
+                  "checker" : data.checker,
+                  "checker_id" : data.checker_id,
+                  "checked_date" : mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss'),
+                  "approver" : data.approver,
+                  "approver_id" : data.approver_id
+                },
+                "select_where": {"code": purchase_code},
+                "rollback": "yes"
+            })
+            purchase_product_insert.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "code" : purchase_code,
+                "type" : data.type,
+                "classification" : data.classification,
+                "product_code" : data.product_code,
+                "item_code" : data.item_code,
+                "name" : data.name,
+                "model" : data.model,
+                "spec" : data.spec,
+                "manufacturer" : data.manufacturer,
+                "unit_price" : data.unit_price,
+                "purchase_num" : data.purchase_num,
+                "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
+                "purchase_estimate_company" : data.purchase_estimate_company,
+                "purchase_estimate_file" : data.purchase_estimate_file_name,
+                "purchase_estimate_thumbnail" : data.purchase_estimate_thumbnail,
+              },
+              "select_where": {"code": purchase_code, "product_code": data.product_code, "item_code": data.item_code},
+              "rollback": "yes"
+            })
+          }
+        }else{ // 미선택 혹은 견적서 첨부일 경우
+          this.purchase_confirmation_data.forEach(data => {
+            purchase_confirmation_insert.push({
+              "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "code" : purchase_code,
+                  "cost_calc_code" : data.cost_calc_code ,
+                  "project_code" : data.project_code ,
+                  "approval_phase": data.approval_phase,
+                  "checker" : data.checker,
+                  "checker_id" : data.checker_id,
+                  "checked_date" : mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss'),
+                  "approver" : data.approver,
+                  "approver_id" : data.approver_id
+                },
+                "select_where": {"code": purchase_code},
+                "rollback": "yes"
+            })
+          })
+
+          purchase_product_insert.push({
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "creater"
+          },
+          "data":{
+            "code" : purchase_code,
+            "type" : data.type,
+            "classification" : data.classification,
+            "product_code" : data.product_code,
+            "item_code" : data.item_code,
+            "name" : data.name,
+            "model" : data.model,
+            "spec" : data.spec,
+            "manufacturer" : data.manufacturer,
+            "unit_price" : data.unit_price,
+            "purchase_num" : data.purchase_num,
+            "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
+            "purchase_estimate_company" : data.purchase_estimate_company,
+            "purchase_estimate_file" : data.purchase_estimate_file_name,
+            "purchase_estimate_thumbnail" : data.purchase_estimate_thumbnail,
+          },
+          "select_where": {"code": purchase_code, "product_code": data.product_code, "item_code": data.item_code},
+          "rollback": "yes"
+        })
+        }
+      })
+
+      sendData["purchase_confirmation_table-insert"] = purchase_confirmation_insert;
+      sendData["purchase_confirmation_table-update"] = purchase_confirmation_update;
+      sendData["purchase_product_table-insert"] = purchase_product_insert;
+      sendData["purchase_product_table-update"] = purchase_product_update;
+
+      console.log("sendData 구매 : ", sendData);
+    }
   },
   data(){
     return{
@@ -3031,6 +3326,7 @@ export default {
       production_step: 4,
       unestimated_steppers: 1,
       unestimated_step: 2,
+      pre_order_set_num: 0,
 
       estimate_dialog: false,
       edit_survey_cost_num_disabled: true,

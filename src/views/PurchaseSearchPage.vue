@@ -139,7 +139,7 @@
                   </th>
                   <th>
                     <v-icon
-                      v-if="items[0].purchase_estimate_phase === '완료' && creater_authority"
+                      v-if="items[0].purchase_estimate_phase === '완료'"
                       color="primary"
                       small
                       @click="estiamteDialog('added_estimate', items[0].order_request_date, items)"
@@ -2218,10 +2218,10 @@ export default {
           this.purchaseEstimateThumbnail = item[0].purchase_estimate_thumbnail;
           this.purchaseEstimateFile = item[0].purchase_estimate_file;
           this.purchaseEstimateCode = item[0].code;
-          if(order !== ""){
-            this.check_editable_purchase_estimate = false;
-          }else{
+          if(order === "" || order === null){
             this.check_editable_purchase_estimate = true;
+          }else{
+            this.check_editable_purchase_estimate = false;
           }
         }else{
           this.setEstimateDialog = true;
