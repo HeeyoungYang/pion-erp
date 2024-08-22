@@ -267,7 +267,68 @@
               />
             </v-card-text>
           </v-card>
-          <v-row class="mt-3">
+          <v-row v-if="clickedProductCost.obtain_file" class="mt-3">
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.blueprint_file"
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(clickedProductCost.blueprint_thumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('obtain/blueprint', clickedProductCost.blueprint_file.replace(clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_', ''), clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_')"
+                style="cursor: pointer;"
+              />
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.approval_file"
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(clickedProductCost.approval_thumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('obtain/approval', clickedProductCost.approval_file.replace(clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_', ''), clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_')"
+                style="cursor: pointer;"
+              />
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 수주서</p>
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.obtain_file"
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(clickedProductCost.obtain_thumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('obtain/obtain', clickedProductCost.obtain_file.replace(clickedProductCost.obtain_file.split('_')[0]+'_'+clickedProductCost.obtain_file.split('_')[1]+'_', ''), clickedProductCost.obtain_file.split('_')[0]+'_'+clickedProductCost.obtain_file.split('_')[1]+'_')"
+                style="cursor: pointer;"
+              />
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
+              <div v-if="clickedProductCost.etc_files">
+                <v-chip
+                  v-for="(file, i) in clickedProductCost.etc_files.split('/')"
+                  :key="i"
+                  color="grey lighten-2"
+                  class="ma-2"
+                  @click="download('obtain/etc', file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', ''), file.split('_')[0]+'_'+file.split('_')[1]+'_')"
+                >
+                  {{ file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', '') }}
+                </v-chip>
+              </div>
+            </v-col>
+          </v-row>
+          <v-row v-if="!clickedProductCost.obtain_file" class="mt-3">
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 배치도</p>
               <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
@@ -344,8 +405,8 @@
               />
             </v-col>
           </v-row>
-          <v-divider class="mt-7"></v-divider>
-          <v-row class="mt-3">
+          <v-divider v-if="!clickedProductCost.obtain_file" class="mt-7"></v-divider>
+          <v-row v-if="!clickedProductCost.obtain_file" class="mt-3">
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 승인도서</p>
               <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
@@ -365,14 +426,14 @@
               <p class="font-weight-bold primary--text mb-0">▼ 제작사양서</p>
               <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
               <v-img
-                v-if="clickedProductCost.buil_sheet_file"
+                v-if="clickedProductCost.build_sheet_file"
                 alt="thumbnail"
                 class="shrink mr-2"
                 contain
-                :src="mux.Util.imageBinary(clickedProductCost.buil_sheet_thumbnail)"
+                :src="mux.Util.imageBinary(clickedProductCost.build_sheet_thumbnail)"
                 transition="scale-transition"
                 width="350"
-                @click="download('design/buil_sheet', clickedProductCost.buil_sheet_file.replace(clickedProductCost.buil_sheet_file.split('_')[0]+'_'+clickedProductCost.buil_sheet_file.split('_')[1]+'_', ''), clickedProductCost.buil_sheet_file.split('_')[0]+'_'+clickedProductCost.buil_sheet_file.split('_')[1]+'_')"
+                @click="download('design/build_sheet', clickedProductCost.build_sheet_file.replace(clickedProductCost.build_sheet_file.split('_')[0]+'_'+clickedProductCost.build_sheet_file.split('_')[1]+'_', ''), clickedProductCost.build_sheet_file.split('_')[0]+'_'+clickedProductCost.build_sheet_file.split('_')[1]+'_')"
                 style="cursor: pointer;"
               />
             </v-col>
@@ -412,14 +473,27 @@
         <!-- 구매요청내역 -->
         <v-tab-item v-if="!clickedProductCost.obtain_file" key="구매 요청 내역">
           <v-card style="border: 1px solid #ccc;" class="pa-4 elevation-0">
-            <DataTableComponent
+            <v-data-table
               :headers="purchase_detail_headers"
               :items="purchase_detail_data"
               item-key="product_code"
-              children-key="belong_data"
               dense
-              tableClass="elevation-0"
-            />
+              class="elevation-0"
+            >
+              <template v-slot:item="{ item }">
+                <tr>
+                  <td v-for="header in purchase_detail_headers" :key="header.text">
+                    {{ header.value == 'estimate' ? '' : item[header.value] }}
+                    <v-icon
+                      v-if="header.value == 'estimate' && item.purchase_estimate_file"
+                      color="primary"
+                      small
+                      @click="estiamteDialog(item)"
+                    >mdi-file</v-icon>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
           </v-card>
         </v-tab-item>
         <!-- 산출내역서 -->
@@ -714,6 +788,41 @@
       </v-tabs-items>
     </ModalDialogComponent>
 
+    <ModalDialogComponent
+      :dialog-value="estimatedDialog"
+      max-width="600px"
+      title-class="display-none"
+      text-class="pb-0"
+      closeText="닫기"
+      :persistent="true"
+      @close="estimatedDialog = false"
+    >
+      <CardComponent
+        elevation="0"
+        text-class="pa-0 pt-4"
+        title-class="pa-0 font-weight-black "
+      >
+        <div slot="cardTitle">
+          <span>{{ estimate_company + ' 견적' }}</span>
+        </div>
+        <div slot="cardText">
+          <v-row>
+            <v-col cols="12">
+              <v-img
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(purchaseEstimateThumbnail)"
+                transition="scale-transition"
+                @click="download('purchase/purchase_estimate', purchaseEstimateFile, purchaseEstimateCode+'_')"
+                style="cursor: pointer; width: 100%;"
+              />
+            </v-col>
+          </v-row>
+        </div>
+      </CardComponent>
+    </ModalDialogComponent>
+
   </div>
 </template>
 <script>
@@ -772,14 +881,12 @@ export default {
       save_estimates: DesignProductionSearchPageConfig.save_estimates,
       login_info: DesignProductionSearchPageConfig.login_info,
       searchCardInputs:DesignProductionSearchPageConfig.searchCardInputs,
-      // setPurchaseInputs:DesignProductionSearchPageConfig.setPurchaseInputs,
-      // searchPurchaseInputs:DesignProductionSearchPageConfig.searchPurchaseInputs,
       estimate_approve_headers:DesignProductionSearchPageConfig.estimate_approve_headers,
       survey_cost_headers: DesignProductionSearchPageConfig.survey_cost_headers,
       bom_list_headers: DesignProductionSearchPageConfig.bom_list_headers,
-      bom_list_data: DesignProductionSearchPageConfig.bom_list_test_data,
+      bom_list_data: [],
       purchase_detail_headers: DesignProductionSearchPageConfig.purchase_detail_headers,
-      purchase_detail_data:DesignProductionSearchPageConfig.test_purchase_detail_data,
+      purchase_detail_data: [],
       search_tab_items: DesignProductionSearchPageConfig.search_tab_items,
       labor_cost_headers: DesignProductionSearchPageConfig.labor_cost_headers,
       labor_cost_data: [],
@@ -797,6 +904,11 @@ export default {
       member_list: [],
       designer_list: [],
 
+      estimatedDialog: false,
+      estimate_company: '',
+      purchaseEstimateThumbnail: '',
+      purchaseEstimateFile: '',
+      purchaseEstimateCode: ''
     }
   },
 
@@ -889,6 +1001,66 @@ export default {
           // this.estimate_member_info[1].name = item.approver;
           // this.estimate_member_info[1].user_id = item.approver_id;
           // this.estimate_member_info[1].checked_date = item.approved_date;
+          this.bom_list_data = [];
+          this.purchase_detail_data = [];
+          if (!item.obtain_file){
+            if (this.searched_datas.product_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code).length > 0){
+              this.bom_list_data = [
+                  ...this.searched_datas.product_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
+                    a.type = '완제품';
+                    a.classification = a.product_classification;
+                    // a.product_code = a.product_code;
+                    a.name = a.product_name;
+                    a.model = a.product_model;
+                    a.spec = a.product_spec;
+                    // a.manufacturer = a.manufacturer;
+                    a.unit_price = a.product_unit_price;
+                    a.item_num = a.product_num;
+                    a.belong_data = [
+                      ...a.belong_data.map((b) => {
+                        b.type = b.module_type;
+                        b.classification = b.module_classification;
+                        b.product_code = b.module_code;
+                        b.name = b.module_name;
+                        b.model = b.module_model;
+                        b.spec = b.module_spec;
+                        b.manufacturer = b.module_manufacturer;
+                        b.unit_price = b.module_unit_price;
+                        b.item_num = b.module_num;
+                        return b;
+                      })
+                    ];
+                    return a;
+                  })
+                ];
+            }
+
+            if (this.searched_datas.purchase_detail_data.filter(x=>x.cost_calc_code === item.cost_calc_code).length > 0){
+              this.purchase_detail_data = [
+                  ...this.searched_datas.purchase_detail_data.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
+                    let item_num = 0;
+                    let usable_num = 0;
+                    if (this.bom_list_data.find(x=>x.product_code === a.item_code)){
+                      item_num = this.bom_list_data.find(x=>x.product_code === a.item_code).item_num;
+                      usable_num = this.bom_list_data.find(x=>x.product_code === a.item_code).usable_num;
+                    }else if (this.bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code))){
+                      item_num = this.bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).belong_data.find(y=>y.product_code === a.item_code).item_num;
+                      usable_num = this.bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).belong_data.find(y=>y.product_code === a.item_code).usable_num;
+                    }else if (this.bom_list_data.find(x=>x.belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code)))){
+                      item_num = this.bom_list_data.find(x=>x.belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code))).belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code)).belong_data.find(z=>z.product_code === a.item_code).item_num;
+                      usable_num = this.bom_list_data.find(x=>x.belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code))).belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code)).belong_data.find(z=>z.product_code === a.item_code).usable_num;
+                    }
+
+                    a.item_num = item_num;
+                    a.usable_num = usable_num;
+
+                    a.purchase_estimate_file = a.purchase_estimate_file ? a.purchase_estimate_file : '';
+                    a.purchase_estimate_thumbnail = a.purchase_estimate_thumbnail ? a.purchase_estimate_thumbnail : '';
+                    return a;
+                  })
+                ];
+            }
+          }
 
           this.labor_cost_data = this.searched_datas.labor_cost_calc_detail.filter(x=>x.cost_calc_code === item.cost_calc_code);
           this.calc_cost_detail_data_product_cost.belong_data = [];
@@ -1061,6 +1233,7 @@ export default {
         this.clickedProductCost = this.relatedClickedProductCost[Number(version.substring(0,1))];
       }
     },
+
   },
   created () {
     this.initialize()
@@ -1331,6 +1504,7 @@ export default {
 
           // 설계 이력 추가하기
           searchResult.design_confirmation = searchDesignResult.confirmation;
+          searchResult.last_design_confirmation = searchDesignResult.last_design_confirmation;
           if (searchDesignResult.product_cost && searchDesignResult.product_cost.length > 0){
             searchResult.product_cost = [...searchResult.product_cost, ...searchDesignResult.product_cost];
           }
@@ -1343,6 +1517,8 @@ export default {
           if (searchDesignResult.construction_materials_data && searchDesignResult.construction_materials_data.length > 0){
             searchResult.construction_materials_data = [...searchResult.construction_materials_data, ...searchDesignResult.construction_materials_data];
           }
+
+          searchResult.purchase_detail_data = searchDesignResult.purchase_detail_data;
 
           this.searchDataCalcProcess(searchResult);
 
@@ -1365,11 +1541,33 @@ export default {
       }
 
       mux.Util.hideLoading();
-
     },
     searchDataCalcProcess(searchResult, isFirst){
       const productTotalCost = {};
       searchResult.product_cost_calc_detail.forEach(a=>{
+        if ((a.product_num && !a.product_unit_price) && a.belong_data && a.belong_data.length > 0){
+          a.product_unit_price = 0;
+          for (let i = 0; i < a.belong_data.length; i++) {
+            const belongData = a.belong_data[i];
+
+            if ((belongData.module_num && !belongData.module_unit_price) && belongData.belong_data && belongData.belong_data.length > 0){
+              belongData.module_unit_price = 0;
+              for (let i = 0; i < belongData.belong_data.length; i++) {
+                const belongBelongData = belongData.belong_data[i];
+                if (belongBelongData.material_num && belongBelongData.material_unit_price){
+                  belongData.module_unit_price += belongBelongData.material_num * belongBelongData.material_unit_price;
+                }
+              }
+              belongData.module_unit_price = Math.round(belongData.module_unit_price / belongData.module_num);
+            }
+            
+            if (belongData.module_num && belongData.module_unit_price){
+              a.product_unit_price += belongData.module_num * belongData.module_unit_price;
+            }
+          }
+          a.product_unit_price = Math.round(a.product_unit_price / a.product_num);
+        }
+        
         if (!productTotalCost[a.cost_calc_code]){
           productTotalCost[a.cost_calc_code] = Math.round(a.product_num && a.product_unit_price ? a.product_num * a.product_unit_price : a.module_num && a.module_unit_price ? a.module_num * a.module_unit_price : a.material_num && a.material_unit_price ? a.material_num * a.material_unit_price : 0);
         }else {
@@ -1468,7 +1666,11 @@ export default {
       });
 
 
-      this.estimate_approve_data = productCostArr.filter(x=>searchResult.last_confirmation.find(xx=>xx.cost_calc_code === x.cost_calc_code));
+      this.estimate_approve_data = productCostArr.filter(x=>searchResult.last_design_confirmation.find(xx=>xx.cost_calc_code === x.cost_calc_code));
+      this.estimate_approve_data = this.estimate_approve_data.map(a=>{
+        a.send_production_request = searchResult.confirmation.filter(x=>searchResult.last_confirmation.find(xx=>xx.cost_calc_code === x.cost_calc_code)).filter(x=>x.cost_calc_code === a.obtain_cost_calc_code)[0].given_name;
+        return a;
+      });
       this.searched_datas = searchResult;
     },
     getCalcProcessedData(searchResult, costCalcCode){
@@ -1583,12 +1785,18 @@ export default {
       this.clickedProductCost = item;
       this.estimate_product_list_dialog = true;
 
-      this.versions = ['수주 원본'];
-      this.relatedClickedProductCost = [this.clickedProductCost];
+      this.versions = [];
+      this.relatedClickedProductCost = [];
       this.searched_datas.design_confirmation.forEach(confirmation => {
-        if (confirmation.obtain_cost_calc_code === item.cost_calc_code){
+        if (confirmation.obtain_cost_calc_code === item.obtain_cost_calc_code){
           this.relatedClickedProductCost.push(this.getCalcProcessedData(this.searched_datas, confirmation.cost_calc_code));
-          this.versions.push(`${this.versions.length}차 수주 설계`);
+          this.versions.push(`${this.versions.length+1}차 수주 설계`);
+        }
+      });
+      this.searched_datas.confirmation.forEach(confirmation => {
+        if (confirmation.cost_calc_code === item.obtain_cost_calc_code){
+          this.relatedClickedProductCost.unshift(this.getCalcProcessedData(this.searched_datas, confirmation.cost_calc_code));
+          this.versions.unshift('수주 원본');
         }
       });
       this.version = this.versions[this.versions.length - 1];
@@ -1628,7 +1836,7 @@ export default {
       }
 
       let sendData = {
-        "obtain_confirmation_table-update": [{
+        "design_confirmation_table-update": [{
           "user_info": {
             "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
             "role": "modifier"
@@ -1646,7 +1854,7 @@ export default {
       };
 
       if (new_approval_phase === '미승인'){
-        sendData["obtain_confirmation_table-update"][0].data.checked_date = new_checked_date;
+        sendData["design_confirmation_table-update"][0].data.checked_date = new_checked_date;
       }
 
       const prevURL = window.location.href;
@@ -1728,7 +1936,7 @@ export default {
           <html>
             <body>
               <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                <h2 style="text-align: center; color:#13428a">견적서 ${item.approval_phase === '미승인' ? '확인' : item.approval_phase} 처리 알림</h2>
+                <h2 style="text-align: center; color:#13428a">설계 ${item.approval_phase === '미승인' ? '확인' : item.approval_phase} 처리 알림</h2>
                 <table style="width: 100%;border-spacing: 10px 10px;">
                   <tr>
                     <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
@@ -1767,7 +1975,7 @@ export default {
             let sendEmailAlam = await mux.Server.post({
               path: '/api/send_email/',
               to_addrs: mailTo,
-              subject: "견적서 " + (item.approval_phase === '미승인' ? '확인' : item.approval_phase) + " 처리 알림",
+              subject: "설계 " + (item.approval_phase === '미승인' ? '확인' : item.approval_phase) + " 처리 알림",
               content: content
             });
             if (prevURL !== window.location.href) return;

@@ -84,54 +84,14 @@
   "purchase_detail_headers": [
     { "text": "종류", "align": "start", "value": "type"},
     { "text": "분류", "align": "start", "value": "classification"},
-    { "text": "관리코드", "align": "start", "value": "product_code"},
+    { "text": "관리코드", "align": "start", "value": "item_code"},
     { "text": "제품명", "align": "start", "value": "name"},
     { "text": "모델명", "align": "start", "value": "model"},
     { "text": "사양", "align": "start", "value": "spec"},
-    { "text": "필요 수량", "align": "start", "value": ""},
+    { "text": "필요 수량", "align": "start", "value": "item_num"},
     { "text": "사용 가능 수량", "align": "start", "value": "usable_num"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
-    { "text": "견적서", "align": "start", "value": ""}
-  ],
-  "bom_list_test_data":[
-    { 
-      "type":"완제품",
-      "classification":"GFM",
-      "product_code":"완제품AA",
-      "name":"완제품명A",
-      "model":"MODEL-001",
-      "spec":"SPEC-001",
-      "manufacturer":"PIONELECTRIC",
-      "unit_price":"100",
-      "item_num":"1",
-      "stock_num":"0",
-      "belong_data":[
-        {
-          "type":"원부자재",
-          "classification":"GFM",
-          "product_code":"원부자재BB",
-          "name":"원부자재B",
-          "model":"MODEL-002",
-          "spec":"SPEC-002",
-          "manufacturer":"PIONELECTRIC",
-          "unit_price":"10",
-          "item_num":"3",
-          "stock_num":"0"
-        },
-        {
-          "type":"반제품",
-          "classification":"GFM",
-          "product_code":"반제품CC",
-          "name":"반제품C",
-          "model":"MODEL-003",
-          "spec":"SPEC-003",
-          "manufacturer":"PIONELECTRIC",
-          "unit_price":"70",
-          "item_num":"1",
-          "stock_num":"1"
-        }
-      ]
-    }
+    { "text": "견적서", "align": "start", "value": "estimate"}
   ],
   
   "calc_cost_detail_data": [
@@ -980,57 +940,6 @@
         "office_phone_number": "02-1234-5678",
         "modifier": "heeyoung",
         "created_time": "2024-05-31 11:50:50",
-        "modified_time": "2024-06-21 09:30:50",
-        "obtain_cost_calc_code": "2024-08-01 11:07:58.846_min",
-        "cost_calc_code": "2024-08-05 11:07:58.846_min",
-
-        "obtain_type": "용역",
-        
-        "issue_date": "2024-05-31",
-        "project_code": "TEST-01",
-        "inhouse_bid_number": "TEST-01-1",
-        "company_bid_number": "TEST-02",
-        "due_date": "2024-06-30",
-        "delivery_condition": "테스트인도조건",
-        "service_name": "테스트용역명",
-        "service_period": "30일",
-        "remark": "테스트용역 특이사항",
-        "company_name": "업체A",
-        "company_manager": "김대리",
-        "company_manager_email": "kim@email.mail",
-        "company_manager_phone": "010-1234-5678",
-
-        "approval_phase": "미승인",
-        "checker": "선우민",
-        "checker_id": "min",
-        "checked_date": "2024-06-01",
-        "approver": "선우민",
-        "approver_id": "min",
-        "approved_date": "",
-        "rejecter": "",
-        "rejected_date": "",
-        "reject_reason": "",
-
-        "layout_file": "2024-08-05 11:07:58.846_min_samp3.pdf",
-        "layout_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
-        "structure_file": "2024-08-05 11:07:58.846_min_samp1.pdf",
-        "structure_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
-        "single_line_file": "2024-08-05 11:07:58.846_min_samp1.pdf",
-        "single_line_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
-        "trilinear_file": "2024-08-05 11:07:58.846_min_samp3.pdf",
-        "trilinear_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
-        "circuit_file": "2024-08-05 11:07:58.846_min_samp1.pdf",
-        "circuit_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
-        "build_sheet_file": "2024-08-05 11:07:58.846_min_samp3.pdf",
-        "build_sheet_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
-        "etc_files": "2024-08-05 11:07:58.846_min_samp3.pdf/2024-08-05 11:07:58.846_min_samp1.pdf"
-      },
-      {
-        "creater": "min",
-        "given_name": "선우민",
-        "office_phone_number": "02-1234-5678",
-        "modifier": "heeyoung",
-        "created_time": "2024-05-31 11:50:50",
         "modified_time": "2024-05-31 11:50:50",
         "obtain_cost_calc_code": "2024-08-01 11:07:58.846_min",
         "cost_calc_code": "2024-07-31 16:39:03.383_min",
@@ -1072,9 +981,64 @@
         "trilinear_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
         "circuit_file": "2024-07-31 16:39:03.383_min_samp1.pdf",
         "circuit_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "approval_file": "2024-07-31 16:39:03.383_min_samp3.pdf",
+        "approval_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
         "build_sheet_file": "2024-07-31 16:39:03.383_min_samp3.pdf",
         "build_sheet_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
         "etc_files": ""
+      },
+      {
+        "creater": "min",
+        "given_name": "선우민",
+        "office_phone_number": "02-1234-5678",
+        "modifier": "heeyoung",
+        "created_time": "2024-05-31 11:50:50",
+        "modified_time": "2024-06-21 09:30:50",
+        "obtain_cost_calc_code": "2024-08-01 11:07:58.846_min",
+        "cost_calc_code": "2024-08-05 11:07:58.846_min",
+
+        "obtain_type": "용역",
+        
+        "issue_date": "2024-05-31",
+        "project_code": "TEST-01",
+        "inhouse_bid_number": "TEST-01-1",
+        "company_bid_number": "TEST-02",
+        "due_date": "2024-06-30",
+        "delivery_condition": "테스트인도조건",
+        "service_name": "테스트용역명",
+        "service_period": "30일",
+        "remark": "테스트용역 특이사항",
+        "company_name": "업체A",
+        "company_manager": "김대리",
+        "company_manager_email": "kim@email.mail",
+        "company_manager_phone": "010-1234-5678",
+
+        "approval_phase": "미승인",
+        "checker": "선우민",
+        "checker_id": "min",
+        "checked_date": "2024-06-01",
+        "approver": "선우민",
+        "approver_id": "min",
+        "approved_date": "",
+        "rejecter": "",
+        "rejected_date": "",
+        "reject_reason": "",
+
+        "layout_file": "2024-08-05 11:07:58.846_min_samp3.pdf",
+        "layout_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "structure_file": "2024-08-05 11:07:58.846_min_samp1.pdf",
+        "structure_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "single_line_file": "2024-08-05 11:07:58.846_min_samp1.pdf",
+        "single_line_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "trilinear_file": "2024-08-05 11:07:58.846_min_samp3.pdf",
+        "trilinear_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "circuit_file": "2024-08-05 11:07:58.846_min_samp1.pdf",
+        "circuit_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "approval_file": "2024-08-05 11:07:58.846_min_samp3.pdf",
+        "approval_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "build_sheet_file": "2024-08-05 11:07:58.846_min_samp3.pdf",
+        "build_sheet_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "etc_files": "2024-08-05 11:07:58.846_min_samp3.pdf/2024-08-05 11:07:58.846_min_samp1.pdf"
       },
 
       {
@@ -1124,6 +1088,8 @@
         "trilinear_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
         "circuit_file": "2024-07-31 16:40:41.349_min_samp1.pdf",
         "circuit_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "approval_file": "2024-07-31 16:40:41.349_min_samp3.pdf",
+        "approval_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
         "build_sheet_file": "2024-07-31 16:40:41.349_min_samp3.pdf",
         "build_sheet_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
         "etc_files": ""
@@ -1490,13 +1456,40 @@
         "created_time": "2024-06-21 09:30:50",
         "modified_time": "2024-06-21 09:30:50",
         "cost_calc_code": "2024-08-05 11:07:58.846_min",
+        "product_classification": "A분류",
         "product_code": "ewrewr",
         "product_name": "ewrwer",
         "product_model": "ewrwer",
         "product_spec": "wqeqwe",
         "manufacturer": "ewrwer",
         "product_num": 1,
-        "product_unit_price": 90750000
+        "usable_num": 2,
+        "belong_data":[
+          {
+            "module_type": "반제품",
+            "module_classification": "a분류",
+            "module_code": "ewr",
+            "module_name": "ewr",
+            "module_model": "ewr",
+            "module_spec": "wqe",
+            "module_manufacturer": "ewr",
+            "module_unit_price": 50000,
+            "module_num": 2,
+            "usable_num": 2
+          },
+          {
+            "module_type": "원부자재",
+            "module_classification": "aa분류",
+            "module_code": "ew",
+            "module_name": "ew",
+            "module_model": "ew",
+            "module_spec": "wq",
+            "module_manufacturer": "ew",
+            "module_unit_price": 5000,
+            "module_num": 30,
+            "usable_num": 2
+          }
+        ]
       },
       {
         "creater": "min",
@@ -1504,13 +1497,40 @@
         "created_time": "2024-06-21 09:30:50",
         "modified_time": "2024-06-21 09:30:50",
         "cost_calc_code": "2024-08-05 11:07:58.846_min",
+        "product_classification": "B분류",
         "product_code": "ewrewr2",
         "product_name": "ewrwer2",
         "product_model": "ewrwer",
         "product_spec": "wqeqwe2",
         "manufacturer": "ewrwer",
         "product_num": 1,
-        "product_unit_price": 222
+        "usable_num": 2,
+        "belong_data":[
+          {
+            "module_type": "반제품",
+            "module_classification": "b분류",
+            "module_code": "ewr2",
+            "module_name": "ewr2",
+            "module_model": "ewr2",
+            "module_spec": "wqe2",
+            "module_manufacturer": "ewr",
+            "module_unit_price": 50000,
+            "module_num": 2,
+            "usable_num": 2
+          },
+          {
+            "module_type": "원부자재",
+            "module_classification": "bb분류",
+            "module_code": "ew2",
+            "module_name": "ew2",
+            "module_model": "ew2",
+            "module_spec": "wq2",
+            "module_manufacturer": "ew",
+            "module_unit_price": 5000,
+            "module_num": 30,
+            "usable_num": 2
+          }
+        ]
       },
       {
         "creater": "min",
@@ -1518,13 +1538,40 @@
         "created_time": "2024-06-21 09:30:50",
         "modified_time": "2024-06-21 09:30:50",
         "cost_calc_code": "2024-08-05 11:07:58.846_min",
+        "product_classification": "C분류",
         "product_code": "ewrewr3",
         "product_name": "ewrwer3",
         "product_model": "ewrwer",
         "product_spec": "wqeqwe3",
         "manufacturer": "ewrwer",
         "product_num": 1,
-        "product_unit_price": 222
+        "usable_num": 2,
+        "belong_data":[
+          {
+            "module_type": "반제품",
+            "module_classification": "c분류",
+            "module_code": "ewr3",
+            "module_name": "ewr3",
+            "module_model": "ewr3",
+            "module_spec": "wqe3",
+            "module_manufacturer": "ewr",
+            "module_unit_price": 50000,
+            "module_num": 2,
+            "usable_num": 2
+          },
+          {
+            "module_type": "원부자재",
+            "module_classification": "cc분류",
+            "module_code": "ew3",
+            "module_name": "ew3",
+            "module_model": "ew3",
+            "module_spec": "wq3",
+            "module_manufacturer": "ew",
+            "module_unit_price": 5000,
+            "module_num": 30,
+            "usable_num": 2
+          }
+        ]
       },
         {
           "creater": "min",
@@ -1532,13 +1579,28 @@
           "created_time": "2024-05-31 11:50:50",
           "modified_time": "2024-05-31 11:50:50",
           "cost_calc_code": "2024-07-31 16:39:03.383_min",
+          "product_classification": "A분류",
           "product_code": "ewrewr",
           "product_name": "ewrwer",
           "product_model": "ewrwer",
           "product_spec": "wqeqwe",
           "manufacturer": "ewrwer",
           "product_num": 1,
-          "product_unit_price": 90750000
+          "usable_num": 2,
+          "belong_data":[
+            {
+              "module_type": "반제품",
+              "module_classification": "a분류",
+              "module_code": "ewr",
+              "module_name": "ewr",
+              "module_model": "ewr",
+              "module_spec": "wqe",
+              "module_manufacturer": "ewr",
+              "module_unit_price": 50000,
+              "module_num": 2,
+              "usable_num": 2
+            }
+          ]
         },
         {
           "creater": "min",
@@ -1546,13 +1608,28 @@
           "created_time": "2024-05-31 11:50:50",
           "modified_time": "2024-05-31 11:50:50",
           "cost_calc_code": "2024-07-31 16:39:03.383_min",
+          "product_classification": "B분류",
           "product_code": "ewrewr2",
           "product_name": "ewrwer2",
           "product_model": "ewrwer",
           "product_spec": "wqeqwe2",
           "manufacturer": "ewrwer",
           "product_num": 1,
-          "product_unit_price": 222
+          "usable_num": 2,
+          "belong_data":[
+            {
+              "module_type": "원부자재",
+              "module_classification": "bb분류",
+              "module_code": "ew2",
+              "module_name": "ew2",
+              "module_model": "ew2",
+              "module_spec": "wq2",
+              "module_manufacturer": "ew",
+              "module_unit_price": 5000,
+              "module_num": 30,
+              "usable_num": 2
+            }
+          ]
         },
         {
           "creater": "min",
@@ -1560,13 +1637,28 @@
           "created_time": "2024-05-31 12:50:50",
           "modified_time": "2024-05-31 12:50:50",
           "cost_calc_code": "2024-07-31 16:40:41.349_min",
+          "product_classification": "C분류",
           "product_code": "ewrewr3",
           "product_name": "ewrwer3",
           "product_model": "ewrwer",
           "product_spec": "wqeqwe3",
           "manufacturer": "ewrwer",
           "product_num": 1,
-          "product_unit_price": 222
+          "usable_num": 2,
+          "belong_data":[
+            {
+              "module_type": "원부자재",
+              "module_classification": "cc분류",
+              "module_code": "ew3",
+              "module_name": "ew3",
+              "module_model": "ew3",
+              "module_spec": "wq3",
+              "module_manufacturer": "ew",
+              "module_unit_price": 5000,
+              "module_num": 30,
+              "usable_num": 2
+            }
+          ]
         }
     ],
     "construction_materials_data":[
@@ -1587,6 +1679,58 @@
         "construction_materials": "공사자재3",
         "construction_materials_num": 1,
         "construction_materials_unit_price": 300000
+      }
+    ],
+    "purchase_detail_data":[
+      {
+        "creater": "min",
+        "modifier": "heeyoung",
+        "created_time": "2024-05-31 11:50:50",
+        "modified_time": "2024-06-21 09:30:50",
+        "code": "purchase1",
+        "cost_calc_code": "2024-08-05 11:07:58.846_min",
+        "type": "반제품",
+        "classification": "a분류",
+        "product_code": "ewrewr",
+        "item_code": "ewr",
+        "name": "ewr",
+        "model": "ewr",
+        "spec": "wqe",
+        "manufacturer": "ewr",
+        "unit_price": 50000,
+        "purchase_num": 2,
+        "purchase_estimate_phase": "미확인",
+        "purchase_estimate_code": "2024-08-01 11:39:03.383_min",
+        "purchase_estimate_company": "업체A",
+        "purchase_estimate_file": "2024-08-01 11:39:03.383_min_samp1.pdf",
+        "purchase_estimate_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "order_code": "2024-08-02 11:39:03.383_min",
+        "order_request_date": "2024-08-02 11:39:03.383"
+      },
+      {
+        "creater": "min",
+        "modifier": "heeyoung",
+        "created_time": "2024-05-31 11:50:50",
+        "modified_time": "2024-06-21 09:30:50",
+        "code": "purchase2",
+        "cost_calc_code": "2024-08-05 11:07:58.846_min",
+        "type": "원부자재",
+        "classification": "bb분류",
+        "product_code": "ewrewr2",
+        "item_code": "ew2",
+        "name": "ew2",
+        "model": "ew2",
+        "spec": "wq2",
+        "manufacturer": "ew",
+        "unit_price": 5000,
+        "purchase_num": 30,
+        "purchase_estimate_phase": "미확인",
+        "purchase_estimate_code": "2024-08-01 11:39:03.383_min",
+        "purchase_estimate_company": "업체A",
+        "purchase_estimate_file": "2024-08-01 11:39:03.383_min_samp1.pdf",
+        "purchase_estimate_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "order_code": "2024-08-02 11:39:03.383_min",
+        "order_request_date": "2024-08-02 11:39:03.383"
       }
     ]
   }

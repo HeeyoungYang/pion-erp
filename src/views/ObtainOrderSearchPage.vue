@@ -269,7 +269,7 @@
               />
             </v-card-text>
           </v-card>
-          <v-row class="mt-3">
+          <v-row v-if="clickedProductCost.obtain_file" class="mt-3">
             <v-col cols="12" sm="4">
               <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
               <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
@@ -324,6 +324,130 @@
                   color="grey lighten-2"
                   class="ma-2"
                   @click="download('obtain/etc', file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', ''), file.split('_')[0]+'_'+file.split('_')[1]+'_')"
+                >
+                  {{ file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', '') }}
+                </v-chip>
+              </div>
+            </v-col>
+          </v-row>
+          <v-row v-if="!clickedProductCost.obtain_file" class="mt-3">
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 배치도</p>
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.layout_file"
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(clickedProductCost.layout_thumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('design/layout', clickedProductCost.layout_file.replace(clickedProductCost.layout_file.split('_')[0]+'_'+clickedProductCost.layout_file.split('_')[1]+'_', ''), clickedProductCost.layout_file.split('_')[0]+'_'+clickedProductCost.layout_file.split('_')[1]+'_')"
+                style="cursor: pointer;"
+              />
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 구조도</p>
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.structure_file"
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(clickedProductCost.structure_thumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('design/structure', clickedProductCost.structure_file.replace(clickedProductCost.structure_file.split('_')[0]+'_'+clickedProductCost.structure_file.split('_')[1]+'_', ''), clickedProductCost.structure_file.split('_')[0]+'_'+clickedProductCost.structure_file.split('_')[1]+'_')"
+                style="cursor: pointer;"
+              />
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 단선도</p>
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.single_line_file"
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(clickedProductCost.single_line_thumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('design/single_line', clickedProductCost.single_line_file.replace(clickedProductCost.single_line_file.split('_')[0]+'_'+clickedProductCost.single_line_file.split('_')[1]+'_', ''), clickedProductCost.single_line_file.split('_')[0]+'_'+clickedProductCost.single_line_file.split('_')[1]+'_')"
+                style="cursor: pointer;"
+              />
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 삼선도</p>
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.trilinear_file"
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(clickedProductCost.trilinear_thumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('design/trilinear', clickedProductCost.trilinear_file.replace(clickedProductCost.trilinear_file.split('_')[0]+'_'+clickedProductCost.trilinear_file.split('_')[1]+'_', ''), clickedProductCost.trilinear_file.split('_')[0]+'_'+clickedProductCost.trilinear_file.split('_')[1]+'_')"
+                style="cursor: pointer;"
+              />
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 회로도</p>
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.circuit_file"
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(clickedProductCost.circuit_thumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('design/circuit', clickedProductCost.circuit_file.replace(clickedProductCost.circuit_file.split('_')[0]+'_'+clickedProductCost.circuit_file.split('_')[1]+'_', ''), clickedProductCost.circuit_file.split('_')[0]+'_'+clickedProductCost.circuit_file.split('_')[1]+'_')"
+                style="cursor: pointer;"
+              />
+            </v-col>
+          </v-row>
+          <v-divider v-if="!clickedProductCost.obtain_file" class="mt-7"></v-divider>
+          <v-row v-if="!clickedProductCost.obtain_file" class="mt-3">
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 승인도서</p>
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.approval_file"
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(clickedProductCost.approval_thumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('design/approval', clickedProductCost.approval_file.replace(clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_', ''), clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_')"
+                style="cursor: pointer;"
+              />
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 제작사양서</p>
+              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+              <v-img
+                v-if="clickedProductCost.build_sheet_file"
+                alt="thumbnail"
+                class="shrink mr-2"
+                contain
+                :src="mux.Util.imageBinary(clickedProductCost.build_sheet_thumbnail)"
+                transition="scale-transition"
+                width="350"
+                @click="download('design/build_sheet', clickedProductCost.build_sheet_file.replace(clickedProductCost.build_sheet_file.split('_')[0]+'_'+clickedProductCost.build_sheet_file.split('_')[1]+'_', ''), clickedProductCost.build_sheet_file.split('_')[0]+'_'+clickedProductCost.build_sheet_file.split('_')[1]+'_')"
+                style="cursor: pointer;"
+              />
+            </v-col>
+            <v-col cols="12" sm="4">
+              <p class="font-weight-bold primary--text mb-0">▼ 기타</p>
+              <div v-if="clickedProductCost.etc_files">
+                <v-chip
+                  v-for="(file, i) in clickedProductCost.etc_files.split('/')"
+                  :key="i"
+                  color="grey lighten-2"
+                  class="ma-2"
+                  @click="download('design/etc', file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', ''), file.split('_')[0]+'_'+file.split('_')[1]+'_')"
                 >
                   {{ file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', '') }}
                 </v-chip>
@@ -758,8 +882,6 @@ export default {
       login_info: ObtainOrderSearchPageConfig.login_info,
       searchCardInputs:ObtainOrderSearchPageConfig.searchCardInputs,
       estimate_approve_headers:ObtainOrderSearchPageConfig.estimate_approve_headers,
-      estimate_product_list_headers:ObtainOrderSearchPageConfig.estimate_product_list_headers,
-      // inbound_approve_data:[],
       survey_cost_headers: ObtainOrderSearchPageConfig.survey_cost_headers,
       bom_list_headers: ObtainOrderSearchPageConfig.bom_list_headers,
       bom_list_data: [],
@@ -1793,7 +1915,7 @@ export default {
           <html>
             <body>
               <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                <h2 style="text-align: center; color:#13428a">견적서 ${item.approval_phase === '미승인' ? '확인' : item.approval_phase} 처리 알림</h2>
+                <h2 style="text-align: center; color:#13428a">수주 ${item.approval_phase === '미승인' ? '확인' : item.approval_phase} 처리 알림</h2>
                 <table style="width: 100%;border-spacing: 10px 10px;">
                   <tr>
                     <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
@@ -1832,7 +1954,7 @@ export default {
             let sendEmailAlam = await mux.Server.post({
               path: '/api/send_email/',
               to_addrs: mailTo,
-              subject: "견적서 " + (item.approval_phase === '미승인' ? '확인' : item.approval_phase) + " 처리 알림",
+              subject: "수주 " + (item.approval_phase === '미승인' ? '확인' : item.approval_phase) + " 처리 알림",
               content: content
             });
             if (prevURL !== window.location.href) return;
