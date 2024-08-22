@@ -86,8 +86,8 @@
         <v-row>
           <v-col cols="12">
             <v-data-table
-              :headers="phase_check 
-                        ? (pricePermission ? ship_approved_product_list_headers : ship_approved_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price')) 
+              :headers="phase_check
+                        ? (pricePermission ? ship_approved_product_list_headers : ship_approved_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price'))
                         : (pricePermission ? ship_product_list_headers : ship_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price'))"
               :items="ship_product_list_data"
               item-key="product_code"
@@ -230,7 +230,7 @@ import ShipSearchPageConfig from "@/configure/ShipSearchPageConfig.json";
 import mux from "@/mux";
 
 export default {
-  
+
   components: {
                 NavComponent,
                 DataTableComponent,
@@ -240,7 +240,7 @@ export default {
                 LoadingModalComponent,
               },
   mounted(){
-    
+
     // this.closeAll()
   },
   data(){
@@ -282,7 +282,7 @@ export default {
     },
     pricePermission(){
       const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
-      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){ 
+      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){
         return true;
       }else {
         return false;
@@ -331,7 +331,7 @@ export default {
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
     // eslint-disable-next-line no-unused-vars
-    
+
     setSearchCardInputs(project_code, purpose, ship_date){
       this.searchCardInputs.find(x=>x.label === '프로젝트').value = project_code;
       this.searchCardInputs.find(x=>x.label === '출고목적').value = purpose;
@@ -591,22 +591,28 @@ export default {
           if(stock_check['code'] == 0){
             let searched_stock_data = [];
             if(stock_check['data'].length > 0){
-              searched_stock_data = stock_check['data'][0]
+              searched_stock_data = stock_check['data']
             }
-            if(belong.product_code === searched_stock_data._code && belong.spot === searched_stock_data.spot){
-              let minus_stock = Number(searched_stock_data.stock_num) - Number(belong.ship_num);
-              update_stock_data.push({
-                "user_info": {
-                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                    "role": "modifier"
-                  },
-                  "data":{
-                    "stock_num": minus_stock
-                  },
-                  "update_where": {"product_code": belong.product_code, "spot": belong.spot},
-                  "rollback": "yes"
-              })
+            let searched_stock_num = 0;
+            let searched_usable_num = 0;
+            for(let s = 0; s<searched_stock_data.length; s++){
+              if(belong.product_code === searched_stock_data[s]._code && belong.spot === searched_stock_data[s].spot){
+                searched_stock_num = searched_stock_data[s].stock_num;
+                searched_usable_num = searched_stock_data[s].usable_num;
+              }
             }
+            update_stock_data.push({
+              "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{
+                  "stock_num": Number(searched_stock_num) - Number(belong.ship_num),
+                  "usable_num": Number(searched_usable_num) - Number(belong.ship_num)
+                },
+                "update_where": {"product_code": belong.product_code, "spot": belong.spot},
+                "rollback": "yes"
+            })
 
           }
 
@@ -942,22 +948,28 @@ export default {
           if(stock_check['code'] == 0){
             let searched_stock_data = [];
             if(stock_check['data'].length > 0){
-              searched_stock_data = stock_check['data'][0]
+              searched_stock_data = stock_check['data']
             }
-            if(belong.product_code === searched_stock_data._code && belong.spot === searched_stock_data.spot){
-              let add_stock = Number(searched_stock_data.stock_num) + Number(belong.ship_num);
-              update_stock_data.push({
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
-                "data": {
-                  "stock_num" : add_stock
-                },
-                "update_where": {"product_code": belong.product_code, "spot": belong.spot},
-                "rollback": "yes"
-              })
+            let searched_stock_num = 0;
+            let searched_usable_num = 0;
+            for(let s = 0; s<searched_stock_data.length; s++){
+              if(belong.product_code === searched_stock_data[s]._code && belong.spot === searched_stock_data[s].spot){
+                searched_stock_num = searched_stock_data[s].stock_num;
+                searched_usable_num = searched_stock_data[s].usable_num;
+              }
             }
+            update_stock_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data": {
+                "stock_num" : Number(searched_stock_num) + Number(belong.ship_num),
+                "usable_num" : Number(searched_usable_num) + Number(belong.ship_num),
+              },
+              "update_where": {"product_code": belong.product_code, "spot": belong.spot},
+              "rollback": "yes"
+            })
             insert_product_data.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -1205,22 +1217,28 @@ export default {
           if(stock_check['code'] == 0){
             let searched_stock_data = [];
             if(stock_check['data'].length > 0){
-              searched_stock_data = stock_check['data'][0]
+              searched_stock_data = stock_check['data']
             }
-            if(product.product_code === searched_stock_data._code && product.spot === searched_stock_data.spot){
-              let add_stock = Number(searched_stock_data.stock_num) + Number(product.ship_num);
-              update_stock_data.push({
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
-                "data": {
-                  "stock_num" : add_stock
-                },
-                "update_where": {"product_code": product.product_code, "spot": product.spot},
-                "rollback": "yes"
-              })
+            let searched_stock_num = 0;
+            let searched_usable_num = 0;
+            for(let s = 0; s<searched_stock_data.length; s++){
+              if(product.product_code === searched_stock_data[s]._code && product.spot === searched_stock_data[s].spot){
+                searched_stock_num = searched_stock_data[s].stock_num;
+                searched_usable_num = searched_stock_data[s].usable_num;
+              }
             }
+            update_stock_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data": {
+                "stock_num" : Number(searched_stock_num) + Number(product.ship_num),
+                "usable_num" : Number(searched_usable_num) + Number(product.ship_num),
+              },
+              "update_where": {"product_code": product.product_code, "spot": product.spot},
+              "rollback": "yes"
+            })
             insert_product_data.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),

@@ -196,9 +196,9 @@ import InboundSearchPageConfig from "@/configure/InboundSearchPageConfig.json";
 import mux from "@/mux";
 
 export default {
-  
+
   mounted() {
-    
+
   },
   components: {
                 NavComponent,
@@ -242,7 +242,7 @@ export default {
     },
     pricePermission(){
       const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
-      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){ 
+      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){
         return true;
       }else {
         return false;
@@ -286,7 +286,7 @@ export default {
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
     },
     // eslint-disable-next-line no-unused-vars
-    
+
     setSearchCardInputs(order_code, inbound_date){
       this.searchCardInputs.find(x=>x.label === '발주번호').value = order_code;
       if (inbound_date.includes(' ~ ')){
@@ -360,7 +360,7 @@ export default {
               for(let d=0; d<datas.belong_data.length; d++){
                 datas.belong_data[d].inbound_num = Number(datas.belong_data[d].inbound_num).toLocaleString();
                 datas.belong_data[d].unit_price = '₩ ' + Number(datas.belong_data[d].unit_price).toLocaleString();
-  
+
                 // 테스트용
                 // datas.belong_data[d].ship_code = 'ㅈㅂㄷㄷㅂㅈㄷ:2024-06-04 10:18:44.818/TESTPJT-00:2024-06-04 10:09:05.080'
                 if(datas.belong_data[d].belong_data){
@@ -636,46 +636,62 @@ export default {
           if(stock_check['code'] == 0){
             let searched_stock_data = [];
             if(stock_check['data'].length > 0){
-              searched_stock_data = stock_check['data'][0]
+              searched_stock_data = stock_check['data']
+            }
+
+            let stock_set;
+            let searched_stock_num = 0;
+            let searched_usable_num = 0;
+            for(let s = 0; s<searched_stock_data.length; s++){
+              if(belong.product_code === searched_stock_data[s]._code){
+                if(belong.spot === searched_stock_data[s].spot){
+                  stock_set = 'update';
+                  searched_stock_num = searched_stock_data[s].stock_num;
+                  searched_usable_num = searched_stock_data[s].usable_num;
+                  break;
+                }else{
+                  stock_set = 'insert';
+                }
+              }else{
+                stock_set = 'continue';
+              }
             }
 
             // 요청할 데이터의 product_code와 검색된 데이터의 product_code가 동일하며
-            if(belong.product_code === searched_stock_data._code){
-              // 두 데이터의 spot이 동일할 경우 재고 테이블 stock_num update
-              if(belong.spot === searched_stock_data.spot){
-                let add_stock = Number(belong.inbound_num.replace(/,/g,'')) + Number(searched_stock_data.stock_num)
-                update_stock_data.push({
-                  "user_info": {
-                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                    "role": "modifier"
-                  },
-                  "data":{
-                    "stock_num": add_stock
-                  },
-                  "update_where": {"product_code": belong.product_code, "spot": belong.spot},
-                  "rollback": "yes"
-                });
-              // 두 데이터의 spot이 상이할 경우 재고 테이블에 insert
-              }else{
-                insert_stock_data.push({
-                  "user_info": {
-                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                    "role": "creater"
-                  },
-                  "data":{
-                    "conditions": "G",
-                    "product_code": belong.product_code,
-                    "spot": belong.spot,
-                    "stock_num": belong.inbound_num.replace(/,/g,''),
-                    "type": belong.type
-                  },
-                  "select_where": {"product_code": belong.product_code, "spot": belong.spot},
-                  "rollback": "yes"
-                });
-              }
-
-            // 요청할 데이터의 product_code와 검색된 데이터의 product_code가 상이하며
-            }else{
+            if(stock_set === 'update'){
+              let add_stock = Number(belong.inbound_num.replace(/,/g,'')) + Number(searched_stock_num)
+              let add_usable = Number(belong.inbound_num.replace(/,/g,'')) + Number(searched_usable_num)
+              update_stock_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{
+                  "stock_num": add_stock,
+                  "usable_num": add_usable
+                },
+                "update_where": {"product_code": belong.product_code, "spot": belong.spot},
+                "rollback": "yes"
+              });
+            // 요청할 데이터의 product_code와 검색된 데이터의 product_code가 동일하며 두 데이터의 spot이 상이할 경우 재고 테이블에 insert
+            }else if(stock_set === 'insert'){
+              insert_stock_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data":{
+                  "conditions": "G",
+                  "product_code": belong.product_code,
+                  "spot": belong.spot,
+                  "stock_num": belong.inbound_num.replace(/,/g,''),
+                  "usable_num": belong.inbound_num.replace(/,/g,''),
+                  "type": belong.type
+                },
+                "select_where": {"product_code": belong.product_code, "spot": belong.spot},
+                "rollback": "yes"
+              });
+            }else{ //요청할 데이터의 product_code와 검색된 데이터의 product_code가 동일하지 않으며
               // 요청할 데이터가 원부자재일 경우 material_table에 정보 insert
               if(belong.type === '원부자재'){
                 insert_material_data.push({
@@ -938,6 +954,7 @@ export default {
                   "product_code": belong.product_code,
                   "spot": belong.spot,
                   "stock_num": belong.inbound_num.replace(/,/g,''),
+                  "usable_num": belong.inbound_num.replace(/,/g,''),
                   "type": belong.type
                 },
                 "select_where": {"product_code": belong.product_code, "spot": belong.spot},
@@ -1237,22 +1254,28 @@ export default {
           if(stock_check['code'] == 0){
             let searched_stock_data = [];
             if(stock_check['data'].length > 0){
-              searched_stock_data = stock_check['data'][0]
+              searched_stock_data = stock_check['data']
             }
-            if(belong.product_code === searched_stock_data._code && belong.spot === searched_stock_data.spot){
-              let minus_stock = Number(searched_stock_data.stock_num) - Number(belong.inbound_num.replace(/,/g,''));
-              update_stock_data.push({
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
-                "data": {
-                  "stock_num" : minus_stock
-                },
-                "update_where": {"product_code": belong.product_code, "spot": belong.spot},
-                "rollback": "yes"
-              })
+            let searched_stock_num = 0;
+            let searched_usable_num = 0;
+            for(let s = 0; s<searched_stock_data.length; s++){
+              if(belong.product_code === searched_stock_data[s]._code && belong.spot === searched_stock_data[s].spot){
+                searched_stock_num = searched_stock_data[s].stock_num;
+                searched_usable_num = searched_stock_data[s].usable_num;
+              }
             }
+            update_stock_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data": {
+                "stock_num" : Number(searched_stock_num) - Number(belong.inbound_num.replace(/,/g,'')),
+                "usable_num" : Number(searched_usable_num) - Number(belong.inbound_num.replace(/,/g,'')),
+              },
+              "update_where": {"product_code": belong.product_code, "spot": belong.spot},
+              "rollback": "yes"
+            })
             insert_product_data.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -1520,22 +1543,28 @@ export default {
           if(stock_check['code'] == 0){
             let searched_stock_data = [];
             if(stock_check['data'].length > 0){
-              searched_stock_data = stock_check['data'][0]
+              searched_stock_data = stock_check['data']
             }
-            if(product.product_code === searched_stock_data._code && product.spot === searched_stock_data.spot){
-              let minus_stock = searched_stock_data.stock_num - product.inbound_num.replace(/,/g,'');
-              update_stock_data.push({
-                "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "modifier"
-                },
-                "data": {
-                  "stock_num" : minus_stock
-                },
-                "update_where": {"product_code": product.product_code, "spot": product.spot},
-                "rollback": "yes"
-              })
+            let searched_stock_num = 0;
+            let searched_usable_num = 0;
+            for(let s = 0; s<searched_stock_data.length; s++){
+              if(product.product_code === searched_stock_data[s]._code && product.spot === searched_stock_data[s].spot){
+                searched_stock_num = searched_stock_data[s].stock_num;
+                searched_usable_num = searched_stock_data[s].usable_num;
+              }
             }
+            update_stock_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data": {
+                "stock_num" : searched_stock_num - product.inbound_num.replace(/,/g,''),
+                "usable_num" : searched_usable_num - product.inbound_num.replace(/,/g,''),
+              },
+              "update_where": {"product_code": product.product_code, "spot": product.spot},
+              "rollback": "yes"
+            })
             insert_product_data.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
