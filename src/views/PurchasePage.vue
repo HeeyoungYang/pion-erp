@@ -19,26 +19,26 @@
           >
 
             <div slot="cardTitle">
-              <span>{{ add_data_type === '완제품자재' ? '완제품 자재' : '개별 자재'}} 선택</span>
+              <span>{{ add_data_type === '선주문' ? '선주문' : '단순 구매'}} 선택</span>
               <v-btn
-                v-if="add_data_type === '완제품자재'"
+                v-if="add_data_type === '선주문'"
                 small
                 outlined
                 color="primary"
                 class="mr-2 ml-4"
                 @click="itemSelect"
               >
-                개별 자재 선택
+                단순 구매 선택
               </v-btn>
               <v-btn
-                v-if="add_data_type === '개별자재'"
+                v-if="add_data_type === '단순구매'"
                 small
                 outlined
                 color="primary"
                 class="mr-2 ml-4"
                 @click="itemSelect"
               >
-                완제품 자재 선택
+                선주문 선택
               </v-btn>
             </div>
             <InputsFormComponent
@@ -47,7 +47,7 @@
               clearable
               filled
               hide-details
-              :inputs="add_data_type === '완제품자재' ? searchProductCardInputs : searchItemsCardInputs"
+              :inputs="add_data_type === '선주문' ? searchProductCardInputs : searchItemsCardInputs"
               @enter="searchProduct"
             >
               <v-col
@@ -64,7 +64,7 @@
                   <v-icon>mdi-magnify</v-icon>검색
                 </v-btn>
                 <v-btn
-                  v-if="add_data_type === '개별자재'"
+                  v-if="add_data_type === '단순구매'"
                   color="default"
                   elevation="2"
                   class="ml-2"
@@ -78,7 +78,7 @@
                 sm="12"
               >
                 <DataTableComponent
-                  v-if="add_data_type === '완제품자재'"
+                  v-if="add_data_type === '선주문'"
                   :headers="headers"
                   :items="product_data"
                   item-key="item_id"
@@ -150,7 +150,7 @@
               >
                 <v-col cols="12" sm="2" align-self="center">
                   <v-btn
-                    v-if="add_data_type === '개별자재'"
+                    v-if="add_data_type === '단순구매'"
                     small
                     class="mr-2"
                     @click="addItemSetting"
@@ -170,7 +170,7 @@
                   cols="12"
                 >
                   <v-data-table
-                    v-if="add_data_type === '완제품자재'"
+                    v-if="add_data_type === '선주문'"
                     :headers="bom_list_purchase_product_headers"
                     :items="bom_list_purchase_data"
                     item-key="item_id"
@@ -269,7 +269,7 @@
                   </v-data-table>
 
                   <v-data-table
-                    v-if="add_data_type !== '완제품자재'"
+                    v-if="add_data_type !== '선주문'"
                     dense
                     :headers="bom_list_purchase_items_headers"
                     :items="bom_list_purchase_items_data"
@@ -487,7 +487,7 @@
                       v-model="selected_unestimated_data"
                       :headers="selected_unestimated_headers"
                       :items="bom_list_need_estiamte_data"
-                      :item-key="add_data_type === '완제품자재' ? 'item_id' : 'item_code'"
+                      :item-key="add_data_type === '선주문' ? 'item_id' : 'item_code'"
                       table-class="elevation-0"
                       show-select
                       dense
@@ -524,7 +524,7 @@
                         style="border:1px solid #c0c0c0"
                           :headers="selected_unestimated_headers"
                           :items="selected_unestimated_data"
-                          :item-key="add_data_type === '완제품자재' ? 'item_id' : 'item_code'"
+                          :item-key="add_data_type === '선주문' ? 'item_id' : 'item_code'"
                           dense
                         ></v-data-table>
                       </v-col>
@@ -614,7 +614,7 @@ export default {
       member_type_index:0,
       unestimated_steppers: 1,
       unestimated_step: 2,
-      add_data_type: '완제품자재',
+      add_data_type: '선주문',
       select_purchase_manager: '',
 
       loading_dialog: false,
@@ -744,7 +744,7 @@ export default {
     async searchProduct() {
       mux.Util.showLoading();
 
-      if(this.add_data_type === '완제품자재'){
+      if(this.add_data_type === '선주문'){
         let searchProductCode = this.searchProductCardInputs.find(x=>x.label === '제품코드').value;
         if (!searchProductCode)
           searchProductCode = '%';
@@ -784,14 +784,19 @@ export default {
               data.item_code = data.code;
               delete data.code;
               let stock_calc = 0;
+              let usable_num = 0;
               if (data.spot_stock){
                 for(let d=0; d<data.spot_stock.length; d++){
                   if (typeof data.spot_stock[d].stock_num === 'number'){
                     stock_calc += data.spot_stock[d].stock_num;
                   }
+                  if (typeof data.spot_stock[d].usable_num === 'number'){
+                    usable_num += data.spot_stock[d].usable_num;
+                  }
                 }
               }
               data.total_stock = stock_calc
+              data.usable_num = usable_num
 
               if(data.belong_data){
                 for(let b=0; b<data.belong_data.length; b++){
@@ -801,15 +806,18 @@ export default {
                   delete data.belong_data[b].code;
 
                   let belong_stock_calc = 0;
+                  let belong_usable_num = 0;
                   if (data.belong_data[b].spot_stock){
                     let spot_stock = data.belong_data[b].spot_stock;
                     for(let d=0; d<spot_stock.length; d++){
                       if (typeof spot_stock[d].stock_num === 'number'){
                         belong_stock_calc += spot_stock[d].stock_num;
+                        belong_usable_num += spot_stock[d].usable_num;
                       }
                     }
                   }
                   data.belong_data[b].total_stock = belong_stock_calc
+                  data.belong_data[b].usable_num = belong_usable_num
                   data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                 }
                 console.log(JSON.stringify(data.belong_data) )
@@ -1061,7 +1069,7 @@ export default {
     async clickDontSelect(item_id){
       let bom_data;
       let item_check;
-      if(this.add_data_type === '완제품자재'){
+      if(this.add_data_type === '선주문'){
         bom_data = this.bom_list_purchase_data;
         item_check = 'item_id';
       }
@@ -1091,7 +1099,7 @@ export default {
       let item_check;
       let set_headers = [];
       this.selected_unestimated_headers = [];
-      if(this.add_data_type === '완제품자재'){
+      if(this.add_data_type === '선주문'){
         bom_data = this.bom_list_purchase_data;
         item_check = 'item_id';
         set_headers = PurchasePageConfig.selected_unestimated_product_headers
@@ -1130,7 +1138,7 @@ export default {
       let estimate_info = this.estimateInfoInputs;
       let product_data;
       let item_check;
-      if(this.add_data_type === '완제품자재'){
+      if(this.add_data_type === '선주문'){
         product_data = this.bom_list_purchase_data;
         item_check = 'item_id';
       } else{
@@ -1164,20 +1172,20 @@ export default {
     },
 
     async itemSelect(){
-      if(this.add_data_type == '완제품자재'){
-        const confirm = await mux.Util.showConfirm('개별 자재 선택으로 전환되며, \n작성하던 내용은 초기화됩니다. ', '전환 확인');
+      if(this.add_data_type == '선주문'){
+        const confirm = await mux.Util.showConfirm('단순 구매 선택으로 전환되며, \n작성하던 내용은 초기화됩니다. ', '전환 확인');
         if (!confirm){
           return;
         }
         this.bom_list_purchase_data = [];
-        this.add_data_type = '개별자재';
+        this.add_data_type = '단순구매';
       }else{
-        const confirm = await mux.Util.showConfirm('완제품 자재 선택으로 전환되며, \n작성하던 내용은 초기화됩니다. ', '전환 확인');
+        const confirm = await mux.Util.showConfirm('선주문 선택으로 전환되며, \n작성하던 내용은 초기화됩니다. ', '전환 확인');
         if (!confirm){
           return;
         }
         this.bom_list_purchase_items_data = [];
-        this.add_data_type = '완제품자재';
+        this.add_data_type = '선주문';
       }
       this.product_data = [];
     },
@@ -1185,7 +1193,7 @@ export default {
     async purchaseApprovalRequest(){
       const currDate = new Date();
       let bom_data;
-      if(this.add_data_type === '완제품자재'){
+      if(this.add_data_type === '선주문'){
         bom_data = this.bom_list_purchase_data;
       } else{
         bom_data = this.bom_list_purchase_items_data;
@@ -1282,7 +1290,7 @@ export default {
 
         let files_unique=[];
         bom_data.forEach(bom => {
-          if(this.add_data_type === '완제품자재'){
+          if(this.add_data_type === '선주문'){
             bom_data_insert.push({
               "user_info": {
                   "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -1366,72 +1374,146 @@ export default {
           if(result.data['code'] == 0){
             mux.Util.showAlert('구매 요청이 완료되었습니다', '요청 완료', 3000);
 
-            //메일 알림 관련
-            let mailTo = [];
-            mailTo.push(confirmation_data.approver_id);
-            // let phase;
-            // if(confirmation_data.approval_phase === '미확인'){
-            //   mailTo.push(confirmation_data.checker_id);
-            //   phase = '확인'
-            // }else if(confirmation_data.approval_phase === '미승인'){
-            //   mailTo.push(confirmation_data.approver_id);
-            //   phase = '승인'
-            // }
-
-            // 메일 본문 내용
-            let content=`
-              <html>
-                <body>
-                  <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                    <h2 style="text-align: center; color:#13428a">구매 요청 알림</h2>
-                    <table style="width: 100%;border-spacing: 10px 10px;">
-                      <tr>
-                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
-                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.project_code === '' ? '-' : confirmation_data.project_code}</td>
-                      </tr>
-                      <tr>
-                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">비고</td>
-                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.note === '' ? '-' : confirmation_data.note}</td>
-                      </tr>
-                      <tr>
-                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
-                      </tr>
-                      <tr>
-                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">구매담당자</td>
-                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
-                      </tr>
-                    </table>
-                    <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${confirmation_data.project_code}">
-                      <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                        확인하기
-                      </p>
-                    </a>
-                  </div>
-                </body>
-              </html>
-            `;
-            try {
-              let sendEmailAlam = await mux.Server.post({
-                path: '/api/send_email/',
-                to_addrs: mailTo,
-                subject: "구매 요청 알림",
-                content: content
-              });
-              if (prevURL !== window.location.href) return;
-              if(sendEmailAlam['code'] == 0){
-                console.log(sendEmailAlam['message']);
-              } else {
+            //선주문일 경우 사용 가능 수량 조정
+            let sendStockData = {}
+            let update_stock_data = [];
+            bom_data.forEach(async bom => {
+              if(this.add_data_type === '선주문'){
+                let stock_check = await mux.Server.post({
+                  path: '/api/common_rest_api/',
+                  params: [
+                    {
+                      "product_table.product_code": bom.item_code,
+                      "module_table.module_code": bom.item_code,
+                      "material_table.material_code": bom.item_code,
+                      "material_table.directly_written": 0,
+                    }
+                  ],
+                  "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+                  "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+                });
                 if (prevURL !== window.location.href) return;
-                mux.Util.showAlert(sendEmailAlam['failed_info']);
+
+                if (typeof stock_check === 'string'){
+                  stock_check = JSON.parse(stock_check);
+                }
+                if(stock_check['code'] == 0){
+                  let searched_stock_data = [];
+                  if(stock_check['data'].length > 0){
+                    searched_stock_data = stock_check['data'][0]
+                  }
+                  let searched_usable_num = 0;
+                  if(bom.item_code === searched_stock_data._code){
+                    searched_usable_num = searched_stock_data.usable_num;
+                    update_stock_data.push({
+                      "user_info": {
+                          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                          "role": "modifier"
+                        },
+                        "data":{
+                          "usable_num": Number(searched_usable_num) - Number(bom.num)
+                        },
+                        "update_where": {"product_code": searched_stock_data._code, "spot": searched_stock_data.spot},
+                        "rollback": "yes"
+                    })
+                  }
+
+                }
+
+                sendStockData["stock_table-update"] = update_stock_data;
+
+                try {
+                  let resultStock = await mux.Server.post({
+                    path: '/api/common_rest_api/',
+                    params: sendStockData
+                  });
+                  if (prevURL !== window.location.href) return;
+
+                  if (typeof resultStock === 'string'){
+                    resultStock = JSON.parse(resultStock);
+                  }
+                  if(resultStock['code'] == 0){
+                    //메일 알림 관련
+                    let mailTo = [];
+                    mailTo.push(confirmation_data.approver_id);
+                    // let phase;
+                    // if(confirmation_data.approval_phase === '미확인'){
+                    //   mailTo.push(confirmation_data.checker_id);
+                    //   phase = '확인'
+                    // }else if(confirmation_data.approval_phase === '미승인'){
+                    //   mailTo.push(confirmation_data.approver_id);
+                    //   phase = '승인'
+                    // }
+
+                    // 메일 본문 내용
+                    let content=`
+                      <html>
+                        <body>
+                          <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                            <h2 style="text-align: center; color:#13428a">구매 요청 알림</h2>
+                            <table style="width: 100%;border-spacing: 10px 10px;">
+                              <tr>
+                                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.project_code === '' ? '-' : confirmation_data.project_code}</td>
+                              </tr>
+                              <tr>
+                                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">비고</td>
+                                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.note === '' ? '-' : confirmation_data.note}</td>
+                              </tr>
+                              <tr>
+                                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                              </tr>
+                              <tr>
+                                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">구매담당자</td>
+                                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
+                              </tr>
+                            </table>
+                            <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${confirmation_data.project_code}">
+                              <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                                확인하기
+                              </p>
+                            </a>
+                          </div>
+                        </body>
+                      </html>
+                    `;
+                    try {
+                      let sendEmailAlam = await mux.Server.post({
+                        path: '/api/send_email/',
+                        to_addrs: mailTo,
+                        subject: "구매 요청 알림",
+                        content: content
+                      });
+                      if (prevURL !== window.location.href) return;
+                      if(sendEmailAlam['code'] == 0){
+                        console.log(sendEmailAlam['message']);
+                      } else {
+                        if (prevURL !== window.location.href) return;
+                        mux.Util.showAlert(sendEmailAlam['failed_info']);
+                      }
+                    } catch (error) {
+                      if (prevURL !== window.location.href) return;
+                      if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                        mux.Util.showAlert(error.response['data']['failed_info'].msg);
+                      else
+                        mux.Util.showAlert(error);
+                    }
+                  } else {
+                    if (prevURL !== window.location.href) return;
+                    mux.Util.showAlert(resultStock['failed_info']);
+                  }
+                } catch (error) {
+                  mux.Util.hideLoading();
+                  if (prevURL !== window.location.href) return;
+                  if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                    mux.Util.showAlert(error.response['data']['failed_info'].msg);
+                  else
+                    mux.Util.showAlert(error);
+                }
+
               }
-            } catch (error) {
-              if (prevURL !== window.location.href) return;
-              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                mux.Util.showAlert(error.response['data']['failed_info'].msg);
-              else
-                mux.Util.showAlert(error);
-            }
+            });
           } else {
             if (prevURL !== window.location.href) return;
             mux.Util.showAlert(result['failed_info']);

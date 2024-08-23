@@ -2751,20 +2751,31 @@ export default {
             mux.Util.showAlert(error);
         }
       }
-      usable_num_searched = usable_num_searched.reduce((prev, now) => {
-        if(!prev.some(obj => obj.product_code === now.product_code)){
-          prev.push(now);
+
+      let set_usable_num = [];
+      usable_num_searched.forEach(data =>{
+        if(set_usable_num.length === 0){
+          set_usable_num.push(data);
+        }else if(set_usable_num.some(x=>x.product_code === data.product_code)){
+          set_usable_num.find(x=>x.product_code === data.product_code).usable_num += data.usable_num;
+        }else {
+          set_usable_num.push(data);
         }
-        return prev;
-      }, [])
+      })
+      // usable_num_searched = usable_num_searched.reduce((prev, now) => {
+      //   if(!prev.some(obj => obj.product_code === now.product_code)){
+      //     prev.push(now);
+      //   }
+      //   return prev;
+      // }, [])
 
       bom_data.forEach(bom =>{
         bom.num = bom.product_num;
-        bom.usable_num = usable_num_searched.find(x=>x.product_code === bom.product_code).usable_num;
+        bom.usable_num = set_usable_num.find(x=>x.product_code === bom.product_code).usable_num;
         for(let i=0; i<bom.belong_data.length; i++){
           let belong_data = bom.belong_data[i];
           belong_data.num = belong_data.num * bom.num;
-          belong_data.usable_num = usable_num_searched.find(x=>x.product_code === belong_data.item_code).usable_num;
+          belong_data.usable_num = set_usable_num.find(x=>x.product_code === belong_data.item_code).usable_num;
         }
       })
       console.log(bom_data);
