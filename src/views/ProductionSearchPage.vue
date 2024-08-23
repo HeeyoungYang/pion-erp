@@ -100,7 +100,7 @@
                   color="success"
                   v-bind="attrs"
                   v-on="on"
-                  :disabled="production_details.inbound_date === '' ? false : true"
+                  :disabled="(production_details.inbound_date === '' || production_details.inbound_date === null) ? false : true"
                 >
                   입고 승인 요청
                 </v-btn>
@@ -157,7 +157,7 @@
             </v-menu>
 
             <span
-              v-if="production_details.inbound_date !== '' && production_details.inbound_approval_phase !== '승인'"
+              v-if="production_details.inbound_date !== null"
               class="ml-2"
             >
               : 입고 요청 완료
@@ -165,7 +165,7 @@
             </span>
 
             <span
-              v-if="production_details.inbound_date !== '' && production_details.inbound_approval_phase === '승인'"
+              v-if="production_details.inbound_approval_phase === '승인'"
               class="ml-2"
             >
               : <span class="success--text font-weight-bold"> {{ production_details.inbound_date }} </span> 입고
@@ -401,6 +401,43 @@ export default {
 
               let thumbnail = thumbnail_result.data[0];
               this.production_details = Object.assign(this.production_details, thumbnail);
+
+              try {
+                let result = await mux.Server.post({
+                  path: '/api/common_rest_api/',
+                  params: [
+                    {
+                      "obtain_confirmation_table.inhouse_bid_number": item.inhouse_bid_number,
+                      "obtain_confirmation_table.company_name": item.company_name,
+                      "obtain_confirmation_table.company_bid_number": item.company_bid_number,
+                      "obtain_confirmation_table.project_code": item.project_code
+                    }
+                  ],
+                  "script_file_name": "rooting_수주_정보_검색_24_08_08_13_53_89S.json",
+                  "script_file_path": "data_storage_pion\\json_sql\\obtain\\수주_정보_검색_24_08_08_13_54_EFQ"
+                });
+                if (prevURL !== window.location.href) return;
+
+                if (typeof result === 'string'){
+                  result = JSON.parse(result);
+                }
+                if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+                  if(result.length === 0){
+                    mux.Util.showAlert('검색 결과가 없습니다.');
+                  }
+                  this.item_product_list = result.data.obtain_cost_calc_detail;
+                } else {
+                  mux.Util.showAlert(result['failed_info']);
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                mux.Util.hideLoading();
+                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
+                else
+                  mux.Util.showAlert(error);
+              }
             } else {
               mux.Util.showAlert(thumbnail_result['failed_info']);
             }
@@ -426,7 +463,7 @@ export default {
       mux.Util.hideLoading();
       this.production_detail_dialog = true;
 
-      if(item.approval_phase === '승인' && item.obtain_type === '재고'){
+      if(item.approval_phase === '승인' && item.obtain_type === '재고' || (item.inbound_approval_phase !== '' || item.inbound_approval_phase !== null)){
         this.show_inbound_button = true;
       }
       this.set_inbound_code = item.code;
@@ -737,9 +774,6 @@ export default {
 
 
 
-      let product_data = {};
-      product_data.spot = this.inboundRequestInputs.find(x=>x.column_name === 'spot').value;
-
 
       //입고 데이터용 파일 정리
       // 시험서 3종 병합 (PDF-LIB 라이브러리 사용)
@@ -842,6 +876,68 @@ export default {
       });
 
       const prevURL = window.location.href;
+      let product_info = [];
+      for(let i=0; i<this.item_product_list.length; i++){
+        let product_code = this.item_product_list[i].product_code;
+        try {
+          let result = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            "params": [
+                {
+                  "product_table.product_code": product_code
+                }
+            ],
+            "script_file_name": "rooting_완제품_검색_24_05_16_13_52_1IN.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+            let info = result['data'][0];
+            product_info.push({
+              //inbound_num, unit_price 추가 작업 해야함
+              "code": confirmation_data.code,
+              "type": "완제품",
+              "classification": info.classification,
+              "product_code": info.code,
+              "name": info.name,
+              "spot": this.inboundRequestInputs.find(x=>x.column_name === 'spot').value,
+              "spec": info.spec,
+              "model": info.model,
+              "manufacturer": info.manufacturer,
+              "ship_code": "미선택"
+            });
+            console.log(product_info);
+          }else{
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(result);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          mux.Util.hideLoading();
+          // console.error(error);
+          mux.Util.showAlert(error);
+        }
+      }
+      let product_data = [];
+      for(let p=0; p<product_info.length; p++){
+        product_data.push({
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "creater"
+          },
+          "data": product_info[p],
+          "select_where": {"code": product_info[p].code, "product_code": product_info[p].product_code},
+          "rollback": "yes"
+        });
+      }
+      console.log(product_data);
+      sendData["inbound_product_table-insert"] = product_data;
+
+
       try {
         let result = await mux.Server.uploadFile(sendData);
         if (prevURL !== window.location.href) return;
@@ -951,6 +1047,7 @@ export default {
       classification_list: [],
       spot_list: [],
       approval_datas: [],
+      item_product_list:[],
       production_details:{},
       inbound_checker:'',
       inbound_approver:'',

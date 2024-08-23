@@ -406,6 +406,7 @@ export default {
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
           this.search_obtain_data = result.data.obtain_confirmation;
+          // result.data.obtain_cost_calc_detail;
         } else {
           mux.Util.showAlert(result['failed_info']);
         }
