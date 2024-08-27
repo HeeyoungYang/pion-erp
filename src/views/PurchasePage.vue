@@ -1190,8 +1190,64 @@ export default {
       this.product_data = [];
     },
 
-    async purchaseApprovalRequest(){
+    async searchCurrentCode(){
       const currDate = new Date();
+      const prevURL = window.location.href;
+      // let code = 'PEPR_' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
+      let code = 'PEPR_' + mux.Date.format(currDate, 'yyMMdd') + '_';
+      let current_code = '';
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "purchase_confirmation_table.code": code
+            }
+          ],
+          "script_file_name": "rooting_구매요청_검색_24_08_08_11_45_79G.json",
+          "script_file_path": "data_storage_pion\\json_sql\\purchase\\구매요청_검색_24_08_08_11_45_QAW"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          let searched = result.data;
+          // 정렬
+          searched.sort((a,b) => a.code.localeCompare(b.code));
+          current_code = searched[searched.length-1].code;
+        } else {
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      return current_code;
+    },
+
+    async purchaseApprovalRequest(){
+      mux.Util.showLoading();
+      let success = await this.purchaseApproval();
+      if(success){
+        if(this.add_data_type === '선주문'){
+          await this.purchaseUsableNum();
+        }
+
+        this.bom_list_purchase_data=[];
+        this.bom_list_purchase_items_data=[];
+        this.product_data = [];
+      }
+    },
+    async purchaseApproval(){
+      const currDate = new Date();
+      let currentCode = await this.searchCurrentCode();
       let bom_data;
       if(this.add_data_type === '선주문'){
         bom_data = this.bom_list_purchase_data;
@@ -1202,9 +1258,14 @@ export default {
       let confirmation_data = {};
       let member_input = this.purchase_member_info;
       let success = true;
-
-      let code = 'PEPR_' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
-
+      let code = '';
+      if(currentCode === ''){
+        code = 'PEPR_' + mux.Date.format(currDate, 'yyMMdd') + '_001';
+      }else{
+        let calc_current_code = Number(currentCode.split('_')[2]) + 1;
+        calc_current_code = ('00' + calc_current_code).slice(-3);
+        code = 'PEPR_' + mux.Date.format(currDate, 'yyMMdd') + '_' + calc_current_code;
+      }
       confirmation_data.project_code = this.purchaseInfoInputs.find(x=>x.label === '프로젝트 코드').value;
       confirmation_data.note = this.purchaseInfoInputs.find(x=>x.label === '비고').value;
       confirmation_data.approval_phase = '요청';
@@ -1258,7 +1319,6 @@ export default {
 
 
       if(success == true){
-        mux.Util.showLoading();
         let sendData = {
           "purchase_confirmation_table-insert": [{
             "user_info": {
@@ -1309,6 +1369,7 @@ export default {
                   "unit_price" : bom.unit_price.replace(/,/g,'').replace(/₩ /g,''),
                   "purchase_num" : bom.purchase_num.replace(/,/g,''),
                   "purchase_estimate_phase" : bom.purchase_estimate_company === '' ? '미요청' : '완료',
+                  "purchase_estimate_code" : bom.purchase_estimate_company === '' ? '' : bom.purchase_estimate_company + ' ' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + ' ' + this.$cookies.get(this.$configJson.cookies.id.key),
                   "purchase_estimate_company" : bom.purchase_estimate_company,
                   "purchase_estimate_file" : bom.purchase_estimate_file_name,
                   "purchase_estimate_thumbnail" : bom.purchase_estimate_thumbnail,
@@ -1373,147 +1434,66 @@ export default {
           }
           if(result.data['code'] == 0){
             mux.Util.showAlert('구매 요청이 완료되었습니다', '요청 완료', 3000);
+            //메일 알림 관련
+            let mailTo = [];
+            mailTo.push(confirmation_data.approver_id);
 
-            //선주문일 경우 사용 가능 수량 조정
-            let sendStockData = {}
-            let update_stock_data = [];
-            bom_data.forEach(async bom => {
-              if(this.add_data_type === '선주문'){
-                let stock_check = await mux.Server.post({
-                  path: '/api/common_rest_api/',
-                  params: [
-                    {
-                      "product_table.product_code": bom.item_code,
-                      "module_table.module_code": bom.item_code,
-                      "material_table.material_code": bom.item_code,
-                      "material_table.directly_written": 0,
-                    }
-                  ],
-                  "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
-                  "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
-                });
+            // 메일 본문 내용
+            let content=`
+              <html>
+                <body>
+                  <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                    <h2 style="text-align: center; color:#13428a">구매 요청 알림</h2>
+                    <table style="width: 100%;border-spacing: 10px 10px;">
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.project_code === '' ? '-' : confirmation_data.project_code}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">비고</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.note === '' ? '-' : confirmation_data.note}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">구매담당자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
+                      </tr>
+                    </table>
+                    <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?code=${code}">
+                      <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                        확인하기
+                      </p>
+                    </a>
+                  </div>
+                </body>
+              </html>
+            `;
+            try {
+              let sendEmailAlam = await mux.Server.post({
+                path: '/api/send_email/',
+                to_addrs: mailTo,
+                subject: "구매 요청 알림",
+                content: content
+              });
+              if (prevURL !== window.location.href) return;
+              if(sendEmailAlam['code'] == 0){
+                console.log(sendEmailAlam['message']);
+                mux.Util.hideLoading();
+              } else {
                 if (prevURL !== window.location.href) return;
-
-                if (typeof stock_check === 'string'){
-                  stock_check = JSON.parse(stock_check);
-                }
-                if(stock_check['code'] == 0){
-                  let searched_stock_data = [];
-                  if(stock_check['data'].length > 0){
-                    searched_stock_data = stock_check['data'][0]
-                  }
-                  let searched_usable_num = 0;
-                  if(bom.item_code === searched_stock_data._code){
-                    searched_usable_num = searched_stock_data.usable_num;
-                    update_stock_data.push({
-                      "user_info": {
-                          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                          "role": "modifier"
-                        },
-                        "data":{
-                          "usable_num": Number(searched_usable_num) - Number(bom.num)
-                        },
-                        "update_where": {"product_code": searched_stock_data._code, "spot": searched_stock_data.spot},
-                        "rollback": "yes"
-                    })
-                  }
-
-                }
-
-                sendStockData["stock_table-update"] = update_stock_data;
-
-                try {
-                  let resultStock = await mux.Server.post({
-                    path: '/api/common_rest_api/',
-                    params: sendStockData
-                  });
-                  if (prevURL !== window.location.href) return;
-
-                  if (typeof resultStock === 'string'){
-                    resultStock = JSON.parse(resultStock);
-                  }
-                  if(resultStock['code'] == 0){
-                    //메일 알림 관련
-                    let mailTo = [];
-                    mailTo.push(confirmation_data.approver_id);
-                    // let phase;
-                    // if(confirmation_data.approval_phase === '미확인'){
-                    //   mailTo.push(confirmation_data.checker_id);
-                    //   phase = '확인'
-                    // }else if(confirmation_data.approval_phase === '미승인'){
-                    //   mailTo.push(confirmation_data.approver_id);
-                    //   phase = '승인'
-                    // }
-
-                    // 메일 본문 내용
-                    let content=`
-                      <html>
-                        <body>
-                          <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                            <h2 style="text-align: center; color:#13428a">구매 요청 알림</h2>
-                            <table style="width: 100%;border-spacing: 10px 10px;">
-                              <tr>
-                                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
-                                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.project_code === '' ? '-' : confirmation_data.project_code}</td>
-                              </tr>
-                              <tr>
-                                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">비고</td>
-                                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.note === '' ? '-' : confirmation_data.note}</td>
-                              </tr>
-                              <tr>
-                                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
-                              </tr>
-                              <tr>
-                                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">구매담당자</td>
-                                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
-                              </tr>
-                            </table>
-                            <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${confirmation_data.project_code}">
-                              <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                                확인하기
-                              </p>
-                            </a>
-                          </div>
-                        </body>
-                      </html>
-                    `;
-                    try {
-                      let sendEmailAlam = await mux.Server.post({
-                        path: '/api/send_email/',
-                        to_addrs: mailTo,
-                        subject: "구매 요청 알림",
-                        content: content
-                      });
-                      if (prevURL !== window.location.href) return;
-                      if(sendEmailAlam['code'] == 0){
-                        console.log(sendEmailAlam['message']);
-                      } else {
-                        if (prevURL !== window.location.href) return;
-                        mux.Util.showAlert(sendEmailAlam['failed_info']);
-                      }
-                    } catch (error) {
-                      if (prevURL !== window.location.href) return;
-                      if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                        mux.Util.showAlert(error.response['data']['failed_info'].msg);
-                      else
-                        mux.Util.showAlert(error);
-                    }
-                  } else {
-                    if (prevURL !== window.location.href) return;
-                    mux.Util.showAlert(resultStock['failed_info']);
-                  }
-                } catch (error) {
-                  mux.Util.hideLoading();
-                  if (prevURL !== window.location.href) return;
-                  if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                    mux.Util.showAlert(error.response['data']['failed_info'].msg);
-                  else
-                    mux.Util.showAlert(error);
-                }
-
+                mux.Util.showAlert(sendEmailAlam['failed_info']);
               }
-            });
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                mux.Util.showAlert(error.response['data']['failed_info'].msg);
+              else
+                mux.Util.showAlert(error);
+            }
+            return true;
           } else {
             if (prevURL !== window.location.href) return;
             mux.Util.showAlert(result['failed_info']);
@@ -1525,12 +1505,102 @@ export default {
           else
             mux.Util.showAlert(error);
         }
-        mux.Util.hideLoading();
-        this.bom_list_purchase_data=[];
-        this.bom_list_purchase_items_data=[];
       }
     },
 
+    async purchaseUsableNum(){
+      //선주문일 경우 사용 가능 수량 조정
+      const prevURL = window.location.href;
+      let bom_data = this.bom_list_purchase_data;
+      let update_stock_data = [];
+      let bom_num_calc = [];
+      for(let bd=0; bd<bom_data.length; bd++){
+        let bom = bom_data[bd];
+        if(bom_num_calc.length === 0){
+          bom_num_calc.push({"item_code": bom.item_code, "num": Number(bom.purchase_num)});
+        }else{
+          if(bom_num_calc.some(x => x.item_code === bom.item_code)){
+            bom_num_calc.find(x => x.item_code === bom.item_code).num += Number(bom.purchase_num);
+          }else{
+            bom_num_calc.push({"item_code": bom.item_code, "num": Number(bom.purchase_num)});
+          }
+        }
+      }
+      console.log(bom_num_calc);
+
+      // if(bom_num_calc.length > 0){
+        for(let calc =0; calc<bom_num_calc.length; calc++){
+          let bomCalc = bom_num_calc[calc];
+          let stock_check = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: [
+              {
+                "product_table.product_code": bomCalc.item_code,
+                "module_table.module_code": bomCalc.item_code,
+                "material_table.material_code": bomCalc.item_code,
+                "material_table.directly_written": 0,
+              }
+            ],
+            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof stock_check === 'string'){
+            stock_check = JSON.parse(stock_check);
+          }
+          if(stock_check['code'] == 0){
+            if(stock_check['data'].length > 0){
+              let searched_stock_data = stock_check['data'][0];
+              let searched_usable_num = searched_stock_data.usable_num;
+              let searched_spot = searched_stock_data.spot;
+              update_stock_data.push({
+                "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "modifier"
+                  },
+                  "data":{
+                    "usable_num": Number(searched_usable_num) - Number(bomCalc.num)
+                  },
+                  "update_where": {"product_code": bomCalc.item_code, "spot": searched_spot},
+                  "rollback": "yes"
+              })
+            }
+          }
+        }
+
+        console.log(update_stock_data);
+      // }
+
+      let sendStockData = {}
+      sendStockData["stock_table-update"] = update_stock_data;
+      if(update_stock_data.length > 0){
+        try {
+          let resultStock = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: sendStockData
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof resultStock === 'string'){
+            resultStock = JSON.parse(resultStock);
+          }
+          if(resultStock['code'] == 0){
+            console.log(resultStock['message']);
+          } else {
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(resultStock['failed_info']);
+          }
+        } catch (error) {
+          mux.Util.hideLoading();
+          if (prevURL !== window.location.href) return;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
+          else
+            mux.Util.showAlert(error);
+        }
+      }
+    },
     addItems(){
       let check_duplicate=[];
       let set_item = this.bom_list_purchase_items_data;
