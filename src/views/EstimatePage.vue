@@ -1741,6 +1741,10 @@ export default {
       }else {
         this.origin_clickedProductCost = JSON.parse(JSON.stringify(this.clickedProductCost));
       }
+      if (this.clearFlag){
+        this.clickedProductCost = {};
+        this.clearFlag = false;
+      }
     },
     // 조회 - 노무비 데이터 변경
     labor_cost_data: {
@@ -2739,6 +2743,7 @@ export default {
       this.dialogDelete = false;
     },
     clearClicked() {
+      this.clearFlag = true;
       this.estimate_member_info = JSON.parse(JSON.stringify(EstimatePageConfig.estimate_member_info));
 
       this.calc_cost_detail_data_product_cost.belong_data = [];
@@ -4427,6 +4432,7 @@ export default {
   },
   data(){
     return{
+      clearFlag: false,
       mux: mux,
       todayDate: '',
       username: '',
