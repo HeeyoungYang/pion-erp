@@ -100,7 +100,7 @@
                   color="success"
                   v-bind="attrs"
                   v-on="on"
-                  :disabled="(production_details.inbound_date === '' || production_details.inbound_date === null) ? false : true"
+                  :disabled="production_details.approval_phase === '승인' && (production_details.inbound_date === '' || production_details.inbound_date === null) ? false : true"
                 >
                   입고 승인 요청
                 </v-btn>
@@ -285,20 +285,42 @@ export default {
                 ModalDialogComponent
               },
 
-  created () {
-    this.initialize()
-  },
-
   watch:{
     production_detail_dialog(val){
       val || this.closeProductList()
     },
+  },
+
+  created () {
+    this.initialize()
+    const project_code = this.$route.query.project_code;
+    const inhouse_bid_number = this.$route.query.inhouse_bid_number;
+    const company_bid_number = this.$route.query.company_bid_number;
+    const company_name = this.$route.query.company_name;
+    if (project_code && inhouse_bid_number && company_bid_number && company_name){
+      this.setSearchCardInputs(project_code, inhouse_bid_number, company_bid_number, company_name);
+      this.searchButton();
+    }
   },
   methods:{
     // eslint-disable-next-line no-unused-vars
 
     async initialize () {
       const prevURL = window.location.href;
+      try {
+        if (prevURL !== window.location.href) return;
+        this.login_info.name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+        this.login_info.email = this.$cookies.get(this.$configJson.cookies.email.key);
+        this.login_info.id = this.$cookies.get(this.$configJson.cookies.id.key);
+        this.login_info.position = this.$cookies.get(this.$configJson.cookies.position.key);
+        this.login_info.department = this.$cookies.get(this.$configJson.cookies.department.key);
+        this.login_info.office_phone_number = this.$cookies.get(this.$configJson.cookies.office_phone_number.key);
+        this.login_info.phone_number = this.$cookies.get(this.$configJson.cookies.phone_number.key);
+        console.log(this.login_info)
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.showAlert(error);
+      }
 
       try {
         let result = await mux.Server.getPionBasicInfo();
@@ -313,7 +335,8 @@ export default {
         if (prevURL !== window.location.href) return;
         mux.Util.showAlert(error);
       }
-      this.inboundRequestInputs.find(x=>x.column_name === 'spot').list = this.spot_list;
+
+
       try {
         const result = await mux.Server.get({path:'/api/admin/users/'});
         if (prevURL !== window.location.href) return;
@@ -336,22 +359,15 @@ export default {
         mux.Util.showAlert(error);
         return;
       }
-
-      try {
-        if (prevURL !== window.location.href) return;
-        this.login_info.name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
-        this.login_info.email = this.$cookies.get(this.$configJson.cookies.email.key);
-        this.login_info.id = this.$cookies.get(this.$configJson.cookies.id.key);
-        this.login_info.position = this.$cookies.get(this.$configJson.cookies.position.key);
-        this.login_info.department = this.$cookies.get(this.$configJson.cookies.department.key);
-        this.login_info.office_phone_number = this.$cookies.get(this.$configJson.cookies.office_phone_number.key);
-        this.login_info.phone_number = this.$cookies.get(this.$configJson.cookies.phone_number.key);
-        console.log(this.login_info)
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        mux.Util.showAlert(error);
-      }
+      this.inboundRequestInputs.find(x=>x.column_name === 'spot').list = this.spot_list;
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
+    },
+
+    setSearchCardInputs(project_code, inhouse_bid_number, company_bid_number, company_name){
+      this.searchCardInputs.find(x=>x.label === '프로젝트 코드').value = project_code;
+      this.searchCardInputs.find(x=>x.label === '사내 견적번호').value = inhouse_bid_number;
+      this.searchCardInputs.find(x=>x.label === '기업별 입찰번호').value = company_bid_number;
+      this.searchCardInputs.find(x=>x.label === '업체명').value = company_name;
     },
     async clickApproveData(item){
       this.production_details = {};
@@ -379,6 +395,7 @@ export default {
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
           this.production_details = result.data[0];
+          this.production_details.approval_phase = item.approval_phase;
 
           //thumbnail
           try {
@@ -513,7 +530,7 @@ export default {
           if(result.length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
-          this.approval_datas = result.data;
+          this.approval_datas = result.data.filter(x=>x.approval_phase !== '작성중');
         } else {
           mux.Util.showAlert(result['failed_info']);
         }

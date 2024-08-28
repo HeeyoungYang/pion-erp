@@ -26,7 +26,7 @@
                 <td align="center">
                   <!-- 확인 또는 승인자가 아닐 경우 노출되는 단순  chip -->
                   <v-chip
-                    v-if="(item.approval_phase == '미확인' || item.approval_phase == '미승인')  && item.checker_id !== userID"
+                    v-if="(item.approval_phase == '미확인' && item.checker_id !== userID) || (item.approval_phase == '미승인'&& item.approver_id !== userID)"
                     class="ma-2"
                     small
                     :color="item.approval_phase == '미확인' ? 'default' : 'amber lighten-4'"
@@ -75,7 +75,7 @@
                   </v-menu>
                   <!-- 확인 또는 승인자에 해당될 경우 노출되는 list형 chip -->
                   <v-menu
-                    v-if="(item.approval_phase == '미확인' || item.approval_phase == '미승인') && item.checker_id == userID"
+                    v-if="(item.approval_phase == '미확인' && item.checker_id == userID) || (item.approval_phase == '미승인' && item.approver_id == userID)"
                     :close-on-content-click="false"
                     :nudge-width="200"
                     offset-x
