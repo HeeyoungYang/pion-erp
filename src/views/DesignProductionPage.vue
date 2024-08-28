@@ -2483,6 +2483,7 @@ export default {
                       b.num = b.module_num;
                       b.product_num = b.num;
                       b.item_num = b.product_num;
+                      b.usable_num = b.module_usable_num;
                       return b;
                     })
                   ];

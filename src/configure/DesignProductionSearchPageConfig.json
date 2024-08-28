@@ -1475,7 +1475,7 @@
             "module_manufacturer": "ewr",
             "module_unit_price": 50000,
             "module_num": 2,
-            "usable_num": 2
+            "module_usable_num": 2
           },
           {
             "module_type": "원부자재",
@@ -1487,7 +1487,7 @@
             "module_manufacturer": "ew",
             "module_unit_price": 5000,
             "module_num": 30,
-            "usable_num": 2
+            "module_usable_num": 2
           }
         ]
       },
@@ -1516,7 +1516,7 @@
             "module_manufacturer": "ewr",
             "module_unit_price": 50000,
             "module_num": 2,
-            "usable_num": 2
+            "module_usable_num": 2
           },
           {
             "module_type": "원부자재",
@@ -1528,7 +1528,7 @@
             "module_manufacturer": "ew",
             "module_unit_price": 5000,
             "module_num": 30,
-            "usable_num": 2
+            "module_usable_num": 2
           }
         ]
       },
@@ -1557,7 +1557,7 @@
             "module_manufacturer": "ewr",
             "module_unit_price": 50000,
             "module_num": 2,
-            "usable_num": 2
+            "module_usable_num": 2
           },
           {
             "module_type": "원부자재",
@@ -1569,7 +1569,7 @@
             "module_manufacturer": "ew",
             "module_unit_price": 5000,
             "module_num": 30,
-            "usable_num": 2
+            "module_usable_num": 2
           }
         ]
       },
@@ -1598,7 +1598,7 @@
               "module_manufacturer": "ewr",
               "module_unit_price": 50000,
               "module_num": 2,
-              "usable_num": 2
+              "module_usable_num": 2
             }
           ]
         },
@@ -1627,7 +1627,7 @@
               "module_manufacturer": "ew",
               "module_unit_price": 5000,
               "module_num": 30,
-              "usable_num": 2
+              "module_usable_num": 2
             }
           ]
         },
@@ -1656,7 +1656,7 @@
               "module_manufacturer": "ew",
               "module_unit_price": 5000,
               "module_num": 30,
-              "usable_num": 2
+              "module_usable_num": 2
             }
           ]
         }

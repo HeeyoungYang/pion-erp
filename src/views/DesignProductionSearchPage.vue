@@ -1027,6 +1027,7 @@ export default {
                         b.manufacturer = b.module_manufacturer;
                         b.unit_price = b.module_unit_price;
                         b.item_num = b.module_num;
+                        b.usable_num = b.module_usable_num;
                         return b;
                       })
                     ];
