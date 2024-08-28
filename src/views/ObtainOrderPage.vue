@@ -1763,6 +1763,10 @@ export default {
       }else {
         this.origin_clickedProductCost = JSON.parse(JSON.stringify(this.clickedProductCost));
       }
+      if (this.clearFlag){
+        this.clickedProductCost = {};
+        this.clearFlag = false;
+      }
     },
     // 조회 - 노무비 데이터 변경
     labor_cost_data: {
@@ -2782,6 +2786,7 @@ export default {
       this.dialogDelete = false;
     },
     clearClicked() {
+      this.clearFlag = true;
       this.estimate_member_info = JSON.parse(JSON.stringify(ObtainOrderPageConfig.estimate_member_info));
 
       this.calc_cost_detail_data_product_cost.belong_data = [];
@@ -4466,6 +4471,7 @@ export default {
   },
   data(){
     return{
+      clearFlag: false,
       type_obtain: '프로젝트',
       mux: mux,
       todayDate: '',
@@ -4505,7 +4511,6 @@ export default {
 
       estimate_member_info: JSON.parse(JSON.stringify(ObtainOrderPageConfig.estimate_member_info)),
       estimate_member_info2:JSON.parse(JSON.stringify(ObtainOrderPageConfig.estimate_member_info)),
-      save_estimate: ObtainOrderPageConfig.save_estimate,
       content_save_items: ObtainOrderPageConfig.content_save_items,
       search_estimate_headers: ObtainOrderPageConfig.search_estimate_headers,
       survey_cost_headers: ObtainOrderPageConfig.survey_cost_headers,

@@ -2221,6 +2221,15 @@ export default {
       }
       mux.Util.hideLoading();
     },
+
+
+    estiamteDialog(item){
+      this.estimatedDialog = true;
+      this.estimate_company = item.purchase_estimate_company;
+      this.purchaseEstimateThumbnail = item.purchase_estimate_thumbnail;
+      this.purchaseEstimateFile = item.purchase_estimate_file;
+      this.purchaseEstimateCode = item.code;
+    },
   },
 }
 </script>
