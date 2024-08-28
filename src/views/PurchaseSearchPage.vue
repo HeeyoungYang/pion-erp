@@ -108,9 +108,10 @@
                 :headers="purchase_detail_headers"
                 :items="purchase_detail_data"
                 :other-headers="other_obtain_headers"
-                :other-items="other_obtain_data"
+                :other-items="check_other_obtain_data"
                 :item-key="purchase_detail_data.product_code"
-                @checkOthers="checkOthers"
+                :show-others="show_others"
+                @checkOthers="checkOtherObtainData"
                 dense
               >
               </PurchaseDetailTableComponent>
@@ -247,6 +248,7 @@
                     :other-headers="selected_unestimated_headers"
                     :other-items="check_other_purchase_data"
                     group-by="project_code"
+                    :show-others="show_other_purchase"
                     @checkOthers="checkOthers"
                     @addList="addList"
                     @subtractList="subtractList"
@@ -513,7 +515,7 @@
                 contain
                 :src="mux.Util.imageBinary(purchaseEstimateThumbnail)"
                 transition="scale-transition"
-                @click="download('purchase/purchase_estimate', purchaseEstimateFile, purchaseEstimateCode+'_')"
+                @click="download('purchase/purchase_estimate', purchaseEstimateFile, estimate_code+'_')"
                 style="cursor: pointer; width: 100%;"
               />
             </v-col>
@@ -1012,6 +1014,8 @@ export default {
 
 
       tab_search: null,
+      show_others: false,
+      show_other_purchase: false,
       check_estimate_list:false,
       creater_authority: false,
       detail_list: false,
@@ -1032,11 +1036,12 @@ export default {
       clicked_tr_phase: '',
       estimate_company: '',
       estimate_code: '',
-      purchaseEstimateCode: '',
+      // purchaseEstimateCode: '',
       purchaseEstimateThumbnail: '',
       purchaseEstimateFile: '',
       email_sign:'',
       estimate_request_company: '',
+      search_by_code: '',
 
       unestimated_steppers: 1,
       unestimated_step: 3,
@@ -1054,12 +1059,14 @@ export default {
       order_request_data:[],
       order_purchase_list_data:[],
       estimate_purchase_list_data:[],
+      search_other_obtain_data:{},
+      check_other_obtain_data:[],
       search_other_purchase_data:[],
       check_other_purchase_data:[],
       purchase_data:[],
       purchase_detail_data:[],
-      other_obtain_data:[],
       order_item_note_data:[],
+      search_product_to_check_obtain:[],
 
       defaultMailData: PurchaseSearchPageConfig.default_mail_data,
       search_tab_items: PurchaseSearchPageConfig.search_tab_items,
@@ -1100,9 +1107,9 @@ export default {
   },
   created () {
     this.initialize()
-    const project_code = this.$route.query.project_code;
-    if (project_code){
-      this.setSearchCardInputs(project_code);
+    const code = this.$route.query.code;
+    if (code){
+      this.search_by_code = code;
       this.searchButton();
     }
   },
@@ -1146,10 +1153,57 @@ export default {
       this.searchCardInputs.find(x=>x.label === '발주번호').value = project_code;
     },
 
-    editPurchaseEstimate(){
+    async editPurchaseEstimate(){
       this.estimateEditDialog = true;
       this.estimatedDialog = false;
       this.estimateInfoInputs.find(x=>x.label === '견적 확정 업체').value = this.estimate_company;
+
+      mux.Util.showLoading();
+      let searched_data = [];
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "purchase_product_table.purchase_estimate_code": this.estimate_code,
+            }
+          ],
+          "script_file_name": "rooting_구매요청_검색_24_08_08_11_45_79G.json",
+          "script_file_path": "data_storage_pion\\json_sql\\purchase\\구매요청_검색_24_08_08_11_45_QAW"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          if(result.data.length > 0){
+            searched_data.push(...result.data.filter(data => data.approval_phase !== '설계미승인'));
+          }
+          for(let i=0; i<searched_data.length; i++){
+            let data = searched_data[i];
+            for(let j=0; j<data.belong_data.length; j++){
+              let belong = data.belong_data[j];
+              belong.project_code = data.project_code;
+              if(belong.purchase_estimate_code === this.estimate_code){
+                this.estimate_purchase_list_data.push(belong);
+              }
+            }
+          }
+          mux.Util.hideLoading();
+        } else {
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
     },
 
     closeEstimateEditDialog(){
@@ -1157,25 +1211,52 @@ export default {
       delete this.estimateInfoInputs.find(x=>x.label === '견적서 첨부').value;
     },
 
-    nextUnestimatedStep (step) {
+    async nextUnestimatedStep (step) {
       if(step === 1 && this.selected_unestimated_data.length === 0){
         mux.Util.showAlert('견적을 요청할 자재를 선택해주세요.');
         return;
       }else if(step === 1 && this.selected_unestimated_data.length !== 0){
         //선택한 자재가 다른 구매요청에 있는지 확인 (발주요청하지 않은 데이터만)
-        let searched_data = PurchaseSearchPageConfig.test_purchase_data;
-        this.selected_unestimated_data.forEach(item => {
-          for(let i=0; i<searched_data.length; i++){
-            let data = searched_data[i];
-            for(let j=0; j<data.belong_data.length; j++){
-              let belong = data.belong_data[j];
-              if(belong.item_code === item.item_code && belong.project_code !== item.project_code){
-                item.exclamation = true
-              }
+        mux.Util.showLoading();
+        let searched_data = [];
+        const prevURL = window.location.href;
+        for(let i=0; i<this.selected_unestimated_data.length; i++){
+          let item = this.selected_unestimated_data[i];
+          try {
+            let result = await mux.Server.post({
+              path: '/api/common_rest_api/',
+              params: [
+                {
+                  "purchase_product_table.item_code": item.item_code,
+                }
+              ],
+              "script_file_name": "rooting_구매요청_검색_24_08_08_11_45_79G.json",
+              "script_file_path": "data_storage_pion\\json_sql\\purchase\\구매요청_검색_24_08_08_11_45_QAW"
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
             }
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+              if(result.data.length > 0){
+                searched_data.push(...result.data.filter(data => data.approval_phase !== '설계미승인'));
+                item.exclamation = true;
+              }
+              mux.Util.hideLoading();
+            } else {
+              mux.Util.showAlert(result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            mux.Util.hideLoading();
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
+            else
+              mux.Util.showAlert(error);
           }
-          // item.exclamation = true
-        });
+        }
         this.search_other_purchase_data = searched_data
         this.selected_estimate_request_list_data = this.selected_unestimated_data
       }
@@ -1258,7 +1339,7 @@ export default {
               for(let o=0; o<this.order_request_data.length; o++){
                 let order = this.order_request_data[o];
                 if(order.item_code === item.item_code){
-                  order.ordered_num = order.purchase_num + item.purchase_num;
+                  order.ordered_num += item.purchase_num;
                   item.order_name = item.name;
                   item.order_spec = item.spec;
                   item.order_unit_price = 0;
@@ -1294,36 +1375,68 @@ export default {
 
     },
 
-    checkOthers(item, project_code){
+    async checkOtherObtainData(item){
+      this.check_other_obtain_data = [];
+      this.check_other_obtain_data.push(...this.search_other_obtain_data[item.item_code]);
+      this.show_others = true;
+    },
+    checkOthers(item, project_code, id){
       this.check_other_purchase_data = [];
+      this.show_other_purchase = true;
       let searched_others = this.search_other_purchase_data;
 
       searched_others.forEach(searched => {
-        if(project_code !== searched.project_code){
+        if(project_code === '' || project_code !== searched.project_code){
           for(let i=0; i<searched.belong_data.length; i++){
             let belong = searched.belong_data[i];
-            if(belong.item_code === item.item_code){
+            if(belong.id !== id && belong.item_code === item.item_code){
               belong.project_code = searched.project_code;
-              belong.product_code = searched.product_code;
+              // belong.product_code = searched.product_code;
               this.check_other_purchase_data.push(belong);
             }
           }
         }
       });
+      this.show_others = true;
     },
-    addList(item, project_code){
-      let selected_project_codes = [];
-      for(let i=0; i<this.selected_estimate_request_list_data.length; i++){
-        let data = this.selected_estimate_request_list_data[i];
-        selected_project_codes.push(data.project_code);
-      }
+    async addList(type, item){
+      // let selected_project_codes = [];
+      if(type === '개별'){
+        let success = false;
+        if(item.purchase_estimate_phase === '완료'){
+          const confirm = await mux.Util.showConfirm('견적 완료된 데이터를 다시 견적 요청할 경우 기존에 등록된 견적은 초기화됩니다. 진행하시겠습니까?', '확인', false, '예', '아니오');
+          success = confirm;
+        }else{
+          success = true;
+        }
+        if(success){
+          this.selected_estimate_request_list_data.push(item);
+        }
+      }else{
+        let check_estimate = 0;
+        for(let m=0; m<item.length; m++){
+          if(item[m].purchase_estimate_phase === '완료'){
+            check_estimate ++;
+          }
+        }
 
-      selected_project_codes = [...new Set(selected_project_codes)];
-      if (selected_project_codes.includes(project_code)) {
-        mux.Util.showAlert('이미 추가된 프로젝트입니다.');
-        return;
-      } else {
-        this.selected_estimate_request_list_data.push(...item);
+        let success = false;
+        if(check_estimate > 0){
+          const confirm = await mux.Util.showConfirm('견적 완료된 데이터를 다시 견적 요청할 경우 기존에 등록된 견적은 초기화됩니다. 진행하시겠습니까?', '확인', false, '예', '아니오');
+          success = confirm;
+        }else{
+          success = true;
+        }
+
+        if(success){
+          this.selected_estimate_request_list_data.push(...item);
+          this.selected_estimate_request_list_data = this.selected_estimate_request_list_data.reduce((prev, now) => {
+            if(!prev.some(obj => obj.id === now.id)){
+              prev.push(now);
+            }
+            return prev;
+          }, [])
+        }
       }
     },
     orderPriceCalc(item){
@@ -1336,10 +1449,16 @@ export default {
         }
       });
     },
-    subtractList(project_code){
-      console.log(project_code);
-      let filtered = this.selected_estimate_request_list_data.filter(data => data.project_code !== project_code);
-      this.selected_estimate_request_list_data = filtered
+    subtractList(type, item){
+      let request_list = JSON.parse(JSON.stringify(this.selected_estimate_request_list_data));
+      if(type === '개별'){
+        request_list = request_list.filter(x => x.id !== item);
+      }else{
+        item.forEach(data => {
+          request_list = request_list.filter(x => x.id !== data.id);
+        })
+      }
+      this.selected_estimate_request_list_data = request_list;
     },
     addNotes(item){
       // let data = item[0];
@@ -1419,6 +1538,7 @@ export default {
 
     async searchButton(){
       mux.Util.showLoading();
+      let searchCode = this.search_by_code;
       let searchApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
       if (searchApprovalPhase === 'All')
         searchApprovalPhase = '';
@@ -1445,7 +1565,8 @@ export default {
               "purchase_product_table.item_code": searchItemCode ? searchItemCode : "",
               "purchase_product_table.purchase_estimate_company": searchCompany ? searchCompany : "",
               "purchase_confirmation_table.project_code": searchProjectCode ? searchProjectCode: "",
-              "purchase_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : ""
+              "purchase_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
+              "purchase_confirmation_table.code": searchCode ? searchCode : ""
             }
           ],
           "script_file_name": "rooting_구매요청_검색_24_08_08_11_45_79G.json",
@@ -1503,6 +1624,9 @@ export default {
     },
     closePurchaseDetail(){
       this.purchase_detail_dialog = false;
+      this.show_others = false;
+      this.search_product_to_check_obtain = [];
+      this.search_other_obtain_data = {};
     },
     closePurchaseEstiamtedDialog(){
       this.unestimatedMailDialog = false;
@@ -1510,6 +1634,7 @@ export default {
       this.setEstimateDialog = false;
       this.set_estimate_steppers = 1;
       this.selected_unestimated_data =[];
+      this.selected_estimate_request_list_data = [];
       this.estimateEditDialog = false;
     },
     closeOrderRequestDialog(){
@@ -1546,11 +1671,131 @@ export default {
       });
       // this.order_request_data = item
 
-      this.iframeSrc = await mux.Server.getFileUrl('purchase/purchase_estimate', item[0].code + '_' + item[0].purchase_estimate_file, 'application/pdf');
+      this.iframeSrc = await mux.Server.getFileUrl('purchase/purchase_estimate', item[0].purchase_estimate_code + '_' + item[0].purchase_estimate_file, 'application/pdf');
       mux.Util.hideLoading();
       this.orderRequestDialog = true;
     },
     async clickApproveData(item){
+      await this.clickedSearchThumbnail(item);
+      await this.clickedSearchObtain(item);
+      mux.Util.hideLoading();
+      this.purchase_detail_dialog = true;
+    },
+
+    async clickedSearchObtain(item){
+      //수주조회
+      const prevURL = window.location.href;
+      let searched =[];
+      for(let i=0; i<item.belong_data.length; i++){
+        let data = item.belong_data[i];
+        try {
+          let result = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            "params": [
+              {
+                "product_material_table.material_code": data.item_code,
+                "product_module_table.module_code": data.item_code
+              }
+            ],
+            "script_file_name": "rooting_완제품_검색_24_05_16_13_52_1IN.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+            result['data'].forEach(resultData =>{
+              searched.push({'product_code': resultData.code, 'item_code': data.item_code})
+            })
+          }else{
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          mux.Util.hideLoading();
+          // console.error(error);
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
+          else
+            mux.Util.showAlert(error);
+        }
+      }
+      console.log(searched);
+
+      searched = searched.reduce((prev, now) => {
+        if(!prev.some(obj => obj.product_code === now.product_code && obj.item_code === now.item_code)){
+          prev.push(now);
+        }
+        return prev;
+      }, [])
+
+      this.search_product_to_check_obtain = searched;
+
+      for(let i=0; i<searched.length; i++){
+        let product = searched[i];
+        if(this.search_other_obtain_data[product.item_code] === undefined){
+          this.search_other_obtain_data[product.item_code] = [];
+        }
+        try {
+          let result = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: [
+              {
+                "obtain_cost_calc_detail_table.product_code": product.product_code,
+
+              }
+            ],
+            "script_file_name": "rooting_수주_정보_검색_24_08_08_13_53_89S.json",
+            "script_file_path": "data_storage_pion\\json_sql\\obtain\\수주_정보_검색_24_08_08_13_54_EFQ"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+            let obtain_cost_calc_detail = result.data.obtain_cost_calc_detail;
+            let obtain_confirmation = result.data.obtain_confirmation;
+            obtain_cost_calc_detail.forEach(data =>{
+              obtain_confirmation.find(x=> x.cost_calc_code === data.cost_calc_code).product_code = data.product_code;
+              obtain_confirmation.find(x=> x.cost_calc_code === data.cost_calc_code).product_name = data.product_name;
+            })
+            this.search_other_obtain_data[product.item_code].push(...obtain_confirmation);
+            // result.data.obtain_cost_calc_detail;
+          } else {
+            mux.Util.showAlert(result['failed_info']);
+          }
+        } catch (error) {
+          if (prevURL !== window.location.href) return;
+          mux.Util.hideLoading();
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
+          else
+            mux.Util.showAlert(error);
+        }
+      }
+
+      console.log('this.search_other_obtain_data : ' + JSON.stringify(this.search_other_obtain_data));
+
+      let detail_data = JSON.parse(JSON.stringify(this.purchase_detail_data));
+      detail_data.forEach(detail =>{
+        if(detail.item_code in this.search_other_obtain_data){
+          if(this.search_other_obtain_data[detail.item_code].length > 0){
+            detail.exclamation = true;
+          }else{
+            detail.exclamation = false;
+          }
+        }
+      })
+      this.purchase_detail_data = detail_data;
+    },
+    async clickedSearchThumbnail(item){
+
       this.purchase_detail_data = [];
       this.clicked_tr_phase = item.approval_phase;
       this.purchase_detail_data = item.belong_data;
@@ -1558,6 +1803,7 @@ export default {
       let thumbnails = [];
       mux.Util.showLoading();
       const prevURL = window.location.href;
+
       //thumbnail
       try {
         let thumbnail_result = await mux.Server.post({
@@ -1625,8 +1871,6 @@ export default {
       }else{
         this.show_request_estimate_button = true;
       }
-      mux.Util.hideLoading();
-      this.purchase_detail_dialog = true;
     },
 
     selectMemberDialog(idx){
@@ -1717,7 +1961,7 @@ export default {
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
                         </tr>
                       </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${item.project_code}">
+                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?code=${item.code}">
                         <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                           확인하기
                         </p>
@@ -1778,7 +2022,7 @@ export default {
           "data":{
             "purchase_estimate_phase": "요청",
             "purchase_estimate_company": this.estimate_request_company,
-            "purchase_estimate_code": this.estimate_request_company + '/' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key),
+            "purchase_estimate_code": this.estimate_request_company + ' ' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + ' ' + this.$cookies.get(this.$configJson.cookies.id.key),
           },
           "update_where": {"id": data.id },
           "rollback": "yes"
@@ -1892,19 +2136,31 @@ export default {
         "data":{
           "purchase_estimate_phase": "완료",
           "purchase_estimate_company": estimate_company,
-          "purchase_estimate_code": estimate_company + '/' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key),
+          "purchase_estimate_code": estimate_company + ' ' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + ' ' + this.$cookies.get(this.$configJson.cookies.id.key),
           "purchase_estimate_file": estimate_file_name,
           "purchase_estimate_thumbnail": estimate_file_thumbnail
         },
         "update_where": {"purchase_estimate_code": estimate_code},
         "rollback": "yes"
       }];
+
+      sendData.path = '/api/multipart_rest_api/';
+      sendData.prefix = estimate_company + ' ' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + ' ' + this.$cookies.get(this.$configJson.cookies.id.key) + '_';
+      sendData.files = [];
+
+      sendData.files.push({
+        folder: 'purchase/purchase_estimate',
+        file: estimate_file_value,
+        name: estimate_file_name
+      });
       console.log("sendData ::: ", sendData);
       try {
-        let result = await mux.Server.post({
-          path: '/api/common_rest_api/',
-          params: sendData
-        });
+        // let result = await mux.Server.post({
+        //   path: '/api/common_rest_api/',
+        //   params: sendData
+        // });
+
+        let result = await mux.Server.uploadFile(sendData);
         if (prevURL !== window.location.href) return;
 
         if (typeof result === 'string'){
@@ -1938,7 +2194,17 @@ export default {
 
       const currDate = new Date();
       let confirmation_data = {};
-      let code = 'PE-' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
+
+      let currentCode = await this.searchCurrentCode();
+      // let code = 'PE-' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
+      let code = '';
+      if(currentCode === ''){
+        code = 'PEPO_' + mux.Date.format(currDate, 'yyMMdd') + '_001';
+      }else{
+        let calc_current_code = Number(currentCode.split('_')[2]) + 1;
+        calc_current_code = ('00' + calc_current_code).slice(-3);
+        code = 'PEPO_' + mux.Date.format(currDate, 'yyMMdd') + '_' + calc_current_code;
+      }
 
       // order_confirmation_table insert 데이터 정리
       confirmation_data = JSON.parse(JSON.stringify(this.order_confirm_data))
@@ -1952,7 +2218,6 @@ export default {
       order_data.forEach(data => {
         delete data.note;
       });
-
       let order_data_unique = order_data.reduce((prev, now) => {
         if(!prev.some(obj => obj.item_code === now.item_code)){
           prev.push(now);
@@ -2202,13 +2467,53 @@ export default {
       mux.Util.hideLoading();
 
     },
-    estiamteDialog(type, order, item){
+    async searchCurrentCode(){
+      const currDate = new Date();
+      const prevURL = window.location.href;
+      let code = 'PEPO_' + mux.Date.format(currDate, 'yyMMdd') + '_';
+      let current_code = '';
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "order_confirmation_table.code": code
+            }
+          ],
+          "script_file_name": "rooting_발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_OKJ.json",
+          "script_file_path": "data_storage_pion\\json_sql\\order\\발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_3Q8"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          let searched = result.data;
+          // 정렬
+          searched.sort((a,b) => a.code.localeCompare(b.code));
+          current_code = searched[searched.length-1].code;
+        } else {
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      return current_code;
+    },
+    async estiamteDialog(type, order, item){
       this.selected_estimate_request_list_data = [];
       if(this.tab_search === 0){
         this.unestimatedMailDialog = true;
-        this.purchase_detail_data.forEach(data => {
-          data.exclamation = false;
-        });
+        // this.purchase_detail_data.forEach(data => {
+        //   data.exclamation = false;
+        // });
       }
       else{
         if(type === 'added_estimate'){
@@ -2217,31 +2522,66 @@ export default {
           this.estimate_code = item[0].purchase_estimate_code;
           this.purchaseEstimateThumbnail = item[0].purchase_estimate_thumbnail;
           this.purchaseEstimateFile = item[0].purchase_estimate_file;
-          this.purchaseEstimateCode = item[0].code;
+          // this.purchaseEstimateCode = item[0].code;
           if(order === "" || order === null){
             this.check_editable_purchase_estimate = true;
           }else{
             this.check_editable_purchase_estimate = false;
           }
         }else{
-          this.setEstimateDialog = true;
+          mux.Util.showLoading();
           // this.selected_estimate_request_list_data = item;
 
           //동일한 purchase_estimate_code를 가진 데이터 불러오기
-          let searched_data = PurchaseSearchPageConfig.test_purchase_data;
-          for(let i=0; i<searched_data.length; i++){
-            let data = searched_data[i];
-            for(let j=0; j<data.belong_data.length; j++){
-              let belong = data.belong_data[j];
-              belong.project_code = data.project_code;
-              belong.product_code = data.product_code;
-              if(belong.purchase_estimate_code === item[0].purchase_estimate_code){
-                this.selected_estimate_request_list_data.push(belong);
-              }
+          // let searched_data = PurchaseSearchPageConfig.test_purchase_data;
+          let searched_data = [];
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/common_rest_api/',
+              params: [
+                {
+                  "purchase_product_table.purchase_estimate_code": item.purchase_estimate_code,
+                }
+              ],
+              "script_file_name": "rooting_구매요청_검색_24_08_08_11_45_79G.json",
+              "script_file_path": "data_storage_pion\\json_sql\\purchase\\구매요청_검색_24_08_08_11_45_QAW"
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
             }
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+              if(result.data.length > 0){
+                searched_data.push(...result.data.filter(data => data.approval_phase !== '설계미승인'));
+              }
+              for(let i=0; i<searched_data.length; i++){
+                let data = searched_data[i];
+                for(let j=0; j<data.belong_data.length; j++){
+                  let belong = data.belong_data[j];
+                  belong.project_code = data.project_code;
+                  if(belong.purchase_estimate_code === item[0].purchase_estimate_code){
+                    this.selected_estimate_request_list_data.push(belong);
+                  }
+                }
+              }
+              this.estimateInfoInputs.find(x=>x.label === '견적 확정 업체').value = item[0].purchase_estimate_company;
+              this.setEstimateDialog = true;
+              console.log(item)
+              mux.Util.hideLoading();
+            } else {
+              mux.Util.showAlert(result['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            mux.Util.hideLoading();
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
+            else
+              mux.Util.showAlert(error);
           }
-          this.estimateInfoInputs.find(x=>x.label === '견적 확정 업체').value = item[0].purchase_estimate_company;
-          console.log(item)
         }
       }
     },

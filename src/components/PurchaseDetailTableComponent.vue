@@ -18,7 +18,7 @@
         :disable-sort="disableSort"
       >
         <template v-slot:[`group.header`]="{items, isOpen, toggle}">
-          <th  @click="toggle" colspan="9">
+          <th  @click="toggle" colspan="10">
             <v-icon
             >
               {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
@@ -33,7 +33,7 @@
             class="mr-2"
             x-small
             style="background: #ffedb4; border-radius: 50px; padding: 4px; cursor: pointer;"
-            @click="checkOtherPurchase(item, items[0].project_code)"
+            @click="checkOtherPurchase(item, item.project_code, item.id)"
           >
             mdi-exclamation-thick
           </v-icon>
@@ -42,7 +42,7 @@
     </v-col>
     <v-col cols="12"
       class="mt-7"
-      v-show="show_others"
+      v-show="showOthers"
     >
       <p>{{ check_item }}</p>
       <v-data-table
@@ -53,7 +53,7 @@
         :group-by="groupBy"
       >
         <template v-slot:[`group.header`]="{items, isOpen, toggle}">
-          <th  @click="toggle" colspan="8">
+          <th  @click="toggle" colspan="9">
             <v-icon
             >
               {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
@@ -66,7 +66,7 @@
               class="mr-2"
               x-small
               style="background: #e4e4e4; border-radius: 50px; padding: 4px; cursor: pointer;"
-              @click="addToList(items, items[0].project_code)"
+              @click="addToList('일괄', items, items[0].project_code)"
             >
               mdi-plus-thick
             </v-icon>
@@ -75,14 +75,33 @@
               class="mr-2"
               x-small
               style="background: #e4e4e4; border-radius: 50px; padding: 4px; cursor: pointer;"
-              @click="subtractToList(items[0].project_code)"
+              @click="subtractToList('일괄', items)"
             >
               mdi-minus-thick
             </v-icon>
           </th>
         </template>
-        <!-- <template v-slot:[`item.check_others`] = "{ item }">
-        </template> -->
+        <template v-slot:[`item.check_others`] = "{ item }">
+
+          <v-icon
+              color="primary"
+              class="mr-2"
+              x-small
+              style="background: #e4e4e4; border-radius: 50px; padding: 4px; cursor: pointer;"
+              @click="addToList('개별', item)"
+            >
+              mdi-plus-thick
+            </v-icon>
+          <v-icon
+            color="error"
+            class="mr-2"
+            x-small
+            style="background: #e4e4e4; border-radius: 50px; padding: 4px; cursor: pointer;"
+            @click="subtractToList('개별', item.id)"
+          >
+            mdi-minus-thick
+          </v-icon>
+        </template>
       </v-data-table>
       <!-- <v-data-table
         :dense="dense"
@@ -132,6 +151,7 @@
  * @property {String} [childrenKey] - 하위 그룹 객체 key(default:'')
  * @property {Boolean} [dense] - 줄간격 줄임 여부(default:false)
  * @property {String} [tableClass] - 테이블 스타일 클래스(default:elevation-1)
+ * @property {Boolean} [showOthers] - 추가 조회 데이터(수주 혹은 타 구매내역) 노출 여부
  * @property {Boolean} [showSelect] - 체크박스 사용 여부(default:false)
  * @property {Boolean} [showSelectOthers] - 체크박스 사용 여부(default:false)
  * @property {String} [search] - 검색창 기본 value(default:undefined)
@@ -166,6 +186,7 @@ export default {
     itemBelong: Array,
     itemKey: String,
     tableClass: String,
+    showOthers: Boolean,
     showSelect: Boolean,
     showSelectOthers: Boolean,
     search: String,
@@ -206,16 +227,15 @@ export default {
     deleteItem(index) {
       this.$emit("delete", index);
     },
-    checkOtherPurchase(item, project_code) {
-      this.show_others = true;
+    checkOtherPurchase(item, project_code, id) {
       this.check_item = item.type + ' : ' + item.item_code;
-      this.$emit("checkOthers", item, project_code);
+      this.$emit("checkOthers", item, project_code, id);
     },
-    addToList(item, project_code) {
-      this.$emit("addList", item, project_code);
+    addToList(type, item, project_code) {
+      this.$emit("addList", type, item, project_code);
     },
-    subtractToList( project_code) {
-      this.$emit("subtractList",  project_code);
+    subtractToList(type, items) {
+      this.$emit("subtractList", type, items);
     },
     calcTotal(item){
       let total = Number(item.num ? item.unit_price.replace(/,/g,'').replace(/₩ /g,'') * item.num.replace(/,/g,'') :  0).toLocaleString();
