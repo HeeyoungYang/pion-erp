@@ -230,9 +230,9 @@
             >
               <v-checkbox
                 hide-details
+                v-model="status"
                 class="my-2"
                 label="생산 완료"
-                v-model="status"
               ></v-checkbox>
 
               <InputsFormComponent
@@ -248,7 +248,7 @@
               >
                 <v-col v-for="(input, n) in editDataInputs" :key="n" :cols="input.col" :sm="input.sm">
                   <v-row>
-                    <v-col cols="12" sm="10">
+                    <v-col cols="12" :sm="search_production_data.length === 0 ? '12' : '10'">
                       <v-file-input
                         dense
                         clearable
@@ -268,44 +268,45 @@
                       ></v-file-input>
                     </v-col>
                     <v-menu
-                        open-on-hover
-                        :close-on-content-click="false"
-                        :nudge-width="100"
-                        offset-x
-                      >
-                        <!-- v-if="this.registMaterialInputs[this.registMaterialInputs.length-1].value" -->
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-col cols="12" sm="2" align-self="center">
-                            <v-icon
-                              :color="setThumbnail(input.column_name, 'name') !== '' ? 'primary' : 'default'"
-                              v-bind="attrs"
-                              v-on="on"
-                            >
-                              mdi-image-multiple-outline
-                            </v-icon>
-                          </v-col>
-                        </template>
+                      v-if="search_production_data.length !== 0"
+                      open-on-hover
+                      :close-on-content-click="false"
+                      :nudge-width="100"
+                      offset-x
+                    >
+                      <!-- v-if="this.registMaterialInputs[this.registMaterialInputs.length-1].value" -->
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-col cols="12" sm="2" align-self="center">
+                          <v-icon
+                            :color="setThumbnail(input.column_name, 'name') !== null ? 'primary' : 'default'"
+                            v-bind="attrs"
+                            v-on="on"
+                          >
+                            mdi-image-multiple-outline
+                          </v-icon>
+                        </v-col>
+                      </template>
 
-                        <v-card class="pa-0">
-                          <v-list class="pa-0">
-                            <v-list-item class="pa-0">
-                              <v-list-item-content class="pa-3">
-                                <v-list-item-subtitle>
-                                  <p class="mb-0">{{ setThumbnail(input.column_name, 'name') !== '' ? setThumbnail(input.column_name, 'name') : '미첨부' }}</p>
-                                  <v-img
-                                    alt="thumbnail"
-                                    class="shrink mr-2"
-                                    contain
-                                    :src="setThumbnail(input.column_name, 'thumbnail')"
-                                    transition="scale-transition"
-                                    width="500"
-                                  />
-                                </v-list-item-subtitle>
-                              </v-list-item-content>
-                            </v-list-item>
-                          </v-list>
-                        </v-card>
-                      </v-menu>
+                      <v-card class="pa-0">
+                        <v-list class="pa-0">
+                          <v-list-item class="pa-0">
+                            <v-list-item-content class="pa-3">
+                              <v-list-item-subtitle>
+                                <p class="mb-0">{{ setThumbnail(input.column_name, 'name') !== null ? setThumbnail(input.column_name, 'name') : '미첨부' }}</p>
+                                <v-img
+                                  alt="thumbnail"
+                                  class="shrink mr-2"
+                                  contain
+                                  :src="setThumbnail(input.column_name, 'thumbnail')"
+                                  transition="scale-transition"
+                                  width="500"
+                                />
+                              </v-list-item-subtitle>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list>
+                      </v-card>
+                    </v-menu>
                   </v-row>
                 </v-col>
               </v-row>
@@ -420,9 +421,20 @@ export default {
       }
       mux.Util.hideLoading();
     },
-    async productionDetail(item){
-      // this.search_production_data = ProductionPageConfig.test_production_data;
+    resetDatas(){
+      this.search_production_data = [];
+      this.production_detail = {};
 
+      this.member_info.find(x => x.type === '확인').name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+      this.member_info.find(x => x.type === '확인').user_id = this.$cookies.get(this.$configJson.cookies.id.key);
+
+      this.member_info.find(x => x.type === '승인').name = '';
+      this.member_info.find(x => x.type === '승인').user_id = '';
+
+      this.status = false;
+    },
+    async productionDetail(item){
+      this.resetDatas();
       mux.Util.showLoading();
 
       const prevURL = window.location.href;
@@ -555,6 +567,7 @@ export default {
         this.production_detail.inhouse_bid_number = item.inhouse_bid_number
         this.production_detail.company_bid_number = item.company_bid_number
       }else{// 데이터가 있을 경우
+        this.edit_data = false;
         // this.search_production_data.forEach((data) => {
         //   for(let i=0; i<Object.keys(this.production_detail).length; i++){
         //     let key = Object.keys(this.production_detail)[i];
@@ -604,8 +617,8 @@ export default {
         return mux.Util.imageBinary(thumbnail);
       }
     },
+
     async saveProduction(type){
-      mux.Util.showLoading();
       const currDate = new Date();
       let production_data = this.production_detail;
       let checker_info = this.member_info.find(x => x.type === '확인');
@@ -613,346 +626,394 @@ export default {
       let production_files = this.editDataInputs
 
 
-      if(production_data.code === ''){
-        let set = '';
-        if(this.status){
-          production_data.status = '생산 완료';
-        }else{
-          production_data.status = '';
-        }
-
-        if(type === '저장'){
-          production_data.approval_phase = '작성중';
-          set = '진행사항 저장'
-        }else{
-          if(approver_info.user_id === ''){
-            mux.Util.showAlert('승인자를 선택해주세요.');
-            return;
-          }else{
-            if(checker_info.user_id == this.login_id){
-              production_data.approval_phase = '미승인';
-              production_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
-            }else{
-              production_data.approval_phase = '미확인';
-            }
-          }
-          set = '승인 요청'
-        }
-
-        for(let p=0; p<production_files.length; p++){
-          let item = production_files[p];
-          if(item.value){
-            production_data[item.column_name + '_file'] = item.value.name;
-            const getPdfThumbnail = await mux.Util.getPdfThumbnail(item.value, 1, false);
-            let file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
-            production_data[item.column_name + '_thumbnail'] = file_thumbnail;
-            this.files_value.find(x => x.type === item.column_name).file = item.value;
-            this.files_value.find(x => x.type === item.column_name).file_name = item.value.name;
-          }
-        }
-
-        production_data.checker = checker_info.name;
-        production_data.checker_id = checker_info.user_id;
-        production_data.approver = approver_info.name;
-        production_data.approver_id = approver_info.user_id;
-
-
-        production_data.code = "production"+mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
-        let sendData = {
-          "production_confirmation_table-insert": [{
-            "user_info": {
-              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-              "role": "creater"
-            },
-            "data":production_data,
-            "select_where": {"code": production_data.code},
-            "rollback": "yes"
-          }]
-        };
-        sendData.path = '/api/multipart_rest_api/';
-        sendData.prefix = production_data.code + '_';
-        sendData.files = [];
-
-        this.files_value.forEach(data => {
-          if(data.file){
-            sendData.files.push({
-              folder: 'production/'+data.type,
-              file: data.file,
-              name: data.file_name
-            });
-          }
-        })
-        const prevURL = window.location.href;
-        try {
-          // let result = await mux.Server.post({
-          //   path: '/api/common_rest_api/',
-          //   params: sendData
-          // });
-
-          let result = await mux.Server.uploadFile(sendData);
-          if (prevURL !== window.location.href) return;
-
-          if (typeof result === 'string'){
-            result = JSON.parse(result);
-          }
-          if(result.data['code'] == 0){
-            mux.Util.showAlert(set + '이 완료되었습니다', set, 3000);
-            if(set === '승인 요청'){
-              let mailTo = [];
-              let phase = '';
-              if(production_data.approval_phase === '미확인'){
-                mailTo.push(production_data.checker_id);
-                phase = '확인';
-              }else if(production_data.approval_phase === '미승인'){
-                mailTo.push(production_data.approver_id);
-                phase = '승인';
-              }
-
-              let content=`
-                <html>
-                  <body>
-                    <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                      <h2 style="text-align: center; color:#13428a">생산 ${phase} 요청 알림</h2>
-                      <table style="width: 100%;border-spacing: 10px 10px;">
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.project_code}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.inhouse_bid_number}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">기업별 입찰번호</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.company_bid_number}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">업체</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.company_name}</td>
-                        </tr>
-                      </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${production_data.project_code}">
-                        <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                          확인하기
-                        </p>
-                      </a>
-                    </div>
-                  </body>
-                </html>
-              `;
-              try {
-                let sendEmailAlam = await mux.Server.post({
-                  path: '/api/send_email/',
-                  to_addrs: mailTo,
-                  subject: "생산 " + phase + " 요청 알림",
-                  content: content
-                });
-                if (prevURL !== window.location.href) return;
-                if(sendEmailAlam['code'] == 0){
-                  console.log(sendEmailAlam['message']);
-                } else {
-                  if (prevURL !== window.location.href) return;
-                  mux.Util.showAlert(sendEmailAlam['failed_info']);
-                }
-              } catch (error) {
-                if (prevURL !== window.location.href) return;
-                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
-                else
-                  mux.Util.showAlert(error);
-              }
-            }
-            mux.Util.hideLoading();
-          } else {
-            if (prevURL !== window.location.href) return;
-            mux.Util.showAlert(result['failed_info']);
-          }
-        } catch (error) {
-          if (prevURL !== window.location.href) return;
-          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            mux.Util.showAlert(error.response['data']['failed_info'].msg);
-          else
-            mux.Util.showAlert(error);
-        }
+      if(!production_data.code){
+        await this.saveNew(type, production_data, approver_info, checker_info, currDate, production_files)
       }else{
-        let update_data = {};
-        let set = '';
+        await this.saveEdit(type, production_data, approver_info, checker_info, currDate, production_files)
+      }
+    },
+    async saveNew(type, production_data, approver_info, checker_info, currDate, production_files){
+      let set = '';
+      if(this.status){
+        production_data.status = '생산 완료';
+      }else{
+        production_data.status = '';
+      }
 
-        if(type === '저장'){
-          update_data.approval_phase = '작성중';
-          set = '진행사항 저장'
+      if(type === '저장'){
+        production_data.approval_phase = '작성중';
+        set = '진행사항 저장'
+      }else{
+
+        if(!this.status){
+          mux.Util.showAlert('생산 완료를 체크해주세요.');
+          return;
         }else{
-          if(approver_info.user_id === ''){
-            mux.Util.showAlert('승인자를 선택해주세요.');
-            return;
+          let check_file = 0;
+          for(let f=0; f<production_files.length; f++){
+            if(!production_files[f].value || production_files[f].value === null){
+              check_file++;
+            }
+          }
+          if(check_file>0){
+            const confirm = await mux.Util.showConfirm('등록되지 않은 파일이 있습니다.<br>생산 완료 및 승인 요청을 하시겠습니까?', '생산 완료', false, '예', '아니오');
+            if(!confirm){
+              return;
+            }
+          }
+        }
+        if(approver_info.user_id === ''){
+          mux.Util.showAlert('승인자를 선택해주세요.');
+          return;
+        }else{
+          if(checker_info.user_id == this.login_id){
+            production_data.approval_phase = '미승인';
+            production_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
           }else{
-            update_data.checker = checker_info.name;
-            update_data.checker_id = checker_info.user_id;
-            update_data.approver = approver_info.name;
-            update_data.approver_id = approver_info.user_id;
-
-            if(checker_info.user_id == this.login_id){
-              update_data.approval_phase = '미승인';
-              update_data.rejecter = null;
-              update_data.rejected_date = null;
-              update_data.reject_reason = null;
-              update_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
-            }else{
-              update_data.approval_phase = '미확인';
-              update_data.rejecter = null;
-              update_data.rejected_date = null;
-              update_data.reject_reason = null;
-            }
-          }
-          set = '승인 요청'
-        }
-
-        // let confirm = await mux.Util.showConfirm(set + ' 시 수정이 불가능합니다.<br>'+ set+'을 하시겠습니까?', '승인 요청', false, '예', '아니오');
-
-        if(this.status){
-          update_data.status = '생산 완료';
-        }else{
-          update_data.status = '';
-        }
-
-        for(let p=0; p<production_files.length; p++){
-          let item = production_files[p];
-          if(item.value){
-            update_data[item.column_name + '_file'] = item.value.name;
-            const getPdfThumbnail = await mux.Util.getPdfThumbnail(item.value, 1, false);
-            let file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
-            update_data[item.column_name + '_thumbnail'] = file_thumbnail;
-            this.files_value.find(x => x.type === item.column_name).file = item.value;
-            this.files_value.find(x => x.type === item.column_name).file_name = item.value.name;
+            production_data.approval_phase = '미확인';
           }
         }
-        console.log(update_data);
-        let sendData = {
-          "production_confirmation_table-update": [{
-            "user_info": {
-              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-              "role": "modifier"
-            },
-            "data":update_data,
-            "update_where": {"code": production_data.code},
-            "rollback": "yes"
-          }]
-        };
-        sendData.path = '/api/multipart_rest_api/';
-        sendData.prefix = production_data.code + '_';
-        sendData.files = [];
+        set = '승인 요청'
+      }
 
-        this.files_value.forEach(data => {
-          if(data.file){
-            sendData.files.push({
-              folder: 'production/'+data.type,
-              file: data.file,
-              name: data.file_name
-            });
-          }
-        })
-        const prevURL = window.location.href;
-        try {
-          // let result = await mux.Server.post({
-          //   path: '/api/common_rest_api/',
-          //   params: sendData
-          // });
-
-          let result = await mux.Server.uploadFile(sendData);
-          if (prevURL !== window.location.href) return;
-
-          if (typeof result === 'string'){
-            result = JSON.parse(result);
-          }
-          if(result.data['code'] == 0){
-            mux.Util.showAlert(set + '이 완료되었습니다', set, 3000);
-            if(set === '승인 요청'){
-              let mailTo = [];
-              let phase = '';
-              if(update_data.approval_phase === '미확인'){
-                mailTo.push(checker_info.user_id);
-                phase = '확인';
-              }else if(update_data.approval_phase === '미승인'){
-                mailTo.push(approver_info.user_id);
-                phase = '승인';
-              }
-
-              let content=`
-                <html>
-                  <body>
-                    <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                      <h2 style="text-align: center; color:#13428a">생산 ${phase} 요청 알림</h2>
-                      <table style="width: 100%;border-spacing: 10px 10px;">
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.given_name}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.project_code}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.inhouse_bid_number}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">기업별 입찰번호</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.company_bid_number}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">업체</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.company_name}</td>
-                        </tr>
-                      </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${production_data.project_code}">
-                        <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                          확인하기
-                        </p>
-                      </a>
-                    </div>
-                  </body>
-                </html>
-              `;
-              try {
-                let sendEmailAlam = await mux.Server.post({
-                  path: '/api/send_email/',
-                  to_addrs: mailTo,
-                  subject: "생산 알림",
-                  content: content
-                });
-                if (prevURL !== window.location.href) return;
-                if(sendEmailAlam['code'] == 0){
-                  console.log(sendEmailAlam['message']);
-                } else {
-                  if (prevURL !== window.location.href) return;
-                  mux.Util.showAlert(sendEmailAlam['failed_info']);
-                }
-              } catch (error) {
-                if (prevURL !== window.location.href) return;
-                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
-                else
-                  mux.Util.showAlert(error);
-              }
-            }
-            mux.Util.hideLoading();
-          } else {
-            if (prevURL !== window.location.href) return;
-            mux.Util.showAlert(result['failed_info']);
-          }
-        } catch (error) {
-          if (prevURL !== window.location.href) return;
-          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            mux.Util.showAlert(error.response['data']['failed_info'].msg);
-          else
-            mux.Util.showAlert(error);
+      for(let p=0; p<production_files.length; p++){
+        let item = production_files[p];
+        if(item.value){
+          production_data[item.column_name + '_file'] = item.value.name;
+          const getPdfThumbnail = await mux.Util.getPdfThumbnail(item.value, 1, false);
+          let file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+          production_data[item.column_name + '_thumbnail'] = file_thumbnail;
+          this.files_value.find(x => x.type === item.column_name).file = item.value;
+          this.files_value.find(x => x.type === item.column_name).file_name = item.value.name;
         }
       }
 
+      production_data.checker = checker_info.name;
+      production_data.checker_id = checker_info.user_id;
+      production_data.approver = approver_info.name;
+      production_data.approver_id = approver_info.user_id;
+
+
+      production_data.code = "production"+mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+      let sendData = {
+        "production_confirmation_table-insert": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "creater"
+          },
+          "data":production_data,
+          "select_where": {"code": production_data.code},
+          "rollback": "yes"
+        }]
+      };
+      sendData.path = '/api/multipart_rest_api/';
+      sendData.prefix = production_data.code + '_';
+      sendData.files = [];
+
+      this.files_value.forEach(data => {
+        if(data.file){
+          sendData.files.push({
+            folder: 'production/'+data.type,
+            file: data.file,
+            name: data.file_name
+          });
+        }
+      })
+
+      mux.Util.showLoading();
+      const prevURL = window.location.href;
+      try {
+        // let result = await mux.Server.post({
+        //   path: '/api/common_rest_api/',
+        //   params: sendData
+        // });
+
+        let result = await mux.Server.uploadFile(sendData);
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result.data['code'] == 0){
+          mux.Util.showAlert(set + '이 완료되었습니다', set, 3000);
+          if(set === '승인 요청'){
+            let mailTo = [];
+            let phase = '';
+            if(production_data.approval_phase === '미확인'){
+              mailTo.push(production_data.checker_id);
+              phase = '확인';
+            }else if(production_data.approval_phase === '미승인'){
+              mailTo.push(production_data.approver_id);
+              phase = '승인';
+            }
+
+            let content=`
+              <html>
+                <body>
+                  <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                    <h2 style="text-align: center; color:#13428a">생산 ${phase} 요청 알림</h2>
+                    <table style="width: 100%;border-spacing: 10px 10px;">
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key).trim()}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.project_code}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.inhouse_bid_number}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">기업별 입찰번호</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.company_bid_number}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">업체</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.company_name}</td>
+                      </tr>
+                    </table>
+                    <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${production_data.project_code}">
+                      <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                        확인하기
+                      </p>
+                    </a>
+                  </div>
+                </body>
+              </html>
+            `;
+            try {
+              let sendEmailAlam = await mux.Server.post({
+                path: '/api/send_email/',
+                to_addrs: mailTo,
+                subject: "생산 " + phase + " 요청 알림",
+                content: content
+              });
+              if (prevURL !== window.location.href) return;
+              if(sendEmailAlam['code'] == 0){
+                console.log(sendEmailAlam['message']);
+              } else {
+                if (prevURL !== window.location.href) return;
+                mux.Util.showAlert(sendEmailAlam['failed_info']);
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                mux.Util.showAlert(error.response['data']['failed_info'].msg);
+              else
+                mux.Util.showAlert(error);
+            }
+          }
+          mux.Util.hideLoading();
+        } else {
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+    },
+    async saveEdit(type, production_data, approver_info, checker_info, currDate, production_files){
+      let update_data = {};
+      let set = '';
+
+
+      for(let p=0; p<production_files.length; p++){
+        let item = production_files[p];
+        if(item.value){
+          update_data[item.column_name + '_file'] = item.value.name;
+          const getPdfThumbnail = await mux.Util.getPdfThumbnail(item.value, 1, false);
+          let file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+          update_data[item.column_name + '_thumbnail'] = file_thumbnail;
+          this.files_value.find(x => x.type === item.column_name).file = item.value;
+          this.files_value.find(x => x.type === item.column_name).file_name = item.value.name;
+        }
+      }
+
+      if(type === '저장'){
+        update_data.approval_phase = '작성중';
+        set = '진행사항 저장'
+      }else{
+        if(approver_info.user_id === '' || approver_info.user_id === null){
+          mux.Util.showAlert('승인자를 선택해주세요.');
+          return;
+        }else{
+          update_data.checker = checker_info.name;
+          update_data.checker_id = checker_info.user_id;
+          update_data.approver = approver_info.name;
+          update_data.approver_id = approver_info.user_id;
+
+          if(checker_info.user_id == this.login_id){
+            update_data.approval_phase = '미승인';
+            update_data.rejecter = null;
+            update_data.rejected_date = null;
+            update_data.reject_reason = null;
+            update_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+          }else{
+            update_data.approval_phase = '미확인';
+            update_data.rejecter = null;
+            update_data.rejected_date = null;
+            update_data.reject_reason = null;
+          }
+        }
+
+        if(!this.status){
+          mux.Util.showAlert('생산 완료를 체크해주세요.');
+          return;
+        }else{
+          let check_file = 0;
+          for(let f=0; f<production_files.length; f++){
+            if(production_data[production_files[f].column_name + '_file'] === null && (update_data[production_files[f].column_name + '_file'] === '' || !update_data[production_files[f].column_name + '_file'])){
+              check_file++;
+            }
+          }
+
+          if(check_file > 0){
+            let message = `등록되지 않은 파일이 ${check_file}개 있습니다.<br>생산 완료 및 승인 요청을 하시겠습니까?`
+            const confirm = await mux.Util.showConfirm(message, '생산 완료', false, '예', '아니오');
+            if(!confirm){
+              return;
+            }
+          }
+        }
+        set = '승인 요청'
+      }
+
+      // let confirm = await mux.Util.showConfirm(set + ' 시 수정이 불가능합니다.<br>'+ set+'을 하시겠습니까?', '승인 요청', false, '예', '아니오');
+
+      if(this.status){
+        update_data.status = '생산 완료';
+      }else{
+        update_data.status = '';
+      }
+      console.log(update_data);
+      let sendData = {
+        "production_confirmation_table-update": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":update_data,
+          "update_where": {"code": production_data.code},
+          "rollback": "yes"
+        }]
+      };
+      sendData.path = '/api/multipart_rest_api/';
+      sendData.prefix = production_data.code + '_';
+      sendData.files = [];
+
+      this.files_value.forEach(data => {
+        if(data.file){
+          sendData.files.push({
+            folder: 'production/'+data.type,
+            file: data.file,
+            name: data.file_name
+          });
+        }
+      })
+
+      mux.Util.showLoading();
+      const prevURL = window.location.href;
+      try {
+        // let result = await mux.Server.post({
+        //   path: '/api/common_rest_api/',
+        //   params: sendData
+        // });
+
+        let result = await mux.Server.uploadFile(sendData);
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result.data['code'] == 0){
+          mux.Util.showAlert(set + '이 완료되었습니다', set, 3000);
+          if(set === '승인 요청'){
+            let mailTo = [];
+            let phase = '';
+            if(update_data.approval_phase === '미확인'){
+              mailTo.push(checker_info.user_id);
+              phase = '확인';
+            }else if(update_data.approval_phase === '미승인'){
+              mailTo.push(approver_info.user_id);
+              phase = '승인';
+            }
+
+            let content=`
+              <html>
+                <body>
+                  <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                    <h2 style="text-align: center; color:#13428a">생산 ${phase} 요청 알림</h2>
+                    <table style="width: 100%;border-spacing: 10px 10px;">
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.given_name}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.project_code}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.inhouse_bid_number}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">기업별 입찰번호</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.company_bid_number}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">업체</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${production_data.company_name}</td>
+                      </tr>
+                    </table>
+                    <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${production_data.project_code}">
+                      <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                        확인하기
+                      </p>
+                    </a>
+                  </div>
+                </body>
+              </html>
+            `;
+            try {
+              let sendEmailAlam = await mux.Server.post({
+                path: '/api/send_email/',
+                to_addrs: mailTo,
+                subject: "생산 알림",
+                content: content
+              });
+              if (prevURL !== window.location.href) return;
+              if(sendEmailAlam['code'] == 0){
+                console.log(sendEmailAlam['message']);
+              } else {
+                if (prevURL !== window.location.href) return;
+                mux.Util.showAlert(sendEmailAlam['failed_info']);
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                mux.Util.showAlert(error.response['data']['failed_info'].msg);
+              else
+                mux.Util.showAlert(error);
+            }
+          }
+          mux.Util.hideLoading();
+        } else {
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
     },
   },
   data(){
