@@ -26,10 +26,10 @@
                 <td align="center">
                   <!-- 확인 또는 승인자가 아닐 경우 노출되는 단순  chip -->
                   <v-chip
-                    v-if="(item.approval_phase == '미확인' || item.approval_phase == '미승인')  && item.checker_id !== userID"
+                    v-if="item.approval_phase == '미승인' && item.approver_id !== userID"
                     class="ma-2"
                     small
-                    :color="item.approval_phase == '미확인' ? 'default' : 'amber lighten-4'"
+                    color="default"
                   >
                     {{ item.approval_phase }}
                   </v-chip>
@@ -38,22 +38,22 @@
                     v-if="item.approval_phase == '승인' || item.approval_phase == '진행중'"
                     class="ma-2"
                     small
-                    color="primary"
+                    :color="item.approval_phase === '승인' ? 'amber lighten-4' : 'primary'"
                   >
                     {{ item.approval_phase }}
                   </v-chip>
 
                   <v-chip
-                    v-if="item.approval_phase == '구매완료'"
+                    v-if="item.approval_phase == '구매완료' || item.approval_phase == '송금완료'"
                     class="ma-2"
                     small
                     color="success"
                   >
                     {{ item.approval_phase }}
                   </v-chip>
-                  <!-- 확인 또는 승인자에 해당될 경우 노출되는 list형 chip -->
+                  <!-- 미승인 상태에서 승인자에 해당될 경우 노출되는 list형 chip -->
                   <v-menu
-                    v-if="(item.approval_phase == '미확인' || item.approval_phase == '미승인') && item.checker_id == userID"
+                    v-if="item.approval_phase == '미승인' && item.approver_id == userID"
                     :close-on-content-click="false"
                     :nudge-width="200"
                     offset-x
@@ -62,7 +62,7 @@
                       <v-chip
                         class="ma-2"
                         small
-                        :color="item.approval_phase == '미확인' ? 'default' : 'amber lighten-4'"
+                        color="default"
                         v-bind="attrs"
                         v-on="on"
                       >
