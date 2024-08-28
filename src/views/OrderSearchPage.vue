@@ -168,11 +168,11 @@
         <v-col cols="12">
 
           <v-btn
-            v-if="order_form_info.approval_phase === '진행중'"
+            v-if="order_form_info.approval_phase === '송금완료'"
             color="success"
             small
             elevation="0"
-            @click="completeOrder"
+            @click="completeOrder('구매')"
             class="mr-4"
           >
             구매 완료
@@ -441,11 +441,11 @@
             발주 업체 관련 첨부
           </p>
         </v-col>
-        <v-col cols="12" sm="4" class="pt-0">
+        <v-col cols="12" sm="4">
           <p class="font-weight-bold mb-0">
             ▼ 발주 확인서
             <v-btn
-              v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
+              v-if="order_form_info.approval_phase !== '구매완료' && order_form_info.approval_phase !== '미승인'"
               outlined
               color="primary"
               x-small
@@ -470,7 +470,7 @@
           <p class="font-weight-bold mb-0">
             ▼ 사업자 등록증
             <v-btn
-              v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
+              v-if="order_form_info.approval_phase !== '구매완료' && order_form_info.approval_phase !== '미승인'"
               outlined
               color="primary"
               x-small
@@ -495,7 +495,7 @@
           <p class="font-weight-bold mb-0">
             ▼ 통장 사본
             <v-btn
-              v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
+              v-if="order_form_info.approval_phase !== '구매완료' && order_form_info.approval_phase !== '미승인'"
               outlined
               color="primary"
               x-small
@@ -524,14 +524,14 @@
             계산서
           </p>
           <v-chip
-            :color="firstBillFile === '' ? 'grey lighten-2': 'primary'"
+            :color="firstBillFile === null ? 'grey lighten-2': 'primary'"
             class="ma-2 ml-0"
-            @click="firstBillFile !== '' ? download('order/bill', firstBillFile, fileCode+'_') : ''"
+            @click="firstBillFile !== null ? download('order/bill', firstBillFile, fileCode+'_') : ''"
           >
-            1차 계산서 {{ firstBillDate === '' ? '' : ' : ' + firstBillDate }}
+            1차 계산서 {{ firstBillDate === null ? '' : ' : ' + firstBillDate }}
           </v-chip>
           <v-btn
-            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
+            v-if="order_form_info.approval_phase === '진행중'"
             outlined
             color="primary"
             x-small
@@ -542,14 +542,14 @@
             변경
           </v-btn>
           <v-chip
-            :color="secondBillFile === '' ? 'grey lighten-2': 'primary'"
+            :color="secondBillFile === null ? 'grey lighten-2': 'primary'"
             class="ma-2 ml-0"
-            @click="secondBillFile !== '' ? download('order/bill', secondBillFile, fileCode+'_'): ''"
+            @click="secondBillFile !== null ? download('order/bill', secondBillFile, fileCode+'_'): ''"
           >
-            2차 계산서 {{ secondBillDate === '' ? '' : ' : ' + secondBillDate }}
+            2차 계산서 {{ secondBillDate === null ? '' : ' : ' + secondBillDate }}
           </v-chip>
           <v-btn
-            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
+            v-if="order_form_info.approval_phase === '진행중'"
             outlined
             color="primary"
             x-small
@@ -561,14 +561,14 @@
           </v-btn>
 
           <v-chip
-            :color="thirdBillFile === '' ? 'grey lighten-2': 'primary'"
+            :color="thirdBillFile === null ? 'grey lighten-2': 'primary'"
             class="ma-2 ml-0"
-            @click="thirdBillFile !== '' ? download('order/bill', thirdBillFile, fileCode+'_'): ''"
+            @click="thirdBillFile !== null ? download('order/bill', thirdBillFile, fileCode+'_'): ''"
           >
-            3차 계산서 {{ thirdBillDate === '' ? '' : ' : ' + thirdBillDate }}
+            3차 계산서 {{ thirdBillDate === null ? '' : ' : ' + thirdBillDate }}
           </v-chip>
           <v-btn
-            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
+            v-if="order_form_info.approval_phase === '진행중'"
             outlined
             color="primary"
             x-small
@@ -587,14 +587,14 @@
             송금 확인증
           </p>
           <v-chip
-            :color="firstConfirmFile === '' ? 'grey lighten-2': 'primary'"
+            :color="firstConfirmFile === null ? 'grey lighten-2': 'primary'"
             class="ma-2 ml-0"
-            @click="firstConfirmFile !== '' ? download('order/confirm_transfer', firstConfirmFile, fileCode+'_') : ''"
+            @click="firstConfirmFile !== null ? download('order/confirm_transfer', firstConfirmFile, fileCode+'_') : ''"
           >
             1차 송금 확인증
           </v-chip>
           <v-btn
-            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
+            v-if="order_form_info.approval_phase === '진행중'"
             outlined
             color="primary"
             x-small
@@ -606,14 +606,14 @@
           </v-btn>
 
           <v-chip
-            :color="secondConfirmFile === '' ? 'grey lighten-2': 'primary'"
+            :color="secondConfirmFile === null ? 'grey lighten-2': 'primary'"
             class="ma-2 ml-0"
-            @click="secondConfirmFile !== '' ? download('order/confirm_transfer', secondConfirmFile, fileCode+'_'): ''"
+            @click="secondConfirmFile !== null ? download('order/confirm_transfer', secondConfirmFile, fileCode+'_'): ''"
           >
             2차 송금 확인증
           </v-chip>
           <v-btn
-            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
+            v-if="order_form_info.approval_phase === '진행중'"
             outlined
             color="primary"
             x-small
@@ -625,21 +625,31 @@
           </v-btn>
 
           <v-chip
-            :color="thirdConfirmFile === '' ? 'grey lighten-2': 'primary'"
+            :color="thirdConfirmFile === null ? 'grey lighten-2': 'primary'"
             class="ma-2 ml-0"
-            @click="thirdConfirmFile !== '' ? download('order/confirm_transfer', thirdConfirmFile, fileCode+'_'): ''"
+            @click="thirdConfirmFile !== null ? download('order/confirm_transfer', thirdConfirmFile, fileCode+'_'): ''"
           >
             3차 송금 확인증
           </v-chip>
           <v-btn
-            v-if="order_form_info.approval_phase === '진행중' || order_form_info.approval_phase === '승인'"
+            v-if="order_form_info.approval_phase === '진행중'"
             outlined
             color="primary"
             x-small
             elevation="0"
+            class="ma-2 ml-0"
             @click="openUploadFilesDialog('3차 송금 확인증', 'third_confirm_transfer')"
           >
             변경
+          </v-btn>
+          <v-btn
+            v-if="order_form_info.approval_phase === '진행중' && firstConfirmFile !== null"
+            color="success"
+            x-small
+            elevation="0"
+            @click="completeOrder('송금')"
+          >
+            송금 완료
           </v-btn>
         </v-col>
       </v-row>
@@ -728,9 +738,9 @@ import OrderSearchPageConfig from "@/configure/OrderSearchPageConfig.json";
 import mux from "@/mux";
 
 export default {
-  
+
   mounted() {
-    
+
   },
   components: {
                 NavComponent,
@@ -757,6 +767,7 @@ export default {
       mailDialog: false,
       uploadFilesDialog: false,
 
+      search_by_code: '',
       email_sign:'',
       fileCode: '',
       orderConfirmationThumbnail: '',
@@ -809,10 +820,9 @@ export default {
   },
   created () {
     this.initialize()
-    const order_code = this.$route.query.order_code;
-    const inbound_date = this.$route.query.inbound_date;
-    if (order_code && inbound_date){
-      this.setSearchCardInputs(order_code, inbound_date);
+    const code = this.$route.query.code;
+    if (code){
+      this.setSearchCardInputs(code);
       this.searchButton();
     }
   },
@@ -837,14 +847,9 @@ export default {
       this.email_sign =`<div><p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px;"><strong>${this.login_info.name} 파이온 일렉트릭㈜ ${this.login_info.department} ${this.login_info.position} / Pion Electric Co., Ltd. </strong></p><p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;">Home page : www.pionelectric.com<br>E-mail: ${this.login_info.email}  C/P: ${'+82(0)' + this.login_info.phone_number.slice(1)}<br> Tel: ${'+82(0)' + this.login_info.office_phone_number.slice(1)} Fax: +82(0)505-300-4179<br><br> 본사: (03722) 서울특별시 서대문구 연세로 50 연세대학교 공학원 116호<br> Head office: #116, Engineering Research Park, Yonsei University, 50, Yonsei-ro, Seodaemun-gu, Seoul, 03722, Republic of KOREA<br><br> 광명 사무소: (14348) 경기도 광명시 일직로 72  A-1818호<br> Gwangmyeong office: #A-1818, 72, Iljik-ro, Gwangmyeong-si, Gyeonggi-do, Republic of KOREA 14348<br><br> 광주 공장: (47580) 광주광역시 광산구 연산동 1247<br> Gwangju factory: 1247 Yeonsan-dong, Gwangsan-gu, Gwangju, Republic of KOREA 47580<br><br> 보령 공장: (33448) 충청남도 보령시 주교면 관창공단길 266<br> Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheongnam-do, Republic of KOREA 33448<br><br></p> <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;"><strong>제품 및 서비스</strong><br> ∙ 고자기장 기반의 산업용 운용기기 (Development of Operating Device for Industrial Applications based on High Magnetic Field)<br> ∙ 광기기 기반의 전력전자 응용기기 (Development of Power Electronics Application Device based on Optical Device)<br> ∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)<br> ∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)<br> ∙ 전기공사면허</p> </div>`
     },
     // eslint-disable-next-line no-unused-vars
-    
-    setSearchCardInputs(order_code, inbound_date){
-      this.searchCardInputs.find(x=>x.label === '발주번호').value = order_code;
-      if (inbound_date.includes(' ~ ')){
-        this.searchCardInputs.find(x=>x.label === '입고일자').value = inbound_date.split(' ~ ');
-      } else {
-        this.searchCardInputs.find(x=>x.label === '입고일자').value = [inbound_date, inbound_date];
-      }
+
+    setSearchCardInputs(code){
+      this.search_by_code = code;
     },
     async download(foldername, filename, prefix) {
       mux.Util.showLoading();
@@ -863,6 +868,7 @@ export default {
       this.order_code_criterion_data = [];
       this.searched_order_data = [];
 
+      let searchCode = this.search_by_code;
       let searchApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
       if (searchApprovalPhase === 'All')
         searchApprovalPhase = '';
@@ -891,6 +897,7 @@ export default {
           path: '/api/common_rest_api/',
           params: [
             {
+              "order_confirmation_table.code": searchCode ?  searchCode :"",
               "order_confirmation_table.company_name": searchCompany ?  searchCompany :"",
               "order_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
               "order_product_table.name": searchItemName ? searchItemName : "",
@@ -972,6 +979,7 @@ export default {
           path: '/api/common_rest_api/',
           params: [
             {
+              "order_confirmation_table.code": searchCode ?  searchCode :"",
               "order_confirmation_table.company_name": searchCompany ?  searchCompany :"",
               "order_confirmation_table.approval_phase": searchApprovalPhase ? searchApprovalPhase : "",
               "order_product_table.name": searchItemName ? searchItemName : "",
@@ -1075,12 +1083,52 @@ export default {
       this.order_detail_dialog = false;
     },
     async clickApproveData(item){
+
+      //thumbnail
+      // this.orderConfirmationThumbnail = item.order_confirmation_thumbnail
+      // this.businessRegistrationThumbnail = item.business_registration_thumbnail
+      // this.bankbookThumbnail = item.bankbook_thumbnail
+
+      const prevURL = window.location.href;
+      try {
+        let thumbnail_result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "order_confirmation_table.code": item.code
+            }
+          ],
+          "script_file_name": "rooting_발주_데이터_thumbnail_검색_24_08_08_09_57_E33.json",
+          "script_file_path": "data_storage_pion\\json_sql\\order\\발주_데이터_thumbnail_검색_24_08_08_09_58_Z61"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof thumbnail_result === 'string'){
+          thumbnail_result = JSON.parse(thumbnail_result);
+        }
+        if(thumbnail_result['code'] == 0 || (typeof thumbnail_result['data'] === 'object' && thumbnail_result['data']['code'] == 0) || (typeof thumbnail_result['response'] === 'object' && typeof thumbnail_result['response']['data'] === 'object' && thumbnail_result['response']['data']['code'] == 0)){
+
+          let data = thumbnail_result.data[0];
+
+          this.orderConfirmationThumbnail = data.order_confirmation_thumbnail
+          this.businessRegistrationThumbnail = data.business_registration_thumbnail
+          this.bankbookThumbnail = data.bankbook_thumbnail
+        } else {
+          mux.Util.showAlert(thumbnail_result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+
+
       this.fileCode = item.code
-      this.orderConfirmationThumbnail = item.order_confirmation_thumbnail
       this.orderConfirmationFile = item.order_confirmation_file
-      this.businessRegistrationThumbnail = item.business_registration_thumbnail
       this.businessRegistrationFile = item.business_registration_file
-      this.bankbookThumbnail = item.bankbook_thumbnail
       this.bankbookFile = item.bankbook_file
       this.firstBillFile = item.first_bill
       this.secondBillFile = item.second_bill
@@ -1098,9 +1146,13 @@ export default {
 
       if(item.approval_phase === '승인' || item.approval_phase === '진행중'){
         this.showEmailIcon = true;
+      }else{
+        this.showEmailIcon = false;
       }
       if(item.approval_phase !== '미승인'){
         this.showSaveIcon = true;
+      }else{
+        this.showEmailIcon = false;
       }
       this.searched_order_data.forEach(data => {
         if(data.code === item.code){
@@ -1147,8 +1199,7 @@ export default {
       let update_data = [];
 
       let content_table = '';
-      let creater = [];
-
+      let mailInfo = [];
       item.forEach(data=>{
         if(data.approval_phase === '미승인'){
           update_data.push({
@@ -1167,7 +1218,7 @@ export default {
               <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${data.approver}</td>
             </tr>
           `
-          creater.push(data.creater);
+          mailInfo.push({"mailTo": data.creater, "code": data.code});
         }
 
       })
@@ -1198,58 +1249,60 @@ export default {
           mux.Util.showAlert('발주 승인 완료', '완료', 3000);
 
           //메일 알림 관련
-          let mailTo = [...new Set(creater)];
-          // mailTo.push(creater);
+          for(let m=0; m<mailInfo.length; m++){
+            let mailTo = [mailInfo[m].mailTo];
+            let mailCode = mailInfo[m].code;
 
-          // 메일 본문 내용
-          let content=`
-                <html>
-                  <body>
-                    <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                      <h2 style="text-align: center; color:#13428a">발주 승인 알림</h2>
-                      <table style="width: 100%;border-spacing: 10px 10px;">
-                        <thead>
-                          <tr>
-                            <th style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 업체</th>
-                            <th style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">구매 담당자</th>
-                            <th style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          ${content_table}
-                        </tbody>
-                      </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${item.project_code}">
-                        <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                          확인하기
-                        </p>
-                      </a>
-                    </div>
-                  </body>
-                </html>
-          `;
+            // 메일 본문 내용
+            let content=`
+                  <html>
+                    <body>
+                      <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                        <h2 style="text-align: center; color:#13428a">발주 승인 알림</h2>
+                        <table style="width: 100%;border-spacing: 10px 10px;">
+                          <thead>
+                            <tr>
+                              <th style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 업체</th>
+                              <th style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">구매 담당자</th>
+                              <th style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            ${content_table}
+                          </tbody>
+                        </table>
+                        <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/order-search?code=${mailCode}">
+                          <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                            확인하기
+                          </p>
+                        </a>
+                      </div>
+                    </body>
+                  </html>
+            `;
 
 
-          try {
-            let sendEmailAlam = await mux.Server.post({
-              path: '/api/send_email/',
-              to_addrs: mailTo,
-              subject: "발주 승인 알림",
-              content: content
-            });
-            if (prevURL !== window.location.href) return;
-            if(sendEmailAlam['code'] == 0){
-              console.log(sendEmailAlam['message']);
-            } else {
+            try {
+              let sendEmailAlam = await mux.Server.post({
+                path: '/api/send_email/',
+                to_addrs: mailTo,
+                subject: "발주 승인 알림",
+                content: content
+              });
               if (prevURL !== window.location.href) return;
-              mux.Util.showAlert(sendEmailAlam['failed_info']);
+              if(sendEmailAlam['code'] == 0){
+                console.log(sendEmailAlam['message']);
+              } else {
+                if (prevURL !== window.location.href) return;
+                mux.Util.showAlert(sendEmailAlam['failed_info']);
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                mux.Util.showAlert(error.response['data']['failed_info'].msg);
+              else
+                mux.Util.showAlert(error);
             }
-          } catch (error) {
-            if (prevURL !== window.location.href) return;
-            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              mux.Util.showAlert(error.response['data']['failed_info'].msg);
-            else
-              mux.Util.showAlert(error);
           }
         } else {
           if (prevURL !== window.location.href) return;
@@ -1269,6 +1322,7 @@ export default {
       const prevURL = window.location.href;
       let phase;
       let send_data = {};
+      let mailTo = [item.creater];
 
       send_data.approved_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
       send_data.approval_phase = '승인';
@@ -1306,16 +1360,12 @@ export default {
           mux.Util.hideLoading();
           mux.Util.showAlert('발주 승인 완료', '완료', 3000);
 
-          //메일 알림 관련
-          let mailTo = [item.creater];
-          // mailTo.push(creater);
-
           // 메일 본문 내용
           let content=`
                 <html>
                   <body>
                     <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                      <h2 style="text-align: center; color:#13428a">발주 승인 알림</h2>
+                      <h2 style="text-align: center; color:#13428a">발주 ${phase} 알림</h2>
                       <table style="width: 100%;border-spacing: 10px 10px;">
                         <tr>
                           <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발주 업체</td>
@@ -1330,7 +1380,7 @@ export default {
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
                         </tr>
                       </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${item.project_code}">
+                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/order-search?code=${item.code}">
                         <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                           확인하기
                         </p>
@@ -1345,7 +1395,7 @@ export default {
             let sendEmailAlam = await mux.Server.post({
               path: '/api/send_email/',
               to_addrs: mailTo,
-              subject: "발주 승인 알림",
+              subject: "발주 "+ phase +" 알림",
               content: content
             });
             if (prevURL !== window.location.href) return;
@@ -1620,16 +1670,20 @@ export default {
         }
       }, 500);
     },
-    async completeOrder(){
+    async completeOrder(type){
       let confirm;
-      if(this.firstConfirmFile === ''){
-        mux.Util.showAlert('송금 확인증을 1차 이상 등록해주세요.', '확인');
-        return;
-      }else if(this.secondConfirmFile === ''){
-        confirm = await mux.Util.showConfirm('송금 확인증이 1차만 등록되었습니다.<br>구매 완료 처리를 하시겠습니까?', '확인', false, '예', '아니오');
+      if(type === '송금'){
+        if(this.firstConfirmFile === ''){
+          mux.Util.showAlert('송금 확인증을 1차 이상 등록해주세요.', '확인');
+          return;
+        }else if(this.secondConfirmFile === '' || this.secondConfirmFile === null){
+          confirm = await mux.Util.showConfirm('송금 확인증이 1차만 등록되었습니다.<br>송금 완료 하시겠습니까?<br><br><span class="error--text">※ 송금 완료시 관련 파일 변경은 불가능합니다.</span>', '확인', false, '예', '아니오');
 
-      }else if(this.thirdConfirmFile === ''){
-        confirm = await mux.Util.showConfirm('송금 확인증이 2차만 등록되었습니다.<br>구매 완료 처리를 하시겠습니까?', '확인', false, '예', '아니오');
+        }else if(this.thirdConfirmFile === '' || this.thirdConfirmFile === null){
+          confirm = await mux.Util.showConfirm('송금 확인증이 2차만 등록되었습니다.<br>송금 완료 하시겠습니까?<br><br><span class="error--text">※ 송금 완료시 관련 파일 변경은 불가능합니다.</span>', '확인', false, '예', '아니오');
+        }
+      }else{
+        confirm = await mux.Util.showConfirm('구매 완료 하시겠습니까?<br><span class="error--text">※ 구매 완료시 파일 변경은 불가능합니다.</span>', '확인', false, '예', '아니오');
       }
       if (confirm){
         let sendData = {};
@@ -1640,7 +1694,7 @@ export default {
             "role": "modifier"
           },
           "data":{
-            "approval_phase": "구매완료"
+            "approval_phase": type + "완료"
           },
           "update_where": {"code": this.order_form_info.code},
           "rollback": "yes"
@@ -1659,7 +1713,7 @@ export default {
             result = JSON.parse(result);
           }
           if(result['code'] == 0){
-            mux.Util.showAlert('구매 완료 처리되었습니다.', '완료', 3000);
+            mux.Util.showAlert(type + ' 완료 처리되었습니다.', '완료', 3000);
           } else {
             if (prevURL !== window.location.href) return;
             mux.Util.showAlert(result['failed_info']);

@@ -2296,7 +2296,7 @@ export default {
             },
             "data":{
               "code" : code,
-              "project_code" : data.project_code,
+              "project_code" : data.project_code === '' ? '-' : data.project_code,
               "item_code" : data.item_code,
               "name" : data.name,
               "spec" : data.spec,
@@ -2423,7 +2423,7 @@ export default {
                       <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
                     </tr>
                   </table>
-                  <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?project_code=${confirmation_data.project_code}">
+                  <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/order-search?code=${code}">
                     <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                       확인하기
                     </p>
