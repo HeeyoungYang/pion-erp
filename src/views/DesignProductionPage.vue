@@ -661,7 +661,7 @@
                             class="mr-3 float-right dont_print"
                             elevation="0"
                             data-html2canvas-ignore="true"
-                            @click="dialog_edit_purchase_requested = true"
+                            @click="bom_list_purchase_data_copy = JSON.parse(JSON.stringify(bom_list_purchase_data)); dialog_edit_purchase_requested = true"
                           >
                             <v-icon
                               small
@@ -2040,7 +2040,7 @@
           <v-col cols="12" sm="12">
             <v-data-table
               :headers="bom_list_purchase_headers"
-              :items="bom_list_purchase_data"
+              :items="bom_list_purchase_data_copy"
               group-by="product_code"
               item-key="item_code"
               dense
@@ -2482,6 +2482,7 @@ export default {
                       b.unit_price = b.module_unit_price;
                       b.num = b.module_num;
                       b.product_num = b.num;
+                      b.item_num = b.product_num;
                       return b;
                     })
                   ];
@@ -6259,31 +6260,41 @@ export default {
     },
     async saveEditData(){
       if(this.tab_search === 2){
+
         await this.setPurchaseRequest(false);
         mux.Util.showAlert('구매 요청 내역으로 이동합니다.', '확인', 2000);
         this.tab_search = 3;
         this.dialog_edit_purchase_requested = true
+
       }else if(this.tab_search ===3){
+
         let test = await this.checkPurchaseRequest(false);
         if(test){
           const confirm = await mux.Util.showConfirm('수정한 내용을 최종 업데이트 하시겠습니까?', '확인', false, '업데이트', '수정 진행');
           if (confirm){
-            // 수정 내용 업데이트 진행
+            // this.bom_list_purchase_data_copy 기준 수정 내용 업데이트 진행
+
+            this.bom_list_purchase_data = JSON.parse(JSON.stringify(this.bom_list_purchase_data_copy)); // 수정 내용 적용
+            // this.searched_datas 에도 적용 진행 필요
 
             if (this.editable_bom_list){ // BOM LIST 수정 후 구매 요청 내역 수정이라면
               // this.set_bom_list_data_copy 기준 수정 내용 업데이트 진행
 
               this.set_bom_list_data = JSON.parse(JSON.stringify(this.set_bom_list_data_copy)); // 수정 내용 적용
+              // this.searched_datas 에도 적용 진행 필요
               this.editable_bom_list = false;
             }
             this.dialog_edit_purchase_requested = false;
           }
         }
+
       }else{
+
         const confirm = await mux.Util.showConfirm('수정한 내용을 최종 업데이트 하시겠습니까?', '확인', false, '업데이트', '수정 진행');
         if (confirm){
           // 수정 내용 업데이트 진행
         }
+
       }
     },
     addItems(){
@@ -6467,7 +6478,7 @@ export default {
       if (step){
         this.bom_list_purchase_data2 = [];
       }else {
-        this.bom_list_purchase_data = [];
+        this.bom_list_purchase_data_copy = [];
       }
 
       bom_data.forEach(data =>{
@@ -6482,7 +6493,7 @@ export default {
             if (step){
               this.bom_list_purchase_data2.push(belong_data);
             }else {
-              this.bom_list_purchase_data.push(belong_data);
+              this.bom_list_purchase_data_copy.push(belong_data);
             }
           }
         }
@@ -6598,7 +6609,7 @@ export default {
         this.purchase_confirmation_data = [];
 
         // 구매 요청할 내역이 있을 경우
-        if(this.bom_list_purchase_data.length > 0){
+        if(this.bom_list_purchase_data_copy.length > 0){
           //구매 담당자가 설정되었는지 확인
           if(this.select_purchase_manager === ''){
             mux.Util.showAlert('구매 담당자를 선택해주세요.');
@@ -6616,8 +6627,8 @@ export default {
             })
           }
   
-          for(let i=0; i<this.bom_list_purchase_data.length; i++){
-            let data = this.bom_list_purchase_data[i];
+          for(let i=0; i<this.bom_list_purchase_data_copy.length; i++){
+            let data = this.bom_list_purchase_data_copy[i];
             if(data.purchase_num === ''){
               data.purchase_num = 0;
             }
@@ -6738,54 +6749,105 @@ export default {
           data.purchase_estimate_thumbnail = '';
           data.purchase_num = 0;
         })
-        this.bom_list_purchase_data = this.bom_list_purchase_data.filter(param => param.product_code != item.product_code);
-        this.bom_list_purchase_data.push(...item.belong_data);
+        if (this.tab_main === 0){
+          this.bom_list_purchase_data_copy = this.bom_list_purchase_data_copy.filter(param => param.product_code != item.product_code);
+          this.bom_list_purchase_data_copy.push(...item.belong_data);
+        }else {
+          this.bom_list_purchase_data2 = this.bom_list_purchase_data2.filter(param => param.product_code != item.product_code);
+          this.bom_list_purchase_data2.push(...item.belong_data);
+        }
       }
     },
     addBelongData(item, idx){
-      if(this.bom_list_purchase_data.length === 0){
-        item.belong_data[idx].purchase_estimate_check = false;
-        item.belong_data[idx].purchase_estimate_company = '';
-        item.belong_data[idx].purchase_estimate_file_name = '';
-        item.belong_data[idx].purchase_estimate_thumbnail = '';
-        item.belong_data[idx].purchase_num = 0;
-        this.bom_list_purchase_data.push(item.belong_data[idx]);
-      }else{
-        let add_data = {};
-        for(let i=0; i<this.bom_list_purchase_data.length; i++){
-          if(this.bom_list_purchase_data[i].product_code === item.product_code && this.bom_list_purchase_data[i].item_code === item.belong_data[idx].item_code){
-            mux.Util.showAlert('이미 추가된 제품입니다.');
-            return;
-          }else{
-            item.belong_data[idx].purchase_estimate_check = false;
-            item.belong_data[idx].purchase_estimate_company = '';
-            item.belong_data[idx].purchase_estimate_file_name = '';
-            item.belong_data[idx].purchase_estimate_thumbnail = '';
-            item.belong_data[idx].purchase_num = 0;
-            add_data=item.belong_data[idx];
+      if (this.tab_main === 0){
+        if(this.bom_list_purchase_data_copy.length === 0){
+          item.belong_data[idx].purchase_estimate_check = false;
+          item.belong_data[idx].purchase_estimate_company = '';
+          item.belong_data[idx].purchase_estimate_file_name = '';
+          item.belong_data[idx].purchase_estimate_thumbnail = '';
+          item.belong_data[idx].purchase_num = 0;
+          this.bom_list_purchase_data_copy.push(item.belong_data[idx]);
+        }else{
+          let add_data = {};
+          for(let i=0; i<this.bom_list_purchase_data_copy.length; i++){
+            if(this.bom_list_purchase_data_copy[i].product_code === item.product_code && this.bom_list_purchase_data_copy[i].item_code === item.belong_data[idx].item_code){
+              mux.Util.showAlert('이미 추가된 제품입니다.');
+              return;
+            }else{
+              item.belong_data[idx].purchase_estimate_check = false;
+              item.belong_data[idx].purchase_estimate_company = '';
+              item.belong_data[idx].purchase_estimate_file_name = '';
+              item.belong_data[idx].purchase_estimate_thumbnail = '';
+              item.belong_data[idx].purchase_num = 0;
+              add_data=item.belong_data[idx];
+            }
           }
+          this.bom_list_purchase_data_copy.push(add_data);
         }
-        this.bom_list_purchase_data.push(add_data);
+      }else {
+        if(this.bom_list_purchase_data2.length === 0){
+          item.belong_data[idx].purchase_estimate_check = false;
+          item.belong_data[idx].purchase_estimate_company = '';
+          item.belong_data[idx].purchase_estimate_file_name = '';
+          item.belong_data[idx].purchase_estimate_thumbnail = '';
+          item.belong_data[idx].purchase_num = 0;
+          this.bom_list_purchase_data2.push(item.belong_data[idx]);
+        }else{
+          let add_data = {};
+          for(let i=0; i<this.bom_list_purchase_data2.length; i++){
+            if(this.bom_list_purchase_data2[i].product_code === item.product_code && this.bom_list_purchase_data2[i].item_code === item.belong_data[idx].item_code){
+              mux.Util.showAlert('이미 추가된 제품입니다.');
+              return;
+            }else{
+              item.belong_data[idx].purchase_estimate_check = false;
+              item.belong_data[idx].purchase_estimate_company = '';
+              item.belong_data[idx].purchase_estimate_file_name = '';
+              item.belong_data[idx].purchase_estimate_thumbnail = '';
+              item.belong_data[idx].purchase_num = 0;
+              add_data=item.belong_data[idx];
+            }
+          }
+          this.bom_list_purchase_data2.push(add_data);
+        }
       }
     },
 
     cancleItem(product_code, item_code){
-      if(item_code === false){
-        this.bom_list_purchase_data = this.bom_list_purchase_data.filter(param => param.product_code != product_code);
-      }else if(product_code === false){
-        this.bom_list_purchase_items_data = this.bom_list_purchase_items_data.filter(param => param.item_code != item_code);
-      }else{
-        this.bom_list_purchase_data.forEach((data, index) => {
-          if(data.product_code === product_code && data.item_code === item_code){
-            this.bom_list_purchase_data.splice(index, 1);
-          }
-        })
+      if (this.tab_main === 0){
+        if(item_code === false){
+          this.bom_list_purchase_data_copy = this.bom_list_purchase_data_copy.filter(param => param.product_code != product_code);
+        }else if(product_code === false){
+          // this.bom_list_purchase_items_data = this.bom_list_purchase_items_data.filter(param => param.item_code != item_code);
+        }else{
+          this.bom_list_purchase_data_copy.forEach((data, index) => {
+            if(data.product_code === product_code && data.item_code === item_code){
+              this.bom_list_purchase_data_copy.splice(index, 1);
+            }
+          })
+        }
+      }else {
+        if(item_code === false){
+          this.bom_list_purchase_data2 = this.bom_list_purchase_data2.filter(param => param.product_code != product_code);
+        }else if(product_code === false){
+          // this.bom_list_purchase_items_data2 = this.bom_list_purchase_items_data2.filter(param => param.item_code != item_code);
+        }else{
+          this.bom_list_purchase_data2.forEach((data, index) => {
+            if(data.product_code === product_code && data.item_code === item_code){
+              this.bom_list_purchase_data2.splice(index, 1);
+            }
+          })
+        }
       }
     },
 
     
     async clickDontSelect(product_code, item_code){
-      let bom_data  = this.bom_list_purchase_data;
+      let bom_data;
+      if (this.tab_main === 0){
+        bom_data  = this.bom_list_purchase_data_copy;
+      }else {
+        bom_data  = this.bom_list_purchase_data2;
+      }
 
       for(let i=0; i<bom_data.length; i++){
         if(bom_data[i].product_code === product_code && bom_data[i].item_code === item_code){
@@ -6814,7 +6876,7 @@ export default {
     async estimateDialog(item){
       let bom_data = null;
       if (this.tab_main === 0){
-        bom_data = this.bom_list_purchase_data;
+        bom_data = this.bom_list_purchase_data_copy;
       }else {
         bom_data = this.bom_list_purchase_data2;
       }
@@ -6901,7 +6963,7 @@ export default {
       }
 
       if (this.tab_main === 0){
-        this.bom_list_purchase_data.forEach(data => {
+        this.bom_list_purchase_data_copy.forEach(data => {
           if(data.product_code === this.pre_ordered_product_code && data.item_code === item.item_code){
             data.belong_data = [];
             data.belong_data.push(item);
@@ -7377,6 +7439,7 @@ export default {
       bom_list_data: [],
       bom_list_data2: [],
       bom_list_purchase_data: [],
+      bom_list_purchase_data_copy: [],
       bom_list_purchase_data2: [],
       selected_unestimated_data:[],
       bom_list_need_estiamte_data:[],

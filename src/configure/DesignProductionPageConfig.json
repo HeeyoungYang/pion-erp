@@ -1074,7 +1074,7 @@
             "module_spec": "wqe",
             "module_manufacturer": "ewr",
             "module_unit_price": 50000,
-            "module_num": 2,
+            "module_num": 1,
             "usable_num": 2
           },
           {
@@ -1086,7 +1086,7 @@
             "module_spec": "wq",
             "module_manufacturer": "ew",
             "module_unit_price": 5000,
-            "module_num": 30,
+            "module_num": 10,
             "usable_num": 2
           }
         ]
@@ -1128,7 +1128,7 @@
             "module_spec": "wq2",
             "module_manufacturer": "ew",
             "module_unit_price": 5000,
-            "module_num": 30,
+            "module_num": 10,
             "usable_num": 2
           }
         ]
