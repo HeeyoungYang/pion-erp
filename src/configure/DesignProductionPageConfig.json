@@ -179,6 +179,21 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "제조사", "align": "start", "value": "manufacturer"},
     { "text": "단가", "align": "start", "value": "unit_price"},
+    { "text": "필요수량", "align": "start", "value": "item_num"},
+    { "text": "사용 가능 수량", "align": "start", "value": "usable_num"},
+    { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
+    { "text": "견적/선주문", "align": "start", "value": "estimate"},
+    { "text": "제외", "align": "start", "value": "cancle"}
+  ],
+  "bom_list_purchase_headers2": [
+    { "text": "종류", "align": "start", "value": "type"},
+    { "text": "분류", "align": "start", "value": "classification"},
+    { "text": "관리코드", "align": "start", "value": "item_code"},
+    { "text": "제품명", "align": "start", "value": "name"},
+    { "text": "모델명", "align": "start", "value": "model"},
+    { "text": "사양", "align": "start", "value": "spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"},
+    { "text": "단가", "align": "start", "value": "unit_price"},
     { "text": "필요수량", "align": "start", "value": "num"},
     { "text": "사용 가능 수량", "align": "start", "value": "usable_num"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
@@ -1063,7 +1078,6 @@
         "manufacturer": "ewrwer",
         "product_num": 1,
         "product_unit_price": 500000,
-        "usable_num": 2,
         "belong_data":[
           {
             "module_type": "반제품",
@@ -1105,7 +1119,6 @@
         "manufacturer": "ewrwer",
         "product_num": 1,
         "product_unit_price": 600000,
-        "usable_num": 2,
         "belong_data":[
           {
             "module_type": "반제품",
@@ -1147,7 +1160,6 @@
         "manufacturer": "ewrwer",
         "product_num": 1,
         "product_unit_price": 700000,
-        "usable_num": 2,
         "belong_data":[
           {
             "module_type": "반제품",
@@ -1189,7 +1201,6 @@
           "manufacturer": "ewrwer",
           "product_num": 1,
           "product_unit_price": 500000,
-          "usable_num": 2,
           "belong_data":[
             {
               "module_type": "반제품",
@@ -1219,7 +1230,6 @@
           "manufacturer": "ewrwer",
           "product_num": 1,
           "product_unit_price": 600000,
-          "usable_num": 2,
           "belong_data":[
             {
               "module_type": "원부자재",
@@ -1249,7 +1259,6 @@
           "manufacturer": "ewrwer",
           "product_num": 1,
           "product_unit_price": 700000,
-          "usable_num": 2,
           "belong_data":[
             {
               "module_type": "원부자재",
@@ -1981,153 +1990,5 @@
         "order_request_date": "2024-08-02 11:39:03.383"
       }
     ]
-  },
-  
-  "dialog_search_product_test_data":[
-    {
-      "product_code": "TEST-02",
-      "name": "제품명",
-      "model": "모델명",
-      "spec": "사양",
-      "manufacturer": "제조사"
-    }
-  ],
-  "set_bom_list_test_data":[
-    {
-      "type":"완제품",
-      "classification":"전력변환기",
-      "name":"asdasd222",
-      "model":"",
-      "spec":"xzczxc",
-      "manufacturer":"(주)현대전기산전",
-      "product_code":"qwewqe222",
-      "product_num":"2",
-      "belong_data":[
-        {
-          "type":"원부자재",
-          "classification":"전력변환기",
-          "name":"SSM자재",
-          "model":"인터페이스 보드",
-          "spec":"DC 5V",
-          "manufacturer":"액트솔루션/라온코리아",
-          "unit_price":"₩ 147,000",
-          "num":1,
-          "condition":"G",
-          "product_code":"qwewqe222",
-          "item_code":"PE-SSM-001",
-          "used_num":1
-        },
-        {
-          "type":"원부자재",
-          "classification":"전력변환기",
-          "name":"SSM자재",
-          "model":"3상통합메인보드",
-          "spec":"MV-SVC-V3.1",
-          "manufacturer":"액트솔루션/라온코리아",
-          "unit_price":"₩ 8,250,000",            
-          "num":1,            
-          "product_code":"qwewqe222",
-          "item_code":"PE-SSM-002",
-          "used_num":1
-        }
-      ]
-    }
-  ],
-  
-  "setting_item_test_data":[
-    {
-      "type":"원부자재",
-      "classification":"전력변환기",
-      "product_code":"TEST-01-001",
-      "name":"제품명A",
-      "model":"모델명A",
-      "spec":"사양A",
-      "manufacturer":"제조사A",
-      "unit_price":"10",
-      "data_type": "selected"
-    }
-  ],
-  "test_production_data":[
-    {
-      "created_time" : "2024-05-29", 
-      "given_name": "양희영",
-      "company_name": "업체A",
-      "project_code": "TEST-00",
-      "inhouse_bid_number": "TEST-01",
-      "company_bid_number": "TEST-02",
-      "cost_total_amount": "1,234,567"      
-    }
-  ],
-  
-  "bom_list_test_data":[
-    { 
-      "type":"완제품",
-      "classification":"GFM",
-      "product_code":"완제품AA",
-      "name":"완제품명A",
-      "model":"MODEL-001",
-      "spec":"SPEC-001",
-      "manufacturer":"PIONELECTRIC",
-      "unit_price":"100",
-      "item_num":"1",
-      "usable_num":"0",
-      "belong_data":[
-        {
-          "type":"원부자재",
-          "classification":"GFM",
-          "product_code":"원부자재BB",
-          "name":"원부자재B",
-          "model":"MODEL-002",
-          "spec":"SPEC-002",
-          "manufacturer":"PIONELECTRIC",
-          "unit_price":"10",
-          "item_num":"3",
-          "usable_num":"0"
-        },
-        {
-          "type":"반제품",
-          "classification":"GFM",
-          "product_code":"반제품CC",
-          "name":"반제품C",
-          "model":"MODEL-003",
-          "spec":"SPEC-003",
-          "manufacturer":"PIONELECTRIC",
-          "unit_price":"70",
-          "item_num":"1",
-          "usable_num":"1"
-        }
-      ]
-    }
-  ],
-  
-  "bom_list_purchase_test_data":[
-    {
-      "type":"원부자재",
-      "classification":"전력변환기",
-      "product_code":"완제품AA",
-      "item_code":"원부자재BB",
-      "name":"원부자재B",
-      "model":"MODEL-002",
-      "spec":"SPEC-002",
-      "manufacturer":"PIONELECTRIC",
-      "unit_price":"10",
-      "num":"3",
-      "purchase_num":"3",
-      "usable_num":"0"
-    },
-    {
-      "type":"반제품",
-      "classification":"GFM",
-      "product_code":"완제품AA",
-      "item_code":"반제품CC",
-      "name":"반제품C",
-      "model":"MODEL-003",
-      "spec":"SPEC-003",
-      "manufacturer":"PIONELECTRIC",
-      "unit_price":"70",
-      "num":"1",
-      "purchase_num":"0",
-      "usable_num":"1"
-    }
-  ]
+  }
 }

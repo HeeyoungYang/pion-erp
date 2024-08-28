@@ -1464,7 +1464,6 @@
         "manufacturer": "ewrwer",
         "product_num": 1,
         "product_unit_price": 500000,
-        "usable_num": 2,
         "belong_data":[
           {
             "module_type": "반제품",
@@ -1506,7 +1505,6 @@
         "manufacturer": "ewrwer",
         "product_num": 1,
         "product_unit_price": 600000,
-        "usable_num": 2,
         "belong_data":[
           {
             "module_type": "반제품",
@@ -1548,7 +1546,6 @@
         "manufacturer": "ewrwer",
         "product_num": 1,
         "product_unit_price": 700000,
-        "usable_num": 2,
         "belong_data":[
           {
             "module_type": "반제품",
@@ -1590,7 +1587,6 @@
           "manufacturer": "ewrwer",
           "product_num": 1,
           "product_unit_price": 500000,
-          "usable_num": 2,
           "belong_data":[
             {
               "module_type": "반제품",
@@ -1620,7 +1616,6 @@
           "manufacturer": "ewrwer",
           "product_num": 1,
           "product_unit_price": 600000,
-          "usable_num": 2,
           "belong_data":[
             {
               "module_type": "원부자재",
@@ -1650,7 +1645,6 @@
           "manufacturer": "ewrwer",
           "product_num": 1,
           "product_unit_price": 700000,
-          "usable_num": 2,
           "belong_data":[
             {
               "module_type": "원부자재",

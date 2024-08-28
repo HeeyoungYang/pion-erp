@@ -1177,7 +1177,7 @@
                         </v-col>
                         <v-col cols="12" sm="12">
                           <v-data-table
-                            :headers="bom_list_purchase_headers"
+                            :headers="bom_list_purchase_headers2"
                             :items="bom_list_purchase_data2"
                             group-by="product_code"
                             item-key="item_code"
@@ -3898,11 +3898,6 @@ export default {
       }else {
         this.member_dialog2 = true;
       }
-    },
-    setEstimate(item){
-      console.log(item)
-      this.set_bom_list_data2 = DesignProductionPageConfig.set_bom_list_test_data
-      this.estimate_cost_dialog = false;
     },
     setMember(item){
       if (this.tab_main === 0){
@@ -7403,6 +7398,7 @@ export default {
       purchase_requested_headers: DesignProductionPageConfig.purchase_requested_headers,
       bom_list_headers: DesignProductionPageConfig.bom_list_headers,
       bom_list_purchase_headers: DesignProductionPageConfig.bom_list_purchase_headers,
+      bom_list_purchase_headers2: DesignProductionPageConfig.bom_list_purchase_headers2,
 
       print_labor_table: false,
       editedIndex: -1,
