@@ -278,7 +278,7 @@
                     <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">관리번호</td>
                     <td class="order_info">{{ order_form_info.code }}</td>
                     <td class="order_info order_title text-center" >발행일</td>
-                    <td class="order_info">{{ order_form_info.created_time.split(' ')[0] }}</td>
+                    <td class="order_info">{{ order_form_info.order_date === null ? '미발행' : order_form_info.order_date }}</td>
                     <td class="order_info order_title text-center">납기일</td>
                     <td class="order_info">{{ order_form_info.due_date }}</td>
                   </tr>
@@ -392,7 +392,7 @@
                     <th style="font-size:11px">{{ (items[0].unit_price * items[0].ordered_num)*0.1 }}</th>
                   </template>
                   <template v-slot:item="{ item }">
-                    <tr>
+                    <tr v-if="item.note">
                       <td colspan="6"  style="font-size:11px">
                         {{ item.note }}
                       </td>
@@ -1165,22 +1165,36 @@ export default {
         if(data.code === item.code){
           this.order_form_data.push(data);
         }
+        // else{
+        //   this.order_form_data.push(item);
+        // }
       });
       this.order_detail_data.forEach(item => {
-        for(let o=0; o<this.order_form_data.length; o++){
-          let order = this.order_form_data[o];
-          if(order.item_code === item.item_code && !order.ordered_num){
-            order.ordered_num = item.ordered_num;
-            order.name = item.name;
-            order.spec = item.spec;
-            order.unit_price = item.unit_price;
-            return;
-          }else if(order.item_code === item.item_code && order.ordered_num){
-            order.ordered_num += item.ordered_num;
-            order.name = item.name;
-            order.spec = item.spec;
-            order.unit_price = item.unit_price;
-            return;
+        if(this.order_form_data.length === 0){
+          this.order_form_data.push({
+            "code":item.code,
+            "item_code":item.item_code,
+            "name":item.name,
+            "ordered_num":item.ordered_num,
+            "spec":item.spec,
+            "unit_price":item.unit_price
+          });
+        }else{
+          for(let o=0; o<this.order_form_data.length; o++){
+            let order = this.order_form_data[o];
+            if(order.item_code === item.item_code && !order.ordered_num){
+              order.ordered_num = item.ordered_num;
+              order.name = item.name;
+              order.spec = item.spec;
+              order.unit_price = item.unit_price;
+              return;
+            }else if(order.item_code === item.item_code && order.ordered_num){
+              order.ordered_num += item.ordered_num;
+              order.name = item.name;
+              order.spec = item.spec;
+              order.unit_price = item.unit_price;
+              return;
+            }
           }
         }
       });
