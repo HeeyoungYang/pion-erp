@@ -70,6 +70,36 @@
               hide-details
             ></v-text-field>
           </v-col>
+          <v-col cols="12" v-if="addSystemFiles === 'estimate_etc'">
+            <v-checkbox
+              label="견적서"
+              v-model="mailData.estimate"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+            <v-checkbox
+              label="기타첨부"
+              v-model="mailData.etc"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+            <v-checkbox
+              label="사업자등록증"
+              v-model="mailData.business_license"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+            <v-checkbox
+              label="통장사본"
+              v-model="mailData.bankbook_copy"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+          </v-col>
           <v-col cols="12" v-if="addSystemFiles === 'estimate'">
             <v-checkbox
               label="견적서"
@@ -116,6 +146,13 @@
             <v-checkbox
               label="사업자등록증"
               v-model="mailData.business_license"
+              color="primary"
+              hide-details
+              class="float-left mr-3"
+            ></v-checkbox>
+            <v-checkbox
+              label="통장사본"
+              v-model="mailData.bankbook_copy"
               color="primary"
               hide-details
               class="float-left mr-3"
@@ -268,6 +305,7 @@ export default {
           approval: false,
           etc: false,
           business_license: false,
+          bankbook_copy: false,
           content:
           `<div>
             <p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px"><strong>윤준수

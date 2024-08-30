@@ -2491,9 +2491,13 @@ export default {
         if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
 
           let searched = result.data;
-          // 정렬
-          searched.sort((a,b) => a.code.localeCompare(b.code));
-          current_code = searched[searched.length-1].code;
+
+          if(searched.length > 0){
+            searched.sort((a,b) => a.code.localeCompare(b.code));
+            current_code = searched[searched.length-1].code;
+          } else {
+            current_code = '';
+          }
         } else {
           mux.Util.showAlert(result['failed_info']);
         }

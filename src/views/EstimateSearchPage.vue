@@ -47,6 +47,78 @@
             title-class="d-none"
           >
             <div slot="cardText">
+              <v-menu
+                offset-y
+                :close-on-content-click="false"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    color="default"
+                    small
+                    class="mb-4"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    기타 견적서 등록
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item>
+                    <v-list-item-content style="width: 250px;">
+                      <v-autocomplete
+                        v-model="estimate_checker"
+                        :items="members"
+                        label="확인"
+                        filled
+                        dense
+                        clearable
+                        hide-details
+                        class="mb-4"
+                      ></v-autocomplete>
+                      <v-autocomplete
+                        v-model="estimate_approver"
+                        :items="members"
+                        label="승인"
+                        filled
+                        dense
+                        clearable
+                        hide-details
+                        class="mb-4"
+                      ></v-autocomplete>
+                      <v-radio-group
+                        v-model="bid_write"
+                        dense
+                        hide-details
+                        row
+                        class="mt-0"
+                      >
+                        <v-radio
+                          label="자동"
+                          :value=true
+                        ></v-radio>
+                        <v-radio
+                          label="직접입력"
+                          :value=false
+                        ></v-radio>
+                      </v-radio-group>
+                      <InputsFormComponent
+                        dense
+                        clearable
+                        filled
+                        hide-details
+                        :inputs="etcRequestInputs"
+                      />
+                      <v-btn
+                        small
+                        color="primary"
+                        class="mt-4"
+                        @click="etcApprovalRequest"
+                      >요청</v-btn>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+
               <EstimateDataTableComponent
                 :headers="estimate_approve_headers"
                 :items="estimate_approve_data"
@@ -73,80 +145,375 @@
       :card-elevation="'0'"
       @close="closeProductList"
     >
-      <v-tabs
-        v-model="tab_search"
-        background-color="transparent"
-        class="tab_search"
-      >
-        <v-tab
-          v-for="sub_item in search_tab_items"
-          :key="sub_item"
+      <div v-if="etc_estimate">
+        <v-row class="mt-3">
+          <v-col cols="12" sm="12" class="py-0">
+            <v-btn
+              color="primary"
+              elevation="0"
+              fab
+              x-small
+              @click="openEstiamteMailForm"
+              class="dont_print"
+              data-html2canvas-ignore="true"
+            >
+              <v-icon >mdi-email</v-icon>
+            </v-btn>
+          </v-col>
+          <v-col cols="12" sm="12">
+            <v-img
+              v-if="clickedProductCost.approval_file"
+              alt="thumbnail"
+              class="shrink mr-2"
+              contain
+              :src="mux.Util.imageBinary(clickedProductCost.approval_thumbnail)"
+              transition="scale-transition"
+              @click="download('estimate/approval', clickedProductCost.approval_file, clickedProductCost.cost_calc_code+'_')"
+              style="cursor: pointer;"
+            />
+          </v-col>
+          <v-col cols="12" sm="12">
+            <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
+            <div v-if="clickedProductCost.etc_files">
+              <v-chip
+                v-for="(file, i) in clickedProductCost.etc_files.split('/')"
+                :key="i"
+                color="grey lighten-2"
+                class="ma-2"
+                @click="download('estimate/etc', file, clickedProductCost.cost_calc_code+'_')"
+              >
+                {{ file }}
+              </v-chip>
+            </div>
+          </v-col>
+        </v-row>
+      </div>
+      <div v-else>
+        <v-tabs
+          v-model="tab_search"
+          background-color="transparent"
+          class="tab_search"
         >
-          {{ sub_item }}
-        </v-tab>
-      </v-tabs>
-      <v-tabs-items v-model="tab_search" class="pb-1">
-        <!-- 원가 계산서 -->
-        <v-tab-item>
-          <v-card ref="calcCostCard" style="border: 1px solid #ccc; overflow-x: auto" elevation="0">
-            <v-row style="max-width: 868.5px;" class="dont_print" data-html2canvas-ignore="true">
-              <v-col align-self="center" cols="12" sm="12" class="dont_print" data-html2canvas-ignore="true">
-                <v-checkbox
-                  v-model="estimate_checkbox.product"
-                  label="재료비 세부"
-                  color="primary"
-                  hide-details
-                  class="float-left mr-3 dont_print"
-                  data-html2canvas-ignore="true"
-                  @click="estimateCheckbox('product', '재료비')"
-                ></v-checkbox>
-                <v-checkbox
-                  v-model="estimate_checkbox.labor_cost"
-                  label="노무비"
-                  color="primary"
-                  hide-details
-                  class="float-left mr-3 dont_print"
-                  data-html2canvas-ignore="true"
-                  @click="estimateCheckbox('labor_cost', '노무비')"
-                ></v-checkbox>
-                <v-checkbox
-                  v-model="estimate_checkbox.expense"
-                  label="경비"
-                  color="primary"
-                  hide-details
-                  class="float-left mr-3 dont_print"
-                  data-html2canvas-ignore="true"
-                  @click="estimateCheckbox('expense', '경비')"
-                ></v-checkbox>
-                <v-checkbox
-                  v-model="estimate_checkbox.general_management"
-                  label="일반관리비"
-                  color="primary"
-                  hide-details
-                  class="float-left mr-3 dont_print"
-                  data-html2canvas-ignore="true"
-                  @click="estimateCheckbox('general_management', '일반관리비')"
-                ></v-checkbox>
-                <v-checkbox
-                  v-model="estimate_checkbox.profit"
-                  label="이윤"
-                  color="primary"
-                  hide-details
-                  class="float-left dont_print"
-                  data-html2canvas-ignore="true"
-                  @click="estimateCheckbox('profit', '이윤')"
-                ></v-checkbox>
-                <v-btn
-                  color="primary"
-                  elevation="0"
-                  fab
-                  x-small
-                  @click="openEstiamteMailForm"
-                  class="mb-3 ml-3 float-right dont_print"
-                  data-html2canvas-ignore="true"
+          <v-tab
+            v-for="sub_item in search_tab_items"
+            :key="sub_item"
+          >
+            {{ sub_item }}
+          </v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="tab_search" class="pb-1">
+          <!-- 원가 계산서 -->
+          <v-tab-item>
+            <v-card ref="calcCostCard" style="border: 1px solid #ccc; overflow-x: auto" elevation="0">
+              <v-row style="max-width: 868.5px;" class="dont_print" data-html2canvas-ignore="true">
+                <v-col align-self="center" cols="12" sm="12" class="dont_print" data-html2canvas-ignore="true">
+                  <v-checkbox
+                    v-model="estimate_checkbox.product"
+                    label="재료비 세부"
+                    color="primary"
+                    hide-details
+                    class="float-left mr-3 dont_print"
+                    data-html2canvas-ignore="true"
+                    @click="estimateCheckbox('product', '재료비')"
+                  ></v-checkbox>
+                  <v-checkbox
+                    v-model="estimate_checkbox.labor_cost"
+                    label="노무비"
+                    color="primary"
+                    hide-details
+                    class="float-left mr-3 dont_print"
+                    data-html2canvas-ignore="true"
+                    @click="estimateCheckbox('labor_cost', '노무비')"
+                  ></v-checkbox>
+                  <v-checkbox
+                    v-model="estimate_checkbox.expense"
+                    label="경비"
+                    color="primary"
+                    hide-details
+                    class="float-left mr-3 dont_print"
+                    data-html2canvas-ignore="true"
+                    @click="estimateCheckbox('expense', '경비')"
+                  ></v-checkbox>
+                  <v-checkbox
+                    v-model="estimate_checkbox.general_management"
+                    label="일반관리비"
+                    color="primary"
+                    hide-details
+                    class="float-left mr-3 dont_print"
+                    data-html2canvas-ignore="true"
+                    @click="estimateCheckbox('general_management', '일반관리비')"
+                  ></v-checkbox>
+                  <v-checkbox
+                    v-model="estimate_checkbox.profit"
+                    label="이윤"
+                    color="primary"
+                    hide-details
+                    class="float-left dont_print"
+                    data-html2canvas-ignore="true"
+                    @click="estimateCheckbox('profit', '이윤')"
+                  ></v-checkbox>
+                  <v-btn
+                    color="primary"
+                    elevation="0"
+                    fab
+                    x-small
+                    @click="openEstiamteMailForm"
+                    class="mb-3 ml-3 float-right dont_print"
+                    data-html2canvas-ignore="true"
+                  >
+                    <v-icon >mdi-email</v-icon>
+                  </v-btn>
+                  <v-menu offset-y>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        color="success"
+                        fab
+                        x-small
+                        class="float-right dont_print"
+                        elevation="0"
+                        v-bind="attrs"
+                        v-on="on"
+                        data-html2canvas-ignore="true"
+                      >
+                        <v-icon
+                          small
+                        >mdi-content-save</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item
+                        v-for="(item, index) in save_estimates"
+                        :key="index"
+                        dense
+                        @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                                : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '견적서') : ''"
+                      >
+                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+
+                </v-col>
+              </v-row>
+              <v-card-title style="max-width: 868.5px;">
+                <v-row
+                  class="px-3"
+                  style="background: #efefef;"
                 >
-                  <v-icon >mdi-email</v-icon>
-                </v-btn>
+                  <v-col align-self="center" cols="12" sm="10">
+                    <p style="font-weight: bold; font-size: 30px;" class="mb-0">견적서
+                    </p>
+                  </v-col>
+                  <v-col align-self="center" cols="12" sm="2">
+                    <v-img
+                      alt="Pionelectric Logo"
+                      class="float-right"
+                      contain
+                      src="../assets/img/pion_logo.png"
+                      transition="scale-transition"
+                      width="140"
+                      style="margin-top:10px"
+                    />
+                  </v-col>
+                </v-row>
+              </v-card-title>
+              <v-card-text style="max-width: 868.5px;">
+                <v-row class="mt-5" justify="space-between">
+                  <v-col align-self="center" cols="12" sm="5" class="pb-0">
+                    <v-row style="border-bottom:1px solid #b4b4b4; font-size: 15px;" class="mb-4">
+                      <v-col cols="12" sm="10" class="font-weight-bold">{{ clickedProductCost.company_name ? clickedProductCost.company_name : '' }}</v-col>
+                      <v-col cols="12" sm="2">귀하</v-col>
+                    </v-row>
+                    <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
+                      <tr class="text-body-1">
+                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">발행일</td>
+                        <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.issue_date ? mux.Date.format(clickedProductCost.issue_date, 'yyyy-MM-dd') : '' }}</td>
+                      </tr>
+                      <tr>
+                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역명</td>
+                        <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_name ? clickedProductCost.service_name : '' }}</td>
+                      </tr>
+                      <tr>
+                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역기간</td>
+                        <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_period ? clickedProductCost.service_period : '' }}</td>
+                      </tr>
+                      <tr>
+                        <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">유효기간</td>
+                        <td class="estimate_info"> 발행일로부터 30일 이내 </td>
+                      </tr>
+                    </table>
+                    <p style=" font-size: 12px;" class="mt-3 text-center font-weight-bold">하기와 같이 견적 드립니다.</p>
+                  </v-col>
+                  <v-col align-self="center" cols="12" sm="6" style="position: relative;" class="pb-0">
+                    <v-img
+                      alt="직인"
+                      contain
+                      src="../assets/img/pion_stamp.png"
+                      transition="scale-transition"
+                      width="40"
+                      style="position: absolute; right:25px; top:25px"
+                    />
+                    <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
+                      <tr>
+                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
+                        <td colspan="3" class="estimate_info" style="border-bottom: 0px;">851 - 86 - 00038</td>
+                      </tr>
+                      <tr>
+                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">상호</td>
+                        <td class="estimate_info" style="border-bottom: 0px;">파이온일렉트릭(주)</td>
+                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">대표자</td>
+                        <td class="estimate_info" style="border-bottom: 0px;">윤광희</td>
+                      </tr>
+                      <tr>
+                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
+                        <td colspan="3" class="estimate_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호 (연세대학교 공학원)</td>
+                      </tr>
+                      <tr>
+                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업태</td>
+                        <td class="estimate_info" style="border-bottom: 0px;">제조업</td>
+                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">종목</td>
+                        <td class="estimate_info" style="border-bottom: 0px;">전력전자기기</td>
+                      </tr>
+                      <tr>
+                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표전화</td>
+                        <td class="estimate_info" style="border-bottom: 0px;">070-5096-4179</td>
+                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">팩스</td>
+                        <td class="estimate_info" style="border-bottom: 0px;">0505-300-4179</td>
+                      </tr>
+                      <tr>
+                        <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
+                        <td class="estimate_info" >{{ clickedProductCost.given_name ? clickedProductCost.given_name : '' }}</td>
+                        <td class="estimate_info estimate_title text-center" >연락처</td>
+                        <td class="estimate_info">{{ clickedProductCost.office_phone_number ? clickedProductCost.office_phone_number : '' }}</td>
+                      </tr>
+                    </table>
+                  </v-col>
+                  <v-col cols="12" sm="12" class="pt-0">
+                    <table style=" border-spacing: 0px; width: 100%;" class="mb-5">
+                      <tr>
+                        <td class="estimate_price_info estimate_price_title text-center">일금</td>
+                        <td class="estimate_price_info"><span class="font-weight-bold">{{ !total_cost || isNaN(total_cost) ? '' : mux.Number.toKorean(total_cost, ' 원정') }} </span>{{ !total_cost || isNaN(total_cost) ? '' : `(￦ ${mux.Number.withComma(total_cost)})` }} <span style="font-size:11px" class="pl-10">* 부가가치세(VAT) 별도</span></td>
+                      </tr>
+                    </table>
+                  </v-col>
+                </v-row>
+                <CostTableComponent
+                  :headers="survey_cost_headers"
+                  :items="estimate_detail_data"
+                  item-key="product_code"
+                  :childTrStyle="'background-color:#efefef'"
+                  prevent-editable
+                  prevent-button
+                  hide-children
+                  :show-childs-parent-index-arr="show_childs_parent_index_arr"
+                  :show-grand-childs-parent-index-arr="show_grand_childs_parent_index_arr"
+                  class="cost_table_border"
+                />
+              </v-card-text>
+            </v-card>
+            <v-row class="mt-3">
+              <v-col cols="12" sm="4">
+                <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
+                <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+                <v-img
+                  v-if="clickedProductCost.approval_file"
+                  alt="thumbnail"
+                  class="shrink mr-2"
+                  contain
+                  :src="mux.Util.imageBinary(clickedProductCost.approval_thumbnail)"
+                  transition="scale-transition"
+                  width="350"
+                  @click="download('estimate/approval', clickedProductCost.approval_file.replace(clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_', ''), clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_')"
+                  style="cursor: pointer;"
+                />
+              </v-col>
+              <v-col cols="12" sm="4">
+                <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
+                <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
+                <v-img
+                  v-if="clickedProductCost.blueprint_file"
+                  alt="thumbnail"
+                  class="shrink mr-2"
+                  contain
+                  :src="mux.Util.imageBinary(clickedProductCost.blueprint_thumbnail)"
+                  transition="scale-transition"
+                  width="350"
+                  @click="download('estimate/blueprint', clickedProductCost.blueprint_file.replace(clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_', ''), clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_')"
+                  style="cursor: pointer;"
+                />
+              </v-col>
+              <v-col cols="12" sm="4">
+                <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
+                <div v-if="clickedProductCost.etc_files">
+                  <v-chip
+                    v-for="(file, i) in clickedProductCost.etc_files.split('/')"
+                    :key="i"
+                    color="grey lighten-2"
+                    class="ma-2"
+                    @click="download('estimate/etc', file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', ''), file.split('_')[0]+'_'+file.split('_')[1]+'_')"
+                  >
+                    {{ file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', '') }}
+                  </v-chip>
+                </div>
+              </v-col>
+            </v-row>
+          </v-tab-item>
+          <!-- 산출내역서 -->
+          <v-tab-item>
+            <v-card ref="calcDetailCard" style="border: 1px solid #ccc;" elevation="0">
+              <v-card-title>
+                <v-menu offset-y>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      color="success"
+                      fab
+                      x-small
+                      class="dont_print"
+                      elevation="0"
+                      v-bind="attrs"
+                      v-on="on"
+                      data-html2canvas-ignore="true"
+                    >
+                      <v-icon
+                        small
+                      >mdi-content-save</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item
+                      v-for="(item, index) in save_estimates"
+                      :key="index"
+                      dense
+                      @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                              : item.click === 'excel' ? mux.Excel.downloadTable(survey_cost_headers, calc_cost_detail_data, '산출내역서')
+                              : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data', '산출내역서') : ''"
+                    >
+                      <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-card-title>
+              <v-card-text>
+                <v-form ref="surveyCostForm">
+                  <CostTableComponent
+                    :headers="survey_cost_headers"
+                    :items="calc_cost_detail_data"
+                    item-key="product_code"
+                    trStyle="background-color:#efefef; "
+                    trClass="font-weight-black estimate_title"
+                    :cost-num-edit-disabled="true"
+                    class="cost_table_border print_cost_table"
+                  >
+                  </CostTableComponent>
+                </v-form>
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+
+          <!-- 노무비 산출 -->
+          <v-tab-item>
+            <v-card ref="calcLaborCard" style="border: 1px solid #ccc;" elevation="0">
+              <v-card-title>
                 <v-menu offset-y>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
@@ -169,297 +536,47 @@
                       v-for="(item, index) in save_estimates"
                       :key="index"
                       dense
-                      @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                              : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '견적서') : ''"
+                      @click="item.click === 'print' ? printLaborCost()
+                              : item.click === 'excel' ? mux.Excel.downloadTable(labor_cost_headers, labor_cost_data, '노무비 산출')
+                              : item.click === 'pdf' ? printLaborCost('노무비 산출') : ''"
                     >
                       <v-list-item-title>{{ item.title }}</v-list-item-title>
                     </v-list-item>
                   </v-list>
                 </v-menu>
-
-              </v-col>
-            </v-row>
-            <v-card-title style="max-width: 868.5px;">
-              <v-row
-                class="px-3"
-                style="background: #efefef;"
-              >
-                <v-col align-self="center" cols="12" sm="10">
-                  <p style="font-weight: bold; font-size: 30px;" class="mb-0">견적서
-                  </p>
-                </v-col>
-                <v-col align-self="center" cols="12" sm="2">
-                  <v-img
-                    alt="Pionelectric Logo"
-                    class="float-right"
-                    contain
-                    src="../assets/img/pion_logo.png"
-                    transition="scale-transition"
-                    width="140"
-                    style="margin-top:10px"
-                  />
-                </v-col>
-              </v-row>
-            </v-card-title>
-            <v-card-text style="max-width: 868.5px;">
-              <v-row class="mt-5" justify="space-between">
-                <v-col align-self="center" cols="12" sm="5" class="pb-0">
-                  <v-row style="border-bottom:1px solid #b4b4b4; font-size: 15px;" class="mb-4">
-                    <v-col cols="12" sm="10" class="font-weight-bold">{{ clickedProductCost.company_name ? clickedProductCost.company_name : '' }}</v-col>
-                    <v-col cols="12" sm="2">귀하</v-col>
-                  </v-row>
-                  <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
-                    <tr class="text-body-1">
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">발행일</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.issue_date ? mux.Date.format(clickedProductCost.issue_date, 'yyyy-MM-dd') : '' }}</td>
-                    </tr>
-                    <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역명</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_name ? clickedProductCost.service_name : '' }}</td>
-                    </tr>
-                    <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역기간</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_period ? clickedProductCost.service_period : '' }}</td>
-                    </tr>
-                    <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">유효기간</td>
-                      <td class="estimate_info"> 발행일로부터 30일 이내 </td>
-                    </tr>
-                  </table>
-                  <p style=" font-size: 12px;" class="mt-3 text-center font-weight-bold">하기와 같이 견적 드립니다.</p>
-                </v-col>
-                <v-col align-self="center" cols="12" sm="6" style="position: relative;" class="pb-0">
-                  <v-img
-                    alt="직인"
-                    contain
-                    src="../assets/img/pion_stamp.png"
-                    transition="scale-transition"
-                    width="40"
-                    style="position: absolute; right:25px; top:25px"
-                  />
-                  <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
-                    <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-                      <td colspan="3" class="estimate_info" style="border-bottom: 0px;">851 - 86 - 00038</td>
-                    </tr>
-                    <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">상호</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">파이온일렉트릭(주)</td>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">대표자</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">윤광희</td>
-                    </tr>
-                    <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
-                      <td colspan="3" class="estimate_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호 (연세대학교 공학원)</td>
-                    </tr>
-                    <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업태</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">제조업</td>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">종목</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">전력전자기기</td>
-                    </tr>
-                    <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표전화</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">070-5096-4179</td>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">팩스</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">0505-300-4179</td>
-                    </tr>
-                    <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
-                      <td class="estimate_info" >{{ clickedProductCost.given_name ? clickedProductCost.given_name : '' }}</td>
-                      <td class="estimate_info estimate_title text-center" >연락처</td>
-                      <td class="estimate_info">{{ clickedProductCost.office_phone_number ? clickedProductCost.office_phone_number : '' }}</td>
-                    </tr>
-                  </table>
-                </v-col>
-                <v-col cols="12" sm="12" class="pt-0">
-                  <table style=" border-spacing: 0px; width: 100%;" class="mb-5">
-                    <tr>
-                      <td class="estimate_price_info estimate_price_title text-center">일금</td>
-                      <td class="estimate_price_info"><span class="font-weight-bold">{{ !total_cost || isNaN(total_cost) ? '' : mux.Number.toKorean(total_cost, ' 원정') }} </span>{{ !total_cost || isNaN(total_cost) ? '' : `(￦ ${mux.Number.withComma(total_cost)})` }} <span style="font-size:11px" class="pl-10">* 부가가치세(VAT) 별도</span></td>
-                    </tr>
-                  </table>
-                </v-col>
-              </v-row>
-              <CostTableComponent
-                :headers="survey_cost_headers"
-                :items="estimate_detail_data"
-                item-key="product_code"
-                :childTrStyle="'background-color:#efefef'"
-                prevent-editable
-                prevent-button
-                hide-children
-                :show-childs-parent-index-arr="show_childs_parent_index_arr"
-                :show-grand-childs-parent-index-arr="show_grand_childs_parent_index_arr"
-                class="cost_table_border"
-              />
-            </v-card-text>
-          </v-card>
-          <v-row class="mt-3">
-            <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 승인서</p>
-              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
-              <v-img
-                v-if="clickedProductCost.approval_file"
-                alt="thumbnail"
-                class="shrink mr-2"
-                contain
-                :src="mux.Util.imageBinary(clickedProductCost.approval_thumbnail)"
-                transition="scale-transition"
-                width="350"
-                @click="download('estimate/approval', clickedProductCost.approval_file.replace(clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_', ''), clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_')"
-                style="cursor: pointer;"
-              />
-            </v-col>
-            <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 도면</p>
-              <!-- <div style="width:100%; background-color: #ccc; min-height:300px"></div> -->
-              <v-img
-                v-if="clickedProductCost.blueprint_file"
-                alt="thumbnail"
-                class="shrink mr-2"
-                contain
-                :src="mux.Util.imageBinary(clickedProductCost.blueprint_thumbnail)"
-                transition="scale-transition"
-                width="350"
-                @click="download('estimate/blueprint', clickedProductCost.blueprint_file.replace(clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_', ''), clickedProductCost.blueprint_file.split('_')[0]+'_'+clickedProductCost.blueprint_file.split('_')[1]+'_')"
-                style="cursor: pointer;"
-              />
-            </v-col>
-            <v-col cols="12" sm="4">
-              <p class="font-weight-bold primary--text mb-0">▼ 기타 첨부</p>
-              <div v-if="clickedProductCost.etc_files">
-                <v-chip
-                  v-for="(file, i) in clickedProductCost.etc_files.split('/')"
-                  :key="i"
-                  color="grey lighten-2"
-                  class="ma-2"
-                  @click="download('estimate/etc', file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', ''), file.split('_')[0]+'_'+file.split('_')[1]+'_')"
+              </v-card-title>
+              <v-card-text>
+                <v-data-table
+                  dense
+                  :headers="labor_cost_headers"
+                  :items="labor_cost_data"
+                  hide-default-footer
+                  disable-pagination
+                  class="elevation-1 labor_cost_list"
+                  disable-sort
                 >
-                  {{ file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', '') }}
-                </v-chip>
-              </div>
-            </v-col>
-          </v-row>
-        </v-tab-item>
-        <!-- 산출내역서 -->
-        <v-tab-item>
-          <v-card ref="calcDetailCard" style="border: 1px solid #ccc;" elevation="0">
-            <v-card-title>
-              <v-menu offset-y>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    color="success"
-                    fab
-                    x-small
-                    class="dont_print"
-                    elevation="0"
-                    v-bind="attrs"
-                    v-on="on"
-                    data-html2canvas-ignore="true"
-                  >
-                    <v-icon
-                      small
-                    >mdi-content-save</v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item
-                    v-for="(item, index) in save_estimates"
-                    :key="index"
-                    dense
-                    @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                            : item.click === 'excel' ? mux.Excel.downloadTable(survey_cost_headers, calc_cost_detail_data, '산출내역서')
-                            : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data', '산출내역서') : ''"
-                  >
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </v-card-title>
-            <v-card-text>
-              <v-form ref="surveyCostForm">
-                <CostTableComponent
-                  :headers="survey_cost_headers"
-                  :items="calc_cost_detail_data"
-                  item-key="product_code"
-                  trStyle="background-color:#efefef; "
-                  trClass="font-weight-black estimate_title"
-                  :cost-num-edit-disabled="true"
-                  class="cost_table_border print_cost_table"
-                >
-                </CostTableComponent>
-              </v-form>
-            </v-card-text>
-          </v-card>
-        </v-tab-item>
-
-        <!-- 노무비 산출 -->
-        <v-tab-item>
-          <v-card ref="calcLaborCard" style="border: 1px solid #ccc;" elevation="0">
-            <v-card-title>
-              <v-menu offset-y>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    color="success"
-                    fab
-                    x-small
-                    class="float-right dont_print"
-                    elevation="0"
-                    v-bind="attrs"
-                    v-on="on"
-                    data-html2canvas-ignore="true"
-                  >
-                    <v-icon
-                      small
-                    >mdi-content-save</v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item
-                    v-for="(item, index) in save_estimates"
-                    :key="index"
-                    dense
-                    @click="item.click === 'print' ? printLaborCost()
-                            : item.click === 'excel' ? mux.Excel.downloadTable(labor_cost_headers, labor_cost_data, '노무비 산출')
-                            : item.click === 'pdf' ? printLaborCost('노무비 산출') : ''"
-                  >
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </v-card-title>
-            <v-card-text>
-              <v-data-table
-                dense
-                :headers="labor_cost_headers"
-                :items="labor_cost_data"
-                hide-default-footer
-                disable-pagination
-                class="elevation-1 labor_cost_list"
-                disable-sort
-              >
-                <template v-slot:item="{ item, index }">
-                  <tr>
-                    <td align="center">{{ item.no }}</td>
-                    <td align="center">{{ item.name }}</td>
-                    <td align="center">{{ item.type }}</td>
-                    <td align="center">{{ item.occupation }}</td>
-                    <td align="center">{{ item.man_per_day }}</td>
-                    <td align="center">{{ Math.round(item.surcharge_ratio * 100 * 10000000) / 10000000 }}%</td>
-                    <td align="center">{{ item.adjustment_ratio }}</td>
-                    <td align="center">{{ item.man_per_hour }}</td>
-                    <td align="center">{{ mux.Number.withComma(item.unit_price) }}</td>
-                    <td align="center">{{ mux.Number.withComma(item.quantity) }}</td>
-                    <td align="center">{{  item.total_amount ? mux.Number.withComma(item.total_amount) : mux.Number.withComma((item.man_per_hour * item.quantity * item.unit_price).toFixed(0)) }}</td>
-                    <td align="center" :class="calcRowSpan(item.name, index) == 0? 'd-none' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? mux.Number.withComma(item.no_total_amount) : mux.Number.withComma(calcNoTotalAmount(item.name)) }}</td>
-                  </tr>
-                </template>
-              </v-data-table>
-            </v-card-text>
-          </v-card>
-        </v-tab-item>
-      </v-tabs-items>
+                  <template v-slot:item="{ item, index }">
+                    <tr>
+                      <td align="center">{{ item.no }}</td>
+                      <td align="center">{{ item.name }}</td>
+                      <td align="center">{{ item.type }}</td>
+                      <td align="center">{{ item.occupation }}</td>
+                      <td align="center">{{ item.man_per_day }}</td>
+                      <td align="center">{{ Math.round(item.surcharge_ratio * 100 * 10000000) / 10000000 }}%</td>
+                      <td align="center">{{ item.adjustment_ratio }}</td>
+                      <td align="center">{{ item.man_per_hour }}</td>
+                      <td align="center">{{ mux.Number.withComma(item.unit_price) }}</td>
+                      <td align="center">{{ mux.Number.withComma(item.quantity) }}</td>
+                      <td align="center">{{  item.total_amount ? mux.Number.withComma(item.total_amount) : mux.Number.withComma((item.man_per_hour * item.quantity * item.unit_price).toFixed(0)) }}</td>
+                      <td align="center" :class="calcRowSpan(item.name, index) == 0? 'd-none' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? mux.Number.withComma(item.no_total_amount) : mux.Number.withComma(calcNoTotalAmount(item.name)) }}</td>
+                    </tr>
+                  </template>
+                </v-data-table>
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+        </v-tabs-items>
+      </div>
     </ModalDialogComponent>
 
     <v-dialog
@@ -472,7 +589,7 @@
           ref="mailFormComponent"
           v-model="mailData"
           addCardClass="d-none"
-          addSystemFiles="estimate"
+          :addSystemFiles="etc_estimate ? 'estimate_etc' : 'estimate'"
           :loginInfo="this.login_info"
         >
           <v-card-actions>
@@ -530,11 +647,14 @@ export default {
       dates: [],
       estimate_product_list_dialog: false,
       clickedProductCost: {},
+      bid_write: true,
       mailDialog: false,
       tab_search: null,
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
       email_sign:'',
+      estimate_checker:'',
+      estimate_approver:'',
       estimate_checkbox:{
         product:true,
         labor_cost:true,
@@ -542,6 +662,8 @@ export default {
         general_management:true,
         profit:true
       },
+
+      etc_estimate: false,
       show_childs_parent_index_arr: [0],
       show_grand_childs_parent_index_arr: [0, 1],
       estimate_info_data:{},
@@ -551,6 +673,7 @@ export default {
 
       searched_products:[],
 
+      etcRequestInputs: EstimateSearchPageConfig.etcRequestInputs,
       save_estimates: EstimateSearchPageConfig.save_estimates,
       defaultMailData: EstimateSearchPageConfig.default_mail_data,
       login_info: EstimateSearchPageConfig.login_info,
@@ -566,6 +689,7 @@ export default {
       calc_cost_detail_data: JSON.parse(JSON.stringify(EstimateSearchPageConfig.calc_cost_detail_data)),
       estimate_detail_data: [],
       estimate_approve_data:[],
+      members: [],
 
       print_labor_table: false,
     }
@@ -646,6 +770,10 @@ export default {
     estimate_product_list_dialog(val){
       val || this.closeProductList()
       this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
+    },
+
+    bid_write(val){
+      this.etcRequestInputs.find(x=>x.label === '사내 견적번호').disabled = val;
     },
     clickedProductCost: {
       handler(item){
@@ -850,6 +978,21 @@ export default {
         this.login_info.office_phone_number = this.$cookies.get(this.$configJson.cookies.office_phone_number.key);
         this.login_info.phone_number = this.$cookies.get(this.$configJson.cookies.phone_number.key);
         console.log(this.login_info)
+
+        const result = await mux.Server.get({path:'/api/admin/users/'});
+        if (prevURL !== window.location.href) return;
+        if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+          result.data.Users.map(data => {
+            let id = data.Username;
+            let name = data.Attributes.find(x=>x.Name === 'given_name').Value;
+            let department = data.Attributes.find(x=>x.Name === 'custom:department').Value
+            this.members.push(department + '-' + name + '-' + id);
+          });
+
+        }else {
+          mux.Util.showAlert(result.message);
+          return;
+        }
       } catch (error) {
         if (prevURL !== window.location.href) return;
         mux.Util.showAlert(error);
@@ -859,6 +1002,218 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
 
+    //기타 타입 등록
+    async etcApprovalRequest(){
+      const currDate = new Date();
+      if(this.estimate_checker === '' || this.estimate_approver === ''){
+        mux.Util.showAlert('승인 정보를 모두 입력해주세요.');
+        return;
+      }
+      const new_cost_calc_code = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+
+
+      let confirmation_data = {};
+      // inhouse_bid_number(사내 견적번호)
+      if(!this.bid_write){
+        if(this.etcRequestInputs.find(x=>x.column_name === 'inhouse_bid_number').value === ''){
+          mux.Util.showAlert('사내 견적번호를 입력해주세요.');
+          return;
+        }else{
+          confirmation_data.inhouse_bid_number = this.etcRequestInputs.find(x=>x.column_name === 'inhouse_bid_number').value;
+        }
+      }else{
+        let currentCode = await this.searchCurrentCode();
+        if(currentCode === ''){
+          confirmation_data.inhouse_bid_number = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd') + '_001';
+        }else{
+          let calc_current_code = Number(currentCode.split('_')[2]) + 1;
+          calc_current_code = ('00' + calc_current_code).slice(-3);
+          confirmation_data.inhouse_bid_number = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd') + '_' + calc_current_code;
+        }
+
+      }
+      confirmation_data.cost_calc_code = new_cost_calc_code;
+      confirmation_data.given_name = this.login_info.name;
+      confirmation_data.estimate_type = '기타';
+      confirmation_data.checker = this.estimate_checker.split('-')[1];
+      confirmation_data.checker_id = this.estimate_checker.split('-')[2]
+      confirmation_data.approver = this.estimate_checker.split('-')[1]
+      confirmation_data.approver_id = this.estimate_checker.split('-')[2]
+      if(confirmation_data.checker_id == this.login_info.id){
+        confirmation_data.approval_phase = '미승인';
+        confirmation_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff')
+      }else{
+        confirmation_data.approval_phase = '미확인';
+      }
+      if(!this.bid_write){
+        confirmation_data.inhouse_bid_number = this.etcRequestInputs.find(x=>x.column_name === 'inhouse_bid_number').value;
+      }
+      confirmation_data.issue_date = this.etcRequestInputs.find(x=>x.column_name === 'issue_date').value;
+      confirmation_data.company_name = this.etcRequestInputs.find(x=>x.column_name === 'company_name').value;
+
+      let approval_file = this.etcRequestInputs.find(x=>x.column_name === 'approval_file').value;
+      confirmation_data.approval_file = approval_file.name;
+      const getPdfThumbnail = await mux.Util.getPdfThumbnail(approval_file, 1, false);
+      let approval_file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+      confirmation_data.approval_thumbnail = approval_file_thumbnail;
+
+      let etc_files = this.etcRequestInputs.find(x=>x.column_name === 'etc_files').value;
+      for(let f=0; f<etc_files.length; f++){
+        if(f===0){
+          confirmation_data.etc_files = etc_files[f].name;
+        }else{
+          confirmation_data.etc_files = confirmation_data.etc_files + "/" + etc_files[f].name;
+        }
+      }
+
+
+      mux.Util.showLoading();
+
+      let sendData = {
+        "estimate_confirmation_table-insert": [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "creater"
+          },
+          "data":confirmation_data,
+          "select_where": {"cost_calc_code": new_cost_calc_code},
+          "rollback": "yes"
+        }]
+      };
+
+      let product_data = [];
+      product_data.push({
+        "user_info": {
+          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+          "role": "creater"
+        },
+        "data":{
+          "cost_calc_code" : new_cost_calc_code,
+          "product_num" : 1,
+          "product_unit_price" : this.etcRequestInputs.find(x=>x.column_name === 'product_unit_price').value
+        },
+        "select_where": {"cost_calc_code": new_cost_calc_code},
+        "rollback": "yes"
+      })
+
+      sendData["estimate_cost_calc_detail_table-insert"] = product_data;
+
+      sendData.path = '/api/multipart_rest_api/';
+      sendData.prefix = new_cost_calc_code + '_';
+      sendData.files = [];
+
+      sendData.files.push({
+        folder: 'estimate/approval',
+        file: approval_file,
+        name: approval_file.name
+      });
+
+      if(etc_files.length > 0){
+        for (let i = 0; i < etc_files.length; i++) {
+          const file = etc_files[i];
+          sendData.files.push({
+            folder: 'estimate/etc',
+            file: file,
+            name: file.name
+          });
+        }
+      }
+
+      console.log(sendData);
+
+      const prevURL = window.location.href;
+      try {
+        let result = await mux.Server.uploadFile(sendData);
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+
+        if (result.code === undefined && result.data !== undefined && result.data.code !== undefined){
+          result = result.data;
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+            //메일 알림 관련
+            let mailTo = [];
+            if(confirmation_data.approval_phase === '미확인'){
+              mailTo.push(confirmation_data.checker_id);
+            }else {
+              mailTo.push(confirmation_data.approver_id);
+            }
+
+            // 메일 본문 내용
+            let content=`
+            <html>
+              <body>
+                <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                  <h2 style="text-align: center; color:#13428a"> 기타 견적서 ${confirmation_data.approval_phase === '미확인' ? '확인' : '승인'} 요청 알림</h2>
+                  <table style="width: 100%;border-spacing: 10px 10px;">
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.inhouse_bid_number}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발행일</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.issue_date}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.given_name}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.checker}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
+                    </tr>
+                  </table>
+                  <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${confirmation_data.inhouse_bid_number}&company_name=${confirmation_data.company_name}&issue_date=${confirmation_data.issue_date}">
+                    <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                      확인하기
+                    </p>
+                  </a>
+                </div>
+              </body>
+            </html>
+            `;
+
+            try {
+              let sendEmailAlam = await mux.Server.post({
+                path: '/api/send_email/',
+                to_addrs: mailTo,
+                subject: "견적서 " + (confirmation_data.approval_phase === '미확인' ? '확인' : '승인') + " 요청 알림",
+                content: content
+              });
+              if (prevURL !== window.location.href) return;
+              if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
+                mux.Util.showAlert('등록되었습니다.', '등록 완료', 3000);
+                mux.Util.hideLoading();
+              } else {
+                if (prevURL !== window.location.href) return;
+                console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+                mux.Util.showAlert('등록되었으나 알림 메일 전송에 실패하였습니다.', '등록 완료');
+                mux.Util.hideLoading();
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              console.log('알림 메일 전송에 실패-error :>> ', error);
+              mux.Util.showAlert('등록되었으나 알림 메일 전송에 실패하였습니다.', '등록 완료');
+              mux.Util.hideLoading();
+            }
+        } else {
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.showAlert(error);
+      }
+
+    },
     setSearchCardInputs(inhouse_bid_number, company_bid_number, company_name, issue_date){
       this.searchCardInputs.find(x=>x.label === '사내 견적번호').value = inhouse_bid_number;
       this.searchCardInputs.find(x=>x.label === '기업별 입찰번호').value = company_bid_number;
@@ -1034,6 +1389,7 @@ export default {
                 break;
               }
             }
+            item.cost_total_amount = mux.Number.withComma(item.cost_total_amount);
             item.created_time = mux.Date.format(item['created_time'], 'yyyy-MM-dd');
             return item;
           })];
@@ -1151,6 +1507,11 @@ export default {
       });
     },
     async clickApproveData(item){
+      if(item.estimate_type === '기타'){
+        this.etc_estimate = true;
+      }else{
+        this.etc_estimate = false;
+      }
       this.clickedProductCost = {};
       this.clickedProductCost = item;
       this.estimate_product_list_dialog = true;
@@ -1385,108 +1746,140 @@ export default {
         sendData.files.push(file);
       }
 
+
       let estimateFile = null;
-      // 견적서 PDF 파일 생성
-      if (sendData.estimate) {
-        const estimate = this.$refs.calcCostCard.$el;
-        try {
-          // await mux.Util.downloadPDF(estimate, 'estimate');
-          estimateFile = await mux.Util.getPDF(estimate, '견적서');
-          sendData.files.push(estimateFile);
-        } catch (error) {
-          this.mailDialog = true;
-          mux.Util.showAlert('견적서 PDF 파일 생성 중 오류가 발생했습니다.');
-          return;
-        }
-      }
-      delete sendData.estimate;
-
       let specificationFile = null;
-      // 산출내역서 PDF 파일 생성
-      if (sendData.specification) {
-        if (!this.$refs.calcDetailCard){ // 산출내역서 탭을 load 한 적이 없는 것을 대비
-          const origin_tab = this.tab_search;
-          this.tab_search = 1;
-          let refLoadCount = 0
-          while(refLoadCount < 50){
-            if (this.$refs.calcDetailCard){
-              break;
-            }
-            await new Promise(resolve => setTimeout(resolve, 100));
-            refLoadCount++;
-          }
-          this.tab_search = origin_tab;
-        }
-        const specification = this.$refs.calcDetailCard.$el;
-        try {
-          // await mux.Util.downloadPDF(specification, 'specification');
-          specificationFile = await mux.Util.getPDF(specification, '산출내역서');
-          sendData.files.push(specificationFile);
-        } catch (error) {
-          this.mailDialog = true;
-          mux.Util.showAlert('산출내역서 PDF 파일 생성 중 오류가 발생했습니다.');
-          return;
-        }
-      }
-      delete sendData.specification;
-
-
       let laborFile = null;
-      // 노무비 산출 PDF 파일 생성
-      if (sendData.labor) {
-        if (!this.$refs.calcLaborCard){ // 노무비 산출 탭을 load 한 적이 없는 것을 대비
-          const origin_tab = this.tab_search;
-          this.tab_search = 2;
-          let refLoadCount = 0
-          while(refLoadCount < 50){
-            if (this.$refs.calcLaborCard){
-              break;
-            }
-            await new Promise(resolve => setTimeout(resolve, 100));
-            refLoadCount++;
-          }
-          this.tab_search = origin_tab;
-        }
-        const labor = this.$refs.calcLaborCard.$el;
-        try {
-          // await mux.Util.downloadPDF(labor, 'labor');
-          laborFile = await mux.Util.getPDF(labor, '노무비 산출');
-          sendData.files.push(laborFile);
-        } catch (error) {
-          this.mailDialog = true;
-          mux.Util.showAlert('노무비 산출 PDF 파일 생성 중 오류가 발생했습니다.');
-          return;
-        }
-      }
-      delete sendData.labor;
-
-
-      // S3에서 찾아서 첨부할 목록
       let attachment = [];
 
-      if (sendData.blueprint) {
-        attachment.push({folder: 'estimate/blueprint', fileName: this.clickedProductCost.blueprint_file, newName: this.clickedProductCost.blueprint_file.replace(this.clickedProductCost.blueprint_file.split('_')[0]+'_'+this.clickedProductCost.blueprint_file.split('_')[1]+'_', '')});
-      }
-      delete sendData.blueprint;
+      if(this.etc_estimate){
+        // S3에서 찾아서 첨부할 목록
+        if (sendData.estimate) {
+          attachment.push({folder: 'estimate/approval', fileName: this.clickedProductCost.cost_calc_code + '_' + this.clickedProductCost.approval_file, newName: this.clickedProductCost.approval_file});
+        }
+        delete sendData.approval;
 
-      if (sendData.approval) {
-        attachment.push({folder: 'estimate/approval', fileName: this.clickedProductCost.approval_file, newName: this.clickedProductCost.approval_file.replace(this.clickedProductCost.approval_file.split('_')[0]+'_'+this.clickedProductCost.approval_file.split('_')[1]+'_', '')});
-      }
-      delete sendData.approval;
+        if (sendData.etc && this.clickedProductCost.etc_files) {
+          this.clickedProductCost.etc_files.split('/').forEach(file => {
+            attachment.push({folder: 'estimate/etc', fileName: this.clickedProductCost.cost_calc_code + '_' + file, newName: file});
+          });
+        }
+        delete sendData.etc;
 
-      if (sendData.etc && this.clickedProductCost.etc_files) {
-        this.clickedProductCost.etc_files.split('/').forEach(file => {
-          attachment.push({folder: 'estimate/etc', fileName: file, newName: file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', '')});
-        });
-      }
-      delete sendData.etc;
+        if (sendData.business_license) {
+          attachment.push({folder: 'common', fileName: 'business_license_test.pdf', newName: '사업자등록증.pdf'});
+        }
+        delete sendData.business_license;
 
-      if (sendData.business_license) {
-        attachment.push({folder: 'common', fileName: 'business_license_test.pdf', newName: '사업자등록증.pdf'});
-      }
-      delete sendData.business_license;
+        if (sendData.bankbook_copy) {
+          attachment.push({folder: 'common', fileName: 'bankbook_copy_test.pdf', newName: '통장사본.pdf'});
+        }
+        delete sendData.bankbook_copy;
 
-      sendData.attachment = attachment;
+        sendData.attachment = attachment;
+      }else{
+        // 견적서 PDF 파일 생성
+        if (sendData.estimate) {
+          const estimate = this.$refs.calcCostCard.$el;
+          try {
+            // await mux.Util.downloadPDF(estimate, 'estimate');
+            estimateFile = await mux.Util.getPDF(estimate, '견적서');
+            sendData.files.push(estimateFile);
+          } catch (error) {
+            this.mailDialog = true;
+            mux.Util.showAlert('견적서 PDF 파일 생성 중 오류가 발생했습니다.');
+            return;
+          }
+        }
+        delete sendData.estimate;
+
+        // 산출내역서 PDF 파일 생성
+        if (sendData.specification) {
+          if (!this.$refs.calcDetailCard){ // 산출내역서 탭을 load 한 적이 없는 것을 대비
+            const origin_tab = this.tab_search;
+            this.tab_search = 1;
+            let refLoadCount = 0
+            while(refLoadCount < 50){
+              if (this.$refs.calcDetailCard){
+                break;
+              }
+              await new Promise(resolve => setTimeout(resolve, 100));
+              refLoadCount++;
+            }
+            this.tab_search = origin_tab;
+          }
+          const specification = this.$refs.calcDetailCard.$el;
+          try {
+            // await mux.Util.downloadPDF(specification, 'specification');
+            specificationFile = await mux.Util.getPDF(specification, '산출내역서');
+            sendData.files.push(specificationFile);
+          } catch (error) {
+            this.mailDialog = true;
+            mux.Util.showAlert('산출내역서 PDF 파일 생성 중 오류가 발생했습니다.');
+            return;
+          }
+        }
+        delete sendData.specification;
+
+        // 노무비 산출 PDF 파일 생성
+        if (sendData.labor) {
+          if (!this.$refs.calcLaborCard){ // 노무비 산출 탭을 load 한 적이 없는 것을 대비
+            const origin_tab = this.tab_search;
+            this.tab_search = 2;
+            let refLoadCount = 0
+            while(refLoadCount < 50){
+              if (this.$refs.calcLaborCard){
+                break;
+              }
+              await new Promise(resolve => setTimeout(resolve, 100));
+              refLoadCount++;
+            }
+            this.tab_search = origin_tab;
+          }
+          const labor = this.$refs.calcLaborCard.$el;
+          try {
+            // await mux.Util.downloadPDF(labor, 'labor');
+            laborFile = await mux.Util.getPDF(labor, '노무비 산출');
+            sendData.files.push(laborFile);
+          } catch (error) {
+            this.mailDialog = true;
+            mux.Util.showAlert('노무비 산출 PDF 파일 생성 중 오류가 발생했습니다.');
+            return;
+          }
+        }
+        delete sendData.labor;
+
+
+        // S3에서 찾아서 첨부할 목록
+        if (sendData.blueprint) {
+          attachment.push({folder: 'estimate/blueprint', fileName: this.clickedProductCost.blueprint_file, newName: this.clickedProductCost.blueprint_file.replace(this.clickedProductCost.blueprint_file.split('_')[0]+'_'+this.clickedProductCost.blueprint_file.split('_')[1]+'_', '')});
+        }
+        delete sendData.blueprint;
+
+        if (sendData.approval) {
+          attachment.push({folder: 'estimate/approval', fileName: this.clickedProductCost.approval_file, newName: this.clickedProductCost.approval_file.replace(this.clickedProductCost.approval_file.split('_')[0]+'_'+this.clickedProductCost.approval_file.split('_')[1]+'_', '')});
+        }
+        delete sendData.approval;
+
+        if (sendData.etc && this.clickedProductCost.etc_files) {
+          this.clickedProductCost.etc_files.split('/').forEach(file => {
+            attachment.push({folder: 'estimate/etc', fileName: file, newName: file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', '')});
+          });
+        }
+        delete sendData.etc;
+
+        if (sendData.business_license) {
+          attachment.push({folder: 'common', fileName: 'business_license_test.pdf', newName: '사업자등록증.pdf'});
+        }
+        delete sendData.business_license;
+
+        if (sendData.bankbook_copy) {
+          attachment.push({folder: 'common', fileName: 'bankbook_copy_test.pdf', newName: '통장사본.pdf'});
+        }
+        delete sendData.bankbook_copy;
+        
+        sendData.attachment = attachment;
+      }
 
       try {
         await mux.Server.sendEmail(sendData);
@@ -1539,6 +1932,53 @@ export default {
         this.show_childs_parent_index_arr = [];
         this.show_grand_childs_parent_index_arr = [];
       }
+    },
+
+
+    async searchCurrentCode(){
+      const currDate = new Date();
+      const prevURL = window.location.href;
+      let code = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd') + '_';
+      let current_code = '';
+      try {
+        //견적서 REST API 스크립트 전달 받으면 수정 예정
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "order_confirmation_table.code": code
+            }
+          ],
+          "script_file_name": "rooting_발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_OKJ.json",
+          "script_file_path": "data_storage_pion\\json_sql\\order\\발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_3Q8"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          let searched = result.data;
+          // 정렬
+          if(searched.length > 0){
+            searched.sort((a,b) => a.code.localeCompare(b.code));
+            current_code = searched[searched.length-1].code;
+          } else {
+            current_code = '';
+          }
+        } else {
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      return current_code;
     },
   },
 }

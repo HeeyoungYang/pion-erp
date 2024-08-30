@@ -15,6 +15,15 @@
   ],
 
 
+  "etcRequestInputs":[    
+    {"label":"사내 견적번호", "column_name": "inhouse_bid_number", "col":"12", "sm":"12", "lg":"12", "value": "", "disabled": true},
+    {"label":"발행일", "column_name": "issue_date", "type": "dateSingle", "menu": "", "col":"12", "sm":"12", "lg":"12", "value": ""},
+    {"label":"업체명", "column_name": "company_name", "col":"12", "sm":"12", "lg":"12", "value": ""},
+    {"label":"견적서", "column_name": "approval_file", "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"기타", "column_name": "etc_files", "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true},
+    {"label":"총액", "column_name": "product_unit_price", "col":"12", "sm":"12", "lg":"12", "value": ""}
+  ],
+
   "estimate_approve_headers": [
     { "text": "발행일", "align": "start", "value": "issue_date"},
     { "text": "업체명", "align": "start", "value": "company_name"},
@@ -279,6 +288,10 @@
       {
         "id": 2,
         "cost_calc_code": "2024-07-29 16:40:41.349_min"
+      },
+      {
+        "id": 3,
+        "cost_calc_code": "2024-08-30 14:17:46.406_heeyoung"
       }
     ],
     "confirmation":[
@@ -318,7 +331,7 @@
 
         "approval_file": "2024-08-01 11:07:58.846_min_samp1.pdf",
         "approval_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
-        "blueprint_file": "2024-08-01 11:07:58.846_min_samp3.pdf",
+        "blueprint_file": "2024-07-29 16:36:32.427_min_samp3.pdf",
         "blueprint_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
         "etc_files": "2024-08-01 11:07:58.846_min_samp1.pdf/samp3.pdf"
       },
@@ -400,6 +413,44 @@
         "approval_file": "2024-07-29 16:40:41.349_min_approval_test.pdf",
         "blueprint_file": "2024-07-29 16:40:41.349_min_blueprint_test.pdf",
         "etc_files": ""
+      },
+      {
+        "created_time": "2024-08-30 14:17:49",
+        "modified_time": "2024-08-30 14:17:49",
+        "creater": "heeyoung",
+        "modifier": null,
+        "deleted_yn": 0,
+        "cost_calc_code": "2024-08-30 14:17:46.406_heeyoung",
+        "given_name": "양희영",
+        "office_phone_number": null,
+        "estimate_type": "기타",
+        "issue_date": "2024-08-30",
+        "inhouse_bid_number": "PEPQ_240830_001",
+        "company_bid_number": null,
+        "due_date": null,
+        "service_name": null,
+        "service_period": null,
+        "remark": null,
+        "company_name": "sdfsdfsdfds",
+        "company_manager": null,
+        "company_manager_email": null,
+        "company_manager_phone": null,
+        "approval_phase": "미승인",
+        "checker": "양희영",
+        "checker_id": "heeyoung",
+        "checked_date": "2024-08-30 14:17:46",
+        "approver": "양희영",
+        "approver_id": "heeyoung",
+        "approved_date": null,
+        "rejecter": null,
+        "rejected_date": null,
+        "reject_reason": null,
+        "approval_file": "테스트용2.pdf",
+        "approval_thumbnail": "89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082",
+        "blueprint_file": "",
+        "blueprint_thumbnail": "",
+        "etc_files": "pdf_for_test.pdf/20240802_150844.png"
+      
       }
     ],
     "product_cost": [
@@ -828,6 +879,18 @@
           "product_spec": "wqeqwe3",
           "product_num": 1,
           "product_unit_price": 222
+        },
+        {
+          "creater": "heeyoung",
+          "modifier": null,
+          "created_time": "2024-08-30 14:17:49",
+          "modified_time": "2024-08-30 14:17:49",
+          "cost_calc_code": "2024-08-30 14:17:46.406_heeyoung",
+          "product_code": null,
+          "product_name": null,
+          "product_spec": null,
+          "product_num": 1,
+          "product_unit_price": 10000000
         }
     ],
     "construction_materials_data":[
