@@ -1023,6 +1023,22 @@ export default {
         searchResult.confirmation.reverse(); // 최신순으로 정렬
         this.searchDataCalcProcess(searchResult);
 
+        // 기타 타입 처리
+        if (searchResult.confirmation.filter(x=>x.estimate_type === '기타').length > 0){
+          this.estimate_approve_data = [...this.estimate_approve_data, ...searchResult.confirmation.filter(x=>x.estimate_type === '기타').map((item) => {
+            item.cost_total_amount = 0;
+            for (let i = 0; i < searchResult.product_cost_calc_detail.length; i++) {
+              const a = searchResult.product_cost_calc_detail[i];
+              if (a.cost_calc_code === item.cost_calc_code){
+                item.cost_total_amount += Math.round(a.product_num * a.product_unit_price);
+                break;
+              }
+            }
+            item.created_time = mux.Date.format(item['created_time'], 'yyyy-MM-dd');
+            return item;
+          })];
+        }
+
         // }else{
         //   mux.Util.showAlert(result);
         // }
