@@ -8,6 +8,7 @@
     {"title":"엑셀", "click":"excel"},
     {"title":"PDF", "click":"pdf"}
   ],
+  "type_list":["원부자재", "반제품"],
   "tab_main_items": [
     "조회", "작성"
   ],

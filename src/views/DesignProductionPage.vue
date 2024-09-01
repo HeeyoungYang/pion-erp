@@ -1593,37 +1593,31 @@
               <template v-slot:item = "{ item, index }">
                 <tr>
                   <td class="text-center">
-                    <v-text-field
+                    <v-autocomplete
                       v-if="item.data_type === 'written'"
                       v-model="item.type"
+                      :items="type_list"
                       dense
                       hide-details
                       filled
-                      style="width:200px; font-size:12px">
-                    </v-text-field>
+                      style="width:150px; font-size:12px">
+                    </v-autocomplete>
                     {{ item.data_type !== 'written' ? item.type : '' }}
                   </td>
                   <td class="text-center">
-                    <v-text-field
+                    <v-autocomplete
                       v-if="item.data_type === 'written'"
                       v-model="item.classification"
+                      :items="classification_list.slice(1)"
                       dense
                       hide-details
                       filled
-                      style="width:200px; font-size:12px">
-                    </v-text-field>
+                      style="width:150px; font-size:12px">
+                    </v-autocomplete>
                     {{ item.data_type !== 'written' ? item.classification : '' }}
                   </td>
-                  <td class="text-center">
-                    <v-text-field
-                      v-if="item.data_type === 'written'"
-                      v-model="item.item_code"
-                      dense
-                      hide-details
-                      filled
-                      style="width:200px; font-size:12px">
-                    </v-text-field>
-                    {{ item.data_type !== 'written' ? item.item_code : '' }}
+                  <td align="center">
+                    {{ item.item_code }}
                   </td>
                   <td class="text-center">
                     <v-text-field
@@ -1659,14 +1653,15 @@
                     {{ item.data_type !== 'written' ? item.spec : '' }}
                   </td>
                   <td class="text-center">
-                    <v-text-field
+                    <v-autocomplete
                       v-if="item.data_type === 'written'"
                       v-model="item.manufacturer"
+                      :items="manufacturer_list"
                       dense
                       hide-details
                       filled
-                      style="width:200px; font-size:12px">
-                    </v-text-field>
+                      style="width:150px; font-size:12px">
+                    </v-autocomplete>
                     {{ item.data_type !== 'written' ? item.manufacturer : '' }}
                   </td>
                   <td class="text-center">
@@ -2741,7 +2736,7 @@ export default {
             a.deletable_row = false;
             return a;
           })));
-          
+
           let constructions_group_index = this.calc_cost_detail_data_product_cost.belong_data.findIndex(x => x.cost_list === '가. 공사 자재');
           if (constructions_group_index > -1) {
             this.calc_cost_detail_data_product_cost.belong_data[constructions_group_index].cost_list = '나. 공사 자재';
@@ -3387,6 +3382,7 @@ export default {
         if (prevURL !== window.location.href) return;
 
 
+        let resultBasic = await mux.Server.getPionBasicInfo();
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           "params": [
@@ -3397,9 +3393,15 @@ export default {
         });
         if (prevURL !== window.location.href) return;
 
+        if (typeof resultBasic === 'string'){
+          resultBasic = JSON.parse(resultBasic);
+        }
         if (typeof result === 'string'){
           result = JSON.parse(result);
         }
+
+        this.classification_list = resultBasic.classification;
+        this.manufacturer_list = resultBasic.manufacturer;
         if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           const searchResult = result.data;
 
@@ -3703,7 +3705,7 @@ export default {
             "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ"
           });
           if (prevURL !== window.location.href) return;
-  
+
           if (typeof result === 'string'){
             result = JSON.parse(result);
           }
@@ -3733,14 +3735,14 @@ export default {
                 }
               }
               data.total_stock = stock_calc
-  
+
               if(data.belong_data){
                 for(let b=0; b<data.belong_data.length; b++){
                   data.belong_data[b].product_code = data.product_code;
                   data.belong_data[b].item_code = data.belong_data[b].code;
                   delete data.belong_data[b].code;
-  
-  
+
+
                   // let total_item_unit_price = 0;
                   // data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                   if(data.belong_data[b].belong_data){
@@ -3751,8 +3753,8 @@ export default {
                 console.log(JSON.stringify(data.belong_data) )
                 data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
               }
-  
-  
+
+
               if (typeof data.unit_price === 'number'){
                 data.item_price = data.unit_price * data.total_stock
                 let total_unit_price = 0;
@@ -3768,8 +3770,8 @@ export default {
               }else {
                 data.item_price = 0;
               }
-  
-  
+
+
               if (data.belong_data && this.pricePermission){
                 data.belong_data.push({
                   item_code: '총 재료비',
@@ -3782,7 +3784,7 @@ export default {
               // this.total_stock_num += data.total_stock
               // this.total_stock_price += data.item_price
             });
-  
+
             this.set_bom_list_data2 = [];
             for(let i=0; i<estimate.product_cost_calc_detail.length; i++){
               const data = estimate.product_cost_calc_detail[i];
@@ -3975,14 +3977,14 @@ export default {
                 }
               }
               data.total_stock = stock_calc
-  
+
               if(data.belong_data){
                 for(let b=0; b<data.belong_data.length; b++){
                   data.belong_data[b].product_code = data.product_code;
                   data.belong_data[b].item_code = data.belong_data[b].code;
                   delete data.belong_data[b].code;
-  
-  
+
+
                   // let total_item_unit_price = 0;
                   // data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                   if(data.belong_data[b].belong_data){
@@ -3993,8 +3995,8 @@ export default {
                 console.log(JSON.stringify(data.belong_data) )
                 data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
               }
-  
-  
+
+
               if (typeof data.unit_price === 'number'){
                 data.item_price = data.unit_price * data.total_stock
                 let total_unit_price = 0;
@@ -4010,8 +4012,8 @@ export default {
               }else {
                 data.item_price = 0;
               }
-  
-  
+
+
               if (data.belong_data && this.pricePermission){
                 data.belong_data.push({
                   item_code: '총 재료비',
@@ -4038,14 +4040,14 @@ export default {
                 }
               }
               data.total_stock = stock_calc
-  
+
               if(data.belong_data){
                 for(let b=0; b<data.belong_data.length; b++){
                   data.belong_data[b].product_code = data.product_code;
                   data.belong_data[b].item_code = data.belong_data[b].code;
                   delete data.belong_data[b].code;
-  
-  
+
+
                   // let total_item_unit_price = 0;
                   // data.belong_data[b].unit_price = '₩ '+ Number(data.belong_data[b].unit_price).toLocaleString()
                   if(data.belong_data[b].belong_data){
@@ -4056,8 +4058,8 @@ export default {
                 console.log(JSON.stringify(data.belong_data) )
                 data.belong_data.sort((a, b) => a.item_code.localeCompare(b.item_code));
               }
-  
-  
+
+
               if (typeof data.unit_price === 'number'){
                 data.item_price = data.unit_price * data.total_stock
                 let total_unit_price = 0;
@@ -4073,8 +4075,8 @@ export default {
               }else {
                 data.item_price = 0;
               }
-  
-  
+
+
               if (data.belong_data && this.pricePermission){
                 data.belong_data.push({
                   item_code: '총 재료비',
@@ -6308,11 +6310,17 @@ export default {
       selected = [];
     },
     addItemSetting(){
+      let added=0;
+      for(let i=0; i<this.setting_item_data.length; i++){
+        if(this.setting_item_data[i].data_type === 'written'){
+          added ++;
+        }
+      }
       this.setting_item_data.push(
         {
           "type":"",
           "classification":"",
-          "item_code":"",
+          "item_code": '임시코드-'+ ('00' + (added + 1)).slice(-3),
           "name":"",
           "model":"",
           "spec":"",
@@ -6532,7 +6540,7 @@ export default {
               }
             })
           }
-  
+
           for(let i=0; i<this.bom_list_purchase_data2.length; i++){
             let data = this.bom_list_purchase_data2[i];
             if(data.purchase_num === ''){
@@ -6543,14 +6551,14 @@ export default {
               mux.Util.showAlert(data.item_code + '의 견적/주문 항목을 확안해주세요.<br> 미선택, 견적서, 선주문 중 택 1');
               return;
             }
-  
+
             if(data.belong_data){// 선주문을 선택한 경우
               // 구매 요청 수량을 추가 기입하였는지 확인
               if(data.purchase_num > 0){
                 let message = `선주문 사용 수량 ${data.belong_data[0].purchase_set_num}개에
                 추가로 ${data.purchase_num}개를 구매 요청 하시겠습니까?
                 아니오 선택 시 구매 요청 수량은 0이 됩니다.`
-  
+
                 const confirm = await mux.Util.showConfirm(message, '구매 요청 확인', false, '예', '아니오');
                 if (!confirm){
                   data.purchase_num = 0;
@@ -6561,7 +6569,7 @@ export default {
                 mux.Util.showAlert(
                   `필요수량 및 사용 가능 수량 대비
                   선주문 사용 수량과 구매 요청 수량이 부족합니다.
-  
+
                   · 필요 수량 : ${data.num}
                   · 사용 가능 수량 : ${data.usable_num}
                   · 선주문 수량 : ${data.belong_data[0].purchase_num}
@@ -6576,13 +6584,13 @@ export default {
                 mux.Util.showAlert(data.item_code + '의 구매 요청 수량을 입력해주세요.');
                 return;
               }
-  
+
               // 구매 요청 수량이 필요수량-사용가능수량 보다 많은지 확인
               if (data.num - data.usable_num > Number(data.purchase_num)){
                 mux.Util.showAlert(
                     `필요수량 및 사용 가능 수량 대비
                     구매 요청 수량이 부족합니다.
-  
+
                     · 필요 수량 : ${data.num}
                     · 사용 가능 수량 : ${data.usable_num}
                     · 구매 요청 수량 : ${data.purchase_num}`
@@ -6622,7 +6630,7 @@ export default {
               }
             })
           }
-  
+
           for(let i=0; i<this.bom_list_purchase_data_copy.length; i++){
             let data = this.bom_list_purchase_data_copy[i];
             if(data.purchase_num === ''){
@@ -6633,14 +6641,14 @@ export default {
               mux.Util.showAlert(data.item_code + '의 견적/주문 항목을 확안해주세요.<br> 미선택, 견적서, 선주문 중 택 1');
               return;
             }
-  
+
             if(data.belong_data){// 선주문을 선택한 경우
               // 구매 요청 수량을 추가 기입하였는지 확인
               if(data.purchase_num > 0){
                 let message = `선주문 사용 수량 ${data.belong_data[0].purchase_set_num}개에
                 추가로 ${data.purchase_num}개를 구매 요청 하시겠습니까?
                 아니오 선택 시 구매 요청 수량은 0이 됩니다.`
-  
+
                 const confirm = await mux.Util.showConfirm(message, '구매 요청 확인', false, '예', '아니오');
                 if (!confirm){
                   data.purchase_num = 0;
@@ -6651,7 +6659,7 @@ export default {
                 mux.Util.showAlert(
                   `필요수량 및 사용 가능 수량 대비
                   선주문 사용 수량과 구매 요청 수량이 부족합니다.
-  
+
                   · 필요 수량 : ${data.num}
                   · 사용 가능 수량 : ${data.usable_num}
                   · 선주문 수량 : ${data.belong_data[0].purchase_num}
@@ -6666,13 +6674,13 @@ export default {
                 mux.Util.showAlert(data.item_code + '의 구매 요청 수량을 입력해주세요.');
                 return;
               }
-  
+
               // 구매 요청 수량이 필요수량-사용가능수량 보다 많은지 확인
               if (data.num - data.usable_num > Number(data.purchase_num)){
                 mux.Util.showAlert(
                     `필요수량 및 사용 가능 수량 대비
                     구매 요청 수량이 부족합니다.
-  
+
                     · 필요 수량 : ${data.num}
                     · 사용 가능 수량 : ${data.usable_num}
                     · 구매 요청 수량 : ${data.purchase_num}`
@@ -6836,7 +6844,7 @@ export default {
       }
     },
 
-    
+
     async clickDontSelect(product_code, item_code){
       let bom_data;
       if (this.tab_main === 0){
@@ -7385,6 +7393,7 @@ export default {
       search_complete_product_name: '',
       search_product_capacity: '',
 
+      type_list: DesignProductionPageConfig.type_list,
       estimate_member_info: JSON.parse(JSON.stringify(DesignProductionPageConfig.estimate_member_info)),
       estimate_member_info2: JSON.parse(JSON.stringify(DesignProductionPageConfig.estimate_member_info)),
       content_save_items: DesignProductionPageConfig.content_save_items,
@@ -7440,6 +7449,8 @@ export default {
       bom_list_purchase_data2: [],
       selected_unestimated_data:[],
       bom_list_need_estiamte_data:[],
+      classification_list:[],
+      manufacturer_list: [],
 
       calc_cost_detail_data: JSON.parse(JSON.stringify(DesignProductionPageConfig.calc_cost_detail_data)),
       calc_cost_detail_data2: DesignProductionPageConfig.calc_cost_detail_data.map(x => {
@@ -7540,7 +7551,7 @@ export default {
       search_estimate_data: [],
 
       writeIssueDate: new Date().toISOString().substr(0, 10),
-      
+
       productSearchItemInputs: DesignProductionPageConfig.productSearchItemInputs,
       estimateDefaultInfoInputs: DesignProductionPageConfig.estimateDefaultInfoInputs,
       // estimateCompanyInfoInputs: DesignProductionPageConfig.estimateCompanyInfoInputs,
