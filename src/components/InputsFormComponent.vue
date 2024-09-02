@@ -121,6 +121,7 @@
             readonly
             v-bind="attrs"
             v-on="on"
+            @click:clear="dateSingleText = null"
           ></v-text-field>
         </template>
         <v-date-picker
@@ -150,6 +151,7 @@
             readonly
             v-bind="attrs"
             v-on="on"
+            @click:clear="input.value = []"
           ></v-text-field>
         </template>
         <v-date-picker
