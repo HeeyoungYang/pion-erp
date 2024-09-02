@@ -956,62 +956,64 @@
                       >
                         {{ member.type }} : {{ member.name }}
                       </v-chip>
-                      <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >설계 정보</p>
-                      <InputsFormComponent
-                        dense
-                        clearable
-                        :inputs="estimateWriteDefaultInfoInputs"
-                      >
-                      </InputsFormComponent>
-                      <InputsFormComponent
-                        dense
-                        clearable
-                        :inputs="estimateWriteDefaultInfoInputs2"
-                      >
-                      </InputsFormComponent>
+                        <v-form ref="estimateInfoForm2">
+                        <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >설계 정보</p>
+                        <InputsFormComponent
+                          dense
+                          clearable
+                          :inputs="estimateWriteDefaultInfoInputs"
+                        >
+                        </InputsFormComponent>
+                        <InputsFormComponent
+                          dense
+                          clearable
+                          :inputs="estimateWriteDefaultInfoInputs2"
+                        >
+                        </InputsFormComponent>
 
-                      <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;">업체 정보</p>
-                      <InputsFormComponent
-                        dense
-                        clearable
-                        :inputs="estimateWriteCompanyInfoInputs"
-                      >
-                      </InputsFormComponent>
-                      <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;" >첨부</p>
-                      <v-row>
-                        <v-col cols="12">
-                          <v-btn
-                            v-if="!blueprint_inputs_show"
-                            @click="blueprint_inputs_show = true"
-                            class="mb-3"
-                            x-small
-                            color="primary"
-                          >상세 도면 첨부</v-btn>
-                          <InputsFormComponent
-                            dense
-                            clearable
-                            :inputs="estimateWriteFilesInputs"
-                            v-show="blueprint_inputs_show"
-                          >
-                          <v-col cols="12" sm="4">
+                        <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;">업체 정보</p>
+                        <InputsFormComponent
+                          dense
+                          clearable
+                          :inputs="estimateWriteCompanyInfoInputs"
+                        >
+                        </InputsFormComponent>
+                        <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;" >첨부</p>
+                        <v-row>
+                          <v-col cols="12">
                             <v-btn
-                              @click="blueprint_inputs_show = false"
-                              class="mb-3 white--text"
+                              v-if="!blueprint_inputs_show"
+                              @click="blueprint_inputs_show = true"
+                              class="mb-3"
                               x-small
-                              color="grey"
-                            >상세 도면 닫기</v-btn>
+                              color="primary"
+                            >상세 도면 첨부</v-btn>
+                            <InputsFormComponent
+                              dense
+                              clearable
+                              :inputs="estimateWriteFilesInputs"
+                              v-show="blueprint_inputs_show"
+                            >
+                            <v-col cols="12" sm="4">
+                              <v-btn
+                                @click="blueprint_inputs_show = false"
+                                class="mb-3 white--text"
+                                x-small
+                                color="grey"
+                              >상세 도면 닫기</v-btn>
+                            </v-col>
+                            </InputsFormComponent>
                           </v-col>
-                          </InputsFormComponent>
-                        </v-col>
-                      </v-row>
-                      <v-divider class="my-4"></v-divider>
-                      <InputsFormComponent
-                        dense
-                        clearable
-                        :inputs="estimateWriteFilesInputs2"
-                      >
+                        </v-row>
+                        <v-divider class="my-4"></v-divider>
+                        <InputsFormComponent
+                          dense
+                          clearable
+                          :inputs="estimateWriteFilesInputs2"
+                        >
 
-                      </InputsFormComponent>
+                        </InputsFormComponent>
+                      </v-form>
                       <v-btn
                         small
                         color="success"
@@ -4644,6 +4646,15 @@ export default {
             "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
             "rollback": "yes"
           }],
+          "purchase_confirmation_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{"cost_calc_code": new_cost_calc_code},
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "no"
+          }],
           "design_labor_cost_calc_detail_table-insert": []
         };
         this.labor_cost_data.forEach(data => {
@@ -4753,7 +4764,7 @@ export default {
                 let sendEmailAlam = await mux.Server.post({
                   path: '/api/send_email/',
                   to_addrs: mailTo,
-                  subject: "수주 확인서 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
+                  subject: "설계 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
                   content: content
                 });
                 if (prevURL !== window.location.href) return;
@@ -4891,17 +4902,17 @@ export default {
             },
             "data":{
               "cost_calc_code": new_cost_calc_code,
-              "issue_date": this.input_issue_date.value,
-              "company_bid_number": this.input_company_bid_number.value,
-              "due_date": this.input_due_date.value,
-              "delivery_condition": this.input_delivery_condition.value,
-              "service_name": this.input_service_name.value,
-              "service_period": this.input_service_period.value,
-              "remark": this.input_remark.value,
-              "company_name": this.input_company_name.value,
-              "company_manager": this.input_company_manager.value,
-              "company_manager_email": this.input_company_manager_email.value,
-              "company_manager_phone": this.input_company_manager_phone.value,
+              // "issue_date": this.input_issue_date.value,
+              // "company_bid_number": this.input_company_bid_number.value,
+              // "due_date": this.input_due_date.value,
+              // "delivery_condition": this.input_delivery_condition.value,
+              // "service_name": this.input_service_name.value,
+              // "service_period": this.input_service_period.value,
+              // "remark": this.input_remark.value,
+              // "company_name": this.input_company_name.value,
+              // "company_manager": this.input_company_manager.value,
+              // "company_manager_email": this.input_company_manager_email.value,
+              // "company_manager_phone": this.input_company_manager_phone.value,
               "approval_phase": sendDataCheckedDate === null ? '미확인' : '미승인',
               "checker": this.estimate_member_info[0].name,
               "checker_id": this.estimate_member_info[0].user_id,
@@ -4950,7 +4961,16 @@ export default {
             "data":{"cost_calc_code": new_cost_calc_code},
             "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
             "rollback": "yes"
-          }]
+          }],
+          "purchase_confirmation_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{"cost_calc_code": new_cost_calc_code},
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "no"
+          }],
         };
 
         sendData.path = '/api/multipart_rest_api/';
@@ -5236,7 +5256,7 @@ export default {
                 let sendEmailAlam = await mux.Server.post({
                   path: '/api/send_email/',
                   to_addrs: mailTo,
-                  subject: "수주 확인서 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
+                  subject: "설계 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
                   content: content
                 });
                 if (prevURL !== window.location.href) return;
@@ -5363,6 +5383,15 @@ export default {
             "data":{"cost_calc_code": new_cost_calc_code},
             "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
             "rollback": "yes"
+          }],
+          "purchase_confirmation_table-update": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "modifier"
+            },
+            "data":{"cost_calc_code": new_cost_calc_code},
+            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "rollback": "no"
           }],
           "design_cost_calc_detail_table-insert": [],
           "design_construction_detail_table-insert": [],
@@ -5589,7 +5618,7 @@ export default {
                 let sendEmailAlam = await mux.Server.post({
                   path: '/api/send_email/',
                   to_addrs: mailTo,
-                  subject: "수주 확인서 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
+                  subject: "설계 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
                   content: content
                 });
                 if (prevURL !== window.location.href) return;
@@ -5814,6 +5843,8 @@ export default {
         "design_cost_calc_detail_table-insert":[],
         "design_construction_detail_table-insert":[],
         "design_labor_cost_calc_detail_table-insert":[],
+        "purchase_confirmation_table-insert":[],
+        "purchase_product_table-insert":[],
       };
       const products = this.calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('재료'));
       const construction_materials = this.calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재'));
@@ -6011,7 +6042,7 @@ export default {
               let sendEmailAlam = await mux.Server.post({
                 path: '/api/send_email/',
                 to_addrs: mailTo,
-                subject: "수주 확인서 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
+                subject: "설계 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
                 content: content
               });
               if (prevURL !== window.location.href) return;
