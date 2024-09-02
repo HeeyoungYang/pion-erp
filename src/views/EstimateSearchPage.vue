@@ -1338,35 +1338,45 @@ export default {
         if (input.value && String(input.value).trim()) {
           let inputValue = String(input.value).trim();
           if (inputValue === 'All'){
-            inputValue = "%";
+            inputValue = "";
           }
           inputs.push(inputValue);
         }else {
-          inputs.push("%");
+          inputs.push("");
         }
       });
       console.log('inputs :>> ', inputs);
 
       const prevURL = window.location.href;
+      let reqURL = '/api/estimate/';
+      // approval_phase = '';
+      if (inputs[0]){
+        reqURL += '?approval_phase=' + inputs[0];
+      }
+      if (inputs[1]){
+        reqURL += inputs[0] ? '&inhouse_bid_number=' + inputs[1] : '?inhouse_bid_number=' + inputs[1];
+      }
+      if (inputs[2]){
+        reqURL += (inputs[0] || inputs[1]) ? '&company_bid_number=' + inputs[2] : '?company_bid_number=' + inputs[2];
+      }
+      if (inputs[3]){
+        reqURL += (inputs[0] || inputs[1] || inputs[2]) ? '&company_name=' + inputs[3] : '?company_name=' + inputs[3];
+      }
+      if (inputs[4]){
+        reqURL += (inputs[0] || inputs[1] || inputs[2] || inputs[3]) ? '&issue_start_date=' + inputs[4].split(',')[0] : '?issue_start_date=' + inputs[4].split(',')[0];
+        reqURL += inputs[4].split(',').length > 1 ? '&issue_end_date=' + inputs[4].split(',')[1] : '&issue_end_date=' + inputs[4].split(',')[0];
+      }
+      
       try {
-        // let result = await mux.Server.post({
-        //   path: '/api/common_rest_api/',
-        //   params: [
-        //     {
-        //       "product_cost_table.product_name": searchProductName ? searchProductName : "%"
-        //     }
-        //   ],
-        //   "script_file_name": "rooting_원가_검색_24_05_22_11_57_N80.json",
-        //   "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_검색_24_05_22_11_57_555"
-        // });
-        // if (prevURL !== window.location.href) return;
+        let result = await mux.Server.get({path: reqURL});
+        if (prevURL !== window.location.href) return;
 
-        // if (typeof result === 'string'){
-        //   result = JSON.parse(result);
-        // }
-        // if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-        //   const searchResult = result.data;
-        const searchResult = JSON.parse(JSON.stringify(EstimateSearchPageConfig.test_estimate_approve_data));
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+          const searchResult = result.data;
+        // const searchResult = JSON.parse(JSON.stringify(EstimateSearchPageConfig.test_estimate_approve_data));
 
         // 이력 제거 후 실제 데이터만 남기기
         searchResult.confirmation = searchResult.confirmation.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
@@ -1395,9 +1405,9 @@ export default {
           })];
         }
 
-        // }else{
-        //   mux.Util.showAlert(result);
-        // }
+        }else{
+          mux.Util.showAlert(result);
+        }
 
       } catch (error) {
         if (prevURL !== window.location.href) return;

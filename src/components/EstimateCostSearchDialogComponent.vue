@@ -133,37 +133,48 @@ export default {
         if (input.value && String(input.value).trim()) {
           inputs.push(String(input.value).trim());
         }else {
-          inputs.push("%");
+          inputs.push("");
         }
       });
       console.log('inputs :>> ', inputs);
 
       const prevURL = window.location.href;
+      let reqURL = '/api/estimate/';
+      // approval_phase = '';
+      if (inputs[0]){
+        reqURL += '?inhouse_bid_number=' + inputs[0];
+      }
+      if (inputs[1]){
+        reqURL += inputs[0] ? '&company_bid_number=' + inputs[1] : '?company_bid_number=' + inputs[1];
+      }
+      if (inputs[2]){
+        reqURL += (inputs[0] || inputs[1]) ? '&company_name=' + inputs[2] : '?company_name=' + inputs[2];
+      }
+      // if (inputs[3]){
+      //   reqURL += (inputs[0] || inputs[1] || inputs[2]) ? '&issue_start_date=' + inputs[3].split(',')[0] : '?issue_start_date=' + inputs[3].split(',')[0];
+      //   reqURL += inputs[3].split(',').length > 1 ? '&issue_end_date=' + inputs[3].split(',')[1] : '&issue_end_date=' + inputs[3].split(',')[0];
+      // }
+      
       try {
-        // let result = await mux.Server.post({
-        //   path: '/api/common_rest_api/',
-        //   params: [
-        //     {
-        //       "product_cost_table.product_name": searchProductName ? searchProductName : "%"
-        //     }
-        //   ],
-        //   "script_file_name": "rooting_원가_검색_24_05_22_11_57_N80.json",
-        //   "script_file_path": "data_storage_pion\\json_sql\\cost\\원가_검색_24_05_22_11_57_555"
-        // });
-        // if (prevURL !== window.location.href) return;
+        let result = await mux.Server.get({path: reqURL});
+        if (prevURL !== window.location.href) return;
 
-        // if (typeof result === 'string'){
-        //   result = JSON.parse(result);
-        // }
-        // if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-        //   this.searchResult = result.data;
-        this.searchResult = JSON.parse(JSON.stringify(EstimateCostSearchDialogConfig.test_product_cost_data));
-        this.searchResult.confirmation.reverse(); // 최신순으로 정렬
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+          this.searchResult = result.data;
+        // this.searchResult = JSON.parse(JSON.stringify(EstimateCostSearchDialogConfig.test_product_cost_data));
+        // this.searchResult.confirmation.reverse(); // 최신순으로 정렬
+        // this.searchResult.confirmation 을 각 객체의 created_time 을 기준으로 최신순 정렬
+        this.searchResult.confirmation.sort((a, b) => {
+          return new Date(b.created_time) - new Date(a.created_time);
+        });
         this.searchDataCalcProcess(this.searchResult);
 
-        // }else{
-        //   mux.Util.showAlert(result['failed_info']);
-        // }
+        }else{
+          mux.Util.showAlert(result['failed_info']);
+        }
 
       } catch (error) {
         if (prevURL !== window.location.href) return;
