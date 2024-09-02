@@ -619,9 +619,7 @@
                     && searched_datas.last_confirmation.find(item => item.cost_calc_code === clickedProductCost.cost_calc_code)">
           <v-card style="border: 1px solid #ccc;" elevation="0">
             <v-menu
-              v-if="searched_datas.last_confirmation
-              && searched_datas.last_confirmation.find(item => item.cost_calc_code === clickedProductCost.cost_calc_code)
-              && searched_datas.approved_date
+              v-if="clickedProductCost.approved_date
               && clickedProductCost.creater === login_info.id"
               offset-y
               :close-on-content-click="false"
@@ -654,12 +652,12 @@
                       dense
                       hide-selected
                       small-chips
-                      :disabled="clickedProductCost.send_production_request !== ''"
+                      :disabled="clickedProductCost.send_production_request"
                       ></v-combobox>
                     <v-btn
                       small
                       @click="sendProductionRequestMail"
-                      :disabled="clickedProductCost.send_production_request !== ''"
+                      :disabled="clickedProductCost.send_production_request"
                     >발송</v-btn>
                   </v-list-item-content>
                 </v-list-item>
@@ -1965,6 +1963,10 @@ export default {
                 <h2 style="text-align: center; color:#13428a">설계 ${item.approval_phase === '미승인' ? '확인' : item.approval_phase} 처리 알림</h2>
                 <table style="width: 100%;border-spacing: 10px 10px;">
                   <tr>
+                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.project_code}</td>
+                  </tr>
+                  <tr>
                     <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
                     <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inhouse_bid_number}</td>
                   </tr>
@@ -1986,7 +1988,7 @@ export default {
                   </tr>
                   ${reject_info ? reject_info : ''}
                 </table>
-                <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${item.inhouse_bid_number}&company_bid_number=${item.company_bid_number}&company_name=${item.company_name}&issue_date=${item.issue_date}">
+                <a style="color: white; text-decoration:none"href="${prevURL}-search?project_code=${item.project_code}&inhouse_bid_number=${item.inhouse_bid_number}&company_bid_number=${item.company_bid_number}&company_name=${item.company_name}&issue_date=${item.issue_date}">
                   <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                     확인하기
                   </p>
@@ -2034,7 +2036,7 @@ export default {
         mux.Util.showAlert('담당자를 선택해주세요.');
         return;
       }
-      const selectDesignerInfo = this.member_list.find(member => member.department + '-' + member.name + '-' + member.position);
+      const selectDesignerInfo = this.member_list.find(member => member.department + '-' + member.name + '-' + member.position === this.selectDesigner);
       if (!selectDesignerInfo){
         mux.Util.showAlert('담당자 정보가 없습니다.');
         return;
@@ -2093,7 +2095,7 @@ export default {
           let mailTo = [selectDesignerInfo.user_id];
 
           let productsTr = '';
-          item.product_cost_calc_detail.forEach(product => {
+          item.product_cost_calc_detail.filter(product => product.cost_calc_code === item.cost_calc_code).forEach(product => {
             productsTr += `
               <tr style="background-repeat: no-repeat; block-size: 32px; border-block-end-color: rgb(128, 128, 128); border-block-start-color: rgb(128, 128, 128); border-bottom-color: rgb(128, 128, 128); border-inline-end-color: rgb(128, 128, 128); border-inline-start-color: rgb(128, 128, 128); border-left-color: rgb(128, 128, 128); border-right-color: rgb(128, 128, 128); border-top-color: rgb(128, 128, 128); box-sizing: border-box; caret-color: rgba(0, 0, 0, 0.87); color: rgba(0, 0, 0, 0.87); column-rule-color: rgba(0, 0, 0, 0.87); font-family: Roboto, sans-serif; font-size: 14px; height: 32px; inline-size: 829.5px; letter-spacing: 0.1px; line-height: 21px; outline-color: rgba(0, 0, 0, 0.87); overflow-wrap: break-word; perspective-origin: 414.75px 16px; tab-size: 4; text-decoration: none solid rgba(0, 0, 0, 0.87); text-decoration-color: rgba(0, 0, 0, 0.87); text-emphasis-color: rgba(0, 0, 0, 0.87); text-rendering: optimizelegibility; text-size-adjust: 100%; transform-origin: 414.75px 16px; vertical-align: middle; width: 829.5px; -webkit-font-smoothing: antialiased; -webkit-locale: &quot;en&quot;; -webkit-print-color-adjust: exact; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); -webkit-text-fill-color: rgba(0, 0, 0, 0.87); -webkit-text-stroke-color: rgba(0, 0, 0, 0.87); ">
                 <td style="background-repeat: no-repeat; block-size: 32px; border-block-end-color: rgba(0, 0, 0, 0.12); border-block-end-style: solid; border-block-end-width: 1px; border-block-start-color: rgba(0, 0, 0, 0.87); border-bottom-color: rgba(0, 0, 0, 0.12); border-bottom-style: solid; border-bottom-width: 1px; border-inline-end-color: rgba(0, 0, 0, 0.87); border-inline-start-color: rgba(0, 0, 0, 0.87); border-left-color: rgba(0, 0, 0, 0.87); border-right-color: rgba(0, 0, 0, 0.87); border-top-color: rgba(0, 0, 0, 0.87); box-sizing: border-box; caret-color: rgba(0, 0, 0, 0.87); color: rgba(0, 0, 0, 0.87); column-rule-color: rgba(0, 0, 0, 0.87); font-family: Roboto, sans-serif; font-size: 12.4px; height: 32px; inline-size: 170.297px; letter-spacing: 0.1px; line-height: 18.6px; outline-color: rgba(0, 0, 0, 0.87); overflow-wrap: break-word; padding-block-end: 0px; padding-block-start: 0px; padding-bottom: 0px; padding-inline-end: 16px; padding-inline-start: 16px; padding-left: 16px; padding-right: 16px; padding-top: 0px; perspective-origin: 85.1406px 16px; tab-size: 4; text-align: center; text-decoration: none solid rgba(0, 0, 0, 0.87); text-decoration-color: rgba(0, 0, 0, 0.87); text-emphasis-color: rgba(0, 0, 0, 0.87); text-rendering: optimizelegibility; text-size-adjust: 100%; text-wrap: nowrap; transform-origin: 85.1484px 16px; transition-duration: 0.2s; transition-property: height; transition-timing-function: cubic-bezier(0.4, 0, 0.6, 1); vertical-align: middle; width: 170.297px; -webkit-font-smoothing: antialiased; -webkit-locale: &quot;en&quot;; -webkit-print-color-adjust: exact; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); -webkit-text-fill-color: rgba(0, 0, 0, 0.87); -webkit-text-stroke-color: rgba(0, 0, 0, 0.87); ">${product.product_code}</td>

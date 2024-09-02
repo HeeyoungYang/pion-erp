@@ -683,7 +683,7 @@ export default {
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
                         </tr>
                       </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
+                      <a style="color: white; text-decoration:none"href="${prevURL}-search?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                         <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                           확인하기
                         </p>
@@ -823,7 +823,7 @@ export default {
                       </tr>
                       ${reject_info ? reject_info : ''}
                     </table>
-                    <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
+                    <a style="color: white; text-decoration:none"href="${prevURL}-search?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                       <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                         확인하기
                       </p>
@@ -1120,7 +1120,7 @@ export default {
                     </tr>
                     ${reject_info ? reject_info : ''}
                   </table>
-                  <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
+                  <a style="color: white; text-decoration:none"href="${prevURL}-search?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                     <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                       확인하기
                     </p>
@@ -1364,7 +1364,7 @@ export default {
                       <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
                     </tr>
                   </table>
-                  <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
+                  <a style="color: white; text-decoration:none"href="${prevURL}-search?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
                     <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                       확인하기
                     </p>

@@ -1171,7 +1171,7 @@ export default {
                       <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${confirmation_data.approver}</td>
                     </tr>
                   </table>
-                  <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${confirmation_data.inhouse_bid_number}&company_name=${confirmation_data.company_name}&issue_date=${confirmation_data.issue_date}">
+                  <a style="color: white; text-decoration:none"href="${prevURL}-search?inhouse_bid_number=${confirmation_data.inhouse_bid_number}&company_name=${confirmation_data.company_name}&issue_date=${confirmation_data.issue_date}">
                     <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                       확인하기
                     </p>
@@ -1683,7 +1683,7 @@ export default {
                   </tr>
                   ${reject_info ? reject_info : ''}
                 </table>
-                <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${item.inhouse_bid_number}&company_bid_number=${item.company_bid_number}&company_name=${item.company_name}&issue_date=${item.issue_date}">
+                <a style="color: white; text-decoration:none"href="${prevURL}-search?inhouse_bid_number=${item.inhouse_bid_number}&company_bid_number=${item.company_bid_number}&company_name=${item.company_name}&issue_date=${item.issue_date}">
                   <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                     확인하기
                   </p>

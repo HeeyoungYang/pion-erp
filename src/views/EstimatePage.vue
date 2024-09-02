@@ -3180,7 +3180,7 @@ export default {
                         <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.approver}</td>
                       </tr>
                     </table>
-                    <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
+                    <a style="color: white; text-decoration:none"href="${prevURL}-search?inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
                       <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                         확인하기
                       </p>
@@ -3584,7 +3584,7 @@ export default {
                         <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.approver}</td>
                       </tr>
                     </table>
-                    <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
+                    <a style="color: white; text-decoration:none"href="${prevURL}-search?inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
                       <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                         확인하기
                       </p>
@@ -3951,7 +3951,7 @@ export default {
                         <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.approver}</td>
                       </tr>
                     </table>
-                    <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
+                    <a style="color: white; text-decoration:none"href="${prevURL}-search?inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
                       <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                         확인하기
                       </p>
@@ -4268,9 +4268,9 @@ export default {
             let mailTo = [];
             // let creater = this.$cookies.get(this.$configJson.cookies.id.key);
             if(sendDataCheckedDate === null){
-              mailTo.push(this.clickedProductCost.checker_id);
+              mailTo.push(this.estimate_member_info2[0].user_id);
             }else {
-              mailTo.push(this.clickedProductCost.approver_id);
+              mailTo.push(this.estimate_member_info2[1].user_id);
             }
 
             // 메일 본문 내용
@@ -4282,26 +4282,26 @@ export default {
                   <table style="width: 100%;border-spacing: 10px 10px;">
                     <tr>
                       <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.inhouse_bid_number}</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.input_inhouse_bid_number2.value}</td>
                     </tr>
                     <tr>
                       <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발행일</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.issue_date}</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.input_issue_date2.value}</td>
                     </tr>
                     <tr>
                       <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.given_name}</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.$cookies.get(this.$configJson.cookies.name.key)}</td>
                     </tr>
                     <tr>
                       <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.checker}</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.estimate_member_info2[0].name}</td>
                     </tr>
                     <tr>
                       <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
-                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.approver}</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.estimate_member_info2[1].name}</td>
                     </tr>
                   </table>
-                  <a style="color: white; text-decoration:none"href="${prevURL}?inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
+                  <a style="color: white; text-decoration:none"href="${prevURL}-search?inhouse_bid_number=${this.input_inhouse_bid_number2.value}&company_bid_number=${this.input_company_bid_number2.value}&company_name=${this.input_company_name2.value}&issue_date=${this.input_issue_date2.value}">
                     <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                       확인하기
                     </p>
