@@ -200,7 +200,14 @@
                             <td align="center">{{ item.project_code }}</td>
                             <td align="center">{{ item.type }}</td>
                             <td align="center">{{ item.classification }}</td>
-                            <td align="center">{{ item.item_code }}</td>
+                            <td align="center"
+                              v-if="item.item_code.includes('임시코드')"
+                            >
+                             [ {{ item.item_code }} ] {{ item.new_item_code }}
+                            </td>
+                            <td align="center"
+                              v-else
+                            >{{ item.item_code }}</td>
                             <td align="center">{{ item.name }}</td>
                             <td align="center">{{ item.inbound_num }}</td>
                             <td
@@ -215,9 +222,27 @@
                                 style="width:150px"
                               ></v-autocomplete>
                             </td>
-                            <td align="center">{{  item.spec  }}</td>
+                            <td align="center">
+                              <v-text-field
+                                dense
+                                hide-details
+                                filled
+                                style="width:150px"
+                                v-model="item.spec"
+                              >
+                              </v-text-field>
+                            </td>
                             <td align="center">{{  item.model }}</td>
-                            <td align="center">{{  item.manufacturer }}</td>
+                            <!-- <td align="center">{{  item.manufacturer }}</td> -->
+                            <v-autocomplete
+                              v-model="item.manufacturer"
+                              :items="manufacturer_list"
+                              dense
+                              hide-details
+                              filled
+                              style="width:150px"
+                              @change="changeManufacturer(item)"
+                            ></v-autocomplete>
                             <td v-if="pricePermission" align="center">{{  item.unit_price }}</td>
                             <td align="center">
                               <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
@@ -1053,39 +1078,42 @@ export default {
           })
 
           order_result.forEach(async order_item => {
-            try {
-              let item_result = await mux.Server.post({
-                path: '/api/common_rest_api/',
-                params: [
-                  {
-                    "product_table.product_code": order_item.item_code,
-                    "module_table.module_code": order_item.item_code,
-                    "material_table.material_code": order_item.item_code,
-                  }
-                ],
-                "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
-                "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
-              });
-              if (prevURL !== window.location.href) return;
+            if(!order_item.item_code.includes('임시코드')){
 
-              if (typeof item_result === 'string'){
-                item_result = JSON.parse(item_result);
+              try {
+                let item_result = await mux.Server.post({
+                  path: '/api/common_rest_api/',
+                  params: [
+                    {
+                      "product_table.product_code": order_item.item_code,
+                      "module_table.module_code": order_item.item_code,
+                      "material_table.material_code": order_item.item_code,
+                    }
+                  ],
+                  "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+                  "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+                });
+                if (prevURL !== window.location.href) return;
+
+                if (typeof item_result === 'string'){
+                  item_result = JSON.parse(item_result);
+                }
+                if(item_result['code'] == 0){
+                  let item = item_result.data[0];
+                  order_item.type = item.type;
+                  order_item.classification = item.classification;
+                  order_item.name = item.name;
+                  order_item.model = item.model;
+                  order_item.spec = item.spec;
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                mux.Util.hideLoading();
+                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
+                else
+                  mux.Util.showAlert(error);
               }
-              if(item_result['code'] == 0){
-                let item = item_result.data[0];
-                order_item.type = item.type;
-                order_item.classification = item.classification;
-                order_item.name = item.name;
-                order_item.model = item.model;
-                order_item.spec = item.spec;
-              }
-            } catch (error) {
-              if (prevURL !== window.location.href) return;
-              mux.Util.hideLoading();
-              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                mux.Util.showAlert(error.response['data']['failed_info'].msg);
-              else
-                mux.Util.showAlert(error);
             }
             ordered_data.push(order_item);
           })
@@ -1259,6 +1287,12 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
 
+    changeManufacturer(item){
+      if(item.item_code.includes('임시코드') && item.type === '반제품'){
+        let manudacturer = item.manufacturer.split('-');
+        item.new_item_code = item.new_item_code + '-' + manudacturer[manudacturer.length-1];
+      }
+    },
     addItems(){
       let check_code = '';
       let check_duplicate=[];
@@ -1304,6 +1338,10 @@ export default {
             data.dont_select_ship = false;
             data.order_code = data.code;
             data.inbound_num = data.ordered_num;
+            if(data.item_code.includes('임시코드')){
+              let classification = data.classification.split('-');
+              data.new_item_code = 'PE-' + classification[classification.length-1];
+            }
           }else if(this.add_self === '재입고'){
             data._code = data.product_code
             data.unit_price =  '₩ ' + Number(data.unit_price).toLocaleString()
@@ -1676,7 +1714,7 @@ export default {
                       "code" : set.code,
                       "type" : inbound_data.type,
                       "classification" : inbound_data.classification,
-                      "product_code" : inbound_data.item_code,
+                      "product_code" : inbound_data.item_code.includes('임시코드') ? inbound_data.new_item_code+'('+inbound_data.item_code+')' : inbound_data.item_code,
                       "name" : inbound_data.name,
                       "inbound_num" : inbound_data.inbound_num.replace(/,/g,''),
                       "spot" : inbound_data.spot,
@@ -1886,7 +1924,7 @@ export default {
                           <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
                         </tr>
                       </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/inbound-search?order_code=${item.order_code}&inbound_date=${item.inbound_date}">
+                      <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/inbound-search?order_code=${this.add_self === '발주입고' ? '' : item.order_code}&inbound_date=${item.inbound_date}">
                         <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                           확인하기
                         </p>

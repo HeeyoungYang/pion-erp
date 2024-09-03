@@ -223,9 +223,9 @@ import mux from "@/mux";
 
 
 export default {
-  
+
   mounted() {
-    
+
   },
   components: {
     NavComponent,
@@ -287,7 +287,7 @@ export default {
 
   methods: {
     // eslint-disable-next-line no-unused-vars
-    
+
     async initialize () {
       // this.classification_data = BasicInfoBackDataPageConfig.test_classification_data
       // this.manufacturer_data = BasicInfoBackDataPageConfig.test_manufacturer_data
@@ -369,86 +369,90 @@ export default {
               mux.Util.showAlert('이미 등록된 분류입니다.');
               return;
             }
-            if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
-              const prevURL = window.location.href;
-              try {
-                let result = await mux.Server.post({
-                  path: '/api/common_rest_api/',
-                  params: {
-                    "classification_table-insert": [{
-                      "user_info": {
-                        "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                        "role": "creater"
-                      },
-                      "data":{
-                        "classification": item.classification_update
-                      },
-                      "select_where": {"classification": item.classification_update},
-                      "rollback": "yes"
-                    }]
-                  }
-                });
-                if (prevURL !== window.location.href) return;
 
-                if (typeof result === 'string'){
-                  result = JSON.parse(result);
-                }
-                if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-                  // console.log('result :>> ', result);
-                  mux.Util.showAlert('분류 등록이 완료되었습니다.', '등록 완료', 1000);
-                  this.classification_data.push({classification: item.classification_update})
-                  data.value = '';
-                } else {
+            const confirm = await mux.Util.showConfirm('분류명-분류코드로 등록해야합니다.<br>정확히 기입하셨습니까?<br><br> 입력 내용 : '+item.classification_update, '등록 확인', false,'예', '아니오');
+            if(confirm){
+              if(this.editedBasicInfoIndex === -1){ // editedIndex가 -1이면 등록
+                const prevURL = window.location.href;
+                try {
+                  let result = await mux.Server.post({
+                    path: '/api/common_rest_api/',
+                    params: {
+                      "classification_table-insert": [{
+                        "user_info": {
+                          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                          "role": "creater"
+                        },
+                        "data":{
+                          "classification": item.classification_update
+                        },
+                        "select_where": {"classification": item.classification_update},
+                        "rollback": "yes"
+                      }]
+                    }
+                  });
                   if (prevURL !== window.location.href) return;
-                  mux.Util.showAlert(result['failed_info']);
-                }
-              } catch (error) {
-                if (prevURL !== window.location.href) return;
-                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
-                else
-                  mux.Util.showAlert(error);
-              }
-            }else{// 아니라면 수정
-              item.classification = this.classification_data[this.editedBasicInfoIndex].classification;
-              const prevURL = window.location.href;
-              try {
-                let result = await mux.Server.post({
-                  path: '/api/common_rest_api/',
-                  params: {
-                    "classification_table-update": [{
-                      "user_info": {
-                        "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                        "role": "modifier"
-                      },
-                      "data":{
-                        "classification": item.classification_update
-                      },
-                      "update_where": {"classification": item.classification},
-                      "rollback": "yes"
-                    }]
-                  }
-                });
-                if (prevURL !== window.location.href) return;
 
-                if (typeof result === 'string'){
-                  result = JSON.parse(result);
-                }
-                if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-                  // console.log('result :>> ', result);
-                  mux.Util.showAlert('분류 수정이 완료되었습니다.', '수정 완료', 1000);
-                  this.classification_data[this.editedBasicInfoIndex].classification = item.classification_update+'';
-                  this.productInfoDialog = false;
-                } else {
+                  if (typeof result === 'string'){
+                    result = JSON.parse(result);
+                  }
+                  if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+                    // console.log('result :>> ', result);
+                    mux.Util.showAlert('분류 등록이 완료되었습니다.', '등록 완료', 1000);
+                    this.classification_data.push({classification: item.classification_update})
+                    data.value = '';
+                  } else {
+                    if (prevURL !== window.location.href) return;
+                    mux.Util.showAlert(result['failed_info']);
+                  }
+                } catch (error) {
                   if (prevURL !== window.location.href) return;
-                  mux.Util.showAlert(result['failed_info']);
+                  if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                    mux.Util.showAlert(error.response['data']['failed_info'].msg);
+                  else
+                    mux.Util.showAlert(error);
                 }
-              } catch (error) {
-                if (prevURL !== window.location.href) return;
-                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
-                else
-                  mux.Util.showAlert(error);
+              }else{// 아니라면 수정
+                item.classification = this.classification_data[this.editedBasicInfoIndex].classification;
+                const prevURL = window.location.href;
+                try {
+                  let result = await mux.Server.post({
+                    path: '/api/common_rest_api/',
+                    params: {
+                      "classification_table-update": [{
+                        "user_info": {
+                          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                          "role": "modifier"
+                        },
+                        "data":{
+                          "classification": item.classification_update
+                        },
+                        "update_where": {"classification": item.classification},
+                        "rollback": "yes"
+                      }]
+                    }
+                  });
+                  if (prevURL !== window.location.href) return;
+
+                  if (typeof result === 'string'){
+                    result = JSON.parse(result);
+                  }
+                  if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+                    // console.log('result :>> ', result);
+                    mux.Util.showAlert('분류 수정이 완료되었습니다.', '수정 완료', 1000);
+                    this.classification_data[this.editedBasicInfoIndex].classification = item.classification_update+'';
+                    this.productInfoDialog = false;
+                  } else {
+                    if (prevURL !== window.location.href) return;
+                    mux.Util.showAlert(result['failed_info']);
+                  }
+                } catch (error) {
+                  if (prevURL !== window.location.href) return;
+                  if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                    mux.Util.showAlert(error.response['data']['failed_info'].msg);
+                  else
+                    mux.Util.showAlert(error);
+                }
               }
             }
           }else if(data.column_name == 'manufacturer'){

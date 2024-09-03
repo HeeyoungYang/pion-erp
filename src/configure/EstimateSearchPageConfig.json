@@ -17,11 +17,11 @@
 
   "etcRequestInputs":[    
     {"label":"사내 견적번호", "column_name": "inhouse_bid_number", "col":"12", "sm":"12", "lg":"12", "value": "", "disabled": true},
-    {"label":"발행일", "column_name": "issue_date", "type": "dateSingle", "menu": "", "col":"12", "sm":"12", "lg":"12", "value": ""},
-    {"label":"업체명", "column_name": "company_name", "col":"12", "sm":"12", "lg":"12", "value": ""},
-    {"label":"견적서", "column_name": "approval_file", "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"발행일", "column_name": "issue_date", "type": "dateSingle", "menu": "", "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true},
+    {"label":"업체명", "column_name": "company_name", "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true},
+    {"label":"견적서", "column_name": "approval_file", "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf", "rule_set":true},
     {"label":"기타", "column_name": "etc_files", "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "multiple":true},
-    {"label":"총액", "column_name": "product_unit_price", "col":"12", "sm":"12", "lg":"12", "value": ""}
+    {"label":"총액", "column_name": "product_unit_price", "col":"12", "sm":"12", "lg":"12", "value": "", "rule_set":true}
   ],
 
   "estimate_approve_headers": [

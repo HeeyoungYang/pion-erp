@@ -90,6 +90,7 @@
         :prepend-icon="input.icon"
         :append-icon="input.appendIcon"
         :label="input.label"
+        :rules="input.rules"
         :disabled="input.disabled"
         :accept="input.accept"
         @change="input.accept ?

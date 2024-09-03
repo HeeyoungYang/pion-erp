@@ -101,13 +101,17 @@
                           :value=false
                         ></v-radio>
                       </v-radio-group>
-                      <InputsFormComponent
-                        dense
-                        clearable
-                        filled
-                        hide-details
-                        :inputs="etcRequestInputs"
-                      />
+                      <v-form
+                        ref="etcForm"
+                      >
+                        <InputsFormComponent
+                          dense
+                          clearable
+                          filled
+                          hide-details
+                          :inputs="etcRequestInputs"
+                        />
+                      </v-form>
                       <v-btn
                         small
                         color="primary"
@@ -965,11 +969,6 @@ export default {
     async initialize () {
       const prevURL = window.location.href;
       try {
-        // console.log('사용자 계정 정보 가졍오기');
-        // let result = await mux.Server.get({
-        //   path: '/api/user/',
-        // });
-
         this.login_info.name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
         this.login_info.email = this.$cookies.get(this.$configJson.cookies.email.key);
         this.login_info.id = this.$cookies.get(this.$configJson.cookies.id.key);
@@ -999,149 +998,164 @@ export default {
       }
       this.searchCardInputs = JSON.parse(JSON.stringify(this.searchCardInputs));
       this.email_sign =`<div><p style="color:#255fab; border-bottom:1px solid #255fab; border-top:1px solid #255fab;padding:15px 0px;"><strong>${this.login_info.name} 파이온 일렉트릭㈜ ${this.login_info.department} ${this.login_info.position} / Pion Electric Co., Ltd. </strong></p><p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;">Home page : www.pionelectric.com<br>E-mail: ${this.login_info.email}  C/P: ${'+82(0)' + this.login_info.phone_number.slice(1)}<br> Tel: ${'+82(0)' + this.login_info.office_phone_number.slice(1)} Fax: +82(0)505-300-4179<br><br> 본사: (03722) 서울특별시 서대문구 연세로 50 연세대학교 공학원 116호<br> Head office: #116, Engineering Research Park, Yonsei University, 50, Yonsei-ro, Seodaemun-gu, Seoul, 03722, Republic of KOREA<br><br> 광명 사무소: (14348) 경기도 광명시 일직로 72  A-1818호<br> Gwangmyeong office: #A-1818, 72, Iljik-ro, Gwangmyeong-si, Gyeonggi-do, Republic of KOREA 14348<br><br> 광주 공장: (47580) 광주광역시 광산구 연산동 1247<br> Gwangju factory: 1247 Yeonsan-dong, Gwangsan-gu, Gwangju, Republic of KOREA 47580<br><br> 보령 공장: (33448) 충청남도 보령시 주교면 관창공단길 266<br> Boryeong factory: 266, Gwanchanggongdan-gil, Jugyo-myeon, Boryeong-si, Chungcheongnam-do, Republic of KOREA 33448<br><br></p> <p style="border-bottom:1px solid #333333;padding-bottom:20px; font-size:14px;"><strong>제품 및 서비스</strong><br> ∙ 고자기장 기반의 산업용 운용기기 (Development of Operating Device for Industrial Applications based on High Magnetic Field)<br> ∙ 광기기 기반의 전력전자 응용기기 (Development of Power Electronics Application Device based on Optical Device)<br> ∙ 신재생 에너지 개발 및 운영 (Development and Operation of Renewable Energy System)<br> ∙ 전력계통 진단 및 해석 (Power System Diagnosis and Analysis)<br> ∙ 전기공사면허</p> </div>`
+
+
+      this.etcRequestInputs = JSON.parse(JSON.stringify(this.etcRequestInputs));
+      mux.Rules.rulesSet(this.etcRequestInputs);
     },
     // eslint-disable-next-line no-unused-vars
 
     //기타 타입 등록
     async etcApprovalRequest(){
-      const currDate = new Date();
-      if(this.estimate_checker === '' || this.estimate_approver === ''){
-        mux.Util.showAlert('승인 정보를 모두 입력해주세요.');
-        return;
-      }
-      const new_cost_calc_code = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
-
-
-      let confirmation_data = {};
-      // inhouse_bid_number(사내 견적번호)
-      if(!this.bid_write){
-        if(this.etcRequestInputs.find(x=>x.column_name === 'inhouse_bid_number').value === ''){
-          mux.Util.showAlert('사내 견적번호를 입력해주세요.');
+      const validate = this.$refs.etcForm.validate();
+      if(validate){
+        const currDate = new Date();
+        if(this.estimate_checker === '' || this.estimate_approver === ''){
+          mux.Util.showAlert('승인 정보를 모두 입력해주세요.');
           return;
+        }
+        mux.Util.showLoading();
+        const new_cost_calc_code = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+        let confirmation_data = {};
+        // inhouse_bid_number(사내 견적번호)
+        if(!this.bid_write){
+          if(this.etcRequestInputs.find(x=>x.column_name === 'inhouse_bid_number').value === ''){
+            mux.Util.showAlert('사내 견적번호를 입력해주세요.');
+            return;
+          }else{
+            confirmation_data.inhouse_bid_number = this.etcRequestInputs.find(x=>x.column_name === 'inhouse_bid_number').value;
+          }
         }else{
+          // let currentCode = await this.searchCurrentCode();
+          let script_file_name =  "rooting_발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_OKJ.json"
+          let script_file_path = "data_storage_pion\\json_sql\\order\\발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_3Q8"
+
+          let currentCode = await mux.Server.getCurrentCode('PEPQ_', 'order_confirmation_table.code', script_file_name, script_file_path);
+          if(currentCode === ''){
+            confirmation_data.inhouse_bid_number = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd') + '_001';
+          }else{
+            let calc_current_code = Number(currentCode.split('_')[2]) + 1;
+            calc_current_code = ('00' + calc_current_code).slice(-3);
+            confirmation_data.inhouse_bid_number = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd') + '_' + calc_current_code;
+          }
+
+        }
+        confirmation_data.cost_calc_code = new_cost_calc_code;
+        confirmation_data.given_name = this.login_info.name;
+        confirmation_data.estimate_type = '기타';
+        confirmation_data.checker = this.estimate_checker.split('-')[1];
+        confirmation_data.checker_id = this.estimate_checker.split('-')[2]
+        confirmation_data.approver = this.estimate_checker.split('-')[1]
+        confirmation_data.approver_id = this.estimate_checker.split('-')[2]
+        if(confirmation_data.checker_id == this.login_info.id){
+          confirmation_data.approval_phase = '미승인';
+          confirmation_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff')
+        }else{
+          confirmation_data.approval_phase = '미확인';
+        }
+        if(!this.bid_write){
           confirmation_data.inhouse_bid_number = this.etcRequestInputs.find(x=>x.column_name === 'inhouse_bid_number').value;
         }
-      }else{
-        let currentCode = await this.searchCurrentCode();
-        if(currentCode === ''){
-          confirmation_data.inhouse_bid_number = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd') + '_001';
-        }else{
-          let calc_current_code = Number(currentCode.split('_')[2]) + 1;
-          calc_current_code = ('00' + calc_current_code).slice(-3);
-          confirmation_data.inhouse_bid_number = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd') + '_' + calc_current_code;
+        confirmation_data.issue_date = this.etcRequestInputs.find(x=>x.column_name === 'issue_date').value;
+        confirmation_data.company_name = this.etcRequestInputs.find(x=>x.column_name === 'company_name').value;
+
+        let approval_file = this.etcRequestInputs.find(x=>x.column_name === 'approval_file').value;
+        confirmation_data.approval_file = approval_file.name;
+        const getPdfThumbnail = await mux.Util.getPdfThumbnail(approval_file, 1, false);
+        let approval_file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+        confirmation_data.approval_thumbnail = approval_file_thumbnail;
+
+        let etc_files = this.etcRequestInputs.find(x=>x.column_name === 'etc_files').value;
+        if(etc_files !== undefined){
+          for(let f=0; f<etc_files.length; f++){
+            if(f===0){
+              confirmation_data.etc_files = etc_files[f].name;
+            }else{
+              confirmation_data.etc_files = confirmation_data.etc_files + "/" + etc_files[f].name;
+            }
+
+            const file = etc_files[f];
+            sendData.files.push({
+              folder: 'estimate/etc',
+              file: file,
+              name: file.name
+            });
+          }
         }
 
-      }
-      confirmation_data.cost_calc_code = new_cost_calc_code;
-      confirmation_data.given_name = this.login_info.name;
-      confirmation_data.estimate_type = '기타';
-      confirmation_data.checker = this.estimate_checker.split('-')[1];
-      confirmation_data.checker_id = this.estimate_checker.split('-')[2]
-      confirmation_data.approver = this.estimate_checker.split('-')[1]
-      confirmation_data.approver_id = this.estimate_checker.split('-')[2]
-      if(confirmation_data.checker_id == this.login_info.id){
-        confirmation_data.approval_phase = '미승인';
-        confirmation_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff')
-      }else{
-        confirmation_data.approval_phase = '미확인';
-      }
-      if(!this.bid_write){
-        confirmation_data.inhouse_bid_number = this.etcRequestInputs.find(x=>x.column_name === 'inhouse_bid_number').value;
-      }
-      confirmation_data.issue_date = this.etcRequestInputs.find(x=>x.column_name === 'issue_date').value;
-      confirmation_data.company_name = this.etcRequestInputs.find(x=>x.column_name === 'company_name').value;
+        let sendData = {
+          "estimate_confirmation_table-insert": [{
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "creater"
+            },
+            "data":confirmation_data,
+            "select_where": {"cost_calc_code": new_cost_calc_code},
+            "rollback": "yes"
+          }]
+        };
 
-      let approval_file = this.etcRequestInputs.find(x=>x.column_name === 'approval_file').value;
-      confirmation_data.approval_file = approval_file.name;
-      const getPdfThumbnail = await mux.Util.getPdfThumbnail(approval_file, 1, false);
-      let approval_file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
-      confirmation_data.approval_thumbnail = approval_file_thumbnail;
-
-      let etc_files = this.etcRequestInputs.find(x=>x.column_name === 'etc_files').value;
-      for(let f=0; f<etc_files.length; f++){
-        if(f===0){
-          confirmation_data.etc_files = etc_files[f].name;
-        }else{
-          confirmation_data.etc_files = confirmation_data.etc_files + "/" + etc_files[f].name;
-        }
-      }
-
-
-      mux.Util.showLoading();
-
-      let sendData = {
-        "estimate_confirmation_table-insert": [{
+        let product_data = [];
+        product_data.push({
           "user_info": {
             "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
             "role": "creater"
           },
-          "data":confirmation_data,
+          "data":{
+            "cost_calc_code" : new_cost_calc_code,
+            "product_num" : 1,
+            "product_unit_price" : this.etcRequestInputs.find(x=>x.column_name === 'product_unit_price').value
+          },
           "select_where": {"cost_calc_code": new_cost_calc_code},
           "rollback": "yes"
-        }]
-      };
+        })
 
-      let product_data = [];
-      product_data.push({
-        "user_info": {
-          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-          "role": "creater"
-        },
-        "data":{
-          "cost_calc_code" : new_cost_calc_code,
-          "product_num" : 1,
-          "product_unit_price" : this.etcRequestInputs.find(x=>x.column_name === 'product_unit_price').value
-        },
-        "select_where": {"cost_calc_code": new_cost_calc_code},
-        "rollback": "yes"
-      })
+        sendData["estimate_cost_calc_detail_table-insert"] = product_data;
 
-      sendData["estimate_cost_calc_detail_table-insert"] = product_data;
+        sendData.path = '/api/multipart_rest_api/';
+        sendData.prefix = new_cost_calc_code + '_';
+        sendData.files = [];
 
-      sendData.path = '/api/multipart_rest_api/';
-      sendData.prefix = new_cost_calc_code + '_';
-      sendData.files = [];
+        sendData.files.push({
+          folder: 'estimate/approval',
+          file: approval_file,
+          name: approval_file.name
+        });
 
-      sendData.files.push({
-        folder: 'estimate/approval',
-        file: approval_file,
-        name: approval_file.name
-      });
+        // if(etc_files.length > 0){
+        //   for (let i = 0; i < etc_files.length; i++) {
+        //     const file = etc_files[i];
+        //     sendData.files.push({
+        //       folder: 'estimate/etc',
+        //       file: file,
+        //       name: file.name
+        //     });
+        //   }
+        // }
 
-      if(etc_files.length > 0){
-        for (let i = 0; i < etc_files.length; i++) {
-          const file = etc_files[i];
-          sendData.files.push({
-            folder: 'estimate/etc',
-            file: file,
-            name: file.name
-          });
-        }
-      }
+        console.log(sendData);
 
-      console.log(sendData);
+        const prevURL = window.location.href;
+        try {
+          let result = await mux.Server.uploadFile(sendData);
+          if (prevURL !== window.location.href) return;
 
-      const prevURL = window.location.href;
-      try {
-        let result = await mux.Server.uploadFile(sendData);
-        if (prevURL !== window.location.href) return;
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
 
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
+          if (result.code === undefined && result.data !== undefined && result.data.code !== undefined){
+            result = result.data;
+          }
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
 
-        if (result.code === undefined && result.data !== undefined && result.data.code !== undefined){
-          result = result.data;
-        }
-        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-
-            //메일 알림 관련
-            let mailTo = [];
-            if(confirmation_data.approval_phase === '미확인'){
-              mailTo.push(confirmation_data.checker_id);
-            }else {
-              mailTo.push(confirmation_data.approver_id);
-            }
+              //메일 알림 관련
+              let mailTo = [];
+              if(confirmation_data.approval_phase === '미확인'){
+                mailTo.push(confirmation_data.checker_id);
+              }else {
+                mailTo.push(confirmation_data.approver_id);
+              }
 
             // 메일 본문 내용
             let content=`
@@ -1181,36 +1195,37 @@ export default {
             </html>
             `;
 
-            try {
-              let sendEmailAlam = await mux.Server.post({
-                path: '/api/send_email/',
-                to_addrs: mailTo,
-                subject: "견적서 " + (confirmation_data.approval_phase === '미확인' ? '확인' : '승인') + " 요청 알림",
-                content: content
-              });
-              if (prevURL !== window.location.href) return;
-              if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
-                mux.Util.showAlert('등록되었습니다.', '등록 완료', 3000);
-                mux.Util.hideLoading();
-              } else {
+              try {
+                let sendEmailAlam = await mux.Server.post({
+                  path: '/api/send_email/',
+                  to_addrs: mailTo,
+                  subject: "견적서 " + (confirmation_data.approval_phase === '미확인' ? '확인' : '승인') + " 요청 알림",
+                  content: content
+                });
                 if (prevURL !== window.location.href) return;
-                console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+                if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
+                  mux.Util.showAlert('등록되었습니다.', '등록 완료', 3000);
+                  mux.Util.hideLoading();
+                } else {
+                  if (prevURL !== window.location.href) return;
+                  console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+                  mux.Util.showAlert('등록되었으나 알림 메일 전송에 실패하였습니다.', '등록 완료');
+                  mux.Util.hideLoading();
+                }
+              } catch (error) {
+                if (prevURL !== window.location.href) return;
+                console.log('알림 메일 전송에 실패-error :>> ', error);
                 mux.Util.showAlert('등록되었으나 알림 메일 전송에 실패하였습니다.', '등록 완료');
                 mux.Util.hideLoading();
               }
-            } catch (error) {
-              if (prevURL !== window.location.href) return;
-              console.log('알림 메일 전송에 실패-error :>> ', error);
-              mux.Util.showAlert('등록되었으나 알림 메일 전송에 실패하였습니다.', '등록 완료');
-              mux.Util.hideLoading();
-            }
-        } else {
+          } else {
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(result);
+          }
+        } catch (error) {
           if (prevURL !== window.location.href) return;
-          mux.Util.showAlert(result);
+          mux.Util.showAlert(error);
         }
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        mux.Util.showAlert(error);
       }
 
     },
@@ -1366,7 +1381,7 @@ export default {
         reqURL += (inputs[0] || inputs[1] || inputs[2] || inputs[3]) ? '&issue_start_date=' + inputs[4].split(',')[0] : '?issue_start_date=' + inputs[4].split(',')[0];
         reqURL += inputs[4].split(',').length > 1 ? '&issue_end_date=' + inputs[4].split(',')[1] : '&issue_end_date=' + inputs[4].split(',')[0];
       }
-      
+
       try {
         let result = await mux.Server.get({path: reqURL});
         if (prevURL !== window.location.href) return;
@@ -1887,7 +1902,7 @@ export default {
           attachment.push({folder: 'common', fileName: 'bankbook_copy_test.pdf', newName: '통장사본.pdf'});
         }
         delete sendData.bankbook_copy;
-        
+
         sendData.attachment = attachment;
       }
 

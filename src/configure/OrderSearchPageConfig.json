@@ -15,7 +15,8 @@
     { "text": "발주일", "align": "start", "value": "order_date"},
     { "text": "1차 계산일", "align": "start", "value": "first_bill_date"},
     { "text": "2차 계산일", "align": "start", "value": "second_bill_date"},
-    { "text": "3차 계산일", "align": "start", "value": "third_bill_date"}
+    { "text": "3차 계산일", "align": "start", "value": "third_bill_date"},
+    { "text": "입고", "align": "start", "value": "inbound_check"}
   ],
   
 
