@@ -1294,7 +1294,7 @@
                         small
                         color="success"
                         class="mt-5 elevation-0"
-                        @click="saveData()"
+                        @click="save()"
                       >
                         저장
                       </v-btn>
@@ -3404,6 +3404,7 @@ export default {
 
         this.classification_list = resultBasic.classification;
         this.manufacturer_list = resultBasic.manufacturer;
+        mux.List.addProductBasicInfoLists(this.productSearchItemInputs, this.classification_list, this.manufacturer_list, true);
         if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           const searchResult = result.data;
 
@@ -5675,66 +5676,35 @@ export default {
     },
 
     async save() {
-      const validate = this.$refs.estimateInfoForm2.validate();
-      if(!validate){
-        mux.Util.showAlert('견적서 정보를 정확히 입력하여 주십시오.');
-        this.tab_write = 0;
-        return;
-      }
-      if (!this.input_layout_file2.value){
-        mux.Util.showAlert('배치도 파일을 첨부해야 합니다.');
-        this.tab_write = 0;
-        return;
-      }
-      if (!this.input_structure_file2.value){
-        mux.Util.showAlert('구조도 파일을 첨부해야 합니다.');
-        this.tab_write = 0;
-        return;
-      }
-      if (!this.input_single_line_file2.value){
-        mux.Util.showAlert('단선도 파일을 첨부해야 합니다.');
-        this.tab_write = 0;
-        return;
-      }
-      if (!this.input_trilinear_file2.value){
-        mux.Util.showAlert('삼선도 파일을 첨부해야 합니다.');
-        this.tab_write = 0;
-        return;
-      }
-      if (!this.input_circuit_file2.value){
-        mux.Util.showAlert('회로도 파일을 첨부해야 합니다.');
-        this.tab_write = 0;
-        return;
-      }
-      if (!this.input_approval_file2.value){
-        mux.Util.showAlert('승인도서 파일을 첨부해야 합니다.');
-        this.tab_write = 0;
-        return;
-      }
-      if (!this.input_build_sheet_file2.value){
-        mux.Util.showAlert('제작사양서 파일을 첨부해야 합니다.');
-        this.tab_write = 0;
-        return;
-      }
-      if (!this.estimate_member_info2[1].user_id){
-        mux.Util.showAlert('확인자, 승인자를 선택하여 주십시오.');
-        this.tab_write = 0;
-        return;
-      }
+      // const validate = this.$refs.estimateInfoForm2.validate();
+      // if(!validate){
+      //   mux.Util.showAlert('견적서 정보를 정확히 입력하여 주십시오.');
+      //   this.tab_write = 0;
+      //   return;
+      // }
+      // if (!this.input_layout_file2.value 
+      //     && !this.input_structure_file2.value 
+      //     && !this.input_single_line_file2.value
+      //     && !this.input_trilinear_file2.value
+      //     && !this.input_circuit_file2.value){
+      //   mux.Util.showAlert('상세 도면을 1개 이상 첨부해야 합니다.');
+      //   this.tab_write = 0;
+      //   return;
+      // }
 
-      // 작성 - 산출내역서 탭 강제 로드
-      if (!this.$refs.surveyCostForm2 && this.tab_write === 0){
-        this.tab_write = 1;
-        let refLoadCount = 0
-        while(refLoadCount < 50){
-          if (this.$refs.surveyCostForm2){
-            break;
-          }
-          await new Promise(resolve => setTimeout(resolve, 100));
-          refLoadCount++;
-        }
-        this.tab_write = 0;
-      }
+      // // 작성 - 산출내역서 탭 강제 로드
+      // if (!this.$refs.surveyCostForm2 && this.tab_write === 0){
+      //   this.tab_write = 1;
+      //   let refLoadCount = 0
+      //   while(refLoadCount < 50){
+      //     if (this.$refs.surveyCostForm2){
+      //       break;
+      //     }
+      //     await new Promise(resolve => setTimeout(resolve, 100));
+      //     refLoadCount++;
+      //   }
+      //   this.tab_write = 0;
+      // }
       const validate2 = this.$refs.surveyCostForm2.validate();
       if(!validate2) {
         mux.Util.showAlert('산출내역서 정보를 정확히 입력하여 주십시오.');
@@ -5864,30 +5834,46 @@ export default {
         }],
         "design_cost_calc_detail_table-insert":[],
         "design_construction_detail_table-insert":[],
-        "design_labor_cost_calc_detail_table-insert":[],
-        "purchase_confirmation_table-insert":[],
-        "purchase_product_table-insert":[],
+        "design_labor_cost_calc_detail_table-insert":[]
       };
       const products = this.calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('재료'));
       const construction_materials = this.calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재'));
       if (products){
         products.belong_data.forEach(data => {
-          sendData["design_cost_calc_detail_table-insert"].push({
-            "user_info": {
-              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-              "role": "creater"
-            },
-            "data":{
-              cost_calc_code: new_cost_calc_code,
-              product_code: data.product_code,
-              product_name: data.cost_list,
-              product_spec: data.cost_list_sub,
-              product_num: data.cost_num,
-              product_unit_price: data.cost_unit_price,
-            },
-            "select_where": {"cost_calc_code": new_cost_calc_code, "product_code": data.product_code},
-            "rollback": "yes"
-          });
+          if (data.belong_data && data.belong_data.length > 0){
+            data.belong_data.forEach(subData => {
+              sendData["design_cost_calc_detail_table-insert"].push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "creater"
+                },
+                "data": {
+                  cost_calc_code: new_cost_calc_code,
+                  product_classification: data.classification,
+                  product_code: data.product_code,
+                  product_name: data.cost_list,
+                  product_model: data.model,
+                  product_spec: data.cost_list_sub,
+                  manufacturer: data.manufacturer,
+                  product_num: data.cost_num,
+                  product_unit_price: data.cost_unit_price,
+                  item_type: subData.type,
+                  item_classification: subData.classification,
+                  item_code: subData.item_code,
+                  item_name: subData.name,
+                  item_model: subData.model,
+                  item_spec: subData.spec,
+                  item_manufacturer: subData.manufacturer,
+                  item_unit_price: subData.unit_price,
+                  item_num: subData.num
+                },
+                "select_where": {"cost_calc_code": new_cost_calc_code, "item_code": subData.item_code},
+                "rollback": "yes"
+              });
+            });
+          }else {
+            // 완제품 내부 자재 구성이 없는 경우가 발생하면 안됨
+          }
         });
       }
       if (construction_materials){
@@ -5931,10 +5917,20 @@ export default {
           "rollback": "yes"
         });
       });
-
+      
       sendData.path = '/api/multipart_rest_api/';
       sendData.prefix = new_cost_calc_code + '_';
       sendData.files = [];
+
+      let purchaseSendData = this.savePurchaseData();
+      for (let i = 0; i < Object.keys(purchaseSendData).length; i++) {
+        const key = Object.keys(purchaseSendData)[i];
+        if (key === 'files'){
+          sendData.files.push(...purchaseSendData[key]);
+        }else {
+          sendData[key] = purchaseSendData[key];
+        }
+      } 
 
       if (this.input_layout_file2.value){
         sendData.files.push({
@@ -6417,7 +6413,9 @@ export default {
       this.production_steppers = step-1;
     },
     async nextStep(step){
-      if(step === 2){
+      if (step === 1){
+        this.validateDesignInfo(step);
+      }else if(step === 2){
         // 사용가능수량 검색 및 적용
         await this.setPurchaseRequest(step);
       }else if(step === 3){
@@ -6426,6 +6424,27 @@ export default {
       }else{
         this.production_steppers = step+1;
       }
+    },
+    validateDesignInfo(step){
+      if (!this.estimate_member_info2[1].user_id){
+        mux.Util.showAlert('확인자, 승인자를 선택하여 주십시오.');
+        return;
+      }
+      if (!this.input_issue_date2.value || !this.input_project_code2.value || !this.input_inhouse_bid_number2.value){
+        mux.Util.showAlert('생산 의뢰 내역을 불러오지 않았습니다.');
+        return;
+      }
+      if (
+        !this.input_layout_file2.value 
+        && !this.input_structure_file2.value 
+        && !this.input_single_line_file2.value
+        && !this.input_trilinear_file2.value
+        && !this.input_circuit_file2.value
+      ){
+        mux.Util.showAlert('상세 도면을 1개 이상 첨부해야 합니다.');
+        return;
+      }
+      this.production_steppers = step+1;
     },
     async setPurchaseRequest(step){
       let bom_data = null;
@@ -6495,15 +6514,15 @@ export default {
             })
 
           } else {
-            mux.Util.showAlert(result['failed_info']);
+            mux.Util.showAlert(result);
+            mux.Util.hideLoading();
+            return;
           }
         } catch (error) {
           if (prevURL !== window.location.href) return;
           mux.Util.hideLoading();
-          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-            mux.Util.showAlert(error.response['data']['failed_info'].msg);
-          else
-            mux.Util.showAlert(error);
+          mux.Util.showAlert(error);
+          return;
         }
       }
 
@@ -6526,11 +6545,11 @@ export default {
 
       bom_data.forEach(bom =>{
         bom.num = bom.product_num;
-        bom.usable_num = set_usable_num.find(x=>x.product_code === bom.product_code).usable_num;
+        bom.usable_num = set_usable_num.some(x=>x.product_code === bom.product_code) ? set_usable_num.find(x=>x.product_code === bom.product_code).usable_num : 0;
         for(let i=0; i<bom.belong_data.length; i++){
           let belong_data = bom.belong_data[i];
           belong_data.num = belong_data.num * bom.num;
-          belong_data.usable_num = set_usable_num.find(x=>x.product_code === belong_data.item_code).usable_num;
+          belong_data.usable_num = set_usable_num.some(x=>x.product_code === belong_data.item_code) ? set_usable_num.find(x=>x.product_code === belong_data.item_code).usable_num : 0;
         }
       })
       console.log(bom_data);
@@ -6568,6 +6587,7 @@ export default {
         this.production_steppers = step+1;
       }
       mux.Util.hideLoading();
+      
     },
     async checkPurchaseRequest(step){
 
@@ -6576,8 +6596,6 @@ export default {
       //confirmation_data에 cost_calc_code와 project_code 정보 추가 필요
 
       if (step){
-
-        this.purchase_confirmation_data2 = [];
 
         // 구매 요청할 내역이 있을 경우
         if(this.bom_list_purchase_data2.length > 0){
@@ -6660,14 +6678,11 @@ export default {
             data.checker_id = confirmation_data.checker_id;
             data.approver = confirmation_data.approver;
             data.approver_id = confirmation_data.approver_id;
-            this.purchase_confirmation_data2.push(data);
           }
         }
 
         this.production_steppers = step+1;
       }else{
-
-        this.purchase_confirmation_data = [];
 
         // 구매 요청할 내역이 있을 경우
         if(this.bom_list_purchase_data_copy.length > 0){
@@ -6750,7 +6765,6 @@ export default {
             data.checker_id = confirmation_data.checker_id;
             data.approver = confirmation_data.approver;
             data.approver_id = confirmation_data.approver_id;
-            this.purchase_confirmation_data.push(data);
           }
         }
 
@@ -6918,8 +6932,10 @@ export default {
                 return;
               }
             bom_data[i].purchase_estimate_company = '';
+            bom_data[i].purchase_estimate_file_value = null;
             bom_data[i].purchase_estimate_file_name = '';
             bom_data[i].purchase_estimate_thumbnail = '';
+            bom_data[i].purchase_estimate_thumbnail_img = '';
           }
           if(bom_data[i].belong_data){
             const confirm = await mux.Util.showConfirm('미선택 체크 시 적용한 선택한 선주문 내역은 초기화됩니다.  ', '선택 확인');
@@ -7003,8 +7019,10 @@ export default {
             return;
           }
           item.purchase_estimate_company = '';
+          item.purchase_estimate_file_value = '';
           item.purchase_estimate_file_name = '';
           item.purchase_estimate_thumbnail = '';
+          item.purchase_estimate_thumbnail_img = '';
           this.searchPurchaseInputs.find(x=>x.label === '관리코드').value = item_code;
         }
       }
@@ -7130,7 +7148,7 @@ export default {
 
         selected_data.forEach(selected => {
           for(let i=0; i<product_data.length; i++){
-            if(selected.item_code === product_data[i].item_code){
+            if(selected.product_code === product_data[i].product_code && selected.item_code === product_data[i].item_code){
               product_data[i].purchase_estimate_company = estimate_company;
               product_data[i].purchase_estimate_file_value = estimate_file_value;
               product_data[i].purchase_estimate_file_name = estimate_file_name;
@@ -7143,54 +7161,53 @@ export default {
         this.closeUnestimatedMailDialog()
       }
     },
-    async saveData(){
-      // BOM LIST
-      this.saveBomListData();
+    // async saveData(){
+    //   // BOM LIST
+    //   this.saveBomListData();
 
-      // 구매 요청
-      this.savePurchaseData();
+    //   // 구매 요청
+    //   this.savePurchaseData();
 
-    },
-    saveBomListData(){
-      // BOM LIST(design_cost_calc_detail_table) : bom_list_data2
-      let sendData = {};
-      let bom_insert = [];
-      this.bom_list_data2.forEach(data => {
-        for(let i=0; i<data.belong_data.length; i++){
-          bom_insert.push({
-            "user_info": {
-              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-              "role": "creater"
-            },
-            "data": {
-              "cost_calc_code": "",
-              "product_classification": data.classification,
-              "product_code": data.product_code,
-              "product_name": data.name,
-              "product_model": data.model,
-              "product_spec": data.spec,
-              "manufacturer": data.manufacturer,
-              "product_num": data.num,
-              "item_type": data.belong_data[i].type,
-              "item_classification": data.belong_data[i].classification,
-              "item_code": data.belong_data[i].item_code,
-              "item_name": data.belong_data[i].name,
-              "item_model": data.belong_data[i].model,
-              "item_spec": data.belong_data[i].spec,
-              "item_manufacturer": data.belong_data[i].manufacturer,
-              "item_unit_price": data.belong_data[i].unit_price,
-              "item_num": data.belong_data[i].num
-            },
-            "select_where": {"cost_calc_code": "", "product_code": data.product_code, "item_code": data.belong_data[i].item_code},
-            "rollback": "yes"
-          })
-        }
-      })
-      sendData['design_cost_calc_detail_table'] = bom_insert;
-      console.log("sendData BOM : ", sendData);
-    },
+    // },
+    // saveBomListData(){
+    //   // BOM LIST(design_cost_calc_detail_table) : bom_list_data2
+    //   let sendData = {};
+    //   let bom_insert = [];
+    //   this.bom_list_data2.forEach(data => {
+    //     for(let i=0; i<data.belong_data.length; i++){
+    //       bom_insert.push({
+    //         "user_info": {
+    //           "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+    //           "role": "creater"
+    //         },
+    //         "data": {
+    //           "cost_calc_code": "",
+    //           "product_classification": data.classification,
+    //           "product_code": data.product_code,
+    //           "product_name": data.name,
+    //           "product_model": data.model,
+    //           "product_spec": data.spec,
+    //           "manufacturer": data.manufacturer,
+    //           "product_num": data.num,
+    //           "item_type": data.belong_data[i].type,
+    //           "item_classification": data.belong_data[i].classification,
+    //           "item_code": data.belong_data[i].item_code,
+    //           "item_name": data.belong_data[i].name,
+    //           "item_model": data.belong_data[i].model,
+    //           "item_spec": data.belong_data[i].spec,
+    //           "item_manufacturer": data.belong_data[i].manufacturer,
+    //           "item_unit_price": data.belong_data[i].unit_price,
+    //           "item_num": data.belong_data[i].num
+    //         },
+    //         "select_where": {"cost_calc_code": "", "product_code": data.product_code, "item_code": data.belong_data[i].item_code},
+    //         "rollback": "yes"
+    //       })
+    //     }
+    //   })
+    //   sendData['design_cost_calc_detail_table'] = bom_insert;
+    //   console.log("sendData BOM : ", sendData);
+    // },
     savePurchaseData(){
-      // DB의 purchase_confirmation_table = purchase_confirmation_data
       // DB의 purchase_product_table = bom_list_purchase_data
       const currDate = new Date();
       let sendData = {};
@@ -7199,6 +7216,9 @@ export default {
       let purchase_confirmation_update = [];
       let purchase_product_update = [];
       let purchase_code = 'PEPR_' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
+      let files = [];
+
+      let confirmation_inserted = false;
 
       this.bom_list_purchase_data2.forEach(data => {
         if(data.belong_data){ //선주문일 경우
@@ -7279,25 +7299,28 @@ export default {
 
           // 선주문을 연결했지만 구매 요청 수량을 입력하여 추가 구매 요청을 하는 경우
           if(data.purchase_num > 0){
-            purchase_confirmation_insert.push({
-              "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "creater"
-                },
-                "data":{
-                  "code" : purchase_code,
-                  "cost_calc_code" : data.cost_calc_code ,
-                  "project_code" : data.project_code ,
-                  "approval_phase": data.approval_phase,
-                  "checker" : data.checker,
-                  "checker_id" : data.checker_id,
-                  "checked_date" : mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss'),
-                  "approver" : data.approver,
-                  "approver_id" : data.approver_id
-                },
-                "select_where": {"code": purchase_code},
-                "rollback": "yes"
-            })
+            if (!confirmation_inserted){
+              purchase_confirmation_insert.push({
+                "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "creater"
+                  },
+                  "data":{
+                    "code" : purchase_code,
+                    "cost_calc_code" : data.cost_calc_code ,
+                    "project_code" : data.project_code ,
+                    "approval_phase": data.approval_phase,
+                    "checker" : data.checker,
+                    "checker_id" : data.checker_id,
+                    "checked_date" : mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss'),
+                    "approver" : data.approver,
+                    "approver_id" : data.approver_id
+                  },
+                  "select_where": {"code": purchase_code},
+                  "rollback": "yes"
+              })
+              confirmation_inserted = true;
+            }
             purchase_product_insert.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -7325,7 +7348,7 @@ export default {
             })
           }
         }else{ // 미선택 혹은 견적서 첨부일 경우
-          this.purchase_confirmation_data2.forEach(data => {
+          if (!confirmation_inserted){
             purchase_confirmation_insert.push({
               "user_info": {
                   "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -7345,33 +7368,42 @@ export default {
                 "select_where": {"code": purchase_code},
                 "rollback": "yes"
             })
-          })
+            confirmation_inserted = true;
+          }
 
           purchase_product_insert.push({
-          "user_info": {
-            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-            "role": "creater"
-          },
-          "data":{
-            "code" : purchase_code,
-            "type" : data.type,
-            "classification" : data.classification,
-            "product_code" : data.product_code,
-            "item_code" : data.item_code,
-            "name" : data.name,
-            "model" : data.model,
-            "spec" : data.spec,
-            "manufacturer" : data.manufacturer,
-            "unit_price" : data.unit_price,
-            "purchase_num" : data.purchase_num,
-            "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
-            "purchase_estimate_company" : data.purchase_estimate_company,
-            "purchase_estimate_file" : data.purchase_estimate_file_name,
-            "purchase_estimate_thumbnail" : data.purchase_estimate_thumbnail,
-          },
-          "select_where": {"code": purchase_code, "product_code": data.product_code, "item_code": data.item_code},
-          "rollback": "yes"
-        })
+            "user_info": {
+              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+              "role": "creater"
+            },
+            "data":{
+              "code" : purchase_code,
+              "type" : data.type,
+              "classification" : data.classification,
+              "product_code" : data.product_code,
+              "item_code" : data.item_code,
+              "name" : data.name,
+              "model" : data.model,
+              "spec" : data.spec,
+              "manufacturer" : data.manufacturer,
+              "unit_price" : data.unit_price,
+              "purchase_num" : data.purchase_num,
+              "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
+              "purchase_estimate_company" : data.purchase_estimate_company,
+              "purchase_estimate_file" : data.purchase_estimate_file_name,
+              "purchase_estimate_thumbnail" : data.purchase_estimate_thumbnail,
+            },
+            "select_where": {"code": purchase_code, "product_code": data.product_code, "item_code": data.item_code},
+            "rollback": "yes"
+          })
+          
+          if (data.purchase_estimate_company){
+            files.push({
+              "column_name": "purchase_estimate",
+              "file": data.purchase_estimate_file_value,
+              "name": data.purchase_estimate_file_name
+            });
+          }
         }
       })
 
@@ -7379,6 +7411,7 @@ export default {
       sendData["purchase_confirmation_table-update"] = purchase_confirmation_update;
       sendData["purchase_product_table-insert"] = purchase_product_insert;
       sendData["purchase_product_table-update"] = purchase_product_update;
+      sendData["files"] = files;
 
       console.log("sendData 구매 : ", sendData);
     },
@@ -7486,8 +7519,6 @@ export default {
 
       searched_product_data: [],
       searched_product_data2: [],
-      purchase_confirmation_data: [],
-      purchase_confirmation_data2: [],
       search_items_for_product_data: [],
       set_bom_list_data: [],
       set_bom_list_data_copy: [],
