@@ -623,16 +623,19 @@ export default {
             let script_file_path = '';
             let set_code = belong.product_code.split('(')[0];
             let new_code = '';
+            let code_name = '';
             if(belong.type === '원부자재'){
+              code_name = 'material_code'
               param_info = {"material_table.material_code": set_code};
               script_file_name = "rooting_원자재_검색_24_05_07_09_42_KFS.json";
               script_file_path = "data_storage_pion\\json_sql\\stock\\2_원부자재_검색\\원자재_검색_24_05_07_09_42_G83";
             }else if(belong.type === '반제품'){
+              code_name = 'code'
               param_info = {"module_table.module_code": set_code};
               script_file_name = "rooting_반제품_검색_24_05_16_13_23_FD4.json";
               script_file_path = "data_storage_pion\\json_sql\\stock\\6_반제품_검색\\반제품_검색_24_05_16_13_24_YJO";
             }
-            let currentCode = await mux.Server.getCurrentCode(param_info, script_file_name, script_file_path)
+            let currentCode = await mux.Server.getCurrentCode(code_name, param_info, script_file_name, script_file_path)
 
             if(currentCode === ''){
               new_code = set_code + '-001';

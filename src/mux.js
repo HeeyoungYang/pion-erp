@@ -1112,13 +1112,13 @@ mux.Server = {
    * @param {string} script_file_name
    * @param {string} script_file_path
    * @example
-   * mux.Util.getCurrentCode(type, table_info, script_file_name, script_file_path);
+   * mux.Util.getCurrentCode(code, param_info, script_file_name, script_file_path);
    * @memberof mux.Server
    * @inner
    * @private
    * @returns {Promise}
   */
-  getCurrentCode(param_info, script_file_name, script_file_path) {
+  getCurrentCode(code, param_info, script_file_name, script_file_path) {
     return new Promise(async (resolve, reject) => {
 
       // const currDate = new Date();
@@ -1145,8 +1145,8 @@ mux.Server = {
           let searched = result.data;
           // 정렬
           if(searched.length > 0){
-            searched.sort((a,b) => a.code.localeCompare(b.code));
-            current_code = searched[searched.length-1].code;
+            searched.sort((a,b) => a[code].localeCompare(b[code]));
+            current_code = searched[searched.length-1][code];
           } else {
             current_code = '';
           }
