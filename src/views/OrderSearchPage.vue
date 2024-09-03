@@ -927,6 +927,9 @@ export default {
           order_result = result.data;
 
           order_result.forEach(async order => {
+            if(order.inbound_code !== null){
+              order.inbound_check = '입고완료'
+            }
             try {
               let note_result = await mux.Server.post({
                 path: '/api/common_rest_api/',
@@ -1007,6 +1010,16 @@ export default {
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
           this.project_code_criterion_data = project_result.data;
+
+          this.project_code_criterion_data.forEach(p_data => {
+            if(p_data.belong_data){
+              p_data.belong_data.forEach(b_data => {
+                if(b_data.inbound_code !== null){
+                  b_data.inbound_check = '입고완료'
+                }
+              })
+            }
+          })
         } else {
           mux.Util.showAlert(project_result['failed_info']);
         }

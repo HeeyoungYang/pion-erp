@@ -881,7 +881,7 @@ mux.Server = {
                         return page_resource;
                       });
                       page_resourceList.sort((a, b) => b.page_name.localeCompare(a.page_name));
-          
+
                       mux.Server.get({path: '/api/admin/page_permission/'}).then(result4 => {
                         if (result4['code'] == 0 || (typeof result4['data'] === 'object' && result4['data']['code'] == 0) || (typeof result4['response'] === 'object' && typeof result4['response']['data'] === 'object' && result4['response']['data']['code'] == 0)){
                           let user_group_info = result2.data;
@@ -913,7 +913,7 @@ mux.Server = {
                           Vue.$cookies.set(configJson.cookies.allowed_urls.key, allowed_urls, configJson.cookies.allowed_urls.expiration);
                           Vue.$cookies.set(configJson.cookies.permission_group_ids.key, user_group_info.map(group => group.group_table_id).join(','), configJson.cookies.permission_group_ids.expiration);
 
-      
+
                           resolve();
                         }else {
                           // console.log('get page_permission fail: ', response);
@@ -1103,7 +1103,107 @@ mux.Server = {
       }
     });
 
-  }
+  },
+
+  /**
+   * 최근 코드 가져오기
+   * @param {string} type
+   * @param {string} table_info
+   * @param {string} script_file_name
+   * @param {string} script_file_path
+   * @example
+   * mux.Util.getCurrentCode(code, param_info, script_file_name, script_file_path);
+   * @memberof mux.Server
+   * @inner
+   * @private
+   * @returns {Promise}
+  */
+  getCurrentCode(code, param_info, script_file_name, script_file_path) {
+    return new Promise(async (resolve, reject) => {
+
+      // const currDate = new Date();
+      // let code = type + mux.Date.format(currDate, 'yyMMdd') + '_';
+      const prevURL = window.location.href;
+      let current_code = '';
+      try {
+        //견적서 REST API 스크립트 전달 받으면 수정 예정
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            param_info
+          ],
+          "script_file_name": script_file_name,
+          "script_file_path": script_file_path
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          let searched = result.data;
+          // 정렬
+          if(searched.length > 0){
+            searched.sort((a,b) => a[code].localeCompare(b[code]));
+            current_code = searched[searched.length-1][code];
+          } else {
+            current_code = '';
+          }
+          resolve(current_code);
+        } else {
+          reject(result.message);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+  // async getCurrentCode(type, table_info, script_file_name, script_file_path) {
+  //   const currDate = new Date();
+  //   const prevURL = window.location.href;
+  //   let code = type + mux.Date.format(currDate, 'yyMMdd') + '_';
+  //   let current_code = '';
+  //   try {
+  //     //견적서 REST API 스크립트 전달 받으면 수정 예정
+  //     let result = await mux.Server.post({
+  //       path: '/api/common_rest_api/',
+  //       params: [
+  //         {
+  //           [table_info] : code
+  //         }
+  //       ],
+  //       "script_file_name": script_file_name,
+  //       "script_file_path": script_file_path
+  //     });
+  //     if (prevURL !== window.location.href) return;
+
+  //     if (typeof result === 'string'){
+  //       result = JSON.parse(result);
+  //     }
+  //     if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+  //       let searched = result.data;
+  //       // 정렬
+  //       if(searched.length > 0){
+  //         searched.sort((a,b) => a.code.localeCompare(b.code));
+  //         current_code = searched[searched.length-1].code;
+  //       } else {
+  //         current_code = '';
+  //       }
+  //     } else {
+  //       mux.Util.showAlert(result['failed_info']);
+  //     }
+  //   } catch (error) {
+  //     if (prevURL !== window.location.href) return;
+  //     mux.Util.hideLoading();
+  //     if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+  //       mux.Util.showAlert(error.response['data']['failed_info'].msg);
+  //     else
+  //       mux.Util.showAlert(error);
+  //   }
+  //   return current_code;
+  // },
 
 }
 // Axios인스턴스 설정: 요청 시마다 헤더에 토큰을 추가
@@ -1165,16 +1265,16 @@ mux.Server.axiosInstance.interceptors.response.use(
                             return page_resource;
                           });
                           page_resourceList.sort((a, b) => b.page_name.localeCompare(a.page_name));
-              
+
                           mux.Server.get({path: '/api/admin/page_permission/'}).then(result4 => {
                             if (result4['code'] == 0 || (typeof result4['data'] === 'object' && result4['data']['code'] == 0) || (typeof result4['response'] === 'object' && typeof result4['response']['data'] === 'object' && result4['response']['data']['code'] == 0)){
                               let user_group_info = result2.data;
                               let page_resource_info = result3.data;
                               let page_permission_info = result4.data;
-    
+
                               let user_allowed_resource_table_id_arr = [];
                               let allowed_urls = [];
-    
+
                               user_group_info.forEach(group => {
                                 page_permission_info.forEach(permission => {
                                   if (permission.group_table_id === group.group_table_id){
@@ -1184,19 +1284,19 @@ mux.Server.axiosInstance.interceptors.response.use(
                                   }
                                 });
                               });
-    
+
                               page_resource_info.forEach(resource => {
                                 if (user_allowed_resource_table_id_arr.indexOf(resource.id) !== -1){
                                   allowed_urls.push(resource.page_url);
                                 }
                               });
-    
+
                               allowed_urls = allowed_urls.sort((a, b) => a.localeCompare(b));
                               allowed_urls = allowed_urls.join(',');
-    
+
                               Vue.$cookies.set(configJson.cookies.permission_group_ids.key, user_group_info.map(group => group.group_table_id).join(','), configJson.cookies.permission_group_ids.expiration);
                               Vue.$cookies.set(configJson.cookies.allowed_urls.key, allowed_urls, configJson.cookies.allowed_urls.expiration);
-                              
+
                               // 기존 요청을 재시도합니다.
                               originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
                               return axios(originalRequest);
@@ -3453,6 +3553,8 @@ mux.Rules = {
             input.rules =  [v => !!v || '백분율(%) 혹은 숫자 입력']
           }else if(input.type != 'file'){
             input.rules =  [v => !!v || input.label + " 입력"]
+          }else if(input.type == 'file'){
+            input.rules =  [v => !!v || input.label + " 첨부"]
           }
         }
       })

@@ -225,6 +225,7 @@
                                 </v-col>
                               </v-row>
                               <v-form ref="materialForm">
+                                <span v-if="editedIndex === -1" class="error--text">※ 관리코드는 자동 설정되며 저장시 넘버링 됩니다.</span>
                                 <InputsFormComponent
                                   clearable
                                   :inputs="registMaterialInputs"
@@ -475,11 +476,12 @@
                             </v-row>
 
                             <v-form ref="moduleForm" class="mt-3">
+                              <span v-if="editedIndex === -1" class="error--text">※ 관리코드는 자동 설정되며 저장시 넘버링 됩니다.</span>
                               <InputsFormComponent
                                 dense
                                 clearable
                                 filled
-                                col_class="py-0"
+                                col_class="pb-0"
                                 :inputs="registModuleInputs"
                                 @textFieldKeyup="itemCodeKeyup"
                               >
@@ -1097,6 +1099,24 @@
                       </v-form>
                       <v-divider class="my-7"></v-divider>
                       <v-row>
+                        <v-col cols="12" class="pb-0" align-self="center">
+                          <span class="text-h6 font-weight-black mb-2 mr-6">
+                            {{ editedIndex === -1 ? '완제품 코드 설정 : ' : '완제품 코드 : ' }}
+                          </span>
+                          <span class="text-h6 mb-2 mr-4">{{ editedIndex === -1 ? product_code_naming + '-' : product_code_naming }}</span>
+                          <v-text-field
+                            v-if="editedIndex === -1"
+                            dense
+                            hide-details
+                            filled
+                            style="width:250px; display: inline-block;"
+                            label="사양(용량)코드"
+                            v-model="product_spec_naming"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-divider class="my-7"></v-divider>
+                      <v-row>
                         <v-col cols="3" class="pb-0">
                           <p class="text-h6 font-weight-black mb-0">
                             완제품 위치 및 재고 설정
@@ -1295,9 +1315,9 @@ import mux from "@/mux";
 
 
 export default {
-  
+
   mounted() {
-    
+
   },
   components: {
     NavComponent,
@@ -1317,6 +1337,8 @@ export default {
       productImg: '',
       set_classification_selected: '',
       set_manufacturer_selected: '',
+      product_code_naming: '',
+      product_spec_naming: '',
       menu: false,
       editedIndex: -1,
       deleteItemList:{},
@@ -1407,6 +1429,21 @@ export default {
   },
 
   computed: {
+    registMaterialInputsClassification() {
+      return this.registMaterialInputs.find(x=>x.label === '분류');
+    },
+    registModuleInputsClassification() {
+      return this.registModuleInputs.find(x=>x.label === '분류');
+    },
+    registModuleInputsManufacturer() {
+      return this.registModuleInputs.find(x=>x.label === '제조사');
+    },
+    registProductInputsClassification() {
+      return this.registProductInputs.find(x=>x.label === '분류');
+    },
+    registProductInputsSpec() {
+      return this.registProductInputs.find(x=>x.label === '사양');
+    },
     registMaterialInputsPhoto() {
       return this.registMaterialInputs.find(x=>x.label === '사진');
     },
@@ -1430,6 +1467,50 @@ export default {
     },
     detail_dialog (val) {
       val || this.closeDetail()
+    },
+    registMaterialInputsClassification: {
+      handler: function (newInput) {
+        let classification = newInput.value.split('-');
+        if(this.editedIndex === -1)
+          this.registMaterialInputs.find(x=>x.label === '관리코드').value = 'PE-' + classification[classification.length-1];
+      },
+      deep: true
+    },
+    registModuleInputsClassification: {
+      handler: function (newInput) {
+        let classification = newInput.value.split('-');
+        let manufacturer = this.registModuleInputs.find(x=>x.label === '제조사').value.split('-');
+
+        if(this.editedIndex === -1)
+          this.registModuleInputs.find(x=>x.label === '관리코드').value = 'PE-' + classification[classification.length-1] + '-' + manufacturer[manufacturer.length-1];
+      },
+      deep: true
+    },
+    registModuleInputsManufacturer: {
+      handler: function (newInput) {
+        let manufacturer = newInput.value.split('-');
+        let classification = this.registModuleInputs.find(x=>x.label === '분류').value.split('-');
+
+        if(this.editedIndex === -1)
+          this.registModuleInputs.find(x=>x.label === '관리코드').value = 'PE-' + classification[classification.length-1] + '-' + manufacturer[manufacturer.length-1];
+      },
+      deep: true
+    },
+    registProductInputsClassification: {
+      handler: function (newInput) {
+        let classification = newInput.value.split('-');
+
+        if(this.editedIndex === -1)
+          this.product_code_naming = 'PE-' + classification[classification.length-1];
+      },
+      deep: true
+    },
+    registProductInputsSpec: {
+      handler: function (newInput) {
+        let v_info = newInput.value.split(' ');
+        this.product_spec_naming = v_info[0] + v_info[1].replace('kW','K') + v_info[2].replace('Hz','H') + v_info[3].replace('Level','L');
+      },
+      deep: true
     },
     registMaterialInputsPhoto: {
       handler: async function (newInput) {
@@ -1469,9 +1550,12 @@ export default {
 
   methods: {
     // eslint-disable-next-line no-unused-vars
-    
+
     openDialog(){
       this.module_dialog = true
+    },
+    setCode(val){
+      alert(val)
     },
     async initialize () {
       this.material_data = []
@@ -1857,9 +1941,11 @@ export default {
 
       material_input.forEach(data =>{
         if(data.column_name == 'item_code'){
-          data.disabled = false
+          data.disabled = true;
+          data.value = 'PE-';
+        }else{
+          data.value = '';
         }
-        data.value = '';
       })
       this.material_dialog = true
     },
@@ -2171,11 +2257,26 @@ export default {
         })
         this.editRegistMaterial.type = '원부자재'
 
+
+
         let thumbnail = 'NULL';
         if (this.materialImg){
           thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.urlToBinary(this.materialImg));
         }
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
+
+          let param_info = {"material_table.material_code": this.editRegistMaterial.item_code};
+          let script_file_name = "rooting_원자재_검색_24_05_07_09_42_KFS.json";
+          let script_file_path = "data_storage_pion\\json_sql\\stock\\2_원부자재_검색\\원자재_검색_24_05_07_09_42_G83";
+          let currentCode = await mux.Server.getCurrentCode('material_code', param_info, script_file_name, script_file_path)
+
+          if(currentCode === ''){
+            this.editRegistMaterial.item_code = this.editRegistMaterial.item_code + '-001';
+          }else{
+            let calc_current_code = Number(currentCode.split('-')[currentCode.split('-').length -1]) + 1;
+            calc_current_code = ('00' + calc_current_code).slice(-3);
+            this.editRegistMaterial.item_code = this.editRegistMaterial.item_code + '-' + calc_current_code;
+          }
           let sendData = {
             "material_table-insert": [{
               "user_info": {
@@ -2204,6 +2305,7 @@ export default {
             stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
           }
           stock_item.forEach(data =>{
+            data.usable_num = data.stock_num
             stock_data.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -2214,6 +2316,7 @@ export default {
                 "product_code": this.editRegistMaterial.item_code,
                 "spot": data.spot,
                 "stock_num": data.stock_num,
+                "usable_num": data.usable_num,
                 "type": this.editRegistMaterial.type
               },
               "select_where": {"product_code": this.editRegistMaterial.item_code, "spot": data.spot},
@@ -2516,9 +2619,11 @@ export default {
       mux.Rules.rulesSet(module_input);
       module_input.forEach(data =>{
         if(data.column_name == 'item_code'){
-          data.disabled = false
+          data.disabled = true;
+          data.value = 'PE-';
+        }else{
+          data.value = '';
         }
-        data.value = '';
       })
       this.module_set_material_data = [];
       this.module_dialog = true
@@ -2541,12 +2646,14 @@ export default {
           script_file_name = "rooting_product_thumbname_검색_24_05_09_12_05_UP0.json";
           script_file_path = "data_storage_pion\\json_sql\\stock\\thumbnail_검색\\product_thumbname_검색_24_05_09_12_06_FHY";
         }else if (item.type === '반제품'){
-          if(item.belong_data[0].directly_written === 1){
-            this.set_material_search = false;
-            this.set_material_write = true;
-          }else{
-            this.set_material_search = false;
-            this.set_material_write = false;
+          if(item.belong_data){
+            if(item.belong_data[0].directly_written === 1){
+              this.set_material_search = false;
+              this.set_material_write = true;
+            }else{
+              this.set_material_search = false;
+              this.set_material_write = false;
+            }
           }
           params = [
             {
@@ -2701,6 +2808,18 @@ export default {
         }
 
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
+          let param_info = {"module_table.module_code": this.editRegistModule.item_code};
+          let script_file_name = "rooting_반제품_검색_24_05_16_13_23_FD4.json";
+          let script_file_path = "data_storage_pion\\json_sql\\stock\\6_반제품_검색\\반제품_검색_24_05_16_13_24_YJO";
+          let currentCode = await mux.Server.getCurrentCode('code', param_info, script_file_name, script_file_path)
+
+          if(currentCode === ''){
+            this.editRegistModule.item_code = this.editRegistModule.item_code + '-001';
+          }else{
+            let calc_current_code = Number(currentCode.split('-')[currentCode.split('-').length -1]) + 1;
+            calc_current_code = ('00' + calc_current_code).slice(-3);
+            this.editRegistModule.item_code = this.editRegistModule.item_code + '-' + calc_current_code;
+          }
           let sendData = {
             "module_table-insert": [{
               "user_info": {
@@ -2729,6 +2848,7 @@ export default {
             stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
           }
           stock_item.forEach(data =>{
+            data.usable_num = data.stock_num
             stock_data.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -2739,6 +2859,7 @@ export default {
                 "product_code": this.editRegistModule.item_code,
                 "spot": data.spot,
                 "stock_num": data.stock_num,
+                "usable_num": data.usable_num,
                 "type": this.editRegistModule.type
               },
               "select_where": {"product_code": this.editRegistModule.item_code, "spot": data.spot},
@@ -3198,11 +3319,14 @@ export default {
       let product_input = this.registProductInputs;
       mux.Rules.rulesSet(product_input);
       product_input.forEach(data =>{
-        if(data.column_name == 'item_code'){
-          data.disabled = false
+        if(data.column_name == 'spec'){
+          data.value = '000V 000kW 00Hz 0Level'
+        }else{
+          data.value = '';
         }
-        data.value = '';
       })
+      this.product_code_naming = 'PE'
+      this.product_spec_naming = ''
       this.product_set_items_data = [];
       this.product_dialog = true;
     },
@@ -3212,6 +3336,7 @@ export default {
       let product_input = this.registProductInputs;
       let spot_input = this.registProductSpotInputs;
       let spot = item.spot_stock
+      this.product_code_naming = item.item_code
       mux.Rules.rulesSet(product_input);
       product_input.forEach(data =>{
         if(data.column_name == 'item_code'){
@@ -3272,6 +3397,11 @@ export default {
           return;
         }
 
+        if(this.product_set_items_data.length === 0){
+          mux.Util.showAlert('완제품의 자재 리스트를 작성해주세요.');
+          return;
+        }
+
         mux.Util.showLoading();
         stock_item = [];
         for(let x=0; x<stock_spot_arr.length; x++){
@@ -3311,6 +3441,24 @@ export default {
         }
 
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
+          const currDate = new Date();
+          let new_code = this.product_code_naming + '-' + this.product_spec_naming + '-' + mux.Date.format(currDate, 'yy');
+
+          let param_info = {"product_table.product_code": new_code};
+          let script_file_name = "rooting_완제품_검색_24_05_16_13_52_1IN.json";
+          let script_file_path = "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ";
+          let currentCode = await mux.Server.getCurrentCode('code', param_info, script_file_name, script_file_path)
+
+          if(currentCode === ''){
+            this.editRegistProduct.item_code = new_code + '-001';
+          }else{
+            let calc_current_code = Number(currentCode.split('-')[currentCode.split('-').length -1]) + 1;
+            calc_current_code = ('00' + calc_current_code).slice(-3);
+            this.editRegistProduct.item_code = new_code + '-' + calc_current_code;
+          }
+
+
+
           let sendData = {
             "product_table-insert": [{
               "user_info": {
@@ -3339,6 +3487,7 @@ export default {
             stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
           }
           stock_item.forEach(data =>{
+            data.usable_num = data.stock_num
             stock_data.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -3349,6 +3498,7 @@ export default {
                 "product_code": this.editRegistProduct.item_code,
                 "spot": data.spot,
                 "stock_num": data.stock_num,
+                "usable_num": data.usable_num,
                 "type": this.editRegistProduct.type
               },
               "select_where": {"product_code": this.editRegistProduct.item_code, "spot": data.spot},
@@ -3430,18 +3580,18 @@ export default {
                 "role": "modifier"
               },
               "data":{
-                "product_code": this.editRegistProduct.item_code,
+                "product_code": this.product_code_naming,
                 "classification": this.editRegistProduct.classification,
                 "manufacturer": this.editRegistProduct.manufacturer,
                 "model": this.editRegistProduct.model,
                 "name": this.editRegistProduct.name,
-                "photo": thumbnail !== 'NULL' ? this.editRegistProduct.item_code + ".png" : "",
+                "photo": thumbnail !== 'NULL' ? this.product_code_naming + ".png" : "",
                 "spec": this.editRegistProduct.spec,
                 "thumbnail": thumbnail,
                 "type": this.editRegistProduct.type,
                 "unit_price": this.editRegistProduct.unit_price
               },
-              "update_where": {"product_code": this.editRegistProduct.item_code},
+              "update_where": {"product_code": this.product_code_naming},
               "rollback": "yes"
             }]
           };
@@ -3452,7 +3602,7 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "delete_where": {"product_code": this.editRegistProduct.item_code},
+            "delete_where": {"product_code": this.product_code_naming},
             "rollback": "no"
           }];
 
@@ -3468,7 +3618,7 @@ export default {
               },
               "data":{
                 "conditions": data.conditions,
-                "product_code": this.editRegistProduct.item_code,
+                "product_code": this.product_code_naming,
                 "spot": data.spot,
                 "stock_num": data.stock_num,
                 "type": this.editRegistProduct.type
@@ -3485,7 +3635,7 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "delete_where": {"product_code": this.editRegistProduct.item_code},
+            "delete_where": {"product_code": this.product_code_naming},
             "rollback": "no"
           }];
 
@@ -3498,7 +3648,7 @@ export default {
                   "role": "creater"
                 },
                 "data":{
-                  "product_code": this.editRegistProduct.item_code,
+                  "product_code": this.product_code_naming,
                   "module_code": data.item_code,
                   "module_num": data.num
                 },
@@ -3515,7 +3665,7 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "delete_where": {"product_code": this.editRegistProduct.item_code},
+            "delete_where": {"product_code": this.product_code_naming},
             "rollback": "no"
           }];
 
@@ -3528,7 +3678,7 @@ export default {
                   "role": "creater"
                 },
                 "data":{
-                  "product_code": this.editRegistProduct.item_code,
+                  "product_code": this.product_code_naming,
                   "material_code": data.item_code,
                   "material_num": data.num
                 },
