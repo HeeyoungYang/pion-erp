@@ -1988,7 +1988,7 @@ export default {
                   </tr>
                   ${reject_info ? reject_info : ''}
                 </table>
-                <a style="color: white; text-decoration:none"href="${prevURL}-search?project_code=${item.project_code}&inhouse_bid_number=${item.inhouse_bid_number}&company_bid_number=${item.company_bid_number}&company_name=${item.company_name}&issue_date=${item.issue_date}">
+                <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&inhouse_bid_number=${item.inhouse_bid_number}&company_bid_number=${item.company_bid_number}&company_name=${item.company_name}&issue_date=${item.issue_date}">
                   <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
                     확인하기
                   </p>
