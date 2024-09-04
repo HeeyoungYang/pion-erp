@@ -1395,6 +1395,22 @@ export default {
 
         // 이력 제거 후 실제 데이터만 남기기
         searchResult.confirmation = searchResult.confirmation.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+        const uniqueConfirmation = [];
+        const confirmationMap = new Map();
+
+        searchResult.confirmation.forEach(item => {
+          const code = item.cost_calc_code;
+          const time = new Date(item.modified_time).getTime();
+
+          if (!confirmationMap.has(code) || time > confirmationMap.get(code)) {
+            confirmationMap.set(code, time);
+          }
+        });
+        confirmationMap.forEach((time, code) => {
+          const item = searchResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
+          uniqueConfirmation.push(item);
+        });
+        searchResult.confirmation = uniqueConfirmation;
         searchResult.product_cost = searchResult.product_cost.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
         searchResult.labor_cost_calc_detail = searchResult.labor_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
         searchResult.product_cost_calc_detail = searchResult.product_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
