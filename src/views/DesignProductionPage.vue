@@ -5394,15 +5394,15 @@ export default {
             "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
             "rollback": "yes"
           }],
-          "design_cost_calc_detail_table-delete": [{
-            "user_info": {
-              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-              "role": "modifier"
-            },
-            "data":{},
-            "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
-            "rollback": "no"
-          }],
+          // "design_cost_calc_detail_table-delete": [{
+          //   "user_info": {
+          //     "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+          //     "role": "modifier"
+          //   },
+          //   "data":{},
+          //   "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+          //   "rollback": "no"
+          // }],
           "design_construction_detail_table-delete": [{
             "user_info": {
               "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -5430,35 +5430,35 @@ export default {
             "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
             "rollback": "no"
           }],
-          "design_cost_calc_detail_table-insert": [],
+          // "design_cost_calc_detail_table-insert": [],
+          "design_cost_calc_detail_table-update": [],
           "design_construction_detail_table-insert": [],
         };
 
-        const new_product_cost_calc_detail = [];
+        const new_product_cost_calc_detail = {};
         const new_construction_materials_data = [];
         if (this.clickedProductCost.obtain_type !== '기술료'){
           const product_cost_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('재료'));
           if (product_cost_materials){
             product_cost_materials.belong_data.forEach(data => {
-              new_product_cost_calc_detail.push(
-                {
-                  cost_calc_code: new_cost_calc_code,
-                  product_code: data.product_code,
-                  product_name: data.cost_list,
-                  product_spec: data.cost_list_sub,
-                  product_num: data.cost_num,
-                  product_unit_price: data.cost_unit_price
-                }
-              );
+              new_product_cost_calc_detail[data.product_code] = {
+                cost_calc_code: new_cost_calc_code,
+                // product_code: data.product_code,
+                // product_name: data.cost_list,
+                // product_spec: data.cost_list_sub,
+                // product_num: data.cost_num,
+                product_unit_price: data.cost_unit_price
+              };
             });
-            new_product_cost_calc_detail.forEach(data => {
-              sendData["design_cost_calc_detail_table-insert"].push({
+            Object.keys(new_product_cost_calc_detail).forEach(key => {
+              const data = new_product_cost_calc_detail[key];
+              sendData["design_cost_calc_detail_table-update"].push({
                 "user_info": {
                   "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
                   "role": "creater"
                 },
                 "data": data,
-                "select_where": {"cost_calc_code": new_cost_calc_code, "product_code": data.product_code},
+                "update_where": {"cost_calc_code":  this.clickedProductCost.cost_calc_code, "product_code": key},
                 "rollback": "yes"
               });
             });
@@ -5518,22 +5518,29 @@ export default {
 
             if (this.clickedProductCost.obtain_type !== '기술료'){
               const product_cost_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('재료'));
-              this.searched_datas.product_cost_calc_detail = this.searched_datas.product_cost_calc_detail.filter(item => item.cost_calc_code !== this.clickedProductCost.cost_calc_code);
+              // this.searched_datas.product_cost_calc_detail = this.searched_datas.product_cost_calc_detail.filter(item => item.cost_calc_code !== this.clickedProductCost.cost_calc_code);
               const new_product_cost_calc_detail = [];
               if (product_cost_materials){
                 product_cost_materials.belong_data.forEach(data => {
                   new_product_cost_calc_detail.push(
                     {
-                      cost_calc_code: new_cost_calc_code,
-                      product_name: data.cost_list,
-                      product_spec: data.cost_list_sub,
-                      product_num: data.cost_num,
+                      product_code: data.product_code,
                       product_unit_price: data.cost_unit_price
                     }
                   );
                 });
-                this.calc_cost_detail_data_product_cost.belong_data = this.calc_cost_detail_data_product_cost.belong_data.filter(x=>!x.cost_list.includes('재료'));
-                this.searched_datas.product_cost_calc_detail.push(...new_product_cost_calc_detail);
+                // this.calc_cost_detail_data_product_cost.belong_data = this.calc_cost_detail_data_product_cost.belong_data.filter(x=>!x.cost_list.includes('재료'));
+                this.searched_datas.product_cost_calc_detail = this.searched_datas.product_cost_calc_detail.map(item => {
+                  if (item.cost_calc_code === this.clickedProductCost.cost_calc_code){
+                    item.cost_calc_code = new_cost_calc_code;
+                  }
+                  new_product_cost_calc_detail.forEach(data => {
+                    if (item.product_code === data.product_code){
+                      item.product_unit_price = data.product_unit_price;
+                    }
+                  });
+                  return item;
+                });
               }
 
               const product_cost_construction_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재'));
@@ -5692,6 +5699,372 @@ export default {
       }
 
     },
+
+    // async surveyCostNumEditSave() {
+    //   // 유효성 검사
+    //   const validate = this.$refs.surveyCostForm.validate();
+    //   if(validate) {
+
+    //     let isRejected = false;
+    //     if (this.clickedProductCost.rejected_date){
+    //       isRejected = true;
+    //     }
+    //     let needReConfirm = false;
+    //     if (this.estimate_member_info[0].user_id !== this.$cookies.get(this.$configJson.cookies.id.key) && this.estimate_member_info[0].checked_date){
+    //       if (!await mux.Util.showConfirm('확인 절차가 다시 진행됩니다. 수정하시겠습니까?')){
+    //         return;
+    //       }
+    //       needReConfirm = true;
+    //     }
+
+    //     const newDate = new Date();
+
+    //     let sendDataCheckedDate = '';
+    //     if (this.estimate_member_info[0].user_id === this.$cookies.get(this.$configJson.cookies.id.key)){
+    //       sendDataCheckedDate = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
+    //     }else {
+    //       sendDataCheckedDate = null;
+    //     }
+
+    //     const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+
+    //     let sendData = {
+    //       "design_confirmation_table-update": [{
+    //         "user_info": {
+    //           "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+    //           "role": "modifier"
+    //         },
+    //         "data":{
+    //           "cost_calc_code": new_cost_calc_code,
+    //           "approval_phase": sendDataCheckedDate === null ? '미확인' : '미승인',
+    //           "checked_date": sendDataCheckedDate,
+    //           "rejecter": '',
+    //           "rejected_date": null,
+    //           "reject_reason": '',
+    //         },
+    //         "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+    //         "rollback": "yes"
+    //       }],
+    //       "design_cost_table-update": [{
+    //         "user_info": {
+    //           "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+    //           "role": "modifier"
+    //         },
+    //         "data":{
+    //           "cost_calc_code": new_cost_calc_code,
+    //           "employment_insurance_num": this.calc_cost_detail_data_employment_insurance.cost_num,
+    //           "tool_rent_fee_num": this.calc_cost_detail_data_tool_rent_fee.cost_num,
+    //           "transportation_fee_num": this.calc_cost_detail_data_transportation_fee.cost_num,
+    //           "industrial_accident_num": this.calc_cost_detail_data_industrial_accident.cost_num,
+    //           "taxes_dues_num": this.calc_cost_detail_data_taxes_dues.cost_num,
+    //           "welfare_benefits_num": this.calc_cost_detail_data_welfare_benefits.cost_num,
+    //           "retirement_num": this.calc_cost_detail_data_retirement.cost_num,
+    //           "expendables_num": this.calc_cost_detail_data_expendables.cost_num,
+    //           "industrial_safety_num": this.calc_cost_detail_data_industrial_safety.cost_num,
+    //           "normal_maintenance_fee_num": this.calc_cost_detail_data_normal_maintenance_fee.cost_num,
+    //           "profite_num": this.calc_cost_detail_data_profite.cost_num,
+    //         },
+    //         "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+    //         "rollback": "yes"
+    //       }],
+    //       "design_cost_calc_detail_table-delete": [{
+    //         "user_info": {
+    //           "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+    //           "role": "modifier"
+    //         },
+    //         "data":{},
+    //         "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+    //         "rollback": "no"
+    //       }],
+    //       "design_construction_detail_table-delete": [{
+    //         "user_info": {
+    //           "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+    //           "role": "modifier"
+    //         },
+    //         "data":{},
+    //         "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+    //         "rollback": "no"
+    //       }],
+    //       "design_labor_cost_calc_detail_table-update": [{
+    //         "user_info": {
+    //           "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+    //           "role": "modifier"
+    //         },
+    //         "data":{"cost_calc_code": new_cost_calc_code},
+    //         "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+    //         "rollback": "yes"
+    //       }],
+    //       "purchase_confirmation_table-update": [{
+    //         "user_info": {
+    //           "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+    //           "role": "modifier"
+    //         },
+    //         "data":{"cost_calc_code": new_cost_calc_code},
+    //         "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+    //         "rollback": "no"
+    //       }],
+    //       "design_cost_calc_detail_table-insert": [],
+    //       "design_construction_detail_table-insert": [],
+    //     };
+
+    //     const new_product_cost_calc_detail = [];
+    //     const new_construction_materials_data = [];
+    //     if (this.clickedProductCost.obtain_type !== '기술료'){
+    //       const product_cost_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('재료'));
+    //       if (product_cost_materials){
+    //         product_cost_materials.belong_data.forEach(data => {
+    //           new_product_cost_calc_detail.push(
+    //             {
+    //               cost_calc_code: new_cost_calc_code,
+    //               product_code: data.product_code,
+    //               product_name: data.cost_list,
+    //               product_spec: data.cost_list_sub,
+    //               product_num: data.cost_num,
+    //               product_unit_price: data.cost_unit_price
+    //             }
+    //           );
+    //         });
+    //         new_product_cost_calc_detail.forEach(data => {
+    //           sendData["design_cost_calc_detail_table-insert"].push({
+    //             "user_info": {
+    //               "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+    //               "role": "creater"
+    //             },
+    //             "data": data,
+    //             "select_where": {"cost_calc_code": new_cost_calc_code, "product_code": data.product_code},
+    //             "rollback": "yes"
+    //           });
+    //         });
+    //       }
+
+    //       const product_cost_construction_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재'));
+    //       if (product_cost_construction_materials){
+    //         product_cost_construction_materials.belong_data.forEach(data => {
+    //           new_construction_materials_data.push(
+    //             {
+    //               cost_calc_code: new_cost_calc_code,
+    //               construction_materials: data.cost_list,
+    //               construction_materials_num: data.cost_num,
+    //               construction_materials_unit_price: data.cost_unit_price,
+    //             }
+    //           );
+    //         });
+    //         new_construction_materials_data.forEach(data => {
+    //           sendData["design_construction_detail_table-insert"].push({
+    //             "user_info": {
+    //               "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+    //               "role": "creater"
+    //             },
+    //             "data": data,
+    //             "select_where": {"cost_calc_code": "!JUST_INSERT!"},
+    //             "rollback": "no"
+    //           });
+    //         });
+    //       }
+    //     }
+
+    //     const prevURL = window.location.href;
+    //     try {
+    //       mux.Util.showLoading();
+
+    //       let result = await mux.Server.post({
+    //         path: '/api/common_rest_api/',
+    //         params: sendData
+    //       });
+    //       if (prevURL !== window.location.href) return;
+
+    //       if (typeof result === 'string'){
+    //         result = JSON.parse(result);
+    //       }
+    //       if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+    //         this.estimate_member_info[0].checked_date = sendDataCheckedDate !== null ? sendDataCheckedDate : '';
+    //         let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.clickedProductCost.cost_calc_code);
+    //         targetConfirmation.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
+    //         targetConfirmation.checked_date = `${this.estimate_member_info[0].checked_date}`;
+    //         targetConfirmation.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
+    //         targetConfirmation.rejecter = '';
+    //         targetConfirmation.rejected_date = '';
+    //         targetConfirmation.reject_reason = '';
+
+    //         this.origin_calc_cost_detail_data = JSON.parse(JSON.stringify(this.calc_cost_detail_data));
+    //         // this.clickedProductCost.product = this.calc_cost_detail_data_product_cost.belong_data[0].cost_list;
+
+    //         if (this.clickedProductCost.obtain_type !== '기술료'){
+    //           const product_cost_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('재료'));
+    //           this.searched_datas.product_cost_calc_detail = this.searched_datas.product_cost_calc_detail.filter(item => item.cost_calc_code !== this.clickedProductCost.cost_calc_code);
+    //           const new_product_cost_calc_detail = [];
+    //           if (product_cost_materials){
+    //             product_cost_materials.belong_data.forEach(data => {
+    //               new_product_cost_calc_detail.push(
+    //                 {
+    //                   cost_calc_code: new_cost_calc_code,
+    //                   product_name: data.cost_list,
+    //                   product_spec: data.cost_list_sub,
+    //                   product_num: data.cost_num,
+    //                   product_unit_price: data.cost_unit_price
+    //                 }
+    //               );
+    //             });
+    //             this.calc_cost_detail_data_product_cost.belong_data = this.calc_cost_detail_data_product_cost.belong_data.filter(x=>!x.cost_list.includes('재료'));
+    //             this.searched_datas.product_cost_calc_detail.push(...new_product_cost_calc_detail);
+    //           }
+
+    //           const product_cost_construction_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재'));
+    //           this.searched_datas.construction_materials_data = this.searched_datas.construction_materials_data.filter(item => item.cost_calc_code !== this.clickedProductCost.cost_calc_code);
+    //           const new_construction_materials_data = [];
+    //           if (product_cost_construction_materials){
+    //             product_cost_construction_materials.belong_data.forEach(data => {
+    //               new_construction_materials_data.push(
+    //                 {
+    //                   cost_calc_code: new_cost_calc_code,
+    //                   construction_materials: data.cost_list,
+    //                   construction_materials_num: data.cost_num,
+    //                   construction_materials_unit_price: data.cost_unit_price,
+    //                 }
+    //               );
+    //             });
+    //             this.calc_cost_detail_data_product_cost.belong_data = this.calc_cost_detail_data_product_cost.belong_data.filter(x=>!x.cost_list.includes('공사 자재'));
+    //             this.searched_datas.construction_materials_data.push(...new_construction_materials_data);
+    //           }
+    //         }else if (this.clickedProductCost.obtain_type === '기술료'){
+
+    //           this.searched_datas.technical_fee_data = this.searched_datas.technical_fee_data.filter(item => item.cost_calc_code !== this.clickedProductCost.cost_calc_code);
+    //           const new_technical_fee_data = [];
+    //           this.calc_cost_detail_data_product_cost.belong_data.forEach(data => {
+    //             new_technical_fee_data.push(
+    //               {
+    //                 cost_calc_code: new_cost_calc_code,
+    //                 technical_fee: data.cost_list,
+    //                 technical_fee_num: data.cost_num,
+    //                 technical_fee_unit_price: data.cost_unit_price,
+    //               }
+    //             );
+    //           });
+    //           this.calc_cost_detail_data_product_cost.belong_data = [];
+    //           this.searched_datas.technical_fee_data.push(...new_technical_fee_data);
+    //         }
+
+    //         targetConfirmation.cost_calc_code = new_cost_calc_code;
+    //         this.searched_datas.last_design_confirmation.find(x=>x.cost_calc_code === this.clickedProductCost.cost_calc_code).cost_calc_code = new_cost_calc_code;
+    //         this.searched_datas.labor_cost_calc_detail.forEach(item => {
+    //           if (item.cost_calc_code === this.clickedProductCost.cost_calc_code){
+    //             item.cost_calc_code = new_cost_calc_code;
+    //           }
+    //         });
+
+    //         this.clickedProductCost.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
+    //         this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
+    //         this.clickedProductCost.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
+    //         this.clickedProductCost.rejecter = '';
+    //         this.clickedProductCost.rejected_date = '';
+    //         this.clickedProductCost.reject_reason = '';
+    //         this.clickedProductCost.employment_insurance_num = this.calc_cost_detail_data_employment_insurance.cost_num;
+    //         this.clickedProductCost.tool_rent_fee_num = this.calc_cost_detail_data_tool_rent_fee.cost_num;
+    //         this.clickedProductCost.transportation_fee_num = this.calc_cost_detail_data_transportation_fee.cost_num;
+    //         this.clickedProductCost.industrial_accident_num = this.calc_cost_detail_data_industrial_accident.cost_num;
+    //         this.clickedProductCost.taxes_dues_num = this.calc_cost_detail_data_taxes_dues.cost_num;
+    //         this.clickedProductCost.welfare_benefits_num = this.calc_cost_detail_data_welfare_benefits.cost_num;
+    //         this.clickedProductCost.retirement_num = this.calc_cost_detail_data_retirement.cost_num;
+    //         this.clickedProductCost.expendables_num = this.calc_cost_detail_data_expendables.cost_num;
+    //         this.clickedProductCost.industrial_safety_num = this.calc_cost_detail_data_industrial_safety.cost_num;
+    //         this.clickedProductCost.normal_maintenance_fee_num = this.calc_cost_detail_data_normal_maintenance_fee.cost_num;
+    //         this.clickedProductCost.profite_num = this.calc_cost_detail_data_profite.cost_num;
+    //         this.clickedProductCost.cost_calc_code = new_cost_calc_code;
+
+    //         this.searchDataCalcProcess(this.searched_datas);
+
+    //         this.edit_survey_cost_num_disabled = true;
+    //         this.during_edit = false;
+
+    //         if (isRejected || needReConfirm){
+    //           //메일 알림 관련
+    //           let mailTo = [];
+    //           // let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+    //           if(sendDataCheckedDate === null){
+    //             mailTo.push(this.clickedProductCost.checker_id);
+    //           }else {
+    //             mailTo.push(this.clickedProductCost.approver_id);
+    //           }
+
+    //           // 메일 본문 내용
+    //           let content=`
+    //           <html>
+    //             <body>
+    //               <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+    //                 <h2 style="text-align: center; color:#13428a">설계 ${sendDataCheckedDate === null ? '확인' : '승인'} 요청 알림</h2>
+    //                 <table style="width: 100%;border-spacing: 10px 10px;">
+    //                   <tr>
+    //                     <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+    //                     <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.project_code}</td>
+    //                   </tr>
+    //                   <tr>
+    //                     <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
+    //                     <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.inhouse_bid_number}</td>
+    //                   </tr>
+    //                   <tr>
+    //                     <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발행일</td>
+    //                     <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.issue_date}</td>
+    //                   </tr>
+    //                   <tr>
+    //                     <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+    //                     <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.given_name}</td>
+    //                   </tr>
+    //                   <tr>
+    //                     <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+    //                     <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.checker}</td>
+    //                   </tr>
+    //                   <tr>
+    //                     <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+    //                     <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.approver}</td>
+    //                   </tr>
+    //                 </table>
+    //                 <a style="color: white; text-decoration:none"href="${prevURL}-search?project_code=${this.clickedProductCost.project_code}&inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
+    //                   <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+    //                     확인하기
+    //                   </p>
+    //                 </a>
+    //               </div>
+    //             </body>
+    //           </html>
+    //           `;
+
+    //           try {
+    //             let sendEmailAlam = await mux.Server.post({
+    //               path: '/api/send_email/',
+    //               to_addrs: mailTo,
+    //               subject: "설계 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
+    //               content: content
+    //             });
+    //             if (prevURL !== window.location.href) return;
+    //             if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
+    //               mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+    //             } else {
+    //               if (prevURL !== window.location.href) return;
+    //               console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+    //               mux.Util.showAlert('수정되었으나 알림 메일 전송에 실패하였습니다.', '수정 완료');
+    //             }
+    //           } catch (error) {
+    //             if (prevURL !== window.location.href) return;
+    //             console.log('알림 메일 전송에 실패-error :>> ', error);
+    //             mux.Util.showAlert('수정되었으나 알림 메일 전송에 실패하였습니다.', '수정 완료');
+    //           }
+    //         }else {
+    //           mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+    //         }
+
+    //       } else {
+    //         if (prevURL !== window.location.href) return;
+    //         mux.Util.showAlert(result);
+    //       }
+    //     } catch (error) {
+    //       if (prevURL !== window.location.href) return;
+    //       mux.Util.showAlert(error);
+    //     }
+    //     mux.Util.hideLoading();
+
+    //   }
+
+    // },
 
     async save() {
       // const validate = this.$refs.estimateInfoForm2.validate();
