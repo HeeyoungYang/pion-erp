@@ -1271,7 +1271,7 @@
                   <!-- 산출내역서 작성 -->
                     <div  v-if="n === 4" >
                       <p class="text-h5 black--text mb-0 font-weight-black"  style="font-weight: bold;">산출내역서</p>
-                      <v-form ref="surveyCostForm">
+                      <v-form ref="surveyCostForm2">
                         <CostTableComponent
                           :headers="survey_cost_headers"
                           :items="calc_cost_detail_data2"
@@ -3900,6 +3900,8 @@ export default {
       this.input_company_manager_email2.value = estimate.product_cost[0].company_manager_email;
       this.input_company_manager_phone2.value = estimate.product_cost[0].company_manager_phone;
 
+      this.loaded_obtain_cost_calc_code = estimate.product_cost[0].cost_calc_code;
+
       mux.Util.hideLoading();
       this.estimate_cost_dialog = false;
     },
@@ -5705,7 +5707,7 @@ export default {
       //   }
       //   this.tab_write = 0;
       // }
-      const validate2 = this.$refs.surveyCostForm2.validate();
+      const validate2 = this.$refs.surveyCostForm2[0].validate();
       if(!validate2) {
         mux.Util.showAlert('산출내역서 정보를 정확히 입력하여 주십시오.');
         this.tab_write = 1;
@@ -5741,6 +5743,7 @@ export default {
             "role": "creater"
           },
           "data":{
+            obtain_cost_calc_code: this.loaded_obtain_cost_calc_code,
             cost_calc_code: new_cost_calc_code,
             given_name: this.$cookies.get(this.$configJson.cookies.name.key),
             office_phone_number: this.$cookies.get(this.$configJson.cookies.office_phone_number.key),
@@ -5764,20 +5767,20 @@ export default {
             checked_date: sendDataCheckedDate,
             approver: this.estimate_member_info2[1].name,
             approver_id: this.estimate_member_info2[1].user_id,
-            layout_file: new_cost_calc_code + '_' + this.input_layout_file2.value.name,
-            layout_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_layout_file2.value, 1, false, 1000, 1000)),
-            structure_file: new_cost_calc_code + '_' + this.input_structure_file2.value.name,
-            structure_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_structure_file2.value, 1, false, 1000, 1000)),
-            single_line_file: new_cost_calc_code + '_' + this.input_single_line_file2.value.name,
-            single_line_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_single_line_file2.value, 1, false, 1000, 1000)),
-            trilinear_file: new_cost_calc_code + '_' + this.input_trilinear_file2.value.name,
-            trilinear_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_trilinear_file2.value, 1, false, 1000, 1000)),
-            circuit_file: new_cost_calc_code + '_' + this.input_circuit_file2.value.name,
-            circuit_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_circuit_file2.value, 1, false, 1000, 1000)),
-            approval_file: new_cost_calc_code + '_' + this.input_approval_file2.value.name,
-            approval_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_approval_file2.value, 1, false, 1000, 1000)),
-            build_sheet_file: new_cost_calc_code + '_' + this.input_build_sheet_file2.value.name,
-            build_sheet_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_build_sheet_file2.value, 1, false, 1000, 1000)),
+            layout_file: this.input_layout_file2.value ? new_cost_calc_code + '_' + this.input_layout_file2.value.name : '',
+            layout_thumbnail: this.input_layout_file2.value ? mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_layout_file2.value, 1, false, 1000, 1000)) : '',
+            structure_file: this.input_structure_file2.value ? new_cost_calc_code + '_' + this.input_structure_file2.value.name : '',
+            structure_thumbnail: this.input_structure_file2.value ? mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_structure_file2.value, 1, false, 1000, 1000)) : '',
+            single_line_file: this.input_single_line_file2.value ? new_cost_calc_code + '_' + this.input_single_line_file2.value.name : '',
+            single_line_thumbnail: this.input_single_line_file2.value ? mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_single_line_file2.value, 1, false, 1000, 1000)) : '',
+            trilinear_file: this.input_trilinear_file2.value ? new_cost_calc_code + '_' + this.input_trilinear_file2.value.name : '',
+            trilinear_thumbnail: this.input_trilinear_file2.value ? mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_trilinear_file2.value, 1, false, 1000, 1000)) : '',
+            circuit_file: this.input_circuit_file2.value ? new_cost_calc_code + '_' + this.input_circuit_file2.value.name : '',
+            circuit_thumbnail: this.input_circuit_file2.value ? mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_circuit_file2.value, 1, false, 1000, 1000)) : '',
+            approval_file: this.input_approval_file2.value ? new_cost_calc_code + '_' + this.input_approval_file2.value.name : '',
+            approval_thumbnail: this.input_approval_file2.value ? mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_approval_file2.value, 1, false, 1000, 1000)) : '',
+            build_sheet_file: this.input_build_sheet_file2.value ? new_cost_calc_code + '_' + this.input_build_sheet_file2.value.name : '',
+            build_sheet_thumbnail: this.input_build_sheet_file2.value ? mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_build_sheet_file2.value, 1, false, 1000, 1000)) : '',
             etc_files: this.input_etc_file2.value && this.input_etc_file2.value.length > 0
             ? this.input_etc_file2.value.map(x=>new_cost_calc_code + '_' + x.name).join('/')
             : '',
@@ -5864,7 +5867,7 @@ export default {
                   item_model: subData.model,
                   item_spec: subData.spec,
                   item_manufacturer: subData.manufacturer,
-                  item_unit_price: subData.unit_price,
+                  item_unit_price: Number(subData.unit_price.replace(/,/g, '').replace('₩ ', '').trim()),
                   item_num: subData.num
                 },
                 "select_where": {"cost_calc_code": new_cost_calc_code, "item_code": subData.item_code},
@@ -7285,7 +7288,7 @@ export default {
                 "model" : belong_data.model,
                 "spec" : belong_data.spec,
                 "manufacturer" : belong_data.manufacturer,
-                "unit_price" : belong_data.unit_price,
+                "unit_price" : Number(belong_data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()),
                 "purchase_num" : belong_data.purchase_set_num,
                 "purchase_estimate_phase" : belong_data.purchase_estimate_company === '' ? '미요청' : '완료',
                 "purchase_estimate_company" : belong_data.purchase_estimate_company,
@@ -7336,7 +7339,7 @@ export default {
                 "model" : data.model,
                 "spec" : data.spec,
                 "manufacturer" : data.manufacturer,
-                "unit_price" : data.unit_price,
+                "unit_price" : Number(data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()),
                 "purchase_num" : data.purchase_num,
                 "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
                 "purchase_estimate_company" : data.purchase_estimate_company,
@@ -7386,7 +7389,7 @@ export default {
               "model" : data.model,
               "spec" : data.spec,
               "manufacturer" : data.manufacturer,
-              "unit_price" : data.unit_price,
+              "unit_price" : Number(data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()),
               "purchase_num" : data.purchase_num,
               "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
               "purchase_estimate_company" : data.purchase_estimate_company,
@@ -7414,6 +7417,7 @@ export default {
       sendData["files"] = files;
 
       console.log("sendData 구매 : ", sendData);
+      return sendData;
     },
 
     estiamteDialog(item){
@@ -7654,7 +7658,9 @@ export default {
       estimate_company: '',
       purchaseEstimateThumbnail: '',
       purchaseEstimateFile: '',
-      purchaseEstimateCode: ''
+      purchaseEstimateCode: '',
+
+      loaded_obtain_cost_calc_code: '',
     }
   },
 }
