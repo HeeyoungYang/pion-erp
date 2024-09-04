@@ -170,6 +170,22 @@ export default {
         this.searchResult.confirmation.sort((a, b) => {
           return new Date(b.created_time) - new Date(a.created_time);
         });
+        const uniqueConfirmation = [];
+        const confirmationMap = new Map();
+
+        this.searchResult.confirmation.forEach(item => {
+          const code = item.cost_calc_code;
+          const time = new Date(item.modified_time).getTime();
+
+          if (!confirmationMap.has(code) || time > confirmationMap.get(code)) {
+            confirmationMap.set(code, time);
+          }
+        });
+        confirmationMap.forEach((time, code) => {
+          const item = this.searchResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
+          uniqueConfirmation.push(item);
+        });
+        this.searchResult.confirmation = uniqueConfirmation;
         this.searchDataCalcProcess(this.searchResult);
 
         }else{

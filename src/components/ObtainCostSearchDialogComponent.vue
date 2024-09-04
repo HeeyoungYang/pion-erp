@@ -184,6 +184,22 @@ export default {
 
           this.searchResult.product_cost = this.searchResult.product_cost.filter(x => this.searchResult.confirmation.find(xx=>xx.cost_calc_code === x.cost_calc_code));
           this.searchResult.confirmation.reverse(); // 최신순으로 정렬
+          const uniqueConfirmation = [];
+          const confirmationMap = new Map();
+
+          this.searchResult.confirmation.forEach(item => {
+            const code = item.cost_calc_code;
+            const time = new Date(item.modified_time).getTime();
+
+            if (!confirmationMap.has(code) || time > confirmationMap.get(code)) {
+              confirmationMap.set(code, time);
+            }
+          });
+          confirmationMap.forEach((time, code) => {
+            const item = this.searchResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
+            uniqueConfirmation.push(item);
+          });
+          this.searchResult.confirmation = uniqueConfirmation;
           this.searchDataCalcProcess(this.searchResult);
 
         }else{

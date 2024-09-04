@@ -902,6 +902,22 @@ export default {
               // const searchDesignResult = JSON.parse(JSON.stringify(ObtainOrderSearchPageConfig.test_design_data));
               // 오래된 순으로 정렬
               searchDesignResult.confirmation.sort((a, b) => new Date(a.created_time) - new Date(b.created_time));
+              const uniqueDesignConfirmation = [];
+              const designConfirmationMap = new Map();
+
+              searchDesignResult.confirmation.forEach(item => {
+                const code = item.cost_calc_code;
+                const time = new Date(item.modified_time).getTime();
+
+                if (!designConfirmationMap.has(code) || time > designConfirmationMap.get(code)) {
+                  designConfirmationMap.set(code, time);
+                }
+              });
+              designConfirmationMap.forEach((time, code) => {
+                const item = searchDesignResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
+                uniqueDesignConfirmation.push(item);
+              });
+              searchDesignResult.confirmation = uniqueDesignConfirmation;
 
               console.log(searchDesignResult)
               // 설계 이력 추가하기

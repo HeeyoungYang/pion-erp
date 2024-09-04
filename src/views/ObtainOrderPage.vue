@@ -2256,6 +2256,22 @@ export default {
           const searchResult = result.data;
         // const searchResult = JSON.parse(JSON.stringify(ObtainOrderPageConfig.test_product_cost_data));
         searchResult.confirmation.reverse(); // 최신순으로 정렬
+        const uniqueConfirmation = [];
+          const confirmationMap = new Map();
+
+          searchResult.confirmation.forEach(item => {
+            const code = item.cost_calc_code;
+            const time = new Date(item.modified_time).getTime();
+
+            if (!confirmationMap.has(code) || time > confirmationMap.get(code)) {
+              confirmationMap.set(code, time);
+            }
+          });
+          confirmationMap.forEach((time, code) => {
+            const item = searchResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
+            uniqueConfirmation.push(item);
+          });
+          searchResult.confirmation = uniqueConfirmation;
         this.clearClicked();
         this.searchDataCalcProcess(searchResult);
 
