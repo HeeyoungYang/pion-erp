@@ -181,7 +181,7 @@ import ShipRegisterPageConfig from "@/configure/ShipRegisterPageConfig.json";
 import mux from "@/mux";
 
 export default {
-  
+
   components: {
                 NavComponent,
                 // DataTableComponent,
@@ -191,7 +191,7 @@ export default {
                 LoadingModalComponent,
               },
   mounted(){
-    
+
     // this.closeAll()
   },
   data(){
@@ -401,7 +401,7 @@ export default {
       mux.Util.hideLoading();
     },
     // eslint-disable-next-line no-unused-vars
-    
+
 
 
     addItems(){
@@ -411,8 +411,8 @@ export default {
 
       set_item.forEach(item => {
         for(let d=0; d<selected_item.length; d++){
-          if(item.item_code === selected_item[d]._code){
-            check_duplicate.push(item.item_code);
+          if(item.item_code === selected_item[d]._code && item.spot === selected_item[d].spot){
+            check_duplicate.push(item.item_code+'('+ item.spot +')');
           }
         }
       })
@@ -742,7 +742,7 @@ export default {
     },
     pricePermission(){
       const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
-      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){ 
+      if (permission_group_ids.some(id => this.$configJson.pricePermissionGroupIds.includes(id))){
         return true;
       }else {
         return false;

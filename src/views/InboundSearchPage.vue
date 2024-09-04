@@ -597,7 +597,12 @@ export default {
 
         for (let i = 0; i < send_data_belong.length; i++) {
           const belong = send_data_belong[i];
-          let ship = belong.ship_code.split('/');
+          let ship = [];
+          let useShipCode = false;
+          if(belong.ship_code !== null && belong.ship_code !== undefined && belong.ship_code !== ''){
+            ship = belong.ship_code.split('/');
+            useShipCode = true;
+          }
 
           // //ship_code가 있을 경우 ship_confirmation_table update
           // if(belong.ship_code !== null && belong.ship_code !== undefined && belong.ship_code !== ''){
@@ -845,8 +850,7 @@ export default {
                     "rollback": "yes"
                   });
                   // 만약 요청할 데이터가 출하정보를 가지고 있는 경우 module_material_table에 insert
-                  if(belong.ship_code !== null && belong.ship_code !== undefined && belong.ship_code !== ''){
-
+                  if(useShipCode){
                     let ship_data_arr = [];
 
                     try {
@@ -951,7 +955,7 @@ export default {
                   });
                   // 만약 요청할 데이터가 출하정보를 가지고 있고
 
-                  if(belong.ship_code !== null && belong.ship_code !== undefined && belong.ship_code !== ''){
+                  if(useShipCode){
 
                     let ship_data_arr = [];
                     try {

@@ -13,6 +13,7 @@
   "inbound_detail_header":[
     { "text": "위치", "align": "center", "value": "spot"},
     { "text": "수량", "align": "center", "value": "inbound_num"},
+    { "text": "입고단가", "align": "center", "value": "unit_price"},
     { "text": "입고일자", "align": "center", "value": "inbound_date"}
   ],
 
