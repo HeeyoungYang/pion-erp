@@ -396,6 +396,7 @@ export default {
           }
           this.production_details = result.data[0];
           this.production_details.approval_phase = item.approval_phase;
+          this.production_details.inbound_approval_phase = item.inbound_approval_phase;
 
           //thumbnail
           try {

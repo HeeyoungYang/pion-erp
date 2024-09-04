@@ -11,7 +11,7 @@
     {"tab_name": "생산", "tab_color": "grey lighten-1"}
   ],
   "searchCardInputs":[
-    {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4"}
+    {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"4", "value": ""}
   ],
   
   "search_estimate_headers":[
@@ -250,7 +250,7 @@
       "defect_warranty_thumbnail":"89504e470d0a1a0a0000000d494844520000000200000002080000000057dd52f80000000e49444154789c6360f8cff09f0100060001ff8ff1fc9a0000000049454e44ae426082"
     }
   ],
-
+  
   "calc_cost_detail_data": [
     {
       "cost_list": "재료비",
@@ -299,7 +299,6 @@
           "cost_list": "가. 고용보험료",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -312,7 +311,6 @@
           "cost_list": "나. 공구손료",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -325,7 +323,6 @@
           "cost_list": "다. 여비교통 통신비",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -338,7 +335,6 @@
           "cost_list": "라. 산재보험료",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -351,7 +347,6 @@
           "cost_list": "마. 세금과공과",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -364,7 +359,6 @@
           "cost_list": "바. 복리후생비",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -377,7 +371,6 @@
           "cost_list": "사. 퇴직공제 부금비",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -390,7 +383,6 @@
           "cost_list": "아. 소모품비",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 	0,
           "belong_data": [
             {
@@ -403,7 +395,6 @@
           "cost_list": "자. 산업안전보건관리비",
           "cost_unit": "식",
           "cost_num": 1,
-          "cost_num_editable": true,
           "cost_unit_price": 0,
           "belong_data": [
             {
@@ -419,7 +410,6 @@
       "cost_unit": "식",
       "cost_num": 1,
       "cost_unit_price": 0,
-      "cost_num_editable": true,
       "allow_edit_decimal_point": true,
       "belong_data": [
         {
@@ -432,7 +422,6 @@
       "cost_list": "이윤",
       "cost_unit": "식",
       "cost_num": 1,
-      "cost_num_editable": true,
       "allow_edit_decimal_point": true,
       "cost_unit_price": 0,
       "belong_data": [
