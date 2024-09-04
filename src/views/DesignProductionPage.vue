@@ -1670,6 +1670,7 @@
                     <v-text-field
                       v-if="item.data_type === 'written'"
                       v-model="item.unit_price"
+                      type="number"
                       dense
                       hide-details
                       filled
@@ -1680,6 +1681,7 @@
                   <td class="text-center">
                     <v-text-field
                       v-model="item.num"
+                      type="number"
                       dense
                       hide-details
                       filled
@@ -6256,7 +6258,7 @@ export default {
                   item_model: subData.model,
                   item_spec: subData.spec,
                   item_manufacturer: subData.manufacturer,
-                  item_unit_price: Number(subData.unit_price.replace(/,/g, '').replace('₩ ', '').trim()),
+                  item_unit_price: typeof subData.unit_price === 'number' ? subData.unit_price : subData.unit_price ? Number(subData.unit_price.replace(/,/g, '').replace('₩ ', '').trim()) : 0,
                   item_num: subData.num
                 },
                 "select_where": {"cost_calc_code": new_cost_calc_code, "item_code": subData.item_code},
@@ -7681,7 +7683,7 @@ export default {
                 "model" : belong_data.model,
                 "spec" : belong_data.spec,
                 "manufacturer" : belong_data.manufacturer,
-                "unit_price" : Number(belong_data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()),
+                "unit_price" : typeof belong_data.unit_price === 'number' ? belong_data.unit_price : belong_data.unit_price ? Number(belong_data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()) : 0,
                 "purchase_num" : belong_data.purchase_set_num,
                 "purchase_estimate_phase" : belong_data.purchase_estimate_company === '' ? '미요청' : '완료',
                 "purchase_estimate_company" : belong_data.purchase_estimate_company,
@@ -7732,7 +7734,7 @@ export default {
                 "model" : data.model,
                 "spec" : data.spec,
                 "manufacturer" : data.manufacturer,
-                "unit_price" : Number(data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()),
+                "unit_price" : typeof data.unit_price === 'number' ? data.unit_price : data.unit_price ? Number(data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()) : 0,
                 "purchase_num" : data.purchase_num,
                 "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
                 "purchase_estimate_company" : data.purchase_estimate_company,
@@ -7782,7 +7784,7 @@ export default {
               "model" : data.model,
               "spec" : data.spec,
               "manufacturer" : data.manufacturer,
-              "unit_price" : Number(data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()),
+              "unit_price" : typeof data.unit_price === 'number' ? data.unit_price : data.unit_price ? Number(data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()) : 0,
               "purchase_num" : data.purchase_num,
               "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
               "purchase_estimate_code" : data.purchase_estimate_company === '' ? '' : purchase_code,
