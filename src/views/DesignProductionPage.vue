@@ -5932,6 +5932,12 @@ export default {
           sendData.files.push(...purchaseSendData[key]);
         }else {
           sendData[key] = purchaseSendData[key];
+          if (key === 'purchase_confirmation_table-insert' || key === 'purchase_confirmation_table-update'){
+            sendData[key].forEach(item => {
+              item.data.cost_calc_code = new_cost_calc_code;
+              item.data.project_code = this.input_project_code2.value;
+            });
+          }
         }
       } 
 
@@ -6596,8 +6602,6 @@ export default {
 
       let confirmation_data = {};
 
-      //confirmation_data에 cost_calc_code와 project_code 정보 추가 필요
-
       if (step){
 
         // 구매 요청할 내역이 있을 경우
@@ -6677,8 +6681,8 @@ export default {
               }
             }
             data.approval_phase = confirmation_data.approval_phase;
-            data.checker = confirmation_data.checker;
-            data.checker_id = confirmation_data.checker_id;
+            data.checker = this.$cookies.get(this.$configJson.cookies.name.key);
+            data.checker_id = this.$cookies.get(this.$configJson.cookies.id.key);
             data.approver = confirmation_data.approver;
             data.approver_id = confirmation_data.approver_id;
           }
@@ -6764,8 +6768,8 @@ export default {
               }
             }
             data.approval_phase = confirmation_data.approval_phase;
-            data.checker = confirmation_data.checker;
-            data.checker_id = confirmation_data.checker_id;
+            data.checker = confirmation_data.checker ? confirmation_data.checker : this.$cookies.get(this.$configJson.cookies.name.key);
+            data.checker_id = confirmation_data.checker ? confirmation_data.checker_id : this.$cookies.get(this.$configJson.cookies.id.key);
             data.approver = confirmation_data.approver;
             data.approver_id = confirmation_data.approver_id;
           }
@@ -7249,7 +7253,7 @@ export default {
                 },
                 "data":{
                   "code" : belong_data.code +'-'+ mux.Date.format(currDate, 'yyyyMMdd HH:mm:ss'),
-                  "cost_calc_code" : data.cost_calc_code ,
+                  "cost_calc_code" : '',
                   "project_code" : data.project_code ,
                   "approval_phase": belong_data.approval_phase,
                   "checker" : belong_data.checker,
@@ -7310,7 +7314,7 @@ export default {
                   },
                   "data":{
                     "code" : purchase_code,
-                    "cost_calc_code" : data.cost_calc_code ,
+                    "cost_calc_code" : '',
                     "project_code" : data.project_code ,
                     "approval_phase": data.approval_phase,
                     "checker" : data.checker,
@@ -7359,7 +7363,7 @@ export default {
                 },
                 "data":{
                   "code" : purchase_code,
-                  "cost_calc_code" : data.cost_calc_code ,
+                  "cost_calc_code" : '',
                   "project_code" : data.project_code ,
                   "approval_phase": data.approval_phase,
                   "checker" : data.checker,
