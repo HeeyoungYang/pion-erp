@@ -142,15 +142,19 @@ export default {
       let reqURL = '/api/obtain-order/';
       reqURL += '?send_production_request_id=' + this.$cookies.get(this.$configJson.cookies.id.key);
       reqURL += '&approval_phase=승인';
+      let reqURL2 = '/api/design-production-search/';
       // project_code = '';
       if (inputs[0]){
         reqURL += '&inhouse_bid_number=' + inputs[0];
+        reqURL2 += '?inhouse_bid_number=' + inputs[0];
       }
       if (inputs[1]){
         reqURL += '&company_bid_number=' + inputs[1];
+        reqURL2 += inputs[0] ? '&company_bid_number=' + inputs[1] : '?company_bid_number=' + inputs[1];
       }
       if (inputs[2]){
         reqURL += '&company_name=' + inputs[2];
+        reqURL2 += (inputs[0] || inputs[1]) ? '&company_name=' + inputs[2] : '?company_name=' + inputs[2];
       }
       
       try {
@@ -164,6 +168,20 @@ export default {
           this.searchResult = result.data;
           // this.searchResult = JSON.parse(JSON.stringify(ObtainCostSearchDialogConfig.test_product_cost_data));
           this.searchResult.confirmation = this.searchResult.confirmation.filter(x => this.searchResult.last_confirmation.find(xx=>xx.cost_calc_code === x.cost_calc_code) && x.send_production_request_id === this.$cookies.get(this.$configJson.cookies.id.key));
+
+          let result2 = await mux.Server.get({path: reqURL2});
+          if (prevURL !== window.location.href) return;
+
+          if (typeof result2 === 'string'){
+            result2 = JSON.parse(result2);
+          }
+          if(result2['code'] == 0 || (typeof result2['data'] === 'object' && result2['data']['code'] == 0) || (typeof result2['response'] === 'object' && typeof result2['response']['data'] === 'object' && result2['response']['data']['code'] == 0)){
+            this.searchResult.confirmation = this.searchResult.confirmation.filter(x => result2.data.confirmation.findIndex(xx=>xx.obtain_cost_calc_code === x.cost_calc_code) === -1);
+            
+          }else{
+            mux.Util.showAlert(result2['failed_info']);
+          }
+
           this.searchResult.product_cost = this.searchResult.product_cost.filter(x => this.searchResult.confirmation.find(xx=>xx.cost_calc_code === x.cost_calc_code));
           this.searchResult.confirmation.reverse(); // 최신순으로 정렬
           this.searchDataCalcProcess(this.searchResult);
