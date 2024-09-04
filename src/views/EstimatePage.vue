@@ -3425,8 +3425,8 @@ export default {
         sendData.files = [];
 
         if (this.input_approval_file.value){
-          sendData['estimate_confirmation_table-update'][0].approval_file = new_cost_calc_code + '_' + this.input_approval_file.value.name;
-          sendData['estimate_confirmation_table-update'][0].approval_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_approval_file.value, 1, false, 1000, 1000));
+          sendData['estimate_confirmation_table-update'][0].data.approval_file = new_cost_calc_code + '_' + this.input_approval_file.value.name;
+          sendData['estimate_confirmation_table-update'][0].data.approval_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_approval_file.value, 1, false, 1000, 1000));
           sendData.files.push({
             "column_name": "approval",
             "file": this.input_approval_file.value,
@@ -3434,8 +3434,8 @@ export default {
           });
         }
         if (this.input_blueprint_file.value){
-          sendData['estimate_confirmation_table-update'][0].blueprint_file = new_cost_calc_code + '_' + this.input_blueprint_file.value.name;
-          sendData['estimate_confirmation_table-update'][0].blueprint_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_blueprint_file.value, 1, false, 1000, 1000));
+          sendData['estimate_confirmation_table-update'][0].data.blueprint_file = new_cost_calc_code + '_' + this.input_blueprint_file.value.name;
+          sendData['estimate_confirmation_table-update'][0].data.blueprint_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_blueprint_file.value, 1, false, 1000, 1000));
           sendData.files.push({
             "column_name": "blueprint",
             "file": this.input_blueprint_file.value,
@@ -3443,7 +3443,7 @@ export default {
           });
         }
         if (this.input_etc_file.value && this.input_etc_file.value.length > 0){
-          sendData['estimate_confirmation_table-update'][0].etc_files = this.input_etc_file.value.map(x=>new_cost_calc_code + '_' + x.name).join('/');
+          sendData['estimate_confirmation_table-update'][0].data.etc_files = this.input_etc_file.value.map(x=>new_cost_calc_code + '_' + x.name).join('/');
           this.input_etc_file.value.forEach(file => {
             sendData.files.push({
               "column_name": "files",

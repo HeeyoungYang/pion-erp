@@ -5011,8 +5011,8 @@ export default {
         sendData.files = [];
 
         if (this.input_layout_file.value){
-          sendData['design_confirmation_table-update'][0].layout_file = new_cost_calc_code + '_' + this.input_layout_file.value.name;
-          sendData['design_confirmation_table-update'][0].layout_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_layout_file.value, 1, false, 1000, 1000));
+          sendData['design_confirmation_table-update'][0].data.layout_file = new_cost_calc_code + '_' + this.input_layout_file.value.name;
+          sendData['design_confirmation_table-update'][0].data.layout_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_layout_file.value, 1, false, 1000, 1000));
           sendData.files.push({
             "folder": "design/layout",
             "file": this.input_layout_file.value,
@@ -5020,8 +5020,8 @@ export default {
           });
         }
         if (this.input_structure_file.value){
-          sendData['design_confirmation_table-update'][0].structure_file = new_cost_calc_code + '_' + this.input_structure_file.value.name;
-          sendData['design_confirmation_table-update'][0].structure_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_structure_file.value, 1, false, 1000, 1000));
+          sendData['design_confirmation_table-update'][0].data.structure_file = new_cost_calc_code + '_' + this.input_structure_file.value.name;
+          sendData['design_confirmation_table-update'][0].data.structure_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_structure_file.value, 1, false, 1000, 1000));
           sendData.files.push({
             "folder": "design/structure",
             "file": this.input_structure_file.value,
@@ -5029,8 +5029,8 @@ export default {
           });
         }
         if (this.input_single_line_file.value){
-          sendData['design_confirmation_table-update'][0].single_line_file = new_cost_calc_code + '_' + this.input_single_line_file.value.name;
-          sendData['design_confirmation_table-update'][0].single_line_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_single_line_file.value, 1, false, 1000, 1000));
+          sendData['design_confirmation_table-update'][0].data.single_line_file = new_cost_calc_code + '_' + this.input_single_line_file.value.name;
+          sendData['design_confirmation_table-update'][0].data.single_line_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_single_line_file.value, 1, false, 1000, 1000));
           sendData.files.push({
             "folder": "design/single_line",
             "file": this.input_single_line_file.value,
@@ -5038,8 +5038,8 @@ export default {
           });
         }
         if (this.input_trilinear_file.value){
-          sendData['design_confirmation_table-update'][0].trilinear_file = new_cost_calc_code + '_' + this.input_trilinear_file.value.name;
-          sendData['design_confirmation_table-update'][0].trilinear_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_trilinear_file.value, 1, false, 1000, 1000));
+          sendData['design_confirmation_table-update'][0].data.trilinear_file = new_cost_calc_code + '_' + this.input_trilinear_file.value.name;
+          sendData['design_confirmation_table-update'][0].data.trilinear_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_trilinear_file.value, 1, false, 1000, 1000));
           sendData.files.push({
             "folder": "design/trilinear",
             "file": this.input_trilinear_file.value,
@@ -5047,8 +5047,8 @@ export default {
           });
         }
         if (this.input_circuit_file.value){
-          sendData['design_confirmation_table-update'][0].circuit_file = new_cost_calc_code + '_' + this.input_circuit_file.value.name;
-          sendData['design_confirmation_table-update'][0].circuit_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_circuit_file.value, 1, false, 1000, 1000));
+          sendData['design_confirmation_table-update'][0].data.circuit_file = new_cost_calc_code + '_' + this.input_circuit_file.value.name;
+          sendData['design_confirmation_table-update'][0].data.circuit_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_circuit_file.value, 1, false, 1000, 1000));
           sendData.files.push({
             "folder": "design/circuit",
             "file": this.input_circuit_file.value,
@@ -5056,8 +5056,8 @@ export default {
           });
         }
         if (this.input_approval_file.value){
-          sendData['design_confirmation_table-update'][0].approval_file = new_cost_calc_code + '_' + this.input_approval_file.value.name;
-          sendData['design_confirmation_table-update'][0].approval_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_approval_file.value, 1, false, 1000, 1000));
+          sendData['design_confirmation_table-update'][0].data.approval_file = new_cost_calc_code + '_' + this.input_approval_file.value.name;
+          sendData['design_confirmation_table-update'][0].data.approval_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_approval_file.value, 1, false, 1000, 1000));
           sendData.files.push({
             "folder": "design/approval",
             "file": this.input_approval_file.value,
@@ -5065,8 +5065,8 @@ export default {
           });
         }
         if (this.input_build_sheet_file.value){
-          sendData['design_confirmation_table-update'][0].build_sheet_file = new_cost_calc_code + '_' + this.input_build_sheet_file.value.name;
-          sendData['design_confirmation_table-update'][0].build_sheet_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_build_sheet_file.value, 1, false, 1000, 1000));
+          sendData['design_confirmation_table-update'][0].data.build_sheet_file = new_cost_calc_code + '_' + this.input_build_sheet_file.value.name;
+          sendData['design_confirmation_table-update'][0].data.build_sheet_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_build_sheet_file.value, 1, false, 1000, 1000));
           sendData.files.push({
             "folder": "design/build_sheet",
             "file": this.input_build_sheet_file.value,
@@ -5074,7 +5074,7 @@ export default {
           });
         }
         if (this.input_etc_file.value && this.input_etc_file.value.length > 0){
-          sendData['design_confirmation_table-update'][0].etc_files = this.input_etc_file.value.map(x=>new_cost_calc_code + '_' + x.name).join('/');
+          sendData['design_confirmation_table-update'][0].data.etc_files = this.input_etc_file.value.map(x=>new_cost_calc_code + '_' + x.name).join('/');
           this.input_etc_file.value.forEach(file => {
             sendData.files.push({
               "folder": "design/files",
