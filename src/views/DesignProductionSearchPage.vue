@@ -697,11 +697,11 @@
                 class="px-3"
                 style="background: #efefef;"
               >
-                <v-col align-self="center" cols="12" sm="10">
-                  <p style="font-weight: bold; font-size: 30px;" class="mb-0">생산 의뢰서
+                <v-col align-self="center" cols="12" sm="12">
+                  <p style="font-weight: bold; font-size: 30px;text-align: center;" class="mb-0 py-3">생산 의뢰서
                   </p>
                 </v-col>
-                <v-col align-self="center" cols="12" sm="2">
+                <!-- <v-col align-self="center" cols="12" sm="2">
                   <v-img
                     alt="Pionelectric Logo"
                     class="float-right"
@@ -711,7 +711,7 @@
                     width="140"
                     style="margin-top:10px"
                   />
-                </v-col>
+                </v-col> -->
               </v-row>
             </v-card-title>
             <v-card-text>
@@ -1451,9 +1451,9 @@ export default {
       const prevURL = window.location.href;
       let reqURL = '/api/obtain-order/';
       // send_production_request_id = '';
-      
+
       reqURL += '?approval_phase=승인';
-      
+
       if (inputs[1]){
         reqURL += '&project_code=' + inputs[1];
       }
@@ -1470,7 +1470,7 @@ export default {
         reqURL += '&issue_start_date=' + inputs[5].split(',')[0];
         reqURL += inputs[5].split(',').length > 1 ? '&issue_end_date=' + inputs[5].split(',')[1] : '&issue_end_date=' + inputs[5].split(',')[0];
       }
-      
+
       try {
         let result = await mux.Server.get({path: reqURL});
         if (prevURL !== window.location.href) return;
@@ -1512,7 +1512,7 @@ export default {
             reqURL2 += (inputs[0] || inputs[1] || inputs[2] || inputs[3] || inputs[4]) ? '&issue_start_date=' + inputs[5].split(',')[0] : '?issue_start_date=' + inputs[5].split(',')[0];
             reqURL2 += inputs[5].split(',').length > 1 ? '&issue_end_date=' + inputs[5].split(',')[1] : '&issue_end_date=' + inputs[5].split(',')[0];
           }
-          
+
           try {
             let result2 = await mux.Server.get({path: reqURL2});
             if (prevURL !== window.location.href) return;
@@ -1584,14 +1584,14 @@ export default {
               }
               belongData.module_unit_price = Math.round(belongData.module_unit_price / belongData.module_num);
             }
-            
+
             if (belongData.module_num && belongData.module_unit_price){
               a.product_unit_price += belongData.module_num * belongData.module_unit_price;
             }
           }
           a.product_unit_price = Math.round(a.product_unit_price / a.product_num);
         }
-        
+
         if (!productTotalCost[a.cost_calc_code]){
           productTotalCost[a.cost_calc_code] = Math.round(a.product_num && a.product_unit_price ? a.product_num * a.product_unit_price : a.module_num && a.module_unit_price ? a.module_num * a.module_unit_price : a.material_num && a.material_unit_price ? a.material_num * a.material_unit_price : 0);
         }else {
