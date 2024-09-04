@@ -2396,7 +2396,7 @@
                 contain
                 :src="mux.Util.imageBinary(purchaseEstimateThumbnail)"
                 transition="scale-transition"
-                @click="download('purchase/purchase_estimate', purchaseEstimateFile, purchaseEstimateCode+'_')"
+                @click="download('purchase/estimate', purchaseEstimateFile, purchaseEstimateCode+'_')"
                 style="cursor: pointer; width: 100%;"
               />
             </v-col>
@@ -4998,7 +4998,7 @@ export default {
           sendData['design_confirmation_table-update'][0].layout_file = new_cost_calc_code + '_' + this.input_layout_file.value.name;
           sendData['design_confirmation_table-update'][0].layout_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_layout_file.value, 1, false, 1000, 1000));
           sendData.files.push({
-            "column_name": "layout",
+            "folder": "design/layout",
             "file": this.input_layout_file.value,
             "name": this.input_layout_file.value.name
           });
@@ -5007,7 +5007,7 @@ export default {
           sendData['design_confirmation_table-update'][0].structure_file = new_cost_calc_code + '_' + this.input_structure_file.value.name;
           sendData['design_confirmation_table-update'][0].structure_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_structure_file.value, 1, false, 1000, 1000));
           sendData.files.push({
-            "column_name": "structure",
+            "folder": "design/structure",
             "file": this.input_structure_file.value,
             "name": this.input_structure_file.value.name
           });
@@ -5016,7 +5016,7 @@ export default {
           sendData['design_confirmation_table-update'][0].single_line_file = new_cost_calc_code + '_' + this.input_single_line_file.value.name;
           sendData['design_confirmation_table-update'][0].single_line_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_single_line_file.value, 1, false, 1000, 1000));
           sendData.files.push({
-            "column_name": "single_line",
+            "folder": "design/single_line",
             "file": this.input_single_line_file.value,
             "name": this.input_single_line_file.value.name
           });
@@ -5025,7 +5025,7 @@ export default {
           sendData['design_confirmation_table-update'][0].trilinear_file = new_cost_calc_code + '_' + this.input_trilinear_file.value.name;
           sendData['design_confirmation_table-update'][0].trilinear_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_trilinear_file.value, 1, false, 1000, 1000));
           sendData.files.push({
-            "column_name": "trilinear",
+            "folder": "design/trilinear",
             "file": this.input_trilinear_file.value,
             "name": this.input_trilinear_file.value.name
           });
@@ -5034,7 +5034,7 @@ export default {
           sendData['design_confirmation_table-update'][0].circuit_file = new_cost_calc_code + '_' + this.input_circuit_file.value.name;
           sendData['design_confirmation_table-update'][0].circuit_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_circuit_file.value, 1, false, 1000, 1000));
           sendData.files.push({
-            "column_name": "circuit",
+            "folder": "design/circuit",
             "file": this.input_circuit_file.value,
             "name": this.input_circuit_file.value.name
           });
@@ -5043,7 +5043,7 @@ export default {
           sendData['design_confirmation_table-update'][0].approval_file = new_cost_calc_code + '_' + this.input_approval_file.value.name;
           sendData['design_confirmation_table-update'][0].approval_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_approval_file.value, 1, false, 1000, 1000));
           sendData.files.push({
-            "column_name": "approval",
+            "folder": "design/approval",
             "file": this.input_approval_file.value,
             "name": this.input_approval_file.value.name
           });
@@ -5052,7 +5052,7 @@ export default {
           sendData['design_confirmation_table-update'][0].build_sheet_file = new_cost_calc_code + '_' + this.input_build_sheet_file.value.name;
           sendData['design_confirmation_table-update'][0].build_sheet_thumbnail = mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_build_sheet_file.value, 1, false, 1000, 1000));
           sendData.files.push({
-            "column_name": "build_sheet",
+            "folder": "design/build_sheet",
             "file": this.input_build_sheet_file.value,
             "name": this.input_build_sheet_file.value.name
           });
@@ -5061,7 +5061,7 @@ export default {
           sendData['design_confirmation_table-update'][0].etc_files = this.input_etc_file.value.map(x=>new_cost_calc_code + '_' + x.name).join('/');
           this.input_etc_file.value.forEach(file => {
             sendData.files.push({
-              "column_name": "files",
+              "folder": "design/files",
               "file": file,
               "name": file.name
             });
@@ -7396,6 +7396,7 @@ export default {
               "unit_price" : Number(data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()),
               "purchase_num" : data.purchase_num,
               "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
+              "purchase_estimate_code" : data.purchase_estimate_company === '' ? '' : purchase_code,
               "purchase_estimate_company" : data.purchase_estimate_company,
               "purchase_estimate_file" : data.purchase_estimate_file_name,
               "purchase_estimate_thumbnail" : data.purchase_estimate_thumbnail,
@@ -7406,8 +7407,9 @@ export default {
           
           if (data.purchase_estimate_company){
             files.push({
-              "column_name": "purchase_estimate",
+              "folder": "purchase/estimate",
               "file": data.purchase_estimate_file_value,
+              "prefix": purchase_code + '_',
               "name": data.purchase_estimate_file_name
             });
           }

@@ -812,7 +812,7 @@
                 contain
                 :src="mux.Util.imageBinary(purchaseEstimateThumbnail)"
                 transition="scale-transition"
-                @click="download('purchase/purchase_estimate', purchaseEstimateFile, purchaseEstimateCode+'_')"
+                @click="download('purchase/estimate', purchaseEstimateFile, purchaseEstimateCode+'_')"
                 style="cursor: pointer; width: 100%;"
               />
             </v-col>
