@@ -2400,7 +2400,7 @@
                 contain
                 :src="mux.Util.imageBinary(purchaseEstimateThumbnail)"
                 transition="scale-transition"
-                @click="download('purchase/estimate', purchaseEstimateFile, purchaseEstimateCode+'_')"
+                @click="download('purchase/purchase_estimate', purchaseEstimateFile, purchaseEstimateCode+'_')"
                 style="cursor: pointer; width: 100%;"
               />
             </v-col>
@@ -8088,7 +8088,7 @@ export default {
 
           if (data.purchase_estimate_company){
             files.push({
-              "folder": "purchase/estimate",
+              "folder": "purchase/purchase_estimate",
               "file": data.purchase_estimate_file_value,
               "prefix": purchase_code + '_',
               "name": data.purchase_estimate_file_name
