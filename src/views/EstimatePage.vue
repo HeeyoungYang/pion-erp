@@ -1440,13 +1440,13 @@
         @close="closeCostSearchDialog"
       >
       </ProductCostSearchDialogComponent>
-      <EstimateCostSearchDialogComponent
+      <EstimateCostHistorySearchDialogComponent
         :dialog-value="estimate_cost_dialog"
         :persistent="true"
         @apply="applyEstimateLoad"
         @close="closeCostSearchDialog"
       >
-      </EstimateCostSearchDialogComponent>
+      </EstimateCostHistorySearchDialogComponent>
   </div>
 </template>
 <script>
@@ -1461,7 +1461,7 @@ import CostTableComponent from "@/components/CostTableComponent";
 import ModalDialogComponent from "@/components/ModalDialogComponent";
 import MemberSearchDialogComponent from "@/components/MemberSearchDialogComponent";
 import ProductCostSearchDialogComponent from "@/components/ProductCostSearchDialogComponent.vue";
-import EstimateCostSearchDialogComponent from "@/components/EstimateCostSearchDialogComponent.vue";
+import EstimateCostHistorySearchDialogComponent from "@/components/EstimateCostHistorySearchDialogComponent.vue";
 
 import mux from "@/mux";
 
@@ -1479,7 +1479,7 @@ export default {
                 CostTableComponent,
                 ModalDialogComponent,
                 ProductCostSearchDialogComponent,
-                EstimateCostSearchDialogComponent,
+                EstimateCostHistorySearchDialogComponent,
               },
 
   created () {

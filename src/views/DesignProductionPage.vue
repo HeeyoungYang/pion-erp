@@ -3619,6 +3619,8 @@ export default {
           const searchResult = result.data;
           // const searchResult = JSON.parse(JSON.stringify(DesignProductionPageConfig.test_design_data));
           searchResult.confirmation.reverse(); // 최신순으로 정렬
+          // 이력 제거 후 실제 데이터만 남기기
+          searchResult.confirmation = searchResult.confirmation.filter(x=> searchResult.last_design_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
           const uniqueConfirmation = [];
           const confirmationMap = new Map();
 
@@ -3635,6 +3637,10 @@ export default {
             uniqueConfirmation.push(item);
           });
           searchResult.confirmation = uniqueConfirmation;
+          searchResult.product_cost = searchResult.product_cost.filter(x=> searchResult.last_design_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          searchResult.labor_cost_calc_detail = searchResult.labor_cost_calc_detail.filter(x=> searchResult.last_design_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          searchResult.product_cost_calc_detail = searchResult.product_cost_calc_detail.filter(x=> searchResult.last_design_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          searchResult.construction_materials_data = searchResult.construction_materials_data.filter(x=> searchResult.last_design_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
           this.clearClicked();
           this.searchDataCalcProcess(searchResult);
 
