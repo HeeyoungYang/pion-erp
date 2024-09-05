@@ -2496,7 +2496,7 @@ export default {
                 ...this.searched_datas.purchase_detail_data.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
                   let item_num = 0;
                   let usable_num = 0;
-                  
+
                   item_num = Math.round(Number(this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).belong_data.find(y=>y.product_code === a.item_code).num) * Number(this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).num));
                   usable_num = this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).belong_data.find(y=>y.product_code === a.item_code).usable_num;
 
@@ -3600,7 +3600,7 @@ export default {
         reqURL += (inputs[0] || inputs[1] || inputs[2] || inputs[3]) ? '&issue_start_date=' + inputs[4].split(',')[0] : '?issue_start_date=' + inputs[4].split(',')[0];
         reqURL += inputs[4].split(',').length > 1 ? '&issue_end_date=' + inputs[4].split(',')[1] : '&issue_end_date=' + inputs[4].split(',')[0];
       }
-      
+
       try {
         let result = await mux.Server.get({path: reqURL});
         if (prevURL !== window.location.href) return;
@@ -6074,8 +6074,8 @@ export default {
       //   this.tab_write = 0;
       //   return;
       // }
-      // if (!this.input_layout_file2.value 
-      //     && !this.input_structure_file2.value 
+      // if (!this.input_layout_file2.value
+      //     && !this.input_structure_file2.value
       //     && !this.input_single_line_file2.value
       //     && !this.input_trilinear_file2.value
       //     && !this.input_circuit_file2.value){
@@ -6310,7 +6310,7 @@ export default {
           "rollback": "yes"
         });
       });
-      
+
       sendData.path = '/api/multipart_rest_api/';
       sendData.prefix = new_cost_calc_code + '_';
       sendData.files = [];
@@ -6329,7 +6329,7 @@ export default {
             });
           }
         }
-      } 
+      }
 
       if (this.input_layout_file2.value){
         sendData.files.push({
@@ -6791,7 +6791,7 @@ export default {
               }],
               "files": []
             };
-            
+
             if (this.editable_bom_list){ // BOM LIST 수정 후 구매 요청 내역 수정이라면
               // this.set_bom_list_data_copy 기준 수정 내용 업데이트 진행
               console.log('this.set_bom_list_data_copy :>> ', this.set_bom_list_data_copy);
@@ -6900,7 +6900,7 @@ export default {
                   });
                 }
               }
-            } 
+            }
 
 
             // let purchase_code = 'PEPR_' + mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
@@ -7161,11 +7161,11 @@ export default {
                   this.set_bom_list_data = JSON.parse(JSON.stringify(this.set_bom_list_data_copy)); // 수정 내용 적용
                 }
                 this.bom_list_purchase_data = JSON.parse(JSON.stringify(this.bom_list_purchase_data_copy)); // 수정 내용 적용
-                
+
                 this.editable_bom_list = false;
                 this.dialog_edit_purchase_requested = false;
                 this.during_edit = false;
-                
+
               } else {
                 if (prevURL !== window.location.href) return;
                 mux.Util.showAlert(result);
@@ -7268,8 +7268,8 @@ export default {
         return;
       }
       if (
-        !this.input_layout_file2.value 
-        && !this.input_structure_file2.value 
+        !this.input_layout_file2.value
+        && !this.input_structure_file2.value
         && !this.input_single_line_file2.value
         && !this.input_trilinear_file2.value
         && !this.input_circuit_file2.value
@@ -7420,7 +7420,7 @@ export default {
         this.production_steppers = step+1;
       }
       mux.Util.hideLoading();
-      
+
     },
     async checkPurchaseRequest(step){
 
@@ -7435,7 +7435,7 @@ export default {
             mux.Util.showAlert('구매 담당자를 선택해주세요.');
             return;
           }else{
-            confirmation_data.approval_phase = '요청';
+            confirmation_data.approval_phase = '설계미승인';
             this.purchase_member_info2.forEach(mem => {
               if(mem.type === '확인'){
                 confirmation_data.checker = mem.name;
@@ -7471,7 +7471,7 @@ export default {
                 }
               }
               // 선주문한 수량이 필요수량-사용가능수량 보다 많은지 확인
-              if( data.num - data.usable_num > Number(data.belong_data[0].purchase_set_num) + Number(data.purchase_num)){
+              if( data.num - data.usable_num > 0 && data.num - data.usable_num > Number(data.belong_data[0].purchase_set_num) + Number(data.purchase_num)){
                 mux.Util.showAlert(
                   `필요수량 및 사용 가능 수량 대비
                   선주문 사용 수량과 구매 요청 수량이 부족합니다.
@@ -7492,7 +7492,7 @@ export default {
               }
 
               // 구매 요청 수량이 필요수량-사용가능수량 보다 많은지 확인
-              if (data.num - data.usable_num > Number(data.purchase_num)){
+              if (data.num - data.usable_num > 0 && data.num - data.usable_num > Number(data.purchase_num)){
                 mux.Util.showAlert(
                     `필요수량 및 사용 가능 수량 대비
                     구매 요청 수량이 부족합니다.
@@ -7522,7 +7522,7 @@ export default {
             mux.Util.showAlert('구매 담당자를 선택해주세요.');
             return;
           }else{
-            confirmation_data.approval_phase = '요청';
+            confirmation_data.approval_phase = '설계미승인';
             this.purchase_member_info.forEach(mem => {
               if(mem.type === '확인'){
                 confirmation_data.checker = mem.name;
@@ -7558,7 +7558,7 @@ export default {
                 }
               }
               // 선주문한 수량이 필요수량-사용가능수량 보다 많은지 확인
-              if( data.num - data.usable_num > Number(data.belong_data[0].purchase_set_num) + Number(data.purchase_num)){
+              if( data.num - data.usable_num > 0 && data.num - data.usable_num > Number(data.belong_data[0].purchase_set_num) + Number(data.purchase_num)){
                 mux.Util.showAlert(
                   `필요수량 및 사용 가능 수량 대비
                   선주문 사용 수량과 구매 요청 수량이 부족합니다.
@@ -7579,7 +7579,7 @@ export default {
               }
 
               // 구매 요청 수량이 필요수량-사용가능수량 보다 많은지 확인
-              if (data.num - data.usable_num > Number(data.purchase_num)){
+              if (data.num - data.usable_num > 0 && data.num - data.usable_num > Number(data.purchase_num)){
                 mux.Util.showAlert(
                     `필요수량 및 사용 가능 수량 대비
                     구매 요청 수량이 부족합니다.
@@ -8234,7 +8234,7 @@ export default {
             "select_where": {"code": purchase_code, "product_code": data.product_code, "item_code": data.item_code},
             "rollback": "yes"
           })
-          
+
           if (data.purchase_estimate_company){
             files.push({
               "folder": "purchase/estimate",

@@ -1856,6 +1856,7 @@ export default {
     async setApprovalPhase(item, change, reason){
       console.log(item, change, reason);
 
+      const prevURL = window.location.href;
       let new_approval_phase = '';
       let new_checked_date = null;
       let new_approved_date = null;
@@ -1871,7 +1872,6 @@ export default {
           new_approval_phase = '승인';
           new_approved_date = mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss');
         }
-
       }
 
       if (change === false){
@@ -1903,157 +1903,242 @@ export default {
         }],
       };
 
+      let update_purchase_data = [];
+      let update_stock_data = [];
+      let check_usable_num_before_update = 0;
       if (new_approval_phase === '미승인'){
         sendData["design_confirmation_table-update"][0].data.checked_date = new_checked_date;
-      }
-
-      const prevURL = window.location.href;
-      try {
-        mux.Util.showLoading();
-
-        let result = await mux.Server.post({
-          path: '/api/common_rest_api/',
-          params: sendData
-        });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
+      }else if(new_approval_phase === '승인'){
+        let alertMessage = '필요수량 및 사용 가능 수량 대비<br>구매 요청 수량이 부족합니다.';
+        let check_usable_num = 0;
+        for(let un=0; un<this.purchase_detail_data.length; un++){
+          let purchase = this.purchase_detail_data[un];
+          if (purchase.item_num - purchase.usable_num > 0 && purchase.item_num - purchase.usable_num > purchase.purchase_num){
+            alertMessage +=
+              `
+              <br>
+                · 자재 코드 : ${purchase.item_code}
+                · 필요 수량 : ${purchase.item_num}
+                · 사용 가능 수량 : ${purchase.usable_num}
+                · 구매 요청 수량 : ${purchase.purchase_num}
+              `;
+              check_usable_num++;
+          }
         }
-        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+        if(check_usable_num > 0){
+          mux.Util.showAlert(alertMessage);
+          return;
+        }
 
-          item.approval_phase = new_approval_phase;
-          item.approved_date = new_approved_date ? new_approved_date : '';
-          item.rejecter = new_rejecter;
-          item.rejected_date = new_rejected_date ? new_rejected_date : '';
-          item.reject_reason = new_reject_reason;
-          if (new_approval_phase === '미승인'){
-            item.checked_date = new_checked_date;
-          }
-
-          this.searched_datas.confirmation.forEach(confirmation => {
-            if (confirmation.cost_calc_code === item.cost_calc_code){
-              confirmation.approval_phase = item.approval_phase;
-              confirmation.checked_date = item.checked_date;
-              confirmation.approved_date = item.approved_date;
-              confirmation.rejecter = item.rejecter;
-              confirmation.rejected_date = item.rejected_date;
-              confirmation.reject_reason = item.reject_reason;
-            }
+        for(let calc =0; calc<this.purchase_detail_data.length; calc++){
+          let bomCalc = this.purchase_detail_data[calc];
+          let stock_check = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: [
+              {
+                "product_table.product_code": bomCalc.item_code,
+                "module_table.module_code": bomCalc.item_code,
+                "material_table.material_code": bomCalc.item_code,
+                "material_table.directly_written": 0,
+              }
+            ],
+            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
           });
+          if (prevURL !== window.location.href) return;
 
-          //메일 알림 관련
-          let mailTo = [];
-          let creater = this.$cookies.get(this.$configJson.cookies.id.key);
-          let reject_info;
-          if(item.approval_phase === '미승인'){
-            mailTo.push(creater);
-            mailTo.push(item.approver_id);
-          }else if(item.approval_phase === '승인'){
-            mailTo.push(creater);
-            if(creater !== item.checker_id){
-              mailTo.push(item.checker_id);
-            }
-          }else if(item.approval_phase === '반려' && !item.checked_date){
-            mailTo.push(creater);
-            reject_info=`
-              <tr>
-                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
-                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejecter}</td>
-              </tr>
-              <tr>
-                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
-                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejected_date}</td>
-              </tr>
-            `
-          }else if(item.approval_phase === '반려' && item.checked_date){
-            mailTo.push(creater);
-            mailTo.push(item.checker_id);
-            reject_info=`
-              <tr>
-                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
-                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejecter}</td>
-              </tr>
-              <tr>
-                <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
-                <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejected_date}</td>
-              </tr>
-            `
+          if (typeof stock_check === 'string'){
+            stock_check = JSON.parse(stock_check);
           }
+          if(stock_check['code'] == 0){
+            if(stock_check['data'].length > 0){
+              let searched_stock_data = stock_check['data'][0];
+              let searched_usable_num = searched_stock_data.usable_num;
+              let searched_spot = searched_stock_data.spot;
+              if(bomCalc.item_num - searched_usable_num > 0 && bomCalc.item_num - searched_usable_num > bomCalc.purchase_num){
+                check_usable_num_before_update++;
+              }else{
+                update_stock_data.push({
+                  "user_info": {
+                      "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                      "role": "modifier"
+                    },
+                    "data":{
+                      "usable_num": Number(searched_usable_num) - Number(bomCalc.item_num)
+                    },
+                    "update_where": {"product_code": bomCalc.item_code, "spot": searched_spot},
+                    "rollback": "yes"
+                })
+              }
+            }
+          }
+        }
+        update_purchase_data.push({
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{"approval_phase": "요청"},
+          "update_where": {"cost_calc_code": item.cost_calc_code},
+          "rollback": "no"
+        })
+      }
+      sendData["purchase_confirmation_table-update"] = update_purchase_data;
+      sendData["stock_table-update"] = update_stock_data;
 
-          // 메일 본문 내용
-          let content=`
-          <html>
-            <body>
-              <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                <h2 style="text-align: center; color:#13428a">설계 ${item.approval_phase === '미승인' ? '확인' : item.approval_phase} 처리 알림</h2>
-                <table style="width: 100%;border-spacing: 10px 10px;">
-                  <tr>
-                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
-                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.project_code}</td>
-                  </tr>
-                  <tr>
-                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
-                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inhouse_bid_number}</td>
-                  </tr>
-                  <tr>
-                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발행일</td>
-                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.issue_date}</td>
-                  </tr>
-                  <tr>
-                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.given_name}</td>
-                  </tr>
-                  <tr>
-                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
-                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
-                  </tr>
-                  <tr>
-                    <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
-                    <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
-                  </tr>
-                  ${reject_info ? reject_info : ''}
-                </table>
-                <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&inhouse_bid_number=${item.inhouse_bid_number}&company_bid_number=${item.company_bid_number}&company_name=${item.company_name}&issue_date=${item.issue_date}">
-                  <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                    확인하기
-                  </p>
-                </a>
-              </div>
-            </body>
-          </html>
-          `;
+      if(check_usable_num_before_update > 0){
+        mux.Util.showAlert('사용 가능 수량이 변동되었습니다.필요수량 및 사용 가능 수량 대비 구매 요청 수량이 부족합니다.<br><br> 재 검색 후 확인해주세요');
+        return;
+      }else{
+        try {
+          mux.Util.showLoading();
 
+          let result = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: sendData
+          });
+          if (prevURL !== window.location.href) return;
 
-          try {
-            let sendEmailAlam = await mux.Server.post({
-              path: '/api/send_email/',
-              to_addrs: mailTo,
-              subject: "설계 " + (item.approval_phase === '미승인' ? '확인' : item.approval_phase) + " 처리 알림",
-              content: content
+          if (typeof result === 'string'){
+            result = JSON.parse(result);
+          }
+          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+            item.approval_phase = new_approval_phase;
+            item.approved_date = new_approved_date ? new_approved_date : '';
+            item.rejecter = new_rejecter;
+            item.rejected_date = new_rejected_date ? new_rejected_date : '';
+            item.reject_reason = new_reject_reason;
+            if (new_approval_phase === '미승인'){
+              item.checked_date = new_checked_date;
+            }
+
+            this.searched_datas.confirmation.forEach(confirmation => {
+              if (confirmation.cost_calc_code === item.cost_calc_code){
+                confirmation.approval_phase = item.approval_phase;
+                confirmation.checked_date = item.checked_date;
+                confirmation.approved_date = item.approved_date;
+                confirmation.rejecter = item.rejecter;
+                confirmation.rejected_date = item.rejected_date;
+                confirmation.reject_reason = item.reject_reason;
+              }
             });
-            if (prevURL !== window.location.href) return;
-            if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
-              mux.Util.showAlert('저장되었습니다.', '저장 완료', 3000);
-            } else {
+
+            //메일 알림 관련
+            let mailTo = [];
+            let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+            let reject_info;
+            if(item.approval_phase === '미승인'){
+              mailTo.push(creater);
+              mailTo.push(item.approver_id);
+            }else if(item.approval_phase === '승인'){
+              mailTo.push(creater);
+              if(creater !== item.checker_id){
+                mailTo.push(item.checker_id);
+              }
+            }else if(item.approval_phase === '반려' && !item.checked_date){
+              mailTo.push(creater);
+              reject_info=`
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejecter}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejected_date}</td>
+                </tr>
+              `
+            }else if(item.approval_phase === '반려' && item.checked_date){
+              mailTo.push(creater);
+              mailTo.push(item.checker_id);
+              reject_info=`
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려자</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejecter}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">반려일</td>
+                  <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.rejected_date}</td>
+                </tr>
+              `
+            }
+
+            // 메일 본문 내용
+            let content=`
+            <html>
+              <body>
+                <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                  <h2 style="text-align: center; color:#13428a">설계 ${item.approval_phase === '미승인' ? '확인' : item.approval_phase} 처리 알림</h2>
+                  <table style="width: 100%;border-spacing: 10px 10px;">
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.project_code}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.inhouse_bid_number}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발행일</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.issue_date}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.given_name}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                    </tr>
+                    ${reject_info ? reject_info : ''}
+                  </table>
+                  <a style="color: white; text-decoration:none"href="${prevURL}?project_code=${item.project_code}&inhouse_bid_number=${item.inhouse_bid_number}&company_bid_number=${item.company_bid_number}&company_name=${item.company_name}&issue_date=${item.issue_date}">
+                    <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                      확인하기
+                    </p>
+                  </a>
+                </div>
+              </body>
+            </html>
+            `;
+
+
+            try {
+              let sendEmailAlam = await mux.Server.post({
+                path: '/api/send_email/',
+                to_addrs: mailTo,
+                subject: "설계 " + (item.approval_phase === '미승인' ? '확인' : item.approval_phase) + " 처리 알림",
+                content: content
+              });
               if (prevURL !== window.location.href) return;
-              console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+              if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
+                mux.Util.showAlert('저장되었습니다.', '저장 완료', 3000);
+              } else {
+                if (prevURL !== window.location.href) return;
+                console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+                mux.Util.showAlert('저장되었으나 알림 메일 전송에 실패하였습니다.', '저장 완료');
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              console.log('알림 메일 전송에 실패-error :>> ', error);
               mux.Util.showAlert('저장되었으나 알림 메일 전송에 실패하였습니다.', '저장 완료');
             }
-          } catch (error) {
-            if (prevURL !== window.location.href) return;
-            console.log('알림 메일 전송에 실패-error :>> ', error);
-            mux.Util.showAlert('저장되었으나 알림 메일 전송에 실패하였습니다.', '저장 완료');
-          }
 
-        } else {
+          } else {
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(result);
+          }
+        } catch (error) {
           if (prevURL !== window.location.href) return;
-          mux.Util.showAlert(result);
+          mux.Util.showAlert(error);
         }
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        mux.Util.showAlert(error);
       }
+
+
       mux.Util.hideLoading();
 
     },
