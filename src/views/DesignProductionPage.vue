@@ -3568,18 +3568,23 @@ export default {
       this.estimateInfoInputs = JSON.parse(JSON.stringify(this.estimateInfoInputs));
       mux.Rules.rulesSet(this.estimateInfoInputs);
     },
-    async searchButton(){
+    async searchButton(inputList, new_cost_calc_code){
       mux.Util.showLoading();
 
       let inputs = [];
-      this.searchCardInputs.forEach((input) => {
-        if (input.value && String(input.value).trim()) {
-          inputs.push(String(input.value).trim());
-        }else {
-          inputs.push("");
-        }
-      });
-      console.log('inputs :>> ', inputs);
+      if (Array.isArray(inputList)){
+        inputs = inputList;
+      }else {
+        this.searchCardInputs.forEach((input) => {
+          if (input.value && String(input.value).trim()) {
+            inputs.push(String(input.value).trim());
+          }else {
+            inputs.push("");
+          }
+        });
+        console.log('inputs :>> ', inputs);
+        this.lastSearchInputs = JSON.parse(JSON.stringify(inputs));
+      }
 
       const prevURL = window.location.href;
       let reqURL = '/api/design-production-search/';
@@ -3636,6 +3641,13 @@ export default {
           searchResult.construction_materials_data = searchResult.construction_materials_data.filter(x=> searchResult.last_design_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
           this.clearClicked();
           this.searchDataCalcProcess(searchResult);
+
+          if (new_cost_calc_code){
+            let clickedIndex = this.search_estimate_data.findIndex(x => x.cost_calc_code === new_cost_calc_code);
+            if (clickedIndex !== -1){
+              this.clickSearchedTr(this.search_estimate_data[clickedIndex]);
+            }
+          }
 
         }else{
           mux.Util.showAlert(result);
@@ -6902,67 +6914,6 @@ export default {
               }
             }
 
-
-            // let purchase_code = 'PEPR_' + mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
-            // sendData['purchase_confirmation_table-insert'] = [{
-            //   "user_info": {
-            //     "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-            //     "role": "modifier"
-            //   },
-            //   "data": {
-            //     "code": purchase_code,
-            //     "project_code": this.input_project_code.value,
-            //     "cost_calc_code": new_cost_calc_code,
-            //     "approval_phase": '요청',
-            //     "checker": this.$cookies.get(this.$configJson.cookies.name.key),
-            //     "checker_id": this.$cookies.get(this.$configJson.cookies.id.key),
-            //     "approver": this.purchase_member_info[1].name,
-            //     "approver_id": this.purchase_member_info[1].user_id
-            //   },
-            //   "select_where": {"cost_calc_code": new_cost_calc_code},
-            //   "rollback": "yes"
-            // }];
-
-            // sendData['purchase_product_table-insert'] = [];
-            // sendData['files'] = [];
-            // this.bom_list_purchase_data_copy.forEach(data => {
-            //   sendData['purchase_product_table-insert'].push({
-            //     "user_info": {
-            //       "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-            //       "role": "modifier"
-            //     },
-            //     "data": {
-            //       "code": purchase_code,
-            //       "type": data.type,
-            //       "classification": data.classification,
-            //       "product_code": data.product_code,
-            //       "item_code": data.item_code,
-            //       "name": data.name,
-            //       "model": data.model,
-            //       "spec": data.spec,
-            //       "manufacturer": data.manufacturer,
-            //       "unit_price": data.unit_price,
-            //       "purchase_num": data.purchase_num,
-            //       "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
-            //       "purchase_estimate_code" : data.purchase_estimate_company === '' ? '' : purchase_code,
-            //       "purchase_estimate_company" : data.purchase_estimate_company,
-            //       "purchase_estimate_file" : data.purchase_estimate_file_name,
-            //       "purchase_estimate_thumbnail" : data.purchase_estimate_thumbnail,
-            //     },
-            //     "select_where": {"code": purchase_code, "product_code": data.product_code, "item_code": data.item_code},
-            //     "rollback": "yes"
-            //   });
-
-            //   if (data.purchase_estimate_company){
-            //     sendData['files'].push({
-            //       "folder": "purchase/estimate",
-            //       "file": data.purchase_estimate_file_value,
-            //       "prefix": purchase_code + '_',
-            //       "name": data.purchase_estimate_file_name
-            //     });
-            //   }
-            // });
-
             sendData.path = '/api/multipart_rest_api/';
             sendData.prefix = new_cost_calc_code + '_';
 
@@ -6979,105 +6930,6 @@ export default {
                 result = result.data;
               }
               if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-
-                this.estimate_member_info[0].checked_date = sendDataCheckedDate !== null ? sendDataCheckedDate : '';
-                let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.clickedProductCost.cost_calc_code);
-                targetConfirmation.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
-                targetConfirmation.checked_date = `${this.estimate_member_info[0].checked_date}`;
-                targetConfirmation.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
-                targetConfirmation.rejecter = '';
-                targetConfirmation.rejected_date = '';
-                targetConfirmation.reject_reason = '';
-
-                targetConfirmation.cost_calc_code = new_cost_calc_code;
-                this.searched_datas.last_design_confirmation.find(x=>x.cost_calc_code === this.clickedProductCost.cost_calc_code).cost_calc_code = new_cost_calc_code;
-                // this.searched_datas.product_cost_calc_detail.find(x=>x.cost_calc_code === this.clickedProductCost.cost_calc_code).cost_calc_code = new_cost_calc_code;
-                if (sendData["design_cost_calc_detail_table-update"]){
-                  this.searched_datas.product_cost_calc_detail = this.searched_datas.product_cost_calc_detail.map(x => {
-                    if (x.cost_calc_code === this.clickedProductCost.cost_calc_code){
-                      x.cost_calc_code = new_cost_calc_code;
-                    }
-                    return x;
-                  });
-                }else {
-                  this.searched_datas.product_cost_calc_detail = this.searched_datas.product_cost_calc_detail.filter(x => x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
-                  let product_obj_list = [];
-                  this.set_bom_list_data_copy.forEach(data => {
-                    product_obj_list.push({
-                      modified_time: mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss'),
-                      cost_calc_code: new_cost_calc_code,
-                      manufactrer: data.manufacturer,
-                      product_classification: data.classification,
-                      product_code: data.product_code,
-                      product_model: data.model,
-                      product_name: data.cost_list,
-                      product_num: data.cost_num,
-                      product_spec: data.cost_list_sub,
-                      product_unit_price: data.cost_unit_price,
-                      belong_data: [ ...data.belong_data.map(x => {
-                          return {
-                            module_classification: x.classification,
-                            module_code: x.item_code,
-                            module_manufacturer: x.manufacturer,
-                            module_model: x.model,
-                            module_name: x.name,
-                            module_num: x.num,
-                            module_spec: x.spec,
-                            module_type: x.type,
-                            module_unit_price: x.unit_price,
-                            module_usable_num: x.usable_num
-                          }
-                        })
-                      ]
-                    })
-                  })
-                  this.searched_datas.product_cost_calc_detail.push(...product_obj_list);
-                }
-                this.searched_datas.construction_materials_data = this.searched_datas.construction_materials_data.map(x => {
-                  if (x.cost_calc_code === this.clickedProductCost.cost_calc_code){
-                    x.cost_calc_code = new_cost_calc_code;
-                  }
-                  return x;
-                });
-                this.searched_datas.labor_cost_calc_detail = this.searched_datas.labor_cost_calc_detail.map(x => {
-                  if (x.cost_calc_code === this.clickedProductCost.cost_calc_code){
-                    x.cost_calc_code = new_cost_calc_code;
-                  }
-                  return x;
-                });
-                this.searched_datas.purchase_detail_data = this.searched_datas.purchase_detail_data.filter(x => x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
-                let purchase_obj_list = [];
-                sendData['purchase_product_table-insert'].forEach(x => {
-                  purchase_obj_list.push({
-                    cost_calc_code: x.data.code,
-                    type: x.data.type,
-                    classification: x.data.classification,
-                    product_code: x.data.product_code,
-                    item_code: x.data.item_code,
-                    name: x.data.name,
-                    model: x.data.model,
-                    spec: x.data.spec,
-                    manufacturer: x.data.manufacturer,
-                    unit_price: x.data.unit_price,
-                    purchase_num: x.data.purchase_num,
-                    purchase_estimate_phase: x.data.purchase_estimate_phase,
-                    purchase_estimate_code: x.data.purchase_estimate_code,
-                    purchase_estimate_company: x.data.purchase_estimate_company,
-                    purchase_estimate_file: x.data.purchase_estimate_file,
-                    purchase_estimate_thumbnail: x.data.purchase_estimate_thumbnail
-                  });
-                });
-                this.searched_datas.purchase_detail_data.push(...purchase_obj_list);
-
-                this.clickedProductCost.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
-                this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
-                this.clickedProductCost.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
-                this.clickedProductCost.rejecter = '';
-                this.clickedProductCost.rejected_date = '';
-                this.clickedProductCost.reject_reason = '';
-                this.clickedProductCost.cost_calc_code = new_cost_calc_code;
-
-                this.searchDataCalcProcess(this.searched_datas);
 
                 if (isRejected || needReConfirm){
                   //메일 알림 관련
@@ -7155,16 +7007,12 @@ export default {
                   mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
                 }
 
-                // this.searched_datas 에도 적용 진행 필요
-
-                if (this.editable_bom_list){ // BOM LIST 수정 후 구매 요청 내역 수정이라면
-                  this.set_bom_list_data = JSON.parse(JSON.stringify(this.set_bom_list_data_copy)); // 수정 내용 적용
-                }
-                this.bom_list_purchase_data = JSON.parse(JSON.stringify(this.bom_list_purchase_data_copy)); // 수정 내용 적용
-
                 this.editable_bom_list = false;
                 this.dialog_edit_purchase_requested = false;
                 this.during_edit = false;
+
+                // 화면 적용을 위해 재검색 및 클릭 이벤트 실행
+                this.searchButton(this.lastSearchInputs, new_cost_calc_code);
 
               } else {
                 if (prevURL !== window.location.href) return;
@@ -7206,6 +7054,7 @@ export default {
         {
           "type":"",
           "classification":"",
+          "product_code": this.item_setting_product_code,
           "item_code": '임시코드-'+ ('00' + (added + 1)).slice(-3),
           "name":"",
           "model":"",
@@ -8497,6 +8346,7 @@ export default {
       purchaseEstimateCode: '',
 
       loaded_obtain_cost_calc_code: '',
+      lastSearchInputs: [],
     }
   },
 }
