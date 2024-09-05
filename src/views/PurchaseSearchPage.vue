@@ -1853,7 +1853,7 @@ export default {
         }
       });
 
-      if(item.creater === this.$cookies.get(this.$configJson.cookies.id.key)){
+      if(item.approver_id === this.$cookies.get(this.$configJson.cookies.id.key)){
         this.creater_authority = true;
       }
       this.purchase_detail_data.forEach(data =>{

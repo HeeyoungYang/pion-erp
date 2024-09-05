@@ -77,16 +77,16 @@
                 <v-card ref="calcCostCard" style="border: 1px solid #ccc;" elevation="0">
                   <v-card-text>
                     <div style="width:100%; background-color: #ccc; min-height:700px">
-                      {{ clickedProductCost.obtain_file ? '' : '※ 수주서 PDF 미리보기 영역' }}
+                      {{ relatedClickedProductCost[0].obtain_file ? '' : '※ 수주서 PDF 미리보기 영역' }}
                       <v-img
-                        v-if="clickedProductCost.obtain_file"
+                        v-if="relatedClickedProductCost[0].obtain_file"
                         alt="thumbnail"
                         class="shrink mr-2"
                         contain
-                        :src="mux.Util.imageBinary(clickedProductCost.obtain_thumbnail)"
+                        :src="mux.Util.imageBinary(relatedClickedProductCost[0].obtain_thumbnail)"
                         transition="scale-transition"
                         width="100%"
-                        @click="download('obtain/obtain', clickedProductCost.obtain_file.replace(clickedProductCost.obtain_file.split('_')[0]+'_'+clickedProductCost.obtain_file.split('_')[1]+'_', ''), clickedProductCost.obtain_file.split('_')[0]+'_'+clickedProductCost.obtain_file.split('_')[1]+'_')"
+                        @click="download('obtain/obtain', relatedClickedProductCost[0].obtain_file.replace(clickedProductCost.obtain_file.split('_')[0]+'_'+clickedProductCost.obtain_file.split('_')[1]+'_', ''), clickedProductCost.obtain_file.split('_')[0]+'_'+clickedProductCost.obtain_file.split('_')[1]+'_')"
                         style="cursor: pointer;"
                       />
                     </div>
@@ -96,36 +96,51 @@
               <!-- 수주 확인서 -->
               <v-tab-item>
                 <v-card ref="calcCostCard" style="border: 1px solid #ccc;" elevation="0">
-                  <v-menu offset-y>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn
-                        color="success"
-                        fab
-                        x-small
-                        class="dont_print"
-                        elevation="0"
-                        v-bind="attrs"
-                        v-on="on"
-                        data-html2canvas-ignore="true"
-                      >
-                        <v-icon
-                          small
-                        >mdi-content-save</v-icon>
-                      </v-btn>
-                    </template>
-                    <v-list>
-                      <v-list-item
-                        v-for="(item, index) in save_estimates"
-                        :key="index"
+                  <v-row>
+                    <v-col cols="12" sm="5">
+                      <v-combobox
+                        label="version"
+                        filled
+                        v-model="version"
+                        :items="versions"
+                        hide-details
                         dense
-                        @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                                : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
-                      >
-                        <v-list-item-title>{{ item.title }}</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                  <v-card-title style="max-width: 868.5px;">
+                      ></v-combobox>
+                    </v-col>
+                    <v-col cols="12" sm="7" align-self="center">
+                      <v-menu offset-y>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                            color="success"
+                            fab
+                            x-small
+                            class="dont_print"
+                            elevation="0"
+                            v-bind="attrs"
+                            v-on="on"
+                            data-html2canvas-ignore="true"
+                          >
+                            <v-icon
+                              small
+                            >mdi-content-save</v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            v-for="(item, index) in save_estimates"
+                            :key="index"
+                            dense
+                            @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                                    : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                          >
+                            <v-list-item-title>{{ item.title }}</v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </v-col>
+                  </v-row>
+
+                  <v-card-title style="max-width: 868.5px;margin-top:20px">
                     <v-row
                       class="px-3"
                       style="background: #efefef;"
@@ -246,15 +261,32 @@
               <!-- 설계 -->
               <v-tab-item>
                 <v-card class="elevation-0">
-                  <v-card-text>
+                  <v-card-text
+                    v-if="version === ''"
+                  >
+                    <p class="error--text">※ 등록된 설계관련 데이터가 없습니다.</p>
+                  </v-card-text>
+
+                  <v-card-text v-else>
                     <v-row>
                       <v-col cols="12" sm="5">
                         <v-combobox
                           label="version"
                           filled
-                          v-model="version"
-                          :items="versions"
+                          v-model="version2"
+                          :items="versions2"
+                          hide-details
+                          dense
                         ></v-combobox>
+                      </v-col>
+                      <v-col cols="12" sm="7" align-self="center">
+                        <v-chip
+                          class="ma-2"
+                          small
+                          :color="design_production_approval_phase == '미확인' ? 'default' : (design_production_approval_phase == '미승인' ? 'amber lighten-4' : (design_production_approval_phase == '승인' ? 'primary' : 'error'))"
+                        >
+                          {{ design_production_approval_phase }}
+                        </v-chip>
                       </v-col>
                     </v-row>
                     <v-row class="mt-3">
@@ -285,59 +317,118 @@
                     <v-row class="mt-4">
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 배치도</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
-                        <!-- <v-img
+                        <v-img
+                          v-if="clickedProductCost.layout_file"
                           alt="thumbnail"
                           class="shrink mr-2"
                           contain
-                          :src="mux.Util.imageBinary(receivingInspectionThumbnail)"
+                          :src="mux.Util.imageBinary(clickedProductCost.layout_thumbnail)"
                           transition="scale-transition"
                           width="350"
-                          @click="download('inbound/receiving_inspection', inbound_info_data.receiving_inspection_file, inbound_info_data.code+'_')"
+                          @click="download('design/layout', clickedProductCost.layout_file.replace(clickedProductCost.layout_file.split('_')[0]+'_'+clickedProductCost.layout_file.split('_')[1]+'_', ''), clickedProductCost.layout_file.split('_')[0]+'_'+clickedProductCost.layout_file.split('_')[1]+'_')"
                           style="cursor: pointer;"
-                        /> -->
+                        />
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 구조도</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          v-if="clickedProductCost.structure_file"
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(clickedProductCost.structure_thumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('design/structure', clickedProductCost.structure_file.replace(clickedProductCost.structure_file.split('_')[0]+'_'+clickedProductCost.structure_file.split('_')[1]+'_', ''), clickedProductCost.structure_file.split('_')[0]+'_'+clickedProductCost.structure_file.split('_')[1]+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 단선도</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          v-if="clickedProductCost.single_line_file"
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(clickedProductCost.single_line_thumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('design/single_line', clickedProductCost.single_line_file.replace(clickedProductCost.single_line_file.split('_')[0]+'_'+clickedProductCost.single_line_file.split('_')[1]+'_', ''), clickedProductCost.single_line_file.split('_')[0]+'_'+clickedProductCost.single_line_file.split('_')[1]+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 삼선도</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          v-if="clickedProductCost.trilinear_file"
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(clickedProductCost.trilinear_thumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('design/trilinear', clickedProductCost.trilinear_file.replace(clickedProductCost.trilinear_file.split('_')[0]+'_'+clickedProductCost.trilinear_file.split('_')[1]+'_', ''), clickedProductCost.trilinear_file.split('_')[0]+'_'+clickedProductCost.trilinear_file.split('_')[1]+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 회로도</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          v-if="clickedProductCost.circuit_file"
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(clickedProductCost.circuit_thumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('design/circuit', clickedProductCost.circuit_file.replace(clickedProductCost.circuit_file.split('_')[0]+'_'+clickedProductCost.circuit_file.split('_')[1]+'_', ''), clickedProductCost.circuit_file.split('_')[0]+'_'+clickedProductCost.circuit_file.split('_')[1]+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
                     </v-row>
                     <v-divider class="mt-7"></v-divider>
                     <v-row class="mt-3">
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 승인도서</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          v-if="clickedProductCost.approval_file"
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(clickedProductCost.approval_thumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('design/approval', clickedProductCost.approval_file.replace(clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_', ''), clickedProductCost.approval_file.split('_')[0]+'_'+clickedProductCost.approval_file.split('_')[1]+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 제작사양서</p>
-                        <div style="width:100%; background-color: #ccc; min-height:300px"></div>
+                        <v-img
+                          v-if="clickedProductCost.build_sheet_file"
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(clickedProductCost.build_sheet_thumbnail)"
+                          transition="scale-transition"
+                          width="350"
+                          @click="download('design/build_sheet', clickedProductCost.build_sheet_file.replace(clickedProductCost.build_sheet_file.split('_')[0]+'_'+clickedProductCost.build_sheet_file.split('_')[1]+'_', ''), clickedProductCost.build_sheet_file.split('_')[0]+'_'+clickedProductCost.build_sheet_file.split('_')[1]+'_')"
+                          style="cursor: pointer;"
+                        />
                       </v-col>
                       <v-col cols="12" sm="4">
                         <p class="font-weight-bold primary--text mb-0">▼ 기타</p>
-                        <v-chip
-                          color="grey lighten-2"
-                          class="ma-2"
-                        >
-                          기타첨부파일.pdf
-                        </v-chip>
-                        <v-chip
-                          color="grey lighten-2"
-                          class="ma-2"
-                        >
-                          기타첨부파일2.xlsx
-                        </v-chip>
+                        <div v-if="clickedProductCost.etc_files">
+                          <v-chip
+                            v-for="(file, i) in clickedProductCost.etc_files.split('/')"
+                            :key="i"
+                            color="grey lighten-2"
+                            class="ma-2"
+                            @click="download('design/etc', file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', ''), file.split('_')[0]+'_'+file.split('_')[1]+'_')"
+                          >
+                            {{ file.replace(file.split('_')[0]+'_'+file.split('_')[1]+'_', '') }}
+                          </v-chip>
+                        </div>
                       </v-col>
                     </v-row>
                   </v-card-text>
@@ -501,10 +592,7 @@ export default {
                 DataTableComponent,
                 CostTableComponent,
               },
-              computed: {
-    dateRangeText () {
-      return this.dates.join(' ~ ')
-    },
+  computed: {
     total_cost(){
       return this.total_product_cost + this.total_labor_cost + this.total_expense_fee + this.normal_maintenance_fee + this.profite;
     },
@@ -576,6 +664,17 @@ export default {
     estimate_product_list_dialog(val){
       val || this.closeProductList()
     },
+    // tab_progress(val){
+    //   if(val === 1){
+    //     if(!this.versions.find(x=>x === '수주 원본')){
+    //       this.versions.unshift('수주 원본');
+    //     }
+    //   }else if(val === 2){
+    //     if(this.versions.find(x=>x === '수주 원본')){
+    //       this.versions.filter(x=>x !== '수주 원본');
+    //     }
+    //   }
+    // },
     clickedProductCost: {
       handler(item){
         if (Object.keys(item).length > 0) {
@@ -810,6 +909,15 @@ export default {
         this.clickedProductCost = this.relatedClickedProductCost[0];
       }else {
         this.clickedProductCost = this.relatedClickedProductCost[Number(version.substring(0,1))];
+      }
+    },
+
+    version2(version2){
+      if (version2 === ''){
+        this.clickedProductCost = this.relatedClickedProductCost[0];
+      }else {
+        this.clickedProductCost = this.relatedClickedProductCost[Number(version2.substring(0,1))];
+        this.design_production_approval_phase = this.relatedClickedProductCost[Number(version2.substring(0,1))].approval_phase;
       }
     },
 
@@ -1091,10 +1199,10 @@ export default {
     async clickEstimateData(item){
       mux.Util.showLoading();
       this.tab_progress = 0;
+      //수주 ~ 설계 탭 데이터
       await this.setObtainData(item);
       //구매,발주 탭 데이터
       await this.searchPurchaseData(item.project_code);
-
       //생산 탭 데이터
       await this.searchProductionData(item.project_code, item.company_name, item.company_bid_number, item.inhouse_bid_number);
       // this.search_production_data = ObtainProgressPageConfig.test_production_data[0];
@@ -1116,6 +1224,10 @@ export default {
 
       this.progress_tab_items.find(x=> x.tab_name === '수주서').tab_color = 'success';
       this.progress_tab_items.find(x=> x.tab_name === '수주 확인서').tab_color = 'success';
+
+      if(this.versions2.length > 0 && this.relatedClickedProductCost[this.versions2.length].approval_phase === '승인')
+      this.progress_tab_items.find(x=> x.tab_name === '설계').tab_color = 'success';
+
       mux.Util.hideLoading();
       this.show_detail = true;
     },
@@ -1126,14 +1238,23 @@ export default {
 
       this.versions = ['수주 원본'];
       this.version = '수주 원본';
+      this.versions2 = [];
+      this.version2 = '';
+      this.design_production_approval_phase = '';
 
       this.relatedClickedProductCost = [this.clickedProductCost];
       this.searched_datas.design_confirmation.forEach(confirmation => {
         if (confirmation.obtain_cost_calc_code === item.cost_calc_code){
           this.relatedClickedProductCost.push(this.getCalcProcessedData(this.searched_datas, confirmation.cost_calc_code));
           this.versions.push(`${this.versions.length}차 수주 설계`);
+          this.versions2.push(`${this.versions2.length+1}차 수주 설계`);
+          this.design_production_approval_phase = confirmation.approval_phase
         }
       });
+
+
+      this.version = this.versions[this.versions.length - 1];
+      this.version2 = this.versions2[this.versions2.length - 1];
 
     },
     async searchPurchaseData(pjt_code){
@@ -1194,6 +1315,20 @@ export default {
                   order_result = JSON.parse(order_result);
                 }
                 if(order_result['code'] == 0 || (typeof order_result['data'] === 'object' && order_result['data']['code'] == 0) || (typeof order_result['response'] === 'object' && typeof order_result['response']['data'] === 'object' && order_result['response']['data']['code'] == 0)){
+
+                  for(let or = 0; or < order_result.data[0].belong_data.length; or++){
+                    let belong = order_result.data[0].belong_data[or];
+                    if(belong.inbound_code === null){
+                      set.inbound_phase = '미완료'
+                    }else{
+                      set.inbound_phase = '완료'
+                    }
+                  }
+                  // if(inbound_phase === order_result.data[0].belong_data.length){
+                  //   set.inbound_phase = '완료';
+                  // }else{
+                  //   set.inbound_phase = inbound_phase + '/' + order_result.data[0].belong_data.length + ' 완료';
+                  // }
 
                   set.order_phase = order_result.data[0].approval_phase;
                 } else {
@@ -1432,6 +1567,9 @@ export default {
       tab_progress: null,
       versions:['수주 원본'], // '1차 수주 설계', '2차 수주 설계' ...
       version: '수주 원본',
+      versions2:[], // '1차 수주 설계', '2차 수주 설계' ...
+      version2: '',
+      design_production_approval_phase: '',
       save_costs: ObtainProgressPageConfig.save_costs,
       search_estimate_headers: ObtainProgressPageConfig.search_estimate_headers,
       purchase_detail_headers: ObtainProgressPageConfig.purchase_detail_headers,
