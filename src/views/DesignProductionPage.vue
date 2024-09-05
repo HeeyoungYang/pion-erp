@@ -1202,6 +1202,7 @@
                           </template>
                           <template v-slot:[`item.purchase_num`] = "{ item }">
                             <v-text-field
+                              type="number"
                               dense
                               hide-details
                               v-model="item.purchase_num"
@@ -2061,6 +2062,7 @@
             </template>
             <template v-slot:[`item.purchase_num`] = "{ item }">
               <v-text-field
+                type="number"
                 dense
                 hide-details
                 v-model="item.purchase_num"
