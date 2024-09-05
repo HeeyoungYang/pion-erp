@@ -567,9 +567,15 @@ export default {
 
       // 미승인에서 승인으로 변경하는 경우
       if(send_data_belong.length > 0){
-
         let update_stock_data = [];
-        send_data_belong.forEach(async belong => {
+        let update_inbound_data = [];
+        let update_inbound_data_products = [];
+        for(let sd = 0; sd < send_data_belong.length; sd++){
+          let belong = send_data_belong[sd];
+          update_inbound_data_products.push({
+            "product_code": belong.product_code,
+            "type": belong.type
+          })
           let stock_check = await mux.Server.post({
             path: '/api/common_rest_api/',
             params: [
@@ -583,10 +589,24 @@ export default {
             "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
             "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
           });
+          let inbound_check = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: [
+              {
+                "inbound_product_table.product_code": belong.product_code,
+                "inbound_confirmation_table.approval_phase": "승인"
+              }
+            ],
+            "script_file_name": "rooting_입고_상세_검색_24_05_22_10_53_9P7.json",
+            "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_상세_검색_24_05_22_10_54_7AL"
+          });
           if (prevURL !== window.location.href) return;
 
           if (typeof stock_check === 'string'){
             stock_check = JSON.parse(stock_check);
+          }
+          if (typeof inbound_check === 'string'){
+            inbound_check = JSON.parse(inbound_check);
           }
           if(stock_check['code'] == 0){
             let searched_stock_data = [];
@@ -615,117 +635,152 @@ export default {
             })
 
           }
-
-          sendData["stock_table-update"] = update_stock_data;
-
-          sendData["ship_confirmation_table-update"] = [{
-            "user_info": {
-              "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-              "role": "modifier"
-            },
-            "data": send_data,
-            "update_where": {"code": item.code},
-            "rollback": "yes"
-          }];
-          console.log(sendData);
-
-          try {
-            mux.Util.showLoading();
-            let resultShip = await mux.Server.post({
-              path: '/api/common_rest_api/',
-              params: sendData
-            });
-            if (prevURL !== window.location.href) return;
-
-            if (typeof resultShip === 'string'){
-              resultShip = JSON.parse(resultShip);
+          if(inbound_check['code'] == 0){
+            let searched_inbound_data = [];
+            if(inbound_check['data'].length > 0){
+              searched_inbound_data = inbound_check['data'].filter(x=>x.spot === belong.spot);
             }
-            if(resultShip['code'] == 0){
-              item.approval_phase = send_data.approval_phase;
-              item.approved_date = send_data.approved_date;
-
-              mux.Util.hideLoading();
-              mux.Util.showAlert('출고 승인 완료', '승인 완료', 3000)
-
-              //메일 알림 관련
-              let mailTo = [];
-              let creater = this.$cookies.get(this.$configJson.cookies.id.key);
-              mailTo.push(creater);
-              if(creater !== item.checker_id){
-                mailTo.push(item.checker_id);
+            searched_inbound_data.sort((a, b) => new Date(a.inbound_date) - new Date(b.inbound_date));
+            let ship_num = belong.ship_num
+            for(let i = 0; i<searched_inbound_data.length; i++){
+              let calc_left_num = searched_inbound_data[i].left_num
+              if(ship_num > 0){
+                calc_left_num = calc_left_num - ship_num;
+                ship_num = ship_num - searched_inbound_data[i].left_num;
+                update_inbound_data.push({
+                  "user_info": {
+                      "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                      "role": "modifier"
+                    },
+                    "data":{
+                      "left_num": calc_left_num < 0 ? 0 : calc_left_num
+                    },
+                    "update_where": {"id": searched_inbound_data[i].id},
+                    "rollback": "yes"
+                })
               }
-
-              // 메일 본문 내용
-              let content=`
-                <html>
-                  <body>
-                    <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
-                      <h2 style="text-align: center; color:#13428a">출고 승인 처리 알림</h2>
-                      <table style="width: 100%;border-spacing: 10px 10px;">
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.project_code}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">출고 요청일</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.ship_date}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.given_name}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
-                        </tr>
-                        <tr>
-                          <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
-                          <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
-                        </tr>
-                      </table>
-                      <a style="color: white; text-decoration:none"href="${prevURL}-search?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
-                        <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
-                          확인하기
-                        </p>
-                      </a>
-                    </div>
-                  </body>
-                </html>
-              `;
-              try {
-                let sendEmailAlam = await mux.Server.post({
-                  path: '/api/send_email/',
-                  to_addrs: mailTo,
-                  subject: "출고 승인 처리 알림",
-                  content: content
-                });
-                if (prevURL !== window.location.href) return;
-                if(sendEmailAlam['code'] == 0){
-                  console.log(sendEmailAlam['message']);
-                } else {
-                  if (prevURL !== window.location.href) return;
-                  mux.Util.showAlert(sendEmailAlam['failed_info']);
-                }
-              } catch (error) {
-                if (prevURL !== window.location.href) return;
-                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
-                else
-                  mux.Util.showAlert(error);
-              }
-            } else {
-              if (prevURL !== window.location.href) return;
-              mux.Util.showAlert(resultShip['failed_info']);
             }
-          } catch (error) {
-            mux.Util.hideLoading();
-            if (prevURL !== window.location.href) return;
-            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-              mux.Util.showAlert(error.response['data']['failed_info'].msg);
-            else
-              mux.Util.showAlert(error);
+
           }
-        })
+        }
+
+        sendData["stock_table-update"] = update_stock_data;
+        sendData["inbound_product_table-update"] = update_inbound_data;
+        sendData["ship_confirmation_table-update"] = [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data": send_data,
+          "update_where": {"code": item.code},
+          "rollback": "yes"
+        }];
+        console.log(sendData);
+
+        update_inbound_data_products = update_inbound_data_products.reduce((prev, now) => {
+          if(!prev.some(obj => obj.product_code === now.product_code )){
+            prev.push(now);
+          }
+          return prev;
+        }, [])
+        console.log(update_inbound_data_products);
+
+        try {
+          mux.Util.showLoading();
+          let resultShip = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: sendData
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof resultShip === 'string'){
+            resultShip = JSON.parse(resultShip);
+          }
+          if(resultShip['code'] == 0){
+            item.approval_phase = send_data.approval_phase;
+            item.approved_date = send_data.approved_date;
+
+            mux.Util.hideLoading();
+            mux.Util.showAlert('출고 승인 완료', '승인 완료', 3000)
+
+            //메일 알림 관련
+            let mailTo = [];
+            let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+            mailTo.push(creater);
+            if(creater !== item.checker_id){
+              mailTo.push(item.checker_id);
+            }
+
+            // 메일 본문 내용
+            let content=`
+              <html>
+                <body>
+                  <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                    <h2 style="text-align: center; color:#13428a">출고 승인 처리 알림</h2>
+                    <table style="width: 100%;border-spacing: 10px 10px;">
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.project_code}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">출고 요청일</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.ship_date}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.given_name}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.checker}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                        <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                      </tr>
+                    </table>
+                    <a style="color: white; text-decoration:none"href="${prevURL}-search?project_code=${item.project_code}&purpose=${item.purpose}&ship_date=${item.ship_date}">
+                      <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                        확인하기
+                      </p>
+                    </a>
+                  </div>
+                </body>
+              </html>
+            `;
+            try {
+              let sendEmailAlam = await mux.Server.post({
+                path: '/api/send_email/',
+                to_addrs: mailTo,
+                subject: "출고 승인 처리 알림",
+                content: content
+              });
+              if (prevURL !== window.location.href) return;
+              if(sendEmailAlam['code'] == 0){
+                console.log(sendEmailAlam['message']);
+              } else {
+                if (prevURL !== window.location.href) return;
+                mux.Util.showAlert(sendEmailAlam['failed_info']);
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+                mux.Util.showAlert(error.response['data']['failed_info'].msg);
+              else
+                mux.Util.showAlert(error);
+            }
+          } else {
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(resultShip['failed_info']);
+          }
+        } catch (error) {
+          mux.Util.hideLoading();
+          if (prevURL !== window.location.href) return;
+          if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+            mux.Util.showAlert(error.response['data']['failed_info'].msg);
+          else
+            mux.Util.showAlert(error);
+        }
       }else{
         let sendData = {
           "ship_confirmation_table-update": [{
