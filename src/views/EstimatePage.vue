@@ -2169,6 +2169,8 @@ export default {
       this.calc_cost_detail_data_normal_maintenance_fee2.belong_data[0].cost_list = ' - ' + this.new_normal_maintenance_fee_formula;
       this.calc_cost_detail_data_profite2.belong_data[0].cost_list = ' - ' + this.new_profite_formula;
 
+      const currDate = new Date();
+      this.estimateWriteDefaultInfoInputs.find(x=>x.label === '사내 견적번호').value = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd')
       this.clearClicked();
     },
     async searchButton(){
@@ -2200,7 +2202,7 @@ export default {
         reqURL += (inputs[0] || inputs[1] || inputs[2]) ? '&issue_start_date=' + inputs[3].split(',')[0] : '?issue_start_date=' + inputs[3].split(',')[0];
         reqURL += inputs[3].split(',').length > 1 ? '&issue_end_date=' + inputs[3].split(',')[1] : '&issue_end_date=' + inputs[3].split(',')[0];
       }
-      
+
       try {
         let result = await mux.Server.get({path: reqURL});
         if (prevURL !== window.location.href) return;
@@ -4071,7 +4073,7 @@ export default {
       mux.Util.showLoading();
 
       const newDate = new Date();
-
+      const prevURL = window.location.href;
       let sendDataCheckedDate = '';
       if (this.estimate_member_info2[0].user_id === this.$cookies.get(this.$configJson.cookies.id.key)){
         sendDataCheckedDate = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
@@ -4080,6 +4082,67 @@ export default {
       }
 
       const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+      let currentCode = '';
+      let basic_code =  this.input_inhouse_bid_number2.value;
+      let new_inhouse_bid_number = '';
+
+      let reqURL = '/api/estimate/?inhouse_bid_number='+basic_code;
+      try {
+        let result = await mux.Server.get({path: reqURL});
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+          const searchResult = result.data;
+          searchResult.confirmation = searchResult.confirmation.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          const uniqueConfirmation = [];
+            const confirmationMap = new Map();
+
+            searchResult.confirmation.forEach(item => {
+              const code = item.cost_calc_code;
+              const time = new Date(item.modified_time).getTime();
+
+              if (!confirmationMap.has(code) || time > confirmationMap.get(code)) {
+                confirmationMap.set(code, time);
+              }
+            });
+            confirmationMap.forEach((time, code) => {
+              const item = searchResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
+              uniqueConfirmation.push(item);
+            });
+            searchResult.confirmation = uniqueConfirmation;
+          searchResult.product_cost = searchResult.product_cost.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          searchResult.labor_cost_calc_detail = searchResult.labor_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          searchResult.product_cost_calc_detail = searchResult.product_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          searchResult.construction_materials_data = searchResult.construction_materials_data.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+
+          searchResult.confirmation.reverse(); // 최신순으로 정렬
+
+          if(searchResult.confirmation.length === 0){
+            currentCode = '';
+          }else{
+            currentCode = searchResult.confirmation[0].inhouse_bid_number;
+          }
+
+        }else{
+          mux.Util.showAlert(result);
+        }
+
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        mux.Util.showAlert(error);
+      }
+      if(currentCode === ''){
+        new_inhouse_bid_number = basic_code + '_001';
+      }else{
+        let calc_current_code = Number(currentCode.split('_')[2]) + 1;
+        calc_current_code = ('00' + calc_current_code).slice(-3);
+        new_inhouse_bid_number = basic_code + '_' + calc_current_code;
+      }
+
       let sendData = {
         "estimate_confirmation_table-insert": [{
           "user_info": {
@@ -4092,7 +4155,7 @@ export default {
             office_phone_number: this.$cookies.get(this.$configJson.cookies.office_phone_number.key),
             estimate_type: '재료비',
             issue_date: this.input_issue_date2.value,
-            inhouse_bid_number: this.input_inhouse_bid_number2.value,
+            inhouse_bid_number: new_inhouse_bid_number,
             company_bid_number: this.input_company_bid_number2.value ? this.input_company_bid_number2.value : '',
             due_date: this.input_due_date2.value,
             service_name: this.input_service_name2.value,
@@ -4262,7 +4325,7 @@ export default {
         });
       }
 
-      const prevURL = window.location.href;
+      // const prevURL = window.location.href;
       try {
         // let result = await mux.Server.post({
         //   path: '/api/common_rest_api/',

@@ -1010,6 +1010,7 @@ export default {
       const validate = this.$refs.etcForm.validate();
       if(validate){
         const currDate = new Date();
+        let basic_code =  'PEPQ_' + mux.Date.format(currDate, 'yyMMdd')
         if(this.estimate_checker === '' || this.estimate_approver === ''){
           mux.Util.showAlert('승인 정보를 모두 입력해주세요.');
           return;
@@ -1026,17 +1027,63 @@ export default {
             confirmation_data.inhouse_bid_number = this.etcRequestInputs.find(x=>x.column_name === 'inhouse_bid_number').value;
           }
         }else{
-          // let currentCode = await this.searchCurrentCode();
-          let script_file_name =  "rooting_발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_OKJ.json"
-          let script_file_path = "data_storage_pion\\json_sql\\order\\발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_3Q8"
+          let currentCode = '';
+          const prevURL = window.location.href;
+          let reqURL = '/api/estimate/?inhouse_bid_number='+basic_code;
+          try {
+            let result = await mux.Server.get({path: reqURL});
+            if (prevURL !== window.location.href) return;
 
-          let currentCode = await mux.Server.getCurrentCode('PEPQ_', 'order_confirmation_table.code', script_file_name, script_file_path);
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+              const searchResult = result.data;
+              searchResult.confirmation = searchResult.confirmation.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+              const uniqueConfirmation = [];
+                const confirmationMap = new Map();
+
+                searchResult.confirmation.forEach(item => {
+                  const code = item.cost_calc_code;
+                  const time = new Date(item.modified_time).getTime();
+
+                  if (!confirmationMap.has(code) || time > confirmationMap.get(code)) {
+                    confirmationMap.set(code, time);
+                  }
+                });
+                confirmationMap.forEach((time, code) => {
+                  const item = searchResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
+                  uniqueConfirmation.push(item);
+                });
+                searchResult.confirmation = uniqueConfirmation;
+              searchResult.product_cost = searchResult.product_cost.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+              searchResult.labor_cost_calc_detail = searchResult.labor_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+              searchResult.product_cost_calc_detail = searchResult.product_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+              searchResult.construction_materials_data = searchResult.construction_materials_data.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+
+              searchResult.confirmation.reverse(); // 최신순으로 정렬
+
+              if(searchResult.confirmation.length === 0){
+                currentCode = '';
+              }else{
+                currentCode = searchResult.confirmation[0].inhouse_bid_number;
+              }
+
+            }else{
+              mux.Util.showAlert(result);
+            }
+
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            mux.Util.hideLoading();
+            mux.Util.showAlert(error);
+          }
           if(currentCode === ''){
-            confirmation_data.inhouse_bid_number = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd') + '_001';
+            confirmation_data.inhouse_bid_number = basic_code + '_001';
           }else{
             let calc_current_code = Number(currentCode.split('_')[2]) + 1;
             calc_current_code = ('00' + calc_current_code).slice(-3);
-            confirmation_data.inhouse_bid_number = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd') + '_' + calc_current_code;
+            confirmation_data.inhouse_bid_number = basic_code + '_' + calc_current_code;
           }
 
         }
