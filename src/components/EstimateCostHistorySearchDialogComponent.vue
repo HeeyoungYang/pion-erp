@@ -170,7 +170,6 @@ export default {
         this.searchResult.confirmation.sort((a, b) => {
           return new Date(b.created_time) - new Date(a.created_time);
         });
-        this.searchResult.confirmation = this.searchResult.confirmation.filter(x=> this.searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
         const uniqueConfirmation = [];
         const confirmationMap = new Map();
 
@@ -187,10 +186,6 @@ export default {
           uniqueConfirmation.push(item);
         });
         this.searchResult.confirmation = uniqueConfirmation;
-        this.searchResult.product_cost = this.searchResult.product_cost.filter(x=> this.searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
-        this.searchResult.labor_cost_calc_detail = this.searchResult.labor_cost_calc_detail.filter(x=> this.searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
-        this.searchResult.product_cost_calc_detail = this.searchResult.product_cost_calc_detail.filter(x=> this.searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
-        this.searchResult.construction_materials_data = this.searchResult.construction_materials_data.filter(x=> this.searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
         this.searchDataCalcProcess(this.searchResult);
 
         }else{
