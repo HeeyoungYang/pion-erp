@@ -2022,7 +2022,7 @@ export default {
           "data":{
             "purchase_estimate_phase": "요청",
             "purchase_estimate_company": this.estimate_request_company,
-            "purchase_estimate_code": this.estimate_request_company + ' ' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + ' ' + this.$cookies.get(this.$configJson.cookies.id.key),
+            "purchase_estimate_code": this.estimate_request_company + ' ' + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff') + ' ' + this.$cookies.get(this.$configJson.cookies.id.key),
           },
           "update_where": {"id": data.id },
           "rollback": "yes"
@@ -2136,7 +2136,7 @@ export default {
         "data":{
           "purchase_estimate_phase": "완료",
           "purchase_estimate_company": estimate_company,
-          "purchase_estimate_code": estimate_company + ' ' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + ' ' + this.$cookies.get(this.$configJson.cookies.id.key),
+          "purchase_estimate_code": estimate_company + ' ' + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff') + ' ' + this.$cookies.get(this.$configJson.cookies.id.key),
           "purchase_estimate_file": estimate_file_name,
           "purchase_estimate_thumbnail": estimate_file_thumbnail
         },
@@ -2145,7 +2145,7 @@ export default {
       }];
 
       sendData.path = '/api/multipart_rest_api/';
-      sendData.prefix = estimate_company + ' ' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + ' ' + this.$cookies.get(this.$configJson.cookies.id.key) + '_';
+      sendData.prefix = estimate_company + ' ' + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff') + ' ' + this.$cookies.get(this.$configJson.cookies.id.key) + '_';
       sendData.files = [];
 
       sendData.files.push({
@@ -2196,7 +2196,7 @@ export default {
       let confirmation_data = {};
 
       let currentCode = await this.searchCurrentCode();
-      // let code = 'PE-' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
+      // let code = 'PE-' + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff');
       let code = '';
       if(currentCode === ''){
         code = 'PEPO_' + mux.Date.format(currDate, 'yyMMdd') + '_001';

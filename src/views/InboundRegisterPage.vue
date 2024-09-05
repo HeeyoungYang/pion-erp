@@ -1490,7 +1490,7 @@ export default {
         const currDate = new Date();
         item.inbound_date = (this.inbound_date_set === "" ? mux.Date.format(currDate, 'yyyy-MM-dd') : this.inbound_date_set);
         item.creater = this.login_id;
-        item.code = item.order_code + ":" + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
+        item.code = item.order_code + ":" + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff');
         if(this.add_self === '직접기입'){
           item.add_data = "직접기입형"
         }else if(this.add_self === '자재선택'){
@@ -1660,7 +1660,7 @@ export default {
             let product_data = []
             inbound_product_data.forEach((data, index) => {
               order_code_arr.push(data.order_code);
-              let confirm_code = data.order_code + ":" + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + index;
+              let confirm_code = data.order_code + ":" + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + index;
               set_confirmation_data.push({
                 "code" : confirm_code,
                 "inbound_date": this.inbound_confirmation_data.inbound_date,
@@ -1993,7 +1993,7 @@ export default {
         const currDate = new Date();
         item.inbound_date = (this.inbound_date_set === "" ? mux.Date.format(currDate, 'yyyy-MM-dd') : this.inbound_date_set);
         item.creater = this.login_id;
-        item.code = "재입고:" + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
+        item.code = "재입고:" + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff');
         item.add_data = "재입고"
 
         // let receiving_inspection_thumbnail = 'NULL';

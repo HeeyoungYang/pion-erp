@@ -3039,7 +3039,7 @@ export default {
           new_inhouse_bid_number = splitted_inhouse_bid_number.join('-');
         }
 
-        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
 
         // 품번 기준 정렬
         this.labor_cost_data.sort((a,b) => a.no.localeCompare(b.no));
@@ -3348,7 +3348,7 @@ export default {
           new_inhouse_bid_number = splitted_inhouse_bid_number.join('-');
         }
 
-        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
 
         let sendData = {
           "estimate_confirmation_table-update": [{
@@ -3684,7 +3684,7 @@ export default {
           new_inhouse_bid_number = splitted_inhouse_bid_number.join('-');
         }
 
-        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
 
         let sendData = {
           "estimate_confirmation_table-update": [{
@@ -4079,7 +4079,7 @@ export default {
         sendDataCheckedDate = null;
       }
 
-      const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+      const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
       let sendData = {
         "estimate_confirmation_table-insert": [{
           "user_info": {

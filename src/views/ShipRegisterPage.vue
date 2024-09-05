@@ -485,7 +485,7 @@ export default {
         const currDate = new Date();
         item.ship_date = (this.ship_date_set === "" ? mux.Date.format(currDate, 'yyyy-MM-dd') : this.ship_date_set);
         item.creater = this.login_id;
-        item.code = item.project_code + ":" + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff');
+        item.code = item.project_code + ":" + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff');
 
         let inspection_report_thumbnail = 'NULL';
         if(this.inspection_report_value){

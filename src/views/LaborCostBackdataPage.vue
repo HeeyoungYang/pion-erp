@@ -445,7 +445,7 @@ export default {
           return;
         }
         if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
-          item.code = item.no + '/' + mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
+          item.code = item.no + '/' + mux.Date.format(new Date(), 'yyyy-MM-dd HH-mm-ss-fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
           const prevURL = window.location.href;
           try {
             let sendData = {"labor_cost_table-insert": [
@@ -590,7 +590,7 @@ export default {
           return;
         }
         if(this.editedLaborIndex === -1){ // editedIndex가 -1이면 등록
-          item.code = item.no + '/' + mux.Date.format(new Date(), 'yyyy-MM-dd HH:mm:ss.fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
+          item.code = item.no + '/' + mux.Date.format(new Date(), 'yyyy-MM-dd HH-mm-ss-fff') + '/' + this.$cookies.get(this.$configJson.cookies.id.key);
           const prevURL = window.location.href;
           try {
             let sendData = {"labor_current_unit_price_table-insert": [

@@ -788,7 +788,7 @@ export default {
 
       if(confirmation_data.checker_id == this.login_info.id){
         confirmation_data.approval_phase = '미승인';
-        confirmation_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff')
+        confirmation_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff')
       }else{
         confirmation_data.approval_phase = '미확인';
       }

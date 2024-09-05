@@ -4632,7 +4632,7 @@ export default {
           sendDataCheckedDate = null;
         }
 
-        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
 
         // 품번 기준 정렬
         this.labor_cost_data.sort((a,b) => a.no.localeCompare(b.no));
@@ -4940,7 +4940,7 @@ export default {
           sendDataCheckedDate = null;
         }
 
-        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
 
         let sendData = {
           "design_confirmation_table-update": [{
@@ -5368,7 +5368,7 @@ export default {
           sendDataCheckedDate = null;
         }
 
-        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+        const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
 
         let sendData = {
           "design_confirmation_table-update": [{
@@ -5741,7 +5741,7 @@ export default {
     //       sendDataCheckedDate = null;
     //     }
 
-    //     const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+    //     const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
 
     //     let sendData = {
     //       "design_confirmation_table-update": [{
@@ -6139,7 +6139,7 @@ export default {
         sendDataCheckedDate = null;
       }
 
-      const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+      const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
       let sendData = {
         "design_confirmation_table-insert": [{
           "user_info": {
@@ -6757,7 +6757,7 @@ export default {
               sendDataCheckedDate = null;
             }
 
-            const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+            const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
 
             let sendData = {
               "design_confirmation_table-update": [{
@@ -7897,7 +7897,7 @@ export default {
       let purchase_product_insert = [];
       let purchase_confirmation_update = [];
       let purchase_product_update = [];
-      let purchase_code = 'PEPR_' + mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
+      let purchase_code = 'PEPR_' + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
       let files = [];
 
       let confirmation_inserted = false;

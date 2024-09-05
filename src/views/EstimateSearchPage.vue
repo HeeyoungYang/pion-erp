@@ -1015,7 +1015,7 @@ export default {
           return;
         }
         mux.Util.showLoading();
-        const new_cost_calc_code = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+        const new_cost_calc_code = mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
         let confirmation_data = {};
         // inhouse_bid_number(사내 견적번호)
         if(!this.bid_write){
@@ -1049,7 +1049,7 @@ export default {
         confirmation_data.approver_id = this.estimate_checker.split('-')[2]
         if(confirmation_data.checker_id == this.login_info.id){
           confirmation_data.approval_phase = '미승인';
-          confirmation_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss.fff')
+          confirmation_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff')
         }else{
           confirmation_data.approval_phase = '미확인';
         }
