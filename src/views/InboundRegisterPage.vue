@@ -1064,16 +1064,21 @@ export default {
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
 
-          result.data.forEach(data => {
+          let result_data = result.data.filter(x=>x.approval_phase === '승인')
+
+          result_data.forEach(data => {
             for(let i=0; i<data.belong_data.length; i++){
               let belong = data.belong_data[i];
-              belong.code = data.code;
-              belong.spot = '';
-              belong.company_name = data.company_name;
-              belong.given_name = data.given_name;
-              belong.unit_price = '₩ '+ Number(belong.unit_price).toLocaleString()
-              belong.ordered_num = Number(belong.ordered_num).toLocaleString()
-              order_result.push(belong);
+
+              if(belong.inbound_code === null){
+                belong.code = data.code;
+                belong.spot = '';
+                belong.company_name = data.company_name;
+                belong.given_name = data.given_name;
+                belong.unit_price = '₩ '+ Number(belong.unit_price).toLocaleString()
+                belong.ordered_num = Number(belong.ordered_num).toLocaleString()
+                order_result.push(belong);
+              }
             }
           })
 
@@ -1108,7 +1113,6 @@ export default {
                 }
               } catch (error) {
                 if (prevURL !== window.location.href) return;
-                mux.Util.hideLoading();
                 if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
                   mux.Util.showAlert(error.response['data']['failed_info'].msg);
                 else
@@ -1528,9 +1532,9 @@ export default {
               item.approver = mem.name;
               item.approver_id = mem.user_id;
             }else if(mem.type === '구매담당자'){
-              item.purchase_manager = mem.name;
+              item.purchase_manager = mem.name + '-' + mem.user_id;
             }else if(mem.type === '자재담당자'){
-              item.material_manager = mem.name;
+              item.material_manager = mem.name + '-' + mem.user_id;
             }
           }
         })
@@ -1662,7 +1666,7 @@ export default {
                 "inbound_date": this.inbound_confirmation_data.inbound_date,
                 "order_code" : data.order_code,
                 "project_code" : data.project_code,
-                "purchase_manager" : data.given_name,
+                "purchase_manager" : data.given_name + '-' + data.creater,
                 "material_manager" : this.inbound_confirmation_data.material_manager,
                 "abnormal_reason" : this.inbound_confirmation_data.abnormal_reason,
                 "approval_phase": this.inbound_confirmation_data.approval_phase,
@@ -2022,9 +2026,9 @@ export default {
               item.approver = mem.name;
               item.approver_id = mem.user_id;
             }else if(mem.type === '구매담당자'){
-              item.purchase_manager = mem.name;
+              item.purchase_manager = mem.name + '-' + mem.user_id;
             }else if(mem.type === '자재담당자'){
-              item.material_manager = mem.name;
+              item.material_manager = mem.name + '-' + mem.user_id;
             }
           }
         })

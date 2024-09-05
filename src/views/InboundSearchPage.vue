@@ -357,6 +357,8 @@ export default {
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
           result.data.forEach(datas =>{
+            datas.purchase_manager_name = datas.purchase_manager.split('-')[0];
+            datas.material_manager_name = datas.material_manager.split('-')[0];
             if (datas.belong_data){
               for(let d=0; d<datas.belong_data.length; d++){
                 datas.belong_data[d].inbound_num = Number(datas.belong_data[d].inbound_num).toLocaleString();
@@ -577,6 +579,20 @@ export default {
       console.log(phase);
 
       let sendData = {};
+      let update_production_data = [];
+      if(item.add_data === '생산 입고'){
+        update_production_data.push({
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{
+            "inbound_approval_phase": send_data.approval_phase
+          },
+          "update_where": {"code": item.code},
+          "rollback": "yes"
+        });
+      }
 
       mux.Util.showLoading();
 
@@ -622,6 +638,21 @@ export default {
           //   }
           // }
 
+
+          if(item.add_data === '발주입고'){
+            update_order_data.push({
+              "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "modifier"
+              },
+              "data":{
+                "inbound_code": send_data.code
+              },
+              "update_where": {"code": item.order_code, "item_code": belong.product_code},
+              "rollback": "yes"
+            });
+          }
+
           if(belong.product_code.includes('임시코드')){
             let param_info = {}
             let script_file_name = '';
@@ -659,18 +690,6 @@ export default {
                 "product_code": new_code
               },
               "update_where": {"code": send_data.code, "product_code": belong.product_code},
-              "rollback": "yes"
-            });
-
-            update_order_data.push({
-              "user_info": {
-                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                "role": "modifier"
-              },
-              "data":{
-                "inbound_code": send_data.code
-              },
-              "update_where": {"code": item.order_code},
               "rollback": "yes"
             });
 
@@ -1092,7 +1111,7 @@ export default {
           sendData["product_material_table-insert"] = belong_product_material_data;
           sendData["product_module_table-insert"] = belong_product_module_data;
           sendData["inbound_product_table-update"] = update_inbound_data;
-          sendData["order_confirmation_table-update"] = update_order_data;
+          sendData["order_product_table-update"] = update_order_data;
         }
 
       }else{
@@ -1121,6 +1140,7 @@ export default {
         }
       }
 
+      sendData["production_confirmation_table-update"] = update_production_data;
       sendData["inbound_confirmation_table-update"] = [{
         "user_info": {
           "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -1172,6 +1192,8 @@ export default {
             mailTo.push(item.approver_id);
           }else if(phase === '승인'){
             mailTo.push(creater);
+            mailTo.push(item.purchase_manager.split('-')[1]);
+            mailTo.push(item.material_manager.split('-')[1]);
             if(creater !== item.checker_id){
               mailTo.push(item.checker_id);
             }
@@ -1490,6 +1512,8 @@ export default {
             mailTo.push(creater);
             if(creater !== item.checker_id){
               mailTo.push(item.checker_id);
+              mailTo.push(item.purchase_manager.split('-')[1]);
+              mailTo.push(item.material_manager.split('-')[1]);
             }
           }else if(phase === '취소 확인 반려'){
             mailTo.push(creater);
@@ -1774,6 +1798,8 @@ export default {
             if(creater !== item.checker_id){
               mailTo.push(item.checker_id);
             }
+            mailTo.push(item.purchase_manager.split('-')[1]);
+            mailTo.push(item.material_manager.split('-')[1]);
             phase = '취소 처리'
           }else if(send_confirmation_data.approval_phase === '취소 미승인'){
             mailTo.push(item.approver_id);

@@ -10,8 +10,8 @@
   "inbound_approve_old_headers": [
     { "text": "발주번호", "align": "center", "value": "order_code"},
     { "text": "신청자", "align": "center", "value": "creater"},
-    { "text": "구매담당자", "align": "center", "value": "purchase_manager"},
-    { "text": "자재담당자", "align": "center", "value": "material_manager"},
+    { "text": "구매담당자", "align": "center", "value": "purchase_manager_name"},
+    { "text": "자재담당자", "align": "center", "value": "material_manager_name"},
     { "text": "제조사", "align": "center", "value": "manufacturer"},
     { "text": "입고일자", "align": "center", "value": "inbound_date"},
     { "text": "입력방식", "align": "center", "value": "add_data"}
@@ -19,8 +19,8 @@
 
   "inbound_approve_headers": [
     { "text": "발주번호", "align": "start", "value": "order_code"},
-    { "text": "구매담당자", "align": "start", "value": "purchase_manager"},
-    { "text": "자재담당자", "align": "start", "value": "material_manager"},
+    { "text": "구매담당자", "align": "start", "value": "purchase_manager_name"},
+    { "text": "자재담당자", "align": "start", "value": "material_manager_name"},
     { "text": "입고일자", "align": "start", "value": "inbound_date"},
     { "text": "입력방식", "align": "start", "value": "add_data"}
   ],

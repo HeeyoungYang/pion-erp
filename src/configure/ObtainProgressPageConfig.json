@@ -46,7 +46,8 @@
     { "text": "사양", "align": "start", "value": "spec"},
     { "text": "구매 요청 수량", "align": "start", "value": "purchase_num"},
     { "text": "구매 현황", "align": "start", "value": "purchase_phase"},  
-    { "text": "발주 현황", "align": "start", "value": "order_phase"}
+    { "text": "발주 현황", "align": "start", "value": "order_phase"},  
+    { "text": "입고 현황", "align": "start", "value": "inbound_phase"}
   ],
   "bom_list_headers": [
     { "text": "종류", "align": "start", "value": "type"},

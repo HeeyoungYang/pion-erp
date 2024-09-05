@@ -16,13 +16,14 @@
     { "text": "1차 계산일", "align": "start", "value": "first_bill_date"},
     { "text": "2차 계산일", "align": "start", "value": "second_bill_date"},
     { "text": "3차 계산일", "align": "start", "value": "third_bill_date"},
-    { "text": "입고", "align": "start", "value": "inbound_check"}
+    { "text": "입고", "align": "start", "value": "inbound_phase"}
   ],
   
 
   "order_detail_headers": [
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
-    { "text": "발주 수량", "align": "start", "value": "ordered_num"}
+    { "text": "발주 수량", "align": "start", "value": "ordered_num"},
+    { "text": "입고", "align": "start", "value": "inbound_check"}
   ],
 
   

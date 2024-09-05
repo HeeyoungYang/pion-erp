@@ -427,7 +427,7 @@
                 </v-icon>
                 {{ items[0].item_code }} : {{ items[0].name }} ({{ items[0].spec }})
               </th>
-              <th @click="toggle">
+              <th @click="toggle" colspan="2">
                 총 {{ calcTotalNum(items) }}개
               </th>
             </template>
@@ -927,8 +927,20 @@ export default {
           order_result = result.data;
 
           order_result.forEach(async order => {
-            if(order.inbound_code !== null){
-              order.inbound_check = '입고완료'
+            let inbound_phase = 0;
+            for(let or = 0; or < order.belong_data.length; or++){
+              let belong = order.belong_data[or];
+              if(belong.inbound_code === null){
+                belong.inbound_check = '미완료'
+              }else{
+                belong.inbound_check = '완료'
+                inbound_phase ++;
+              }
+            }
+            if(inbound_phase === order.belong_data.length){
+              order.inbound_phase = '완료';
+            }else{
+              order.inbound_phase = inbound_phase + '/' + order.belong_data.length + ' 완료';
             }
             try {
               let note_result = await mux.Server.post({
@@ -1009,17 +1021,14 @@ export default {
           if(project_result.length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
-          this.project_code_criterion_data = project_result.data;
-
-          this.project_code_criterion_data.forEach(p_data => {
-            if(p_data.belong_data){
-              p_data.belong_data.forEach(b_data => {
-                if(b_data.inbound_code !== null){
-                  b_data.inbound_check = '입고완료'
-                }
-              })
+          project_result.data.forEach(project =>{
+            for(let p=0; p<project.belong_data.length; p++){
+              let project_data = project.belong_data[p];
+              project_data.inbound_phase = order_result.find(x=>x.code === project_data.code).inbound_phase;
             }
           })
+          this.project_code_criterion_data = project_result.data;
+
         } else {
           mux.Util.showAlert(project_result['failed_info']);
         }
