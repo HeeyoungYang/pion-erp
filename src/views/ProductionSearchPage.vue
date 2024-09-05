@@ -397,6 +397,11 @@ export default {
           this.production_details = result.data[0];
           this.production_details.approval_phase = item.approval_phase;
           this.production_details.inbound_approval_phase = item.inbound_approval_phase;
+          this.production_details.project_code = item.project_code;
+          this.production_details.inhouse_bid_number = item.inhouse_bid_number;
+          this.production_details.company_bid_number = item.company_bid_number;
+          this.production_details.company_name = item.company_name;
+          this.production_details.obtain_cost_calc_code = item.obtain_cost_calc_code;
 
           //thumbnail
           try {
@@ -420,42 +425,42 @@ export default {
               let thumbnail = thumbnail_result.data[0];
               this.production_details = Object.assign(this.production_details, thumbnail);
 
-              try {
-                let result = await mux.Server.post({
-                  path: '/api/common_rest_api/',
-                  params: [
-                    {
-                      "obtain_confirmation_table.inhouse_bid_number": item.inhouse_bid_number,
-                      "obtain_confirmation_table.company_name": item.company_name,
-                      "obtain_confirmation_table.company_bid_number": item.company_bid_number,
-                      "obtain_confirmation_table.project_code": item.project_code
-                    }
-                  ],
-                  "script_file_name": "rooting_수주_정보_검색_24_08_08_13_53_89S.json",
-                  "script_file_path": "data_storage_pion\\json_sql\\obtain\\수주_정보_검색_24_08_08_13_54_EFQ"
-                });
-                if (prevURL !== window.location.href) return;
+              // try {
+              //   let result = await mux.Server.post({
+              //     path: '/api/common_rest_api/',
+              //     params: [
+              //       {
+              //         "obtain_confirmation_table.inhouse_bid_number": item.inhouse_bid_number,
+              //         "obtain_confirmation_table.company_name": item.company_name,
+              //         "obtain_confirmation_table.company_bid_number": item.company_bid_number,
+              //         "obtain_confirmation_table.project_code": item.project_code
+              //       }
+              //     ],
+              //     "script_file_name": "rooting_수주_정보_검색_24_08_08_13_53_89S.json",
+              //     "script_file_path": "data_storage_pion\\json_sql\\obtain\\수주_정보_검색_24_08_08_13_54_EFQ"
+              //   });
+              //   if (prevURL !== window.location.href) return;
 
-                if (typeof result === 'string'){
-                  result = JSON.parse(result);
-                }
-                if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+              //   if (typeof result === 'string'){
+              //     result = JSON.parse(result);
+              //   }
+              //   if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
 
-                  if(result.length === 0){
-                    mux.Util.showAlert('검색 결과가 없습니다.');
-                  }
-                  this.item_product_list = result.data.obtain_cost_calc_detail;
-                } else {
-                  mux.Util.showAlert(result['failed_info']);
-                }
-              } catch (error) {
-                if (prevURL !== window.location.href) return;
-                mux.Util.hideLoading();
-                if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-                  mux.Util.showAlert(error.response['data']['failed_info'].msg);
-                else
-                  mux.Util.showAlert(error);
-              }
+              //     if(result.length === 0){
+              //       mux.Util.showAlert('검색 결과가 없습니다.');
+              //     }
+              //     this.item_product_list = result.data.obtain_cost_calc_detail;
+              //   } else {
+              //     mux.Util.showAlert(result['failed_info']);
+              //   }
+              // } catch (error) {
+              //   if (prevURL !== window.location.href) return;
+              //   mux.Util.hideLoading();
+              //   if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              //     mux.Util.showAlert(error.response['data']['failed_info'].msg);
+              //   else
+              //     mux.Util.showAlert(error);
+              // }
             } else {
               mux.Util.showAlert(thumbnail_result['failed_info']);
             }
@@ -774,6 +779,7 @@ export default {
       let confirmation_data = {};
       confirmation_data.code = this.set_inbound_code
       confirmation_data.project_code = this.set_project_code
+      confirmation_data.purchase_manager = '-'
       confirmation_data.material_manager = this.inbound_material_manager.split('-')[1]
       confirmation_data.checker = this.inbound_checker.split('-')[1]
       confirmation_data.checker_id = this.inbound_checker.split('-')[2]
@@ -795,11 +801,27 @@ export default {
 
       //입고 데이터용 파일 정리
       // 시험서 3종 병합 (PDF-LIB 라이브러리 사용)
-      let self_test_file = await mux.Server.getFileUrl('production/self_test', this.set_inbound_code + '_' + this.production_details.self_test_file, 'application/pdf');
-      let factory_test_file = await mux.Server.getFileUrl('production/factory_test', this.set_inbound_code + '_' + this.production_details.factory_test_file, 'application/pdf');
-      let field_test_file = await mux.Server.getFileUrl('production/field_test', this.set_inbound_code + '_' + this.production_details.field_test_file, 'application/pdf');
+      // let self_test_file = await mux.Server.getFileUrl('production/self_test', this.set_inbound_code + '_' + this.production_details.self_test_file, 'application/pdf');
+      // let factory_test_file = await mux.Server.getFileUrl('production/factory_test', this.set_inbound_code + '_' + this.production_details.factory_test_file, 'application/pdf');
+      // let field_test_file = await mux.Server.getFileUrl('production/field_test', this.set_inbound_code + '_' + this.production_details.field_test_file, 'application/pdf');
 
-      let urls = [self_test_file, factory_test_file, field_test_file];
+      // let urls = [self_test_file, factory_test_file, field_test_file];
+
+      let urls = [];
+      if(this.production_details.self_test_file !== null){
+        let self_test_file = await mux.Server.getFileUrl('production/self_test', this.set_inbound_code + '_' + this.production_details.self_test_file, 'application/pdf');
+        urls.push(self_test_file);
+      }
+
+      if(this.production_details.factory_test_file !== null){
+        let factory_test_file = await mux.Server.getFileUrl('production/factory_test', this.set_inbound_code + '_' + this.production_details.factory_test_file, 'application/pdf');
+        urls.push(factory_test_file);
+      }
+
+      if(this.production_details.field_test_file !== null){
+        let field_test_file = await mux.Server.getFileUrl('production/field_test', this.set_inbound_code + '_' + this.production_details.field_test_file, 'application/pdf');
+        urls.push(field_test_file);
+      }
       console.log(urls)
       const pdfDoc = await PDFDocument.create()
       for(let u = 0; u < urls.length; u++) {
@@ -826,34 +848,96 @@ export default {
       const getPdfThumbnail = await mux.Util.getPdfThumbnail(inspection_report_file, 1, false, 1000, 1000);
       let inspection_report_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
 
-
-
-      // 시험서 3종 외 파일들 inbound_confirmation_table의 files에 저장하기 위한 설정
-      let trial_run_blob = await mux.Server.getFileData('production/trial_run', this.set_inbound_code + '_' + this.production_details.trial_run_file, 'application/pdf');
-      const trial_run_file = new File([trial_run_blob], this.production_details.trial_run_file);
-
-      let tax_invoice_blob = await mux.Server.getFileData('production/tax_invoice', this.set_inbound_code + '_' + this.production_details.tax_invoice_file, 'application/pdf');
-      const tax_invoice_file = new File([tax_invoice_blob], this.production_details.trial_run_file);
-
-      let defect_warranty_blob = await mux.Server.getFileData('production/defect_warranty', this.set_inbound_code + '_' + this.production_details.defect_warranty_file, 'application/pdf');
-      const defect_warranty_file = new File([defect_warranty_blob], this.production_details.trial_run_file);
-
-
-      confirmation_data.files = this.production_details.trial_run_file + "/" + this.production_details.tax_invoice_file + "/" + this.production_details.defect_warranty_file;
       confirmation_data.inspection_report_file = '시험성적서.pdf';
       confirmation_data.inspection_report_thumbnail = inspection_report_thumbnail;
 
-      let sendData = {
-        "inbound_confirmation_table-insert": [{
-          "user_info": {
-            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-            "role": "creater"
-          },
-          "data":confirmation_data,
-          "select_where": {"code": confirmation_data.code},
-          "rollback": "yes"
-        }]
-      };
+      let sendData = {};
+      sendData.files = [];
+      sendData.files.push({
+        folder: 'inbound/inspection_report',
+        file: inspection_report_file,
+        name: confirmation_data.inspection_report_file
+      });
+
+      // 시험서 3종 외 파일들 inbound_confirmation_table의 files에 저장하기 위한 설정
+      // let trial_run_blob = await mux.Server.getFileData('production/trial_run', this.set_inbound_code + '_' + this.production_details.trial_run_file, 'application/pdf');
+      // const trial_run_file = new File([trial_run_blob], this.production_details.trial_run_file);
+
+      // let tax_invoice_blob = await mux.Server.getFileData('production/tax_invoice', this.set_inbound_code + '_' + this.production_details.tax_invoice_file, 'application/pdf');
+      // const tax_invoice_file = new File([tax_invoice_blob], this.production_details.trial_run_file);
+
+      // let defect_warranty_blob = await mux.Server.getFileData('production/defect_warranty', this.set_inbound_code + '_' + this.production_details.defect_warranty_file, 'application/pdf');
+      // const defect_warranty_file = new File([defect_warranty_blob], this.production_details.trial_run_file);
+
+      let check_file = 0;
+      if(this.production_details.trial_run_file !== null){
+        let trial_run_blob = await mux.Server.getFileData('production/trial_run', this.set_inbound_code + '_' + this.production_details.trial_run_file, 'application/pdf');
+        const trial_run_file = new File([trial_run_blob], this.production_details.trial_run_file);
+        sendData.files.push({
+          folder: 'inbound/files',
+          file: trial_run_file,
+          name: this.production_details.trial_run_file
+        });
+        confirmation_data.files = this.production_details.trial_run_file;
+        check_file++;
+      }
+
+      if(this.production_details.tax_invoice_file !== null){
+        let tax_invoice_blob = await mux.Server.getFileData('production/tax_invoice', this.set_inbound_code + '_' + this.production_details.tax_invoice_file, 'application/pdf');
+        const tax_invoice_file = new File([tax_invoice_blob], this.production_details.tax_invoice_file);
+        sendData.files.push({
+          folder: 'inbound/files',
+          file: tax_invoice_file,
+          name: this.production_details.tax_invoice_file
+        });
+        if(check_file === 0){
+          confirmation_data.files = this.production_details.tax_invoice_file;
+        } else{
+          confirmation_data.files += "/" + this.production_details.tax_invoice_file;
+        }
+        check_file++;
+      }
+
+      if(this.production_details.defect_warranty_file !== null){
+        let defect_warranty_blob = await mux.Server.getFileData('production/defect_warranty', this.set_inbound_code + '_' + this.production_details.defect_warranty_file, 'application/pdf');
+        const defect_warranty_file = new File([defect_warranty_blob], this.production_details.defect_warranty_file);
+        sendData.files.push({
+          folder: 'inbound/files',
+          file: defect_warranty_file,
+          name: this.production_details.defect_warranty_file
+        });
+        if(check_file === 0){
+          confirmation_data.files = this.production_details.defect_warranty_file;
+        } else{
+          confirmation_data.files += "/" + this.production_details.defect_warranty_file;
+        }
+      }
+
+
+      // confirmation_data.files = this.production_details.trial_run_file + "/" + this.production_details.tax_invoice_file + "/" + this.production_details.defect_warranty_file;
+
+
+      let insert_confirmation_data = [];
+      insert_confirmation_data.push({
+        "user_info": {
+          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+          "role": "creater"
+        },
+        "data":confirmation_data,
+        "select_where": {"code": confirmation_data.code},
+        "rollback": "yes"
+      });
+    // sendData = {
+    //     "inbound_confirmation_table-insert": [{
+    //       "user_info": {
+    //         "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+    //         "role": "creater"
+    //       },
+    //       "data":confirmation_data,
+    //       "select_where": {"code": confirmation_data.code},
+    //       "rollback": "yes"
+    //     }]
+    //   };
 
       let update_production_data = [];
       update_production_data.push({
@@ -870,76 +954,141 @@ export default {
       })
 
       sendData["production_confirmation_table-update"] = update_production_data;
-
+      sendData["inbound_confirmation_table-insert"] = insert_confirmation_data;
 
       sendData.path = '/api/multipart_rest_api/';
       sendData.prefix = confirmation_data.code + '_';
-      sendData.files = [];
-      sendData.files.push({
-        folder: 'inbound/inspection_report',
-        file: inspection_report_file,
-        name: confirmation_data.inspection_report_file
-      },{
-        folder: 'inbound/files',
-        file: trial_run_file,
-        name: this.production_details.trial_run_file
-      },{
-        folder: 'inbound/files',
-        file: tax_invoice_file,
-        name: this.production_details.tax_invoice_file
-      },{
-        folder: 'inbound/files',
-        file: defect_warranty_file,
-        name: this.production_details.defect_warranty_file
-      });
 
       const prevURL = window.location.href;
       let product_info = [];
-      for(let i=0; i<this.item_product_list.length; i++){
-        let product_code = this.item_product_list[i].product_code;
-        try {
-          let result = await mux.Server.post({
-            path: '/api/common_rest_api/',
-            "params": [
-                {
-                  "product_table.product_code": product_code
-                }
-            ],
-            "script_file_name": "rooting_완제품_검색_24_05_16_13_52_1IN.json",
-            "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ"
-          });
-          if (prevURL !== window.location.href) return;
 
-          if (typeof result === 'string'){
-            result = JSON.parse(result);
-          }
-          if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-            let info = result['data'][0];
+      // let reqURL2 = '/api/design-production-search/?approval_phase=&project_code=' + this.production_details.project_code + '&inhouse_bid_number=' + this.production_details.inhouse_bid_number + '&company_bid_number=' + this.production_details.company_bid_number + '&company_name=' + this.production_details.company_name;
+
+      let reqURL2 = `/api/design-production-search/?approval_phase=&project_code=${this.production_details.project_code}&inhouse_bid_number=${this.production_details.inhouse_bid_number}&company_bid_number=${this.production_details.company_bid_number}&company_name=${this.production_details.company_name}`;
+
+      try {
+        let result2 = await mux.Server.get({path: reqURL2});
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result2 === 'string'){
+          result2 = JSON.parse(result2);
+        }
+        if(result2['code'] == 0 || (typeof result2['data'] === 'object' && result2['data']['code'] == 0) || (typeof result2['response'] === 'object' && typeof result2['response']['data'] === 'object' && result2['response']['data']['code'] == 0)){
+          const searchDesignResult = result2.data;
+          // const searchDesignResult = JSON.parse(JSON.stringify(DesignProductionSearchPageConfig.test_design_data));
+          // 오래된 순으로 정렬
+          searchDesignResult.confirmation.sort((a, b) => new Date(a.created_time) - new Date(b.created_time));
+          const uniqueDesignConfirmation = [];
+          const designConfirmationMap = new Map();
+
+          searchDesignResult.confirmation.forEach(item => {
+            const code = item.cost_calc_code;
+            const time = new Date(item.modified_time).getTime();
+
+            if (!designConfirmationMap.has(code) || time > designConfirmationMap.get(code)) {
+              designConfirmationMap.set(code, time);
+            }
+          });
+          designConfirmationMap.forEach((time, code) => {
+            const item = searchDesignResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
+            uniqueDesignConfirmation.push(item);
+          });
+          searchDesignResult.confirmation = uniqueDesignConfirmation;
+
+          let design_cost_calc_code = searchDesignResult.confirmation.find(x=>x.obtain_cost_calc_code === this.production_details.obtain_cost_calc_code).cost_calc_code;
+          let product_list = searchDesignResult.product_cost_calc_detail.filter(x=>x.cost_calc_code === design_cost_calc_code);
+          product_list.forEach(info => {
             product_info.push({
               //inbound_num, unit_price 추가 작업 해야함
               "code": confirmation_data.code,
               "type": "완제품",
               "classification": info.classification,
-              "product_code": info.code,
-              "name": info.name,
+              "product_code": info.product_code,
+              "name": info.product_name,
               "spot": this.inboundRequestInputs.find(x=>x.column_name === 'spot').value,
-              "spec": info.spec,
-              "model": info.model,
+              "spec": info.product_spec,
+              "model": info.product_model,
               "manufacturer": info.manufacturer,
+              "inbound_num": info.product_num,
+              "left_num": info.product_num,
+              "unit_price": info.product_unit_price,
               "ship_code": "미선택"
             });
-            console.log(product_info);
-          }else{
-            if (prevURL !== window.location.href) return;
-            mux.Util.showAlert(result);
-          }
-        } catch (error) {
-          if (prevURL !== window.location.href) return;
-          mux.Util.hideLoading();
-          // console.error(error);
-          mux.Util.showAlert(error);
+          })
+          console.log(searchDesignResult);
+          // 설계 이력 추가하기
+          // searchResult.design_confirmation = searchDesignResult.confirmation;
+          // searchResult.last_design_confirmation = searchDesignResult.last_design_confirmation;
+          // if (searchDesignResult.product_cost && searchDesignResult.product_cost.length > 0){
+          //   searchResult.product_cost = [...searchResult.product_cost, ...searchDesignResult.product_cost];
+          // }
+          // if (searchDesignResult.labor_cost_calc_detail && searchDesignResult.labor_cost_calc_detail.length > 0){
+          //   searchResult.labor_cost_calc_detail = [...searchResult.labor_cost_calc_detail, ...searchDesignResult.labor_cost_calc_detail];
+          // }
+          // if (searchDesignResult.product_cost_calc_detail && searchDesignResult.product_cost_calc_detail.length > 0){
+          //   searchResult.product_cost_calc_detail = [...searchResult.product_cost_calc_detail, ...searchDesignResult.product_cost_calc_detail];
+          // }
+          // if (searchDesignResult.construction_materials_data && searchDesignResult.construction_materials_data.length > 0){
+          //   searchResult.construction_materials_data = [...searchResult.construction_materials_data, ...searchDesignResult.construction_materials_data];
+          // }
+
+          // searchResult.purchase_detail_data = searchDesignResult.purchase_detail_data;
+
+          // this.searchDataCalcProcess(searchResult);
+
+        }else{
+          mux.Util.showAlert(result2);
         }
+
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.showAlert(error);
       }
+      // for(let i=0; i<this.item_product_list.length; i++){
+      //   let product_code = this.item_product_list[i].product_code;
+      //   try {
+      //     let result = await mux.Server.post({
+      //       path: '/api/common_rest_api/',
+      //       "params": [
+      //           {
+      //             "product_table.product_code": product_code
+      //           }
+      //       ],
+      //       "script_file_name": "rooting_완제품_검색_24_05_16_13_52_1IN.json",
+      //       "script_file_path": "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ"
+      //     });
+      //     if (prevURL !== window.location.href) return;
+
+      //     if (typeof result === 'string'){
+      //       result = JSON.parse(result);
+      //     }
+      //     if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+      //       let info = result['data'][0];
+      //       product_info.push({
+      //         //inbound_num, unit_price 추가 작업 해야함
+      //         "code": confirmation_data.code,
+      //         "type": "완제품",
+      //         "classification": info.classification,
+      //         "product_code": info.code,
+      //         "name": info.name,
+      //         "spot": this.inboundRequestInputs.find(x=>x.column_name === 'spot').value,
+      //         "spec": info.spec,
+      //         "model": info.model,
+      //         "manufacturer": info.manufacturer,
+      //         "ship_code": "미선택"
+      //       });
+      //       console.log(product_info);
+      //     }else{
+      //       if (prevURL !== window.location.href) return;
+      //       mux.Util.showAlert(result);
+      //     }
+      //   } catch (error) {
+      //     if (prevURL !== window.location.href) return;
+      //     mux.Util.hideLoading();
+      //     // console.error(error);
+      //     mux.Util.showAlert(error);
+      //   }
+      // }
       let product_data = [];
       for(let p=0; p<product_info.length; p++){
         product_data.push({

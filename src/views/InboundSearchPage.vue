@@ -579,6 +579,20 @@ export default {
       console.log(phase);
 
       let sendData = {};
+      let update_production_data = [];
+      if(item.add_data === '생산 입고'){
+        update_production_data.push({
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{
+            "inbound_approval_phase": send_data.approval_phase
+          },
+          "update_where": {"code": item.code},
+          "rollback": "yes"
+        });
+      }
 
       mux.Util.showLoading();
 
@@ -1126,6 +1140,7 @@ export default {
         }
       }
 
+      sendData["production_confirmation_table-update"] = update_production_data;
       sendData["inbound_confirmation_table-update"] = [{
         "user_info": {
           "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
