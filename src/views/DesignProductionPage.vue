@@ -2496,18 +2496,11 @@ export default {
                 ...this.searched_datas.purchase_detail_data.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
                   let item_num = 0;
                   let usable_num = 0;
-                  if (this.set_bom_list_data.find(x=>x.product_code === a.item_code)){
-                    item_num = this.set_bom_list_data.find(x=>x.product_code === a.item_code).item_num;
-                    usable_num = this.set_bom_list_data.find(x=>x.product_code === a.item_code).usable_num;
-                  }else if (this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code))){
-                    item_num = this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).belong_data.find(y=>y.product_code === a.item_code).item_num;
-                    usable_num = this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).belong_data.find(y=>y.product_code === a.item_code).usable_num;
-                  }else if (this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code)))){
-                    item_num = this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code))).belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code)).belong_data.find(z=>z.product_code === a.item_code).item_num;
-                    usable_num = this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code))).belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code)).belong_data.find(z=>z.product_code === a.item_code).usable_num;
-                  }
+                  
+                  item_num = Math.round(Number(this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).belong_data.find(y=>y.product_code === a.item_code).num) * Number(this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).num));
+                  usable_num = this.set_bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).belong_data.find(y=>y.product_code === a.item_code).usable_num;
 
-                  a.item_num = item_num;
+                  a.num = item_num;
                   a.usable_num = usable_num;
 
                   a.purchase_estimate_file = a.purchase_estimate_file ? a.purchase_estimate_file : '';
@@ -6322,7 +6315,7 @@ export default {
       sendData.prefix = new_cost_calc_code + '_';
       sendData.files = [];
 
-      let purchaseSendData = this.savePurchaseData();
+      let purchaseSendData = this.savePurchaseData(false);
       for (let i = 0; i < Object.keys(purchaseSendData).length; i++) {
         const key = Object.keys(purchaseSendData)[i];
         if (key === 'files'){
@@ -6703,7 +6696,7 @@ export default {
           this.selected_items_for_product_data = []
         }else{
           if (prevURL !== window.location.href) return;
-          mux.Util.showAlert(result['failed_info']);
+          mux.Util.showAlert(result);
         }
 
       } catch (error) {
@@ -6727,29 +6720,463 @@ export default {
 
         let test = await this.checkPurchaseRequest(false);
         if(test){
-          const confirm = await mux.Util.showConfirm('수정한 내용을 최종 업데이트 하시겠습니까?', '확인', false, '업데이트', '수정 진행');
+          const confirm = await mux.Util.showConfirm('수정한 내용을 최종 업데이트 하시겠습니까?', '확인', false, '업데이트', '취소');
           if (confirm){
-            // this.bom_list_purchase_data_copy 기준 수정 내용 업데이트 진행
+            let isRejected = false;
+            if (this.clickedProductCost.rejected_date){
+              isRejected = true;
+            }
+            let needReConfirm = false;
+            if (this.estimate_member_info[0].user_id !== this.$cookies.get(this.$configJson.cookies.id.key) && this.estimate_member_info[0].checked_date){
+              if (!await mux.Util.showConfirm('확인 절차가 다시 진행됩니다. 수정하시겠습니까?')){
+                return;
+              }
+              needReConfirm = true;
+            }
 
-            this.bom_list_purchase_data = JSON.parse(JSON.stringify(this.bom_list_purchase_data_copy)); // 수정 내용 적용
-            // this.searched_datas 에도 적용 진행 필요
+            const newDate = new Date();
 
+            let sendDataCheckedDate = '';
+            if (this.estimate_member_info[0].user_id === this.$cookies.get(this.$configJson.cookies.id.key)){
+              sendDataCheckedDate = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
+            }else {
+              sendDataCheckedDate = null;
+            }
+
+            const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+
+            let sendData = {
+              "design_confirmation_table-update": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{
+                  "cost_calc_code": new_cost_calc_code,
+                  "approval_phase": sendDataCheckedDate === null ? '미확인' : '미승인',
+                  "checked_date": sendDataCheckedDate,
+                  "rejecter": '',
+                  "rejected_date": null,
+                  "reject_reason": '',
+                },
+                "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+                "rollback": "yes"
+              }],
+              "design_cost_table-update": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{"cost_calc_code": new_cost_calc_code},
+                "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+                "rollback": "yes"
+              }],
+              "design_construction_detail_table-update": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{"cost_calc_code": new_cost_calc_code},
+                "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+                "rollback": "no"
+              }],
+              "design_labor_cost_calc_detail_table-update": [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{"cost_calc_code": new_cost_calc_code},
+                "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+                "rollback": "no"
+              }],
+              "files": []
+            };
+            
             if (this.editable_bom_list){ // BOM LIST 수정 후 구매 요청 내역 수정이라면
               // this.set_bom_list_data_copy 기준 수정 내용 업데이트 진행
+              console.log('this.set_bom_list_data_copy :>> ', this.set_bom_list_data_copy);
 
-              this.set_bom_list_data = JSON.parse(JSON.stringify(this.set_bom_list_data_copy)); // 수정 내용 적용
-              // this.searched_datas 에도 적용 진행 필요
-              this.editable_bom_list = false;
+              if (this.set_bom_list_data.length > 0){
+                sendData['design_cost_calc_detail_table-delete'] = [{
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "modifier"
+                  },
+                  "data": {
+                    "cost_calc_code": new_cost_calc_code
+                  },
+                  "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+                  "rollback": "no"
+                }];
+              }
+
+              sendData['design_cost_calc_detail_table-insert'] = [];
+              this.set_bom_list_data_copy.forEach(data => {
+                data.belong_data.forEach(belong_data => {
+                  sendData['design_cost_calc_detail_table-insert'].push({
+                    "user_info": {
+                      "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                      "role": "modifier"
+                    },
+                    "data": {
+                      "cost_calc_code": new_cost_calc_code,
+                      "product_classification": data.classification,
+                      "product_code": data.product_code,
+                      "product_name": data.cost_list,
+                      "product_model": data.model,
+                      "product_spec": data.cost_list_sub,
+                      "manufacturer": data.manufacturer,
+                      "product_num": data.cost_num,
+                      "product_unit_price": data.cost_unit_price,
+                      "item_type": belong_data.type,
+                      "item_classification": belong_data.classification,
+                      "item_code": belong_data.item_code,
+                      "item_name": belong_data.name,
+                      "item_model": belong_data.model,
+                      "item_spec": belong_data.spec,
+                      "item_manufacturer": belong_data.manufacturer,
+                      "item_unit_price": typeof belong_data.unit_price === 'number' ? belong_data.unit_price : belong_data.unit_price ? Number(belong_data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()) : 0,
+                      "item_num": belong_data.num
+                    },
+                    "select_where": {"cost_calc_code": new_cost_calc_code, "product_code": data.product_code, "item_code": belong_data.item_code },
+                    "rollback": "yes"
+                  });
+                });
+              });
+            }else {
+              sendData["design_cost_calc_detail_table-update"] = [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{"cost_calc_code": new_cost_calc_code},
+                "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+                "rollback": "no"
+              }]
             }
-            this.dialog_edit_purchase_requested = false;
+
+            // this.bom_list_purchase_data_copy 기준 수정 내용 업데이트 진행
+            console.log('this.bom_list_purchase_data_copy :>> ', this.bom_list_purchase_data_copy);
+            if (this.bom_list_purchase_data.length > 0){
+              sendData['purchase_confirmation_table-delete'] = [{
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data": {
+                  "cost_calc_code": new_cost_calc_code
+                },
+                "delete_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+                "rollback": "no"
+              }];
+
+              sendData['purchase_product_table-delete'] = [];
+              this.bom_list_purchase_data.forEach(data => {
+                sendData['purchase_product_table-delete'].push({
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "modifier"
+                  },
+                  "data": {
+                    "cost_calc_code": new_cost_calc_code
+                  },
+                  "delete_where": { code: data.code, product_code: data.product_code, item_code: data.item_code },
+                  "rollback": "no"
+                });
+              });
+            }
+
+            let purchaseSendData = this.savePurchaseData(true);
+            for (let i = 0; i < Object.keys(purchaseSendData).length; i++) {
+              const key = Object.keys(purchaseSendData)[i];
+              if (key === 'files'){
+                sendData.files.push(...purchaseSendData[key]);
+              }else {
+                sendData[key] = purchaseSendData[key];
+                if (key === 'purchase_confirmation_table-insert' || key === 'purchase_confirmation_table-update'){
+                  sendData[key].forEach(item => {
+                    item.data.cost_calc_code = new_cost_calc_code;
+                    item.data.project_code = this.input_project_code.value;
+                  });
+                }
+              }
+            } 
+
+
+            // let purchase_code = 'PEPR_' + mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss.fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
+            // sendData['purchase_confirmation_table-insert'] = [{
+            //   "user_info": {
+            //     "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            //     "role": "modifier"
+            //   },
+            //   "data": {
+            //     "code": purchase_code,
+            //     "project_code": this.input_project_code.value,
+            //     "cost_calc_code": new_cost_calc_code,
+            //     "approval_phase": '요청',
+            //     "checker": this.$cookies.get(this.$configJson.cookies.name.key),
+            //     "checker_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            //     "approver": this.purchase_member_info[1].name,
+            //     "approver_id": this.purchase_member_info[1].user_id
+            //   },
+            //   "select_where": {"cost_calc_code": new_cost_calc_code},
+            //   "rollback": "yes"
+            // }];
+
+            // sendData['purchase_product_table-insert'] = [];
+            // sendData['files'] = [];
+            // this.bom_list_purchase_data_copy.forEach(data => {
+            //   sendData['purchase_product_table-insert'].push({
+            //     "user_info": {
+            //       "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            //       "role": "modifier"
+            //     },
+            //     "data": {
+            //       "code": purchase_code,
+            //       "type": data.type,
+            //       "classification": data.classification,
+            //       "product_code": data.product_code,
+            //       "item_code": data.item_code,
+            //       "name": data.name,
+            //       "model": data.model,
+            //       "spec": data.spec,
+            //       "manufacturer": data.manufacturer,
+            //       "unit_price": data.unit_price,
+            //       "purchase_num": data.purchase_num,
+            //       "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
+            //       "purchase_estimate_code" : data.purchase_estimate_company === '' ? '' : purchase_code,
+            //       "purchase_estimate_company" : data.purchase_estimate_company,
+            //       "purchase_estimate_file" : data.purchase_estimate_file_name,
+            //       "purchase_estimate_thumbnail" : data.purchase_estimate_thumbnail,
+            //     },
+            //     "select_where": {"code": purchase_code, "product_code": data.product_code, "item_code": data.item_code},
+            //     "rollback": "yes"
+            //   });
+
+            //   if (data.purchase_estimate_company){
+            //     sendData['files'].push({
+            //       "folder": "purchase/estimate",
+            //       "file": data.purchase_estimate_file_value,
+            //       "prefix": purchase_code + '_',
+            //       "name": data.purchase_estimate_file_name
+            //     });
+            //   }
+            // });
+
+            sendData.path = '/api/multipart_rest_api/';
+            sendData.prefix = new_cost_calc_code + '_';
+
+            const prevURL = window.location.href;
+            try {
+              let result = await mux.Server.uploadFile(sendData);
+              if (prevURL !== window.location.href) return;
+
+              if (typeof result === 'string'){
+                result = JSON.parse(result);
+              }
+
+              if (result.code === undefined && result.data !== undefined && result.data.code !== undefined){
+                result = result.data;
+              }
+              if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+                this.estimate_member_info[0].checked_date = sendDataCheckedDate !== null ? sendDataCheckedDate : '';
+                let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.clickedProductCost.cost_calc_code);
+                targetConfirmation.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
+                targetConfirmation.checked_date = `${this.estimate_member_info[0].checked_date}`;
+                targetConfirmation.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
+                targetConfirmation.rejecter = '';
+                targetConfirmation.rejected_date = '';
+                targetConfirmation.reject_reason = '';
+
+                targetConfirmation.cost_calc_code = new_cost_calc_code;
+                this.searched_datas.last_design_confirmation.find(x=>x.cost_calc_code === this.clickedProductCost.cost_calc_code).cost_calc_code = new_cost_calc_code;
+                // this.searched_datas.product_cost_calc_detail.find(x=>x.cost_calc_code === this.clickedProductCost.cost_calc_code).cost_calc_code = new_cost_calc_code;
+                if (sendData["design_cost_calc_detail_table-update"]){
+                  this.searched_datas.product_cost_calc_detail = this.searched_datas.product_cost_calc_detail.map(x => {
+                    if (x.cost_calc_code === this.clickedProductCost.cost_calc_code){
+                      x.cost_calc_code = new_cost_calc_code;
+                    }
+                    return x;
+                  });
+                }else {
+                  this.searched_datas.product_cost_calc_detail = this.searched_datas.product_cost_calc_detail.filter(x => x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
+                  let product_obj_list = [];
+                  this.set_bom_list_data_copy.forEach(data => {
+                    product_obj_list.push({
+                      modified_time: mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss'),
+                      cost_calc_code: new_cost_calc_code,
+                      manufactrer: data.manufacturer,
+                      product_classification: data.classification,
+                      product_code: data.product_code,
+                      product_model: data.model,
+                      product_name: data.cost_list,
+                      product_num: data.cost_num,
+                      product_spec: data.cost_list_sub,
+                      product_unit_price: data.cost_unit_price,
+                      belong_data: [ ...data.belong_data.map(x => {
+                          return {
+                            module_classification: x.classification,
+                            module_code: x.item_code,
+                            module_manufacturer: x.manufacturer,
+                            module_model: x.model,
+                            module_name: x.name,
+                            module_num: x.num,
+                            module_spec: x.spec,
+                            module_type: x.type,
+                            module_unit_price: x.unit_price,
+                            module_usable_num: x.usable_num
+                          }
+                        })
+                      ]
+                    })
+                  })
+                  this.searched_datas.product_cost_calc_detail.push(...product_obj_list);
+                }
+                this.searched_datas.construction_materials_data = this.searched_datas.construction_materials_data.map(x => {
+                  if (x.cost_calc_code === this.clickedProductCost.cost_calc_code){
+                    x.cost_calc_code = new_cost_calc_code;
+                  }
+                  return x;
+                });
+                this.searched_datas.labor_cost_calc_detail = this.searched_datas.labor_cost_calc_detail.map(x => {
+                  if (x.cost_calc_code === this.clickedProductCost.cost_calc_code){
+                    x.cost_calc_code = new_cost_calc_code;
+                  }
+                  return x;
+                });
+                this.searched_datas.purchase_detail_data = this.searched_datas.purchase_detail_data.filter(x => x.cost_calc_code !== this.clickedProductCost.cost_calc_code);
+                let purchase_obj_list = [];
+                sendData['purchase_product_table-insert'].forEach(x => {
+                  purchase_obj_list.push({
+                    cost_calc_code: x.data.code,
+                    type: x.data.type,
+                    classification: x.data.classification,
+                    product_code: x.data.product_code,
+                    item_code: x.data.item_code,
+                    name: x.data.name,
+                    model: x.data.model,
+                    spec: x.data.spec,
+                    manufacturer: x.data.manufacturer,
+                    unit_price: x.data.unit_price,
+                    purchase_num: x.data.purchase_num,
+                    purchase_estimate_phase: x.data.purchase_estimate_phase,
+                    purchase_estimate_code: x.data.purchase_estimate_code,
+                    purchase_estimate_company: x.data.purchase_estimate_company,
+                    purchase_estimate_file: x.data.purchase_estimate_file,
+                    purchase_estimate_thumbnail: x.data.purchase_estimate_thumbnail
+                  });
+                });
+                this.searched_datas.purchase_detail_data.push(...purchase_obj_list);
+
+                this.clickedProductCost.modified_time = mux.Date.format(newDate, 'yyyy-MM-dd HH:mm:ss');
+                this.clickedProductCost.checked_date = this.estimate_member_info[0].checked_date;
+                this.clickedProductCost.approval_phase = sendDataCheckedDate === null ? '미확인' : '미승인';
+                this.clickedProductCost.rejecter = '';
+                this.clickedProductCost.rejected_date = '';
+                this.clickedProductCost.reject_reason = '';
+                this.clickedProductCost.cost_calc_code = new_cost_calc_code;
+
+                this.searchDataCalcProcess(this.searched_datas);
+
+                if (isRejected || needReConfirm){
+                  //메일 알림 관련
+                  let mailTo = [];
+                  // let creater = this.$cookies.get(this.$configJson.cookies.id.key);
+                  if(sendDataCheckedDate === null){
+                    mailTo.push(this.clickedProductCost.checker_id);
+                  }else {
+                    mailTo.push(this.clickedProductCost.approver_id);
+                  }
+
+                  // 메일 본문 내용
+                  let content=`
+                  <html>
+                    <body>
+                      <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                        <h2 style="text-align: center; color:#13428a">설계 ${sendDataCheckedDate === null ? '확인' : '승인'} 요청 알림</h2>
+                        <table style="width: 100%;border-spacing: 10px 10px;">
+                          <tr>
+                            <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                            <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.project_code}</td>
+                          </tr>
+                          <tr>
+                            <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">사내 견적번호</td>
+                            <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.inhouse_bid_number}</td>
+                          </tr>
+                          <tr>
+                            <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">발행일</td>
+                            <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.issue_date}</td>
+                          </tr>
+                          <tr>
+                            <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                            <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.given_name}</td>
+                          </tr>
+                          <tr>
+                            <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">확인자</td>
+                            <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.checker}</td>
+                          </tr>
+                          <tr>
+                            <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">승인자</td>
+                            <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${this.clickedProductCost.approver}</td>
+                          </tr>
+                        </table>
+                        <a style="color: white; text-decoration:none"href="${prevURL}-search?project_code=${this.clickedProductCost.project_code}&inhouse_bid_number=${this.clickedProductCost.inhouse_bid_number}&company_bid_number=${this.clickedProductCost.company_bid_number}&company_name=${this.clickedProductCost.company_name}&issue_date=${this.clickedProductCost.issue_date}">
+                          <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                            확인하기
+                          </p>
+                        </a>
+                      </div>
+                    </body>
+                  </html>
+                  `;
+
+                  try {
+                    let sendEmailAlam = await mux.Server.post({
+                      path: '/api/send_email/',
+                      to_addrs: mailTo,
+                      subject: "설계 " + (sendDataCheckedDate === null ? '확인' : '승인') + " 요청 알림",
+                      content: content
+                    });
+                    if (prevURL !== window.location.href) return;
+                    if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
+                      mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+                    } else {
+                      if (prevURL !== window.location.href) return;
+                      console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);
+                      mux.Util.showAlert('수정되었으나 알림 메일 전송에 실패하였습니다.', '수정 완료');
+                    }
+                  } catch (error) {
+                    if (prevURL !== window.location.href) return;
+                    console.log('알림 메일 전송에 실패-error :>> ', error);
+                    mux.Util.showAlert('수정되었으나 알림 메일 전송에 실패하였습니다.', '수정 완료');
+                  }
+                }else {
+                  mux.Util.showAlert('수정되었습니다.', '수정 완료', 3000);
+                }
+
+                // this.searched_datas 에도 적용 진행 필요
+
+                if (this.editable_bom_list){ // BOM LIST 수정 후 구매 요청 내역 수정이라면
+                  this.set_bom_list_data = JSON.parse(JSON.stringify(this.set_bom_list_data_copy)); // 수정 내용 적용
+                }
+                this.bom_list_purchase_data = JSON.parse(JSON.stringify(this.bom_list_purchase_data_copy)); // 수정 내용 적용
+                
+                this.editable_bom_list = false;
+                this.dialog_edit_purchase_requested = false;
+                this.during_edit = false;
+                
+              } else {
+                if (prevURL !== window.location.href) return;
+                mux.Util.showAlert(result);
+              }
+            } catch (error) {
+              if (prevURL !== window.location.href) return;
+              mux.Util.showAlert(error);
+            }
+
+            mux.Util.hideLoading();
           }
-        }
-
-      }else{
-
-        const confirm = await mux.Util.showConfirm('수정한 내용을 최종 업데이트 하시겠습니까?', '확인', false, '업데이트', '수정 진행');
-        if (confirm){
-          // 수정 내용 업데이트 진행
         }
 
       }
@@ -7523,7 +7950,7 @@ export default {
           console.log(set_purchase_data);
           this.purchase_detail_data = set_purchase_data;
         } else {
-          mux.Util.showAlert(result['failed_info']);
+          mux.Util.showAlert(result);
         }
       } catch (error) {
         if (prevURL !== window.location.href) return;
@@ -7611,7 +8038,7 @@ export default {
     //   sendData['design_cost_calc_detail_table'] = bom_insert;
     //   console.log("sendData BOM : ", sendData);
     // },
-    savePurchaseData(){
+    savePurchaseData(isUpdate){
       // DB의 purchase_product_table = bom_list_purchase_data
       const currDate = new Date();
       let sendData = {};
@@ -7624,7 +8051,13 @@ export default {
 
       let confirmation_inserted = false;
 
-      this.bom_list_purchase_data2.forEach(data => {
+      let purchase_data = null;
+      if (isUpdate){
+        purchase_data = this.bom_list_purchase_data_copy;
+      }else {
+        purchase_data = this.bom_list_purchase_data2;
+      }
+      purchase_data.forEach(data => {
         if(data.belong_data){ //선주문일 경우
           let belong_data = data.belong_data[0];
           // 선주문 수량과 선주문 사용 수량이 동일할 경우 기존 선주문 데이터의 project_code, cost_calc_code, note만 update

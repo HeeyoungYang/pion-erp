@@ -623,13 +623,8 @@ export default {
               this.purchase_detail_data = [
                   ...this.searched_datas.purchase_detail_data.filter(x=>x.cost_calc_code === item.cost_calc_code).map((a) => {
                     let item_num = 0;
-                    if (this.bom_list_data.find(x=>x.product_code === a.item_code)){
-                      item_num = this.bom_list_data.find(x=>x.product_code === a.item_code).item_num;
-                    }else if (this.bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code))){
-                      item_num = this.bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).belong_data.find(y=>y.product_code === a.item_code).item_num;
-                    }else if (this.bom_list_data.find(x=>x.belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code)))){
-                      item_num = this.bom_list_data.find(x=>x.belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code))).belong_data.find(y=>y.belong_data.find(z=>z.product_code === a.item_code)).belong_data.find(z=>z.product_code === a.item_code).item_num;
-                    }
+
+                    item_num = Math.round(Number(this.bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).belong_data.find(y=>y.product_code === a.item_code).item_num) * Number(this.bom_list_data.find(x=>x.belong_data.find(y=>y.product_code === a.item_code)).item_num));
 
                     a.item_num = item_num;
 
