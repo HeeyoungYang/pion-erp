@@ -262,7 +262,7 @@
               <v-tab-item>
                 <v-card class="elevation-0">
                   <v-card-text
-                    v-if="version === ''"
+                    v-if="version2 === ''"
                   >
                     <p class="error--text">※ 등록된 설계관련 데이터가 없습니다.</p>
                   </v-card-text>

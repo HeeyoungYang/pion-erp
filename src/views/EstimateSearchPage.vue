@@ -1049,7 +1049,7 @@ export default {
         confirmation_data.approver_id = this.estimate_checker.split('-')[2]
         if(confirmation_data.checker_id == this.login_info.id){
           confirmation_data.approval_phase = '미승인';
-          confirmation_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff')
+          confirmation_data.checked_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss')
         }else{
           confirmation_data.approval_phase = '미확인';
         }
