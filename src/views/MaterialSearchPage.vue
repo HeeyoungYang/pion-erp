@@ -154,7 +154,7 @@
           <v-col cols="12" sm="4">
             <p class="text-h6 font-weight-bold primary--text">입고 정보</p>
             <DataTableComponent
-              :headers="inbound_detail_header"
+              :headers="pricePermission ? inbound_detail_header : inbound_detail_header.filter(x => x.value !== 'unit_price')"
               :items="inboundDetails"
               dense
             />

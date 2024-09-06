@@ -178,7 +178,7 @@
           <v-col cols="12" :sm="detailForProduct ? 6 : 4" v-if="detailForProduct">
             <p class="text-h6 font-weight-bold primary--text">기본 정보</p>
             <DataTableComponent
-              :headers="product_detail_header"
+              :headers="pricePermission ? product_detail_header : product_detail_header.filter(x => x.value !== 'unit_price')"
               :items="productDetails"
               dense
             />
@@ -194,7 +194,7 @@
           <v-col cols="12" :sm="detailForProduct ? 6 : 4">
             <p class="text-h6 font-weight-bold primary--text">입고 정보</p>
             <DataTableComponent
-              :headers="inbound_detail_header"
+              :headers="pricePermission ? inbound_detail_header : inbound_detail_header.filter(x => x.value !== 'unit_price')"
               :items="inboundDetails"
               dense
             />
