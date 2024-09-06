@@ -143,7 +143,7 @@
               </template>
               <v-list>
                 <v-list-item
-                  v-for="(item, index) in save_estimates"
+                  v-for="(item, index) in save_confirmation"
                   :key="index"
                   dense
                   @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
@@ -521,7 +521,7 @@
                 </template>
                 <v-list>
                   <v-list-item
-                    v-for="(item, index) in save_estimates"
+                    v-for="(item, index) in save_confirmation"
                     :key="index"
                     dense
                     @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
@@ -684,7 +684,7 @@
               </template>
               <v-list>
                 <v-list-item
-                  v-for="(item, index) in save_estimates"
+                  v-for="(item, index) in save_confirmation"
                   :key="index"
                   dense
                   @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
@@ -876,7 +876,7 @@ export default {
 
       searched_products:[],
 
-      save_estimates: ObtainOrderSearchPageConfig.save_estimates,
+      save_confirmation: ObtainOrderSearchPageConfig.save_confirmation,
       login_info: ObtainOrderSearchPageConfig.login_info,
       searchCardInputs:ObtainOrderSearchPageConfig.searchCardInputs,
       estimate_approve_headers:ObtainOrderSearchPageConfig.estimate_approve_headers,
