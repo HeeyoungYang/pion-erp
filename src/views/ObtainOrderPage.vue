@@ -2209,6 +2209,9 @@ export default {
       this.calc_cost_detail_data_normal_maintenance_fee2.belong_data[0].cost_list = ' - ' + this.new_normal_maintenance_fee_formula;
       this.calc_cost_detail_data_profite2.belong_data[0].cost_list = ' - ' + this.new_profite_formula;
 
+      const currDate = new Date();
+      this.estimateWriteDefaultInfoInputs.find(x=>x.label === '사내 견적번호').value = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd');
+      this.estimateWriteDefaultInfoInputs.find(x=>x.label === '프로젝트 코드').value = 'PE_' + mux.Date.format(currDate, 'yyMMdd');
       this.clearClicked();
     },
     async searchButton(){
@@ -2244,7 +2247,7 @@ export default {
         reqURL += (inputs[0] || inputs[1] || inputs[2] || inputs[3]) ? '&issue_start_date=' + inputs[4].split(',')[0] : '?issue_start_date=' + inputs[4].split(',')[0];
         reqURL += inputs[4].split(',').length > 1 ? '&issue_end_date=' + inputs[4].split(',')[1] : '&issue_end_date=' + inputs[4].split(',')[0];
       }
-      
+
       try {
         let result = await mux.Server.get({path: reqURL});
         if (prevURL !== window.location.href) return;
@@ -2898,6 +2901,86 @@ export default {
       this.labor_cost_data = [];
 
       this.clickedProductCost = {};
+    },
+    clearWrite(){
+      const currDate = new Date();
+
+      this.labor_cost_list = [];
+      this.estimate_member_info2 = JSON.parse(JSON.stringify(ObtainOrderPageConfig.estimate_member_info));
+      this.estimate_member_info2[0].name = this.$cookies.get(this.$configJson.cookies.name.key).trim();
+      this.estimate_member_info2[0].email =  this.$cookies.get(this.$configJson.cookies.email.key);
+      this.estimate_member_info2[0].user_id =  this.$cookies.get(this.$configJson.cookies.id.key);
+      this.estimateWriteFilesInputs = JSON.parse(JSON.stringify(ObtainOrderPageConfig.estimateWriteFilesInputs));
+
+      this.calc_cost_detail_data_product_cost2.belong_data = [];
+      // 작성 - 직접 노무비 리스트 적용
+      this.calc_cost_detail_data_direct_labor2.belong_data = [];
+      // 작성 - 간접 노무비 적용
+      this.calc_cost_detail_data_indirect_labor2.cost_unit_price = 0;
+      this.calc_cost_detail_data_indirect_labor2.cost_num = 1;
+      // 작성 - 고용보험료 적용
+      this.calc_cost_detail_data_employment_insurance2.cost_unit_price = 0;
+      this.calc_cost_detail_data_employment_insurance2.cost_num = 1;
+      // 작성 - 공구손료 적용
+      this.calc_cost_detail_data_tool_rent_fee2.cost_unit_price = 0;
+      this.calc_cost_detail_data_tool_rent_fee2.cost_num = 1;
+      // 작성 - 여비교통 통신비 적용
+      this.calc_cost_detail_data_transportation_fee2.cost_unit_price = 0;
+      this.calc_cost_detail_data_transportation_fee2.cost_num = 1;
+      // 작성 - 산재보험료 적용
+      this.calc_cost_detail_data_industrial_accident2.cost_unit_price = 0;
+      this.calc_cost_detail_data_industrial_accident2.cost_num = 1;
+      // 작성 - 세금과공과 적용
+      this.calc_cost_detail_data_taxes_dues2.cost_unit_price = 0;
+      this.calc_cost_detail_data_taxes_dues2.cost_num = 1;
+      // 작성 - 복리후생비 적용
+      this.calc_cost_detail_data_welfare_benefits2.cost_unit_price = 0;
+      this.calc_cost_detail_data_welfare_benefits2.cost_num = 1;
+      // 작성 - 퇴직공제 부금비 적용
+      this.calc_cost_detail_data_retirement2.cost_unit_price = 0;
+      this.calc_cost_detail_data_retirement2.cost_num = 1;
+      // 작성 - 소모품비 적용
+      this.calc_cost_detail_data_expendables2.cost_unit_price = 0;
+      this.calc_cost_detail_data_expendables2.cost_num = 1;
+      // 작성 - 산업안전보건관리비 적용
+      this.calc_cost_detail_data_industrial_safety2.cost_unit_price = 0;
+      this.calc_cost_detail_data_industrial_safety2.cost_num = 1;
+
+      // 작성 - 일반관리비 적용
+      this.calc_cost_detail_data_normal_maintenance_fee2.cost_unit_price = 0;
+      this.calc_cost_detail_data_normal_maintenance_fee2.cost_num = 1;
+      // 작성 - 이윤 적용
+      this.calc_cost_detail_data_profite2.cost_unit_price = 0;
+      this.calc_cost_detail_data_profite2.cost_num = 1;
+
+      this.calc_cost_detail_data_indirect_labor2.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_employment_insurance2.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_tool_rent_fee2.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_transportation_fee2.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_industrial_accident2.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_taxes_dues2.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_welfare_benefits2.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_retirement2.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_expendables2.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_industrial_safety2.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_normal_maintenance_fee2.belong_data[0].cost_list = '';
+      this.calc_cost_detail_data_profite2.belong_data[0].cost_list = '';
+
+
+      this.input_issue_date2.value = '';
+      this.input_project_code2.value = 'PE_' + mux.Date.format(currDate, 'yyMMdd');
+      this.input_inhouse_bid_number2.value = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd');
+      this.input_company_bid_number2.value = '';
+      this.input_due_date2.value = '';
+      this.input_delivery_condition2.value = '';
+      this.input_service_name2.value = '';
+      this.input_service_period2.value = '';
+      this.input_remark2.value = '';
+      this.input_company_name2.value = '';
+      this.input_company_manager2.value = '';
+      this.input_company_manager_email2.value = '';
+      this.input_company_manager_phone2.value = '';
+
     },
     calcNoTotalAmount(labor){
       let labor_data = this.labor_cost_data
@@ -4087,6 +4170,13 @@ export default {
         this.tab_write = 0;
         return;
       }
+      if (this.input_inhouse_bid_number2.value.split('_').length === 2){
+        const confirm = await mux.Util.showConfirm('견적서를 불러오지 않고 직접 작성한 수주 데이터를 업로드 하시겠습니까?', '확인', false, '예', '아니오');
+        if (!confirm){
+          this.tab_write = 0;
+          return;
+        }
+      }
 
       // 작성 - 산출내역서 탭 강제 로드
       if (!this.$refs.surveyCostForm2 && this.tab_write === 0){
@@ -4130,6 +4220,35 @@ export default {
       }
 
       const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
+
+      let basic_inhouse_bid =  this.input_inhouse_bid_number2.value;
+      let set_inhouse_bid_number = '';
+      if(basic_inhouse_bid.split('_').length === 2){
+        let currentCode = await mux.Get.getCurrentInhouseBid(basic_inhouse_bid);
+        if(currentCode === ''){
+          set_inhouse_bid_number = basic_inhouse_bid + '_001';
+        }else{
+          let calc_current_code = Number(currentCode.split('_')[2]) + 1;
+          calc_current_code = ('00' + calc_current_code).slice(-3);
+          set_inhouse_bid_number = basic_inhouse_bid + '_' + calc_current_code;
+        }
+      }else{
+        set_inhouse_bid_number = basic_inhouse_bid;
+      }
+
+
+      let basic_project_code =  this.input_project_code2.value;
+      let set_project_code = '';
+      let currentProjectCode = await mux.Get.getCurrentProjectCode(basic_project_code);
+
+      if(currentProjectCode === ''){
+        set_project_code = basic_project_code + '_001';
+      }else{
+        let calc_current_code = Number(currentProjectCode.split('_')[2]) + 1;
+        calc_current_code = ('00' + calc_current_code).slice(-3);
+        set_project_code = basic_project_code + '_' + calc_current_code;
+      }
+
       let sendData = {
         "obtain_confirmation_table-insert": [{
           "user_info": {
@@ -4142,8 +4261,8 @@ export default {
             office_phone_number: this.$cookies.get(this.$configJson.cookies.office_phone_number.key),
             obtain_type: this.type_obtain,
             issue_date: this.input_issue_date2.value,
-            project_code: this.input_project_code2.value,
-            inhouse_bid_number: this.input_inhouse_bid_number2.value,
+            project_code: set_project_code,
+            inhouse_bid_number: set_inhouse_bid_number,
             company_bid_number: this.input_company_bid_number2.value ? this.input_company_bid_number2.value : '',
             due_date: this.input_due_date2.value,
             delivery_condition: this.input_delivery_condition2.value,
@@ -4402,6 +4521,7 @@ export default {
               if (prevURL !== window.location.href) return;
               if(sendEmailAlam['code'] == 0 || (typeof sendEmailAlam['data'] === 'object' && sendEmailAlam['data']['code'] == 0) || (typeof sendEmailAlam['response'] === 'object' && typeof sendEmailAlam['response']['data'] === 'object' && sendEmailAlam['response']['data']['code'] == 0)){
                 mux.Util.showAlert('등록되었습니다.', '등록 완료', 3000);
+                this.clearWrite();
               } else {
                 if (prevURL !== window.location.href) return;
                 console.log('알림 메일 전송에 실패-sendEmailAlam :>> ', sendEmailAlam);

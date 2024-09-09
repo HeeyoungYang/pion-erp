@@ -2372,7 +2372,7 @@ export default {
       this.calc_cost_detail_data_profite2.cost_num = estimate.product_cost[0].profite_num;
 
       this.input_issue_date2.value = estimate.product_cost[0].issue_date;
-      this.input_inhouse_bid_number2.value = estimate.product_cost[0].inhouse_bid_number;
+      // this.input_inhouse_bid_number2.value = estimate.product_cost[0].inhouse_bid_number;
       this.input_company_bid_number2.value = estimate.product_cost[0].company_bid_number;
       this.input_due_date2.value = estimate.product_cost[0].due_date;
       this.input_service_name2.value = estimate.product_cost[0].service_name;
@@ -4082,59 +4082,10 @@ export default {
       }
 
       const new_cost_calc_code = mux.Date.format(newDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key);
-      let currentCode = '';
       let basic_code =  this.input_inhouse_bid_number2.value;
+      let currentCode = await mux.Get.getCurrentInhouseBid(basic_code);
       let new_inhouse_bid_number = '';
 
-      let reqURL = '/api/estimate/?inhouse_bid_number='+basic_code;
-      try {
-        let result = await mux.Server.get({path: reqURL});
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-          const searchResult = result.data;
-          searchResult.confirmation = searchResult.confirmation.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
-          const uniqueConfirmation = [];
-            const confirmationMap = new Map();
-
-            searchResult.confirmation.forEach(item => {
-              const code = item.cost_calc_code;
-              const time = new Date(item.modified_time).getTime();
-
-              if (!confirmationMap.has(code) || time > confirmationMap.get(code)) {
-                confirmationMap.set(code, time);
-              }
-            });
-            confirmationMap.forEach((time, code) => {
-              const item = searchResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
-              uniqueConfirmation.push(item);
-            });
-            searchResult.confirmation = uniqueConfirmation;
-          searchResult.product_cost = searchResult.product_cost.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
-          searchResult.labor_cost_calc_detail = searchResult.labor_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
-          searchResult.product_cost_calc_detail = searchResult.product_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
-          searchResult.construction_materials_data = searchResult.construction_materials_data.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
-
-          searchResult.confirmation.reverse(); // 최신순으로 정렬
-
-          if(searchResult.confirmation.length === 0){
-            currentCode = '';
-          }else{
-            currentCode = searchResult.confirmation[0].inhouse_bid_number;
-          }
-
-        }else{
-          mux.Util.showAlert(result);
-        }
-
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        mux.Util.hideLoading();
-        mux.Util.showAlert(error);
-      }
       if(currentCode === ''){
         new_inhouse_bid_number = basic_code + '_001';
       }else{
@@ -4325,12 +4276,7 @@ export default {
         });
       }
 
-      // const prevURL = window.location.href;
       try {
-        // let result = await mux.Server.post({
-        //   path: '/api/common_rest_api/',
-        //   params: sendData
-        // });
         let result = await mux.Server.uploadFile(sendData);
         if (prevURL !== window.location.href) return;
 

@@ -671,7 +671,7 @@ export default {
               script_file_name = "rooting_반제품_검색_24_05_16_13_23_FD4.json";
               script_file_path = "data_storage_pion\\json_sql\\stock\\6_반제품_검색\\반제품_검색_24_05_16_13_24_YJO";
             }
-            let currentCode = await mux.Server.getCurrentCode(code_name, param_info, script_file_name, script_file_path)
+            let currentCode = await mux.Get.getCurrentCode(code_name, param_info, script_file_name, script_file_path)
 
             if(currentCode === ''){
               new_code = set_code + '-001';

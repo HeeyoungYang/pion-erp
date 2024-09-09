@@ -1105,106 +1105,6 @@ mux.Server = {
 
   },
 
-  /**
-   * 최근 코드 가져오기
-   * @param {string} type
-   * @param {string} table_info
-   * @param {string} script_file_name
-   * @param {string} script_file_path
-   * @example
-   * mux.Util.getCurrentCode(code, param_info, script_file_name, script_file_path);
-   * @memberof mux.Server
-   * @inner
-   * @private
-   * @returns {Promise}
-  */
-  getCurrentCode(code, param_info, script_file_name, script_file_path) {
-    return new Promise(async (resolve, reject) => {
-
-      // const currDate = new Date();
-      // let code = type + mux.Date.format(currDate, 'yyMMdd') + '_';
-      const prevURL = window.location.href;
-      let current_code = '';
-      try {
-        //견적서 REST API 스크립트 전달 받으면 수정 예정
-        let result = await mux.Server.post({
-          path: '/api/common_rest_api/',
-          params: [
-            param_info
-          ],
-          "script_file_name": script_file_name,
-          "script_file_path": script_file_path
-        });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-
-          let searched = result.data;
-          // 정렬
-          if(searched.length > 0){
-            searched.sort((a,b) => a[code].localeCompare(b[code]));
-            current_code = searched[searched.length-1][code];
-          } else {
-            current_code = '';
-          }
-          resolve(current_code);
-        } else {
-          reject(result.message);
-        }
-      } catch (error) {
-        reject(error);
-      }
-    });
-  },
-  // async getCurrentCode(type, table_info, script_file_name, script_file_path) {
-  //   const currDate = new Date();
-  //   const prevURL = window.location.href;
-  //   let code = type + mux.Date.format(currDate, 'yyMMdd') + '_';
-  //   let current_code = '';
-  //   try {
-  //     //견적서 REST API 스크립트 전달 받으면 수정 예정
-  //     let result = await mux.Server.post({
-  //       path: '/api/common_rest_api/',
-  //       params: [
-  //         {
-  //           [table_info] : code
-  //         }
-  //       ],
-  //       "script_file_name": script_file_name,
-  //       "script_file_path": script_file_path
-  //     });
-  //     if (prevURL !== window.location.href) return;
-
-  //     if (typeof result === 'string'){
-  //       result = JSON.parse(result);
-  //     }
-  //     if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-
-  //       let searched = result.data;
-  //       // 정렬
-  //       if(searched.length > 0){
-  //         searched.sort((a,b) => a.code.localeCompare(b.code));
-  //         current_code = searched[searched.length-1].code;
-  //       } else {
-  //         current_code = '';
-  //       }
-  //     } else {
-  //       mux.Util.showAlert(result['failed_info']);
-  //     }
-  //   } catch (error) {
-  //     if (prevURL !== window.location.href) return;
-  //     mux.Util.hideLoading();
-  //     if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-  //       mux.Util.showAlert(error.response['data']['failed_info'].msg);
-  //     else
-  //       mux.Util.showAlert(error);
-  //   }
-  //   return current_code;
-  // },
-
 }
 // Axios인스턴스 설정: 요청 시마다 헤더에 토큰을 추가
 mux.Server.axiosInstance.interceptors.request.use(
@@ -1383,6 +1283,228 @@ mux.Get = {
     }
     return value;
   },
+
+
+  /**
+   * 최근 코드 가져오기
+   * @param {string} type
+   * @param {string} table_info
+   * @param {string} script_file_name
+   * @param {string} script_file_path
+   * @example
+   * mux.Util.getCurrentCode(code, param_info, script_file_name, script_file_path);
+   * @memberof mux.Server
+   * @inner
+   * @private
+   * @returns {Promise}
+  */
+  getCurrentCode(code, param_info, script_file_name, script_file_path) {
+    return new Promise(async (resolve, reject) => {
+
+      // const currDate = new Date();
+      // let code = type + mux.Date.format(currDate, 'yyMMdd') + '_';
+      const prevURL = window.location.href;
+      let current_code = '';
+      try {
+        //견적서 REST API 스크립트 전달 받으면 수정 예정
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            param_info
+          ],
+          "script_file_name": script_file_name,
+          "script_file_path": script_file_path
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          let searched = result.data;
+          // 정렬
+          if(searched.length > 0){
+            searched.sort((a,b) => a[code].localeCompare(b[code]));
+            current_code = searched[searched.length-1][code];
+          } else {
+            current_code = '';
+          }
+          resolve(current_code);
+        } else {
+          reject(result.message);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  /**
+   * 최근 사내 견적번호 가져오기
+   * @param {string} basic_code
+   * @example
+   * mux.Util.getCurrentInhouseBid(basic_code);
+   * @memberof mux.Server
+   * @inner
+   * @private
+   * @returns {Promise}
+  */
+  async getCurrentInhouseBid(basic_code){
+    return new Promise(async (resolve, reject) => {
+      let currentCode = '';
+      const prevURL = window.location.href;
+
+      let reqURL = '/api/estimate/?inhouse_bid_number='+basic_code;
+      try {
+        let result = await mux.Server.get({path: reqURL});
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+          const searchResult = result.data;
+          searchResult.confirmation = searchResult.confirmation.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          const uniqueConfirmation = [];
+          const confirmationMap = new Map();
+
+          searchResult.confirmation.forEach(item => {
+            const code = item.cost_calc_code;
+            const time = new Date(item.modified_time).getTime();
+
+            if (!confirmationMap.has(code) || time > confirmationMap.get(code)) {
+              confirmationMap.set(code, time);
+            }
+          });
+          confirmationMap.forEach((time, code) => {
+            const item = searchResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
+            uniqueConfirmation.push(item);
+          });
+          searchResult.confirmation = uniqueConfirmation;
+          // searchResult.product_cost = searchResult.product_cost.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          // searchResult.labor_cost_calc_detail = searchResult.labor_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          // searchResult.product_cost_calc_detail = searchResult.product_cost_calc_detail.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          // searchResult.construction_materials_data = searchResult.construction_materials_data.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+
+          let reqURL2 = '/api/obtain-order/?inhouse_bid_number='+basic_code;
+          try {
+            let result2 = await mux.Server.get({path: reqURL2});
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result2 === 'string'){
+              result2 = JSON.parse(result2);
+            }
+            if(result2['code'] == 0 || (typeof result2['data'] === 'object' && result2['data']['code'] == 0) || (typeof result2['response'] === 'object' && typeof result2['response']['data'] === 'object' && result2['response']['data']['code'] == 0)){
+              const searchObtainResult = result2.data;
+              searchObtainResult.confirmation = searchObtainResult.confirmation.filter(x=> searchObtainResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+              const uniqueObtainConfirmation = [];
+              const obtainConfirmationMap = new Map();
+
+              searchObtainResult.confirmation.forEach(item => {
+                const code = item.cost_calc_code;
+                const time = new Date(item.modified_time).getTime();
+
+                if (!obtainConfirmationMap.has(code) || time > obtainConfirmationMap.get(code)) {
+                  obtainConfirmationMap.set(code, time);
+                }
+              });
+              obtainConfirmationMap.forEach((time, code) => {
+                const item = searchObtainResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
+                uniqueObtainConfirmation.push(item);
+              });
+
+              searchResult.confirmation.push(...uniqueObtainConfirmation);
+              // searchResult.confirmation.reverse(); // 최신순으로 정렬
+              // 사내 견적번호 내림차순으로 정렬
+              searchResult.confirmation.sort((a, b) => b.inhouse_bid_number.localeCompare(a.inhouse_bid_number));
+
+              if(searchResult.confirmation.length === 0){
+                currentCode = '';
+              }else{
+                currentCode = searchResult.confirmation[0].inhouse_bid_number;
+              }
+              resolve(currentCode);
+            }else{
+              mux.Util.showAlert(result2);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            mux.Util.showAlert(error);
+          }
+
+        } else {
+          reject(result.message);
+        }
+      } catch (error) {
+        reject(error);
+      }
+
+    });
+  },
+
+  /**
+   * 최근 프로젝트코드 가져오기
+   * @param {string} basic_code
+   * @example
+   * mux.Util.getCurrentInhouseBid(basic_code);
+   * @memberof mux.Server
+   * @inner
+   * @private
+   * @returns {Promise}
+  */
+  async getCurrentProjectCode(basic_code){
+    return new Promise(async (resolve, reject) => {
+      let currentCode = '';
+      const prevURL = window.location.href;
+
+      let reqURL = '/api/obtain-order/?inhouse_bid_number='+basic_code;
+      try {
+        let result = await mux.Server.get({path: reqURL});
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+          const searchResult = result.data;
+          searchResult.confirmation = searchResult.confirmation.filter(x=> searchResult.last_confirmation.find(last => last.cost_calc_code === x.cost_calc_code));
+          const uniqueConfirmation = [];
+          const confirmationMap = new Map();
+
+          searchResult.confirmation.forEach(item => {
+            const code = item.cost_calc_code;
+            const time = new Date(item.modified_time).getTime();
+
+            if (!confirmationMap.has(code) || time > confirmationMap.get(code)) {
+              confirmationMap.set(code, time);
+            }
+          });
+          confirmationMap.forEach((time, code) => {
+            const item = searchResult.confirmation.find(item => item.cost_calc_code === code && new Date(item.modified_time).getTime() === time);
+            uniqueConfirmation.push(item);
+          });
+          searchResult.confirmation = uniqueConfirmation;
+
+          // 프로젝트 코드 내림차순으로 정렬
+          searchResult.confirmation.sort((a, b) => b.project_code.localeCompare(a.project_code));
+
+          if(searchResult.confirmation.length === 0){
+            currentCode = '';
+          }else{
+            currentCode = searchResult.confirmation[0].project_code;
+          }
+          resolve(currentCode);
+
+        } else {
+          reject(result.message);
+        }
+      } catch (error) {
+        reject(error);
+      }
+
+    });
+  }
 
 }
 

@@ -2268,7 +2268,7 @@ export default {
           let param_info = {"material_table.material_code": this.editRegistMaterial.item_code};
           let script_file_name = "rooting_원자재_검색_24_05_07_09_42_KFS.json";
           let script_file_path = "data_storage_pion\\json_sql\\stock\\2_원부자재_검색\\원자재_검색_24_05_07_09_42_G83";
-          let currentCode = await mux.Server.getCurrentCode('material_code', param_info, script_file_name, script_file_path)
+          let currentCode = await mux.Get.getCurrentCode('material_code', param_info, script_file_name, script_file_path)
 
           if(currentCode === ''){
             this.editRegistMaterial.item_code = this.editRegistMaterial.item_code + '-001';
@@ -2811,7 +2811,7 @@ export default {
           let param_info = {"module_table.module_code": this.editRegistModule.item_code};
           let script_file_name = "rooting_반제품_검색_24_05_16_13_23_FD4.json";
           let script_file_path = "data_storage_pion\\json_sql\\stock\\6_반제품_검색\\반제품_검색_24_05_16_13_24_YJO";
-          let currentCode = await mux.Server.getCurrentCode('code', param_info, script_file_name, script_file_path)
+          let currentCode = await mux.Get.getCurrentCode('code', param_info, script_file_name, script_file_path)
 
           if(currentCode === ''){
             this.editRegistModule.item_code = this.editRegistModule.item_code + '-001';
@@ -3447,7 +3447,7 @@ export default {
           let param_info = {"product_table.product_code": new_code};
           let script_file_name = "rooting_완제품_검색_24_05_16_13_52_1IN.json";
           let script_file_path = "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ";
-          let currentCode = await mux.Server.getCurrentCode('code', param_info, script_file_name, script_file_path)
+          let currentCode = await mux.Get.getCurrentCode('code', param_info, script_file_name, script_file_path)
 
           if(currentCode === ''){
             this.editRegistProduct.item_code = new_code + '-001';
