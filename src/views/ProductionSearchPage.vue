@@ -533,10 +533,11 @@ export default {
         }
         if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
 
-          if(result.length === 0){
+          if(result['data'].length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
+          } else{
+            this.approval_datas = result.data.filter(x=>x.approval_phase !== '작성중');
           }
-          this.approval_datas = result.data.filter(x=>x.approval_phase !== '작성중');
         } else {
           mux.Util.showAlert(result['failed_info']);
         }
