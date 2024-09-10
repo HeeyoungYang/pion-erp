@@ -1724,7 +1724,7 @@ export default {
     printOrder(fileName){
       setTimeout(async () => {
         if (fileName){
-          mux.Util.downloadPDF(this.$refs.orderForm, fileName);
+          mux.Util.downloadPDF(this.$refs.orderForm, fileName, 11.5);
         }else {
           mux.Util.print(this.$refs.orderForm);
         }

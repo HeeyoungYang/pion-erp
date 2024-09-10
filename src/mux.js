@@ -6,6 +6,8 @@ import configJson from '@/mux.json';
 import Vue from 'vue';
 import VueCookies from 'vue-cookies';
 import html2pdf from 'html2pdf.js' // npm install html2pdf.js
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import * as pdfjsLib from 'pdfjs-dist/build/pdf.js'; // npm install pdfjs-dist@3.11.174
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.js`
 // pdfjsLib.GlobalWorkerOptions.workerSrc = `@/../node_modules/pdfjs-dist/build/pdf.worker.js`
@@ -1637,7 +1639,7 @@ mux.Util = {
     });
   },
 
-  async downloadPDF(element, fileName = 'data'){
+  async downloadPDF(element, fileName = 'data', marginTopBottom = 10, sinceSecondPagePlusMargin = 0, marginLeftRight = 10){
     return new Promise(async (resolve, reject) => {
       try {
         let thisElement;
@@ -1646,49 +1648,120 @@ mux.Util = {
         }else {
           thisElement = element;
         }
-        const a4Width = 1240;
-        const a4Height = 1754;
+        const imgTags = thisElement.querySelectorAll('img');
+        imgTags.forEach((img) => {
+          img.style.imageRendering = 'optimizeQuality';
+        });
+        // const a4Width = 1240;
+        // const a4Height = 1754;
 
-        const styleCopy = this.copyStyleToNewWindowWithoutHover();
+        // const styleCopy = this.copyStyleToNewWindowWithoutHover();
         // 미리보기 팝업을 띄우기
-        if (await this.showConfirm(`${fileName} PDF 파일 다운로드를 위한 팝업창을 허용하시겠습니까?`) === false) {
-          reject('팝업창 허용이 필요합니다.');
+        if (await this.showConfirm(`${fileName} PDF 파일을 다운로드하시겠습니까?`) === false) {
+          resolve();
           return;
         }else {
-          const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
-          const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
-          previewPopup.document.write(previewContent);
+          // const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
+          // const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
+          // previewPopup.document.write(previewContent);
 
           // 포커스를 설정하고 1초 뒤에 프린트 도구 시작
           setTimeout(async() => {
-            previewPopup.focus();
+            // previewPopup.focus();
 
-            // PDF 생성 옵션 설정
-            const options = {
-              // margin: [15, 0, 15, 0], // top, right, bottom, left 마진 여백
-              margin: 10,
-              filename: fileName+'.pdf', // Pdf 파일 명
-              pagebreak: { mode: 'avoid-all' }, // pagebreak 옵션
-              // image: { type: 'pdf', quality: 1 },
-              image: { type: 'jpeg', quality: 1 }, // 이미지 퀄리티 (pdf 들어갈 영역을 사진을 찍어 변환 하기 때문에 이미지 퀄리티 = pdf 퀄리티
-              html2canvas: { // html2canvas 옵션
-                useCORS: true, // 영역 안에 로컬 이미지를 삽입 할 때 옵션 필요
-                scrollY: 0, // 스크롤 이슈 때문에 필수
-                scale: 2, // browsers device pixel ratio !! 1로 하면 부분적으로 회색 영역 생겨서 2로 해야 함
-                dpi: 300,
-                letterRendering: true,
-                allowTaint: false, //useCORS를 true로 설정 시 반드시 allowTaint를 false처리 해주어야함
-              },
-              // jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' }
-              jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
-            };
+            // HTML 요소를 캡처하여 캔버스로 변환
+            html2canvas(thisElement, { scale: 2 }).then((canvas) => {
+              // const imgData = canvas.toDataURL("image/jpeg", 1.0);  // 캡처한 이미지를 JPEG 형식으로 저장
 
-            // HTML을 PDF로 변환하여 다운로드
-            html2pdf().set(options).from(previewPopup.document.body).save();
+              const pdf = new jsPDF("p", "mm", "a4");
+              const pdfWidth = 210; // A4 너비(mm)
+              const pdfHeight = 297; // A4 높이(mm)
+              
+              const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
+              const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
+
+              let heightLeft = imgHeight; // 남은 높이 계산
+              let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
+              
+              // pdf 높이에서 상하 여백을 뺀 높이
+              let pdfHeightMinusMargin = pdfHeight - 2 * marginTopBottom;
+              let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
+              while(heightLeft > 0){
+                if (heightLeft < pdfHeightMinusMargin){
+                  imgHeightPerPageArr.push(heightLeft);
+                }else {
+                  if (imgHeightPerPageArr.length === 1) {
+                    pdfHeightMinusMargin = pdfHeightMinusMargin - 2 * sinceSecondPagePlusMargin;
+                  }
+                  imgHeightPerPageArr.push(pdfHeightMinusMargin);
+                }
+                heightLeft -= pdfHeightMinusMargin;
+              }
+
+              let cuttedImgDataArr = [];
+              for (let i = 0; i < imgHeightPerPageArr.length; i++) {
+                let prevPxHeight = 0;
+                for (let ii = 0; ii < i; ii++) {
+                  prevPxHeight += imgHeightPerPageArr[ii] * canvas.width / imgWidth;
+                }
+                const pxHeight = imgHeightPerPageArr[i] * canvas.width / imgWidth;
+                const cuttedCanvas = document.createElement('canvas');
+                cuttedCanvas.width = canvas.width;
+                cuttedCanvas.height = pxHeight;
+                const cuttedCtx = cuttedCanvas.getContext('2d');
+                cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
+                cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
+              }
+
+              // 이미지를 삽입
+              cuttedImgDataArr.forEach((imgData, index) => {
+                if (index > 0) pdf.addPage();
+                pdf.addImage(imgData, "JPEG", marginLeftRight, index === 0 ? position : position+sinceSecondPagePlusMargin, imgWidth, imgHeightPerPageArr[index]);
+              });
+
+              // PDF 저장
+              pdf.save(fileName+'.pdf');
+            });
+            // html2canvas(thisElement, { scale: 3 }).then((canvas) => {
+            //   const imgData = canvas.toDataURL("image/jpeg", 1.0);  // 캡처한 이미지를 JPEG 형식으로 저장
+      
+            //   // A4 크기의 PDF 생성
+            //   const pdf = new jsPDF("p", "mm", "a4");
+            //   const pdfWidth = 210; // A4 너비(mm)
+            //   const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
+      
+            //   // 이미지가 A4 크기에 맞게 조정되어 삽입
+            //   pdf.addImage(imgData, "JPEG", 10, 10, pdfWidth - 20, pdfHeight - 20);
+              
+            //   // PDF 저장
+            //   pdf.save(fileName+'.pdf');
+            // });
+            // // PDF 생성 옵션 설정
+            // const options = {
+            //   // margin: [15, 0, 15, 0], // top, right, bottom, left 마진 여백
+            //   margin: 10,
+            //   filename: fileName+'.pdf', // Pdf 파일 명
+            //   pagebreak: { mode: 'avoid-all' }, // pagebreak 옵션
+            //   // image: { type: 'pdf', quality: 1 },
+            //   image: { type: 'jpeg', quality: 1 }, // 이미지 퀄리티 (pdf 들어갈 영역을 사진을 찍어 변환 하기 때문에 이미지 퀄리티 = pdf 퀄리티
+            //   html2canvas: { // html2canvas 옵션
+            //     useCORS: true, // 영역 안에 로컬 이미지를 삽입 할 때 옵션 필요
+            //     scrollY: 0, // 스크롤 이슈 때문에 필수
+            //     scale: 2, // browsers device pixel ratio !! 1로 하면 부분적으로 회색 영역 생겨서 2로 해야 함
+            //     dpi: 300,
+            //     letterRendering: true,
+            //     allowTaint: false, //useCORS를 true로 설정 시 반드시 allowTaint를 false처리 해주어야함
+            //   },
+            //   // jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' }
+            //   jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
+            // };
+
+            // // HTML을 PDF로 변환하여 다운로드
+            // html2pdf().set(options).from(previewPopup.document.body).save();
 
             // 프린트 도구가 닫히면 팝업도 닫기
             setTimeout(() => {
-              previewPopup.close();
+              // previewPopup.close();
               resolve();
             }, 500);
           }, 1000);
