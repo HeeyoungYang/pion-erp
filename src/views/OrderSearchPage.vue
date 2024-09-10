@@ -1726,7 +1726,7 @@ export default {
         if (fileName){
           mux.Util.downloadPDF(this.$refs.orderForm, fileName, 11.5);
         }else {
-          mux.Util.print(this.$refs.orderForm);
+          mux.Util.print(this.$refs.orderForm, 11.5);
         }
       }, 500);
     },
