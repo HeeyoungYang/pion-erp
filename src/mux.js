@@ -1607,7 +1607,7 @@ mux.Util = {
             pdf.addImage(imgData, "JPEG", marginLeftRight, index === 0 ? position : position+sinceSecondPagePlusMargin, imgWidth, imgHeightPerPageArr[index]);
           });
 
-          // PDF 저장
+          // // PDF 저장
           // pdf.save(fileName+'.pdf');
           
           // PDF 인쇄
@@ -1804,11 +1804,11 @@ mux.Util = {
               });
 
               // PDF 저장
-              // pdf.save(fileName+'.pdf');
+              pdf.save(fileName+'.pdf');
 
-              // PDF 인쇄
-              pdf.autoPrint();
-              pdf.output('dataurlnewwindow');
+              // // PDF 인쇄
+              // pdf.autoPrint();
+              // pdf.output('dataurlnewwindow');
             });
             // html2canvas(thisElement, { scale: 3 }).then((canvas) => {
             //   const imgData = canvas.toDataURL("image/jpeg", 1.0);  // 캡처한 이미지를 JPEG 형식으로 저장
