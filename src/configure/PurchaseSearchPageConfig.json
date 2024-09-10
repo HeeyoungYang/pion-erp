@@ -24,9 +24,9 @@
     {"label":"팩스", "column_name":"company_fax", "col":"12", "sm":"4", "lg":"4", "value": "", "rule_set":true},
     {"label":"결제조건", "column_name":"payment_terms", "col":"12", "sm":"4", "lg":"4", "value": "", "rule_set":true},
     {"label":"계좌정보", "column_name":"account_number", "col":"12", "sm":"4", "lg":"4", "value": "", "rule_set":true},    
-    {"label":"발주확인서", "column_name":"order_confirmation_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"사업자 등록증", "column_name":"business_registration_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"},
-    {"label":"통장 사본", "column_name":"bankbook_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "rule_set":true, "accept":".pdf"}
+    {"label":"발주확인서", "column_name":"order_confirmation_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"사업자 등록증", "column_name":"business_registration_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
+    {"label":"통장 사본", "column_name":"bankbook_file", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"}
   ],
 
   "purchase_headers": [

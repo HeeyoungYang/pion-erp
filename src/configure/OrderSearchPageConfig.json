@@ -6,16 +6,16 @@
     {"label":"발주 업체명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"제품명", "col":"12", "sm":"4", "lg":"3", "value": ""},
-    {"label":"계산일", "type":"dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"3"}
+    {"label":"발급일", "type":"dateRange", "range":true, "value":[], "col":"12", "sm":"4", "lg":"3"}
   ],
 
   "project_code_data_headers": [
     { "text": "승인 요청일", "align": "start", "value": "created_time"},
     { "text": "발주 업체", "align": "start", "value": "company_name"},
     { "text": "발주일", "align": "start", "value": "order_date"},
-    { "text": "1차 계산일", "align": "start", "value": "first_bill_date"},
-    { "text": "2차 계산일", "align": "start", "value": "second_bill_date"},
-    { "text": "3차 계산일", "align": "start", "value": "third_bill_date"},
+    { "text": "1차 발급일", "align": "start", "value": "first_bill_date"},
+    { "text": "2차 발급일", "align": "start", "value": "second_bill_date"},
+    { "text": "3차 발급일", "align": "start", "value": "third_bill_date"},
     { "text": "입고", "align": "start", "value": "inbound_phase"}
   ],
   

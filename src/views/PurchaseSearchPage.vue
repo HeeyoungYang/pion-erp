@@ -111,6 +111,7 @@
                 :other-items="check_other_obtain_data"
                 :item-key="purchase_detail_data.product_code"
                 :show-others="show_others"
+                tool-tip-message="해당 자재를 사용하는 수주 내역이 있습니다.클릭하여 확인해주세요."
                 @checkOthers="checkOtherObtainData"
                 dense
               >
@@ -217,7 +218,7 @@
               <v-row>
                 <v-col cols="12">
                   <DataTableComponent
-                    v-model="selected_unestimated_data"
+                    v-model="selected_data"
                     :headers="purchase_detail_headers"
                     :items="purchase_detail_data.filter(data => data.purchase_estimate_phase !== '완료')"
                     table-class="elevation-0"
@@ -252,6 +253,7 @@
                     @checkOthers="checkOthers"
                     @addList="addList"
                     @subtractList="subtractList"
+                    tool-tip-message="해당 자재의 다른 구매 요청 내역이 있습니다. 클릭하여 확인해주세요."
                     dense
                   >
                   </PurchaseDetailTableComponent>
@@ -1031,6 +1033,7 @@ export default {
       show_selected_unestimated_data: false,
       check_editable_purchase_estimate: false,
 
+      purchaseToolTip : `해당 자재를 사용하는 수주 내역이 있습니다.<br>클릭하여 확인해주세요.`,
       unestimated_request:'mailed',
       iframeSrc: '',
       clicked_tr_phase: '',
@@ -1054,6 +1057,7 @@ export default {
       order_confirm_data:{},
 
       members_list:[],
+      selected_data:[],
       selected_unestimated_data:[],
       selected_estimate_request_list_data:[],
       order_request_data:[],
@@ -1212,11 +1216,12 @@ export default {
     },
 
     async nextUnestimatedStep (step) {
-      if(step === 1 && this.selected_unestimated_data.length === 0){
+      if(step === 1 && this.selected_data.length === 0){
         mux.Util.showAlert('견적을 요청할 자재를 선택해주세요.');
         return;
-      }else if(step === 1 && this.selected_unestimated_data.length !== 0){
+      }else if(step === 1 && this.selected_data.length !== 0){
         //선택한 자재가 다른 구매요청에 있는지 확인 (발주요청하지 않은 데이터만)
+        this.selected_unestimated_data = JSON.parse(JSON.stringify(this.selected_data));
         mux.Util.showLoading();
         let searched_data = [];
         const prevURL = window.location.href;
@@ -1242,7 +1247,7 @@ export default {
 
               if(result.data.length > 0){
                 searched_data.push(...result.data.filter(data => data.approval_phase !== '설계미승인'));
-                item.exclamation = true;
+                item.exclamation = false;
               }
               mux.Util.hideLoading();
             } else {
@@ -1259,6 +1264,21 @@ export default {
         }
         this.search_other_purchase_data = searched_data
         this.selected_estimate_request_list_data = this.selected_unestimated_data
+
+        let search_others = [];
+        searched_data.forEach(searched =>{
+          search_others.push(...searched.belong_data);
+        })
+
+        this.selected_estimate_request_list_data.forEach(data => {
+          for(let sd=0; sd<search_others.length; sd++){
+            let search_data = search_others[sd];
+            if(data.item_code === search_data.item_code && data.id !== search_data.id){
+              data.exclamation = true;
+              return;
+            }
+          }
+        })
       }
       this.unestimated_steppers = step + 1
     },
@@ -1283,30 +1303,32 @@ export default {
         }
 
 
-        let order_file = this.orderRequestInfoInputs.find(x=>x.label === '발주확인서').value;
-        let registration_file = this.orderRequestInfoInputs.find(x=>x.label === '사업자 등록증').value;
-        let bankbook_file = this.orderRequestInfoInputs.find(x=>x.label === '통장 사본').value;
-        if(order_file === '' || order_file === null || order_file === undefined){
-          mux.Util.showAlert('발주확인서를 첨부해주세요.');
-          return next_step = false;
-        }else if(registration_file === '' || registration_file === null || registration_file === undefined){
-          mux.Util.showAlert('사업자 등록증을 첨부해주세요.');
-          return next_step = false;
-        }else if(bankbook_file === '' || bankbook_file === null || bankbook_file === undefined){
-          mux.Util.showAlert('통장 사본을 첨부해주세요.');
-          return next_step = false;
-        }
+        // let order_file = this.orderRequestInfoInputs.find(x=>x.label === '발주확인서').value;
+        // let registration_file = this.orderRequestInfoInputs.find(x=>x.label === '사업자 등록증').value;
+        // let bankbook_file = this.orderRequestInfoInputs.find(x=>x.label === '통장 사본').value;
+        // if(order_file === '' || order_file === null || order_file === undefined){
+        //   mux.Util.showAlert('발주확인서를 첨부해주세요.');
+        //   return next_step = false;
+        // }else if(registration_file === '' || registration_file === null || registration_file === undefined){
+        //   mux.Util.showAlert('사업자 등록증을 첨부해주세요.');
+        //   return next_step = false;
+        // }else if(bankbook_file === '' || bankbook_file === null || bankbook_file === undefined){
+        //   mux.Util.showAlert('통장 사본을 첨부해주세요.');
+        //   return next_step = false;
+        // }
 
         if(next_step){
           this.orderRequestInfoInputs.forEach(async item => {
             if(item.type !== 'file'){
               this.order_confirm_data[item.column_name] = item.value;
             }else{
-              this.order_confirm_data[item.column_name+'_value'] = item.value;
-              this.order_confirm_data[item.column_name+'_name'] = item.value.name;
-              const getPdfThumbnail = await mux.Util.getPdfThumbnail(item.value, 1, false);
-              let file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
-              this.order_confirm_data[item.column_name+'_thumbnail'] = file_thumbnail;
+              if(item.value && (item.value !== '' || item.value !== null || item.value !== undefined)){
+                this.order_confirm_data[item.column_name+'_value'] = item.value;
+                this.order_confirm_data[item.column_name+'_name'] = item.value.name;
+                const getPdfThumbnail = await mux.Util.getPdfThumbnail(item.value, 1, false);
+                let file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
+                this.order_confirm_data[item.column_name+'_thumbnail'] = file_thumbnail;
+              }
             }
           });
           this.order_member_info.forEach(mem => {
@@ -1397,7 +1419,7 @@ export default {
           }
         }
       });
-      this.show_others = true;
+      // this.show_others = true;
     },
     async addList(type, item){
       // let selected_project_codes = [];
@@ -1615,10 +1637,13 @@ export default {
         else
           data.purchase_estimate = check_unestimated + '건 미완료';
 
-        if(check_unordered === 0)
+        if(check_unordered === 0){
           data.order_situation = '완료'
-        else
+          data.approval_phase = '발주완료'
+        } else{
           data.order_situation = check_unordered + '건 미발주';
+        }
+
       }
       mux.Util.hideLoading();
     },
@@ -1633,6 +1658,7 @@ export default {
       this.unestimated_steppers = 1;
       this.setEstimateDialog = false;
       this.set_estimate_steppers = 1;
+      this.selected_data =[];
       this.selected_unestimated_data =[];
       this.selected_estimate_request_list_data = [];
       this.estimateEditDialog = false;
@@ -1677,7 +1703,9 @@ export default {
     },
     async clickApproveData(item){
       await this.clickedSearchThumbnail(item);
-      await this.clickedSearchObtain(item);
+      if(item.approval_phase === '진행중'){
+        await this.clickedSearchObtain(item);
+      }
       mux.Util.hideLoading();
       this.purchase_detail_dialog = true;
     },
@@ -2359,23 +2387,29 @@ export default {
       // delete confirmation_data.order_confirmation_file_value;
       // delete confirmation_data.business_registration_file_value;
       // delete confirmation_data.bankbook_file_value;
-      sendData.files.push({
-        folder: 'order/confirmation',
-        file: this.order_confirm_data.order_confirmation_file_value,
-        name: this.order_confirm_data.order_confirmation_file_name
-      });
+      if(this.order_confirm_data.order_confirmation_file_value){
+        sendData.files.push({
+          folder: 'order/confirmation',
+          file: this.order_confirm_data.order_confirmation_file_value,
+          name: this.order_confirm_data.order_confirmation_file_name
+        });
+      }
       //사업자등록증
-      sendData.files.push({
-        folder: 'order/registration',
-        file: this.order_confirm_data.business_registration_file_value,
-        name: this.order_confirm_data.business_registration_file_name
-      });
+      if(this.order_confirm_data.business_registration_file_value){
+        sendData.files.push({
+          folder: 'order/registration',
+          file: this.order_confirm_data.business_registration_file_value,
+          name: this.order_confirm_data.business_registration_file_name
+        });
+      }
       //통장사본
-      sendData.files.push({
-        folder: 'order/bankbook',
-        file: this.order_confirm_data.bankbook_file_value,
-        name: this.order_confirm_data.bankbook_file_name
-      });
+      if(this.order_confirm_data.bankbook_file_value){
+        sendData.files.push({
+          folder: 'order/bankbook',
+          file: this.order_confirm_data.bankbook_file_value,
+          name: this.order_confirm_data.bankbook_file_name
+        });
+      }
 
       const prevURL = window.location.href;
       try {
@@ -2514,7 +2548,11 @@ export default {
     async estiamteDialog(type, order, item){
       this.selected_estimate_request_list_data = [];
       if(this.tab_search === 0){
-        this.unestimatedMailDialog = true;
+        if(!this.purchase_detail_data.some(data => data.purchase_estimate_phase !== '완료')){
+          mux.Util.showAlert('견적서가 모두 완료되어 요청이 불가능합니다.');
+        }else{
+          this.unestimatedMailDialog = true;
+        }
         // this.purchase_detail_data.forEach(data => {
         //   data.exclamation = false;
         // });

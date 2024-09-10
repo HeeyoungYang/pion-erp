@@ -242,7 +242,7 @@
             <p class="print_doc_title">발주서</p>
             <v-row style="margin-top:15px">
               <v-col cols="12" sm="6">
-                <v-img
+                <img
                   alt="Pionelectric Logo"
                   class="shrink mr-2"
                   contain
@@ -379,7 +379,7 @@
 
                   <template v-slot:[`group.header`]="{items}">
                     <th
-                      :rowspan="items.length+1"
+                      :rowspan="items.some(x => x.note && x.note !== '') ? items.length : 1"
                       style="background: white;border-right: thin solid rgba(0, 0, 0, 0.12); font-size: 11px;"
                     >
                       {{ checkNo(items[0].item_code) }}
@@ -392,7 +392,7 @@
                     <th style="font-size:11px">{{ (items[0].unit_price * items[0].ordered_num)*0.1 }}</th>
                   </template>
                   <template v-slot:item="{ item }">
-                    <tr v-if="item.note">
+                    <tr v-if="item.note && item.note !== ''">
                       <td colspan="6"  style="font-size:11px">
                         {{ item.note }}
                       </td>
@@ -521,14 +521,14 @@
       <v-row>
         <v-col cols="12">
           <p class="font-weight-bold primary--text mb-0" style="font-size: 18px;">
-            계산서
+            전자세금계산서
           </p>
           <v-chip
             :color="firstBillFile === null ? 'grey lighten-2': 'primary'"
             class="ma-2 ml-0"
             @click="firstBillFile !== null ? download('order/bill', firstBillFile, fileCode+'_') : ''"
           >
-            1차 계산서 {{ firstBillDate === null ? '' : ' : ' + firstBillDate }}
+            1차 전자세금계산서 {{ firstBillDate === null ? '' : ' : ' + firstBillDate }}
           </v-chip>
           <v-btn
             v-if="order_form_info.approval_phase === '진행중'"
@@ -537,7 +537,7 @@
             x-small
             elevation="0"
             class="mr-6"
-            @click="openUploadFilesDialog('1차 계산서', 'first_bill')"
+            @click="openUploadFilesDialog('1차 전자세금계산서', 'first_bill')"
           >
             변경
           </v-btn>
@@ -546,7 +546,7 @@
             class="ma-2 ml-0"
             @click="secondBillFile !== null ? download('order/bill', secondBillFile, fileCode+'_'): ''"
           >
-            2차 계산서 {{ secondBillDate === null ? '' : ' : ' + secondBillDate }}
+            2차 전자세금계산서 {{ secondBillDate === null ? '' : ' : ' + secondBillDate }}
           </v-chip>
           <v-btn
             v-if="order_form_info.approval_phase === '진행중'"
@@ -555,7 +555,7 @@
             x-small
             elevation="0"
             class="mr-6"
-            @click="openUploadFilesDialog('2차 계산서', 'second_bill')"
+            @click="openUploadFilesDialog('2차 전자세금계산서', 'second_bill')"
           >
             변경
           </v-btn>
@@ -565,7 +565,7 @@
             class="ma-2 ml-0"
             @click="thirdBillFile !== null ? download('order/bill', thirdBillFile, fileCode+'_'): ''"
           >
-            3차 계산서 {{ thirdBillDate === null ? '' : ' : ' + thirdBillDate }}
+            3차 전자세금계산서 {{ thirdBillDate === null ? '' : ' : ' + thirdBillDate }}
           </v-chip>
           <v-btn
             v-if="order_form_info.approval_phase === '진행중'"
@@ -573,7 +573,7 @@
             color="primary"
             x-small
             elevation="0"
-            @click="openUploadFilesDialog('3차 계산서', 'third_bill')"
+            @click="openUploadFilesDialog('3차 전자세금계산서', 'third_bill')"
           >
             변경
           </v-btn>
@@ -885,7 +885,7 @@ export default {
       if (searchItemName)
       searchItemName = searchItemName.trim();
 
-      let searchBillDate = this.searchCardInputs.find(x=>x.label === '계산일').value;
+      let searchBillDate = this.searchCardInputs.find(x=>x.label === '발급일').value;
       let searchBillStartDate = searchBillDate[0];
       let searchBillEndDate = searchBillDate[1];
 
@@ -1077,6 +1077,7 @@ export default {
       mux.Util.hideLoading();
     },
     checkNo(item_code){
+      console.log(item_code)
       let project_code = [];
       this.order_form_data.forEach(data => {
         project_code.push(data.item_code);
@@ -1085,6 +1086,7 @@ export default {
       project_code = new Set(project_code);
       project_code = [ ...project_code]
 
+      console.log(project_code);
       let idx= 0;
       for(let i=0; i<project_code.length; i++){
         if(project_code[i] === item_code){
@@ -1182,17 +1184,9 @@ export default {
           this.order_form_info = data;
         }
       });
-      let notes = JSON.parse(JSON.stringify(this.order_notes_data))
-      notes.forEach(data => {
-        if(data.code === item.code){
-          this.order_form_data.push(data);
-        }
-        // else{
-        //   this.order_form_data.push(item);
-        // }
-      });
+
       this.order_detail_data.forEach(item => {
-        if(this.order_form_data.length === 0){
+        if(this.order_form_data.length === 0 || !this.order_form_data.some(x=>x.item_code === item.item_code)){
           this.order_form_data.push({
             "code":item.code,
             "item_code":item.item_code,
@@ -1216,10 +1210,40 @@ export default {
               order.spec = item.spec;
               order.unit_price = item.unit_price;
               return;
+            }else if(order.item_code !== item.item_code){
+              this.order_form_data.push({
+                "code":item.code,
+                "item_code":item.item_code,
+                "name":item.name,
+                "ordered_num":item.ordered_num,
+                "spec":item.spec,
+                "unit_price":item.unit_price
+              });
             }
           }
         }
       });
+      let notes = JSON.parse(JSON.stringify(this.order_notes_data))
+      this.order_form_data.forEach(data => {
+        if(notes.some(x=>x.code === data.code && x.item_code === data.item_code)){
+          this.order_form_data.push(...notes.filter(x=>x.item_code === data.item_code && x.code === data.code));
+        }else if(notes.some(x=>x.code === data.code && x.item_code !== data.item_code)){
+          this.order_form_data.push({"code":data.code, "item_code":data.item_code, "note":""});
+        }
+      });
+
+
+      this.order_form_data.sort((a,b) => a.item_code.localeCompare(b.item_code));
+      // let notes = JSON.parse(JSON.stringify(this.order_notes_data))
+      // notes.forEach(data => {
+      //   if(data.code === item.code){
+      //     if(this.order_form_data.some(x=>x.item_code === notes.item_code)){
+      //       this.order_form_data.push(data);
+      //     }else{
+      //       this.order_form_data.push({"code":data.code, "item_code":data.item_code, "note":data.note});
+      //     }
+      //   }
+      // });
     },
 
     async batchApprovalPhase(item){
@@ -1478,10 +1502,10 @@ export default {
         const getPdfThumbnail = await mux.Util.getPdfThumbnail(file_value, 1, false);
         file_thumbnail = mux.Util.uint8ArrayToHexString(getPdfThumbnail);
         save_data[save_info.column_thumbnail] = file_thumbnail;
-      }else if(save_info.name.includes('계산서')){
+      }else if(save_info.name.includes('전자세금계산서')){
         let file_date = this.uploadFilesInputs.find(x=>x.column_name === save_info.column_file+'_date').value;
         if(file_date === '' || file_date === null || file_date === undefined){
-          mux.Util.showAlert(save_info.name.replace('계산서', '계산일')+'을 입력해주세요');
+          mux.Util.showAlert(save_info.name.replace('전자세금계산서', '발급일')+'을 입력해주세요');
           return;
         }else{
         save_data[save_info.column_file+'_date'] = file_date;
@@ -1666,7 +1690,7 @@ export default {
         folder_name = 'order/registration';
       }else if(name === '통장 사본'){
         folder_name = 'order/bankbook';
-      }else if(name.includes('계산서')){
+      }else if(name.includes('전자세금계산서')){
         folder_name = 'order/bill';
       }else if(name.includes('송금 확인증')){
         folder_name = 'order/confirm_transfer';
@@ -1675,9 +1699,9 @@ export default {
       this.save_new_file_info.code = this.order_form_data[0].code;
       this.save_new_file_info.name = name;
       this.save_new_file_info.folder = folder_name;
-      if(name.includes('계산서')){
+      if(name.includes('전자세금계산서')){
         this.save_new_file_info.column_file = type;
-        let date_name = name.replace('계산서','계산일')
+        let date_name = name.replace('전자세금계산서','발급일')
         this.uploadFilesInputs.push(
           {"label":date_name, "column_name":type+"_date", "type":"dateSingle", "value": type === 'first_bill' ? this.firstBillDate : (type === 'second_bill' ? this.secondBillDate : this.thirdBillDate), "col":"12", "sm":"12", "lg":"12", "menu":""},
           {"label":name, "column_name":type, "type":"file", "col":"12", "sm":"12", "lg":"12", "icon":"", "appendIcon":"mdi-paperclip", "accept":".pdf"},

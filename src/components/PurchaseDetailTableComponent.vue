@@ -27,7 +27,7 @@
           </th>
         </template>
         <template v-slot:[`item.check_others`] = "{ item }">
-          <v-icon
+          <!-- <v-icon
             v-if="item.exclamation === true"
             color="error"
             class="mr-2"
@@ -36,7 +36,26 @@
             @click="checkOtherPurchase(item, item.project_code, item.id)"
           >
             mdi-exclamation-thick
-          </v-icon>
+          </v-icon> -->
+          <v-tooltip
+            bottom
+            v-if="item.exclamation === true"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                v-bind="attrs"
+                v-on="on"
+                color="error"
+                class="mr-2"
+                x-small
+                style="background: #ffedb4; border-radius: 50px; padding: 4px; cursor: pointer;"
+                @click="checkOtherPurchase(item, item.project_code, item.id)"
+              >
+                mdi-exclamation-thick
+              </v-icon>
+            </template>
+            <span>{{ toolTipMessage }}</span>
+          </v-tooltip>
         </template>
       </v-data-table>
     </v-col>
@@ -147,6 +166,7 @@
  * @property {Array} otherItems - 테이블 아이템 데이터 배열
  * @property {Array} itemBelong - 하위 데이터 배열
  * @property {String} itemKey - 아이템 키
+ * @property {String} toolTipMessage - tooltip 메시지
  * @property {String} [groupBy] - 그룹핑할 헤더 value(default:undefined)
  * @property {String} [childrenKey] - 하위 그룹 객체 key(default:'')
  * @property {Boolean} [dense] - 줄간격 줄임 여부(default:false)
@@ -185,6 +205,7 @@ export default {
     otherItems: Array,
     itemBelong: Array,
     itemKey: String,
+    toolTipMessage: String,
     tableClass: String,
     showOthers: Boolean,
     showSelect: Boolean,
