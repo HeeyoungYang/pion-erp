@@ -62,6 +62,46 @@
           </CardComponent>
         </v-col>
       </v-row>
+      <v-row v-if="print_labor_table" justify="center">
+        <v-col
+          cols="12"
+          sm="11"
+        >
+          <v-card ref="printLaborTable" style="border: 1px solid #ccc;" elevation="0">
+            <v-card-title>
+            </v-card-title>
+            <v-card-text>
+              <p class="text-h5 font-weight-black black--text mb-5">노무비 산출</p>
+              <v-data-table
+                dense
+                :headers="labor_cost_headers"
+                :items="labor_cost_data"
+                hide-default-footer
+                disable-pagination
+                class="elevation-1 labor_cost_list no-scroll"
+                disable-sort
+              >
+                <template v-slot:item="{ item, index }">
+                  <tr>
+                    <td align="center">{{ item.no }}</td>
+                    <td align="center">{{ item.name }}</td>
+                    <td align="center">{{ item.type }}</td>
+                    <td align="center">{{ item.occupation }}</td>
+                    <td align="center">{{ item.man_per_day }}</td>
+                    <td align="center">{{ Math.round(item.surcharge_ratio * 100 * 10000000) / 10000000 }}%</td>
+                    <td align="center">{{ item.adjustment_ratio }}</td>
+                    <td align="center">{{ item.man_per_hour }}</td>
+                    <td align="center">{{ mux.Number.withComma(item.unit_price) }}</td>
+                    <td align="center">{{ mux.Number.withComma(item.quantity) }}</td>
+                    <td align="center">{{  item.total_amount ? mux.Number.withComma(item.total_amount) : mux.Number.withComma((item.man_per_hour * item.quantity * item.unit_price).toFixed(0)) }}</td>
+                    <td align="center" :class="calcRowSpan(item.name, index) == 0? 'd-none' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? mux.Number.withComma(item.no_total_amount) : mux.Number.withComma(calcNoTotalAmount(item.name)) }}</td>
+                  </tr>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-main>
 
     <!-- 행 클릭 시 노출되는 모달 -->
@@ -573,7 +613,7 @@
                 </template>
                 <v-list>
                   <v-list-item
-                    v-for="(item, index) in save_estimates"
+                    v-for="(item, index) in save_confirmation"
                     :key="index"
                     dense
                     @click="item.click === 'print' ? printLaborCost()
@@ -1328,20 +1368,58 @@ export default {
       }
       return rowspan;
     },
-    printLaborCost(fileName){
+    async printLaborCost(fileName){
       this.print_labor_table = true;
+
+      let navClicked = false;
+      if (!document.querySelector(".v-navigation-drawer--close")){
+        document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+        navClicked = true;
+      }
+      if (!this.$refs.printLaborTable){
+        let refLoadCount = 0
+        while(refLoadCount < 50){
+          if (this.$refs.printLaborTable){
+            break;
+          }
+          await new Promise(resolve => setTimeout(resolve, 100));
+          refLoadCount++;
+        }
+      }
 
       setTimeout(async () => {
         if (fileName){
-          mux.Util.downloadPDF(this.$refs.calcLaborCard, fileName);
+          await mux.Util.downloadPDF(this.$refs.printLaborTable, fileName);
+
+          if (navClicked) {
+            document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+          }
           this.print_labor_table = false;
         }else {
-          mux.Util.print(this.$refs.calcLaborCard);
+          await mux.Util.print(this.$refs.printLaborTable);
+
+          if (navClicked) {
+            document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+          }
           this.print_labor_table = false;
         }
       }, 500);
 
     },
+    // printLaborCost(fileName){
+    //   this.print_labor_table = true;
+
+    //   setTimeout(async () => {
+    //     if (fileName){
+    //       mux.Util.downloadPDF(this.$refs.calcLaborCard, fileName);
+    //       this.print_labor_table = false;
+    //     }else {
+    //       mux.Util.print(this.$refs.calcLaborCard);
+    //       this.print_labor_table = false;
+    //     }
+    //   }, 500);
+
+    // },
 
     // 파일명 인자 있을 경우 PDF download, 없을 경우 print
     async costDetailPrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
