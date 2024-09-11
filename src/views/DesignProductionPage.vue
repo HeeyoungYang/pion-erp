@@ -1585,120 +1585,129 @@
               <span>*하단 표의 필요 수량은 완제품 1개를 만드는데 필요한 수량입니다.</span>
             </p>
 
-            <v-data-table
-              v-model="selected_items_for_product_data"
-              :headers="product_item_setting_headers"
-              :items="setting_item_data"
-              item-key="item_code"
-              dense
-              disable-sort
-            >
-              <template v-slot:item = "{ item, index }">
-                <tr>
-                  <td class="text-center">
-                    <v-autocomplete
-                      v-if="item.data_type === 'written'"
-                      v-model="item.type"
-                      :items="type_list"
-                      dense
-                      hide-details
-                      filled
-                      style="width:150px; font-size:12px">
-                    </v-autocomplete>
-                    {{ item.data_type !== 'written' ? item.type : '' }}
-                  </td>
-                  <td class="text-center">
-                    <v-autocomplete
-                      v-if="item.data_type === 'written'"
-                      v-model="item.classification"
-                      :items="classification_list.slice(1)"
-                      dense
-                      hide-details
-                      filled
-                      style="width:150px; font-size:12px">
-                    </v-autocomplete>
-                    {{ item.data_type !== 'written' ? item.classification : '' }}
-                  </td>
-                  <td align="center">
-                    {{ item.item_code }}
-                  </td>
-                  <td class="text-center">
-                    <v-text-field
-                      v-if="item.data_type === 'written'"
-                      v-model="item.name"
-                      dense
-                      hide-details
-                      filled
-                      style="width:200px; font-size:12px">
-                    </v-text-field>
-                    {{ item.data_type !== 'written' ? item.name : '' }}
-                  </td>
-                  <td class="text-center">
-                    <v-text-field
-                      v-if="item.data_type === 'written'"
-                      v-model="item.model"
-                      dense
-                      hide-details
-                      filled
-                      style="width:200px; font-size:12px">
-                    </v-text-field>
-                    {{ item.data_type !== 'written' ? item.model : '' }}
-                  </td>
-                  <td class="text-center">
-                    <v-text-field
-                      v-if="item.data_type === 'written'"
-                      v-model="item.spec"
-                      dense
-                      hide-details
-                      filled
-                      style="width:200px; font-size:12px">
-                    </v-text-field>
-                    {{ item.data_type !== 'written' ? item.spec : '' }}
-                  </td>
-                  <td class="text-center">
-                    <v-autocomplete
-                      v-if="item.data_type === 'written'"
-                      v-model="item.manufacturer"
-                      :items="manufacturer_list"
-                      dense
-                      hide-details
-                      filled
-                      style="width:150px; font-size:12px">
-                    </v-autocomplete>
-                    {{ item.data_type !== 'written' ? item.manufacturer : '' }}
-                  </td>
-                  <td class="text-center">
-                    <v-text-field
-                      v-if="item.data_type === 'written'"
-                      v-model="item.unit_price"
-                      type="number"
-                      dense
-                      hide-details
-                      filled
-                      style="width:200px; font-size:12px">
-                    </v-text-field>
-                    {{ item.data_type !== 'written' ? item.unit_price : '' }}
-                  </td>
-                  <td class="text-center">
-                    <v-text-field
-                      v-model="item.num"
-                      type="number"
-                      dense
-                      hide-details
-                      filled
-                      style="width:100px; font-size:12px">
-                    </v-text-field>
-                  </td>
-                  <td class="text-center">
-                    <v-icon
-                      color="grey"
-                      small
-                      @click="deleteItem(setting_item_data, index)"
-                    >mdi-minus-thick</v-icon>
-                  </td>
-                </tr>
-              </template>
-            </v-data-table>
+            <v-form ref="itemSettingForm">
+              <v-data-table
+                v-model="selected_items_for_product_data"
+                :headers="product_item_setting_headers"
+                :items="setting_item_data"
+                item-key="item_code"
+                dense
+                disable-sort
+              >
+                <template v-slot:item = "{ item, index }">
+                  <tr>
+                    <td class="text-center">
+                      <v-autocomplete
+                        v-if="item.data_type === 'written'"
+                        v-model="item.type"
+                        :items="type_list"
+                        dense
+                        hide-details
+                        filled
+                        :rules="defaultRules"
+                        style="width:150px; font-size:12px">
+                      </v-autocomplete>
+                      {{ item.data_type !== 'written' ? item.type : '' }}
+                    </td>
+                    <td class="text-center">
+                      <v-autocomplete
+                        v-if="item.data_type === 'written'"
+                        v-model="item.classification"
+                        :items="classification_list.slice(1)"
+                        dense
+                        hide-details
+                        filled
+                        :rules="defaultRules"
+                        style="width:150px; font-size:12px">
+                      </v-autocomplete>
+                      {{ item.data_type !== 'written' ? item.classification : '' }}
+                    </td>
+                    <td align="center">
+                      {{ item.item_code }}
+                    </td>
+                    <td class="text-center">
+                      <v-text-field
+                        v-if="item.data_type === 'written'"
+                        v-model="item.name"
+                        dense
+                        hide-details
+                        filled
+                        :rules="defaultRules"
+                        style="width:200px; font-size:12px">
+                      </v-text-field>
+                      {{ item.data_type !== 'written' ? item.name : '' }}
+                    </td>
+                    <td class="text-center">
+                      <v-text-field
+                        v-if="item.data_type === 'written'"
+                        v-model="item.model"
+                        dense
+                        hide-details
+                        filled
+                        style="width:200px; font-size:12px">
+                      </v-text-field>
+                      {{ item.data_type !== 'written' ? item.model : '' }}
+                    </td>
+                    <td class="text-center">
+                      <v-text-field
+                        v-if="item.data_type === 'written'"
+                        v-model="item.spec"
+                        dense
+                        hide-details
+                        filled
+                        :rules="defaultRules"
+                        style="width:200px; font-size:12px">
+                      </v-text-field>
+                      {{ item.data_type !== 'written' ? item.spec : '' }}
+                    </td>
+                    <td class="text-center">
+                      <v-autocomplete
+                        v-if="item.data_type === 'written'"
+                        v-model="item.manufacturer"
+                        :items="manufacturer_list"
+                        dense
+                        hide-details
+                        filled
+                        :rules="defaultRules"
+                        style="width:150px; font-size:12px">
+                      </v-autocomplete>
+                      {{ item.data_type !== 'written' ? item.manufacturer : '' }}
+                    </td>
+                    <td class="text-center">
+                      <v-text-field
+                        v-if="item.data_type === 'written'"
+                        v-model="item.unit_price"
+                        type="number"
+                        dense
+                        hide-details
+                        filled
+                        :rules="defaultRules"
+                        style="width:200px; font-size:12px">
+                      </v-text-field>
+                      {{ item.data_type !== 'written' ? item.unit_price : '' }}
+                    </td>
+                    <td class="text-center">
+                      <v-text-field
+                        v-model="item.num"
+                        type="number"
+                        dense
+                        hide-details
+                        filled
+                        :rules="defaultRules"
+                        style="width:100px; font-size:12px">
+                      </v-text-field>
+                    </td>
+                    <td class="text-center">
+                      <v-icon
+                        color="grey"
+                        small
+                        @click="deleteItem(setting_item_data, index)"
+                      >mdi-minus-thick</v-icon>
+                    </td>
+                  </tr>
+                </template>
+              </v-data-table>
+            </v-form>
           </v-col>
         </v-row>
       </v-container>
@@ -7465,8 +7474,21 @@ export default {
       }
     },
     saveBomDetail(){
+      
+      const validate = this.$refs.itemSettingForm.validate();
+      if (!validate){
+        mux.Util.showAlert('필수 입력 항목을 확인해주세요.');
+        return;
+      }
       let product_code = this.setting_item_data[0].product_code;
+      let item_code_list = [];
       for(let i=0; i<this.setting_item_data.length; i++){
+        if(item_code_list.includes(this.setting_item_data[i].item_code)){
+          mux.Util.showAlert('중복된 품목이 있습니다.');
+          return;
+        }else {
+          item_code_list.push(this.setting_item_data[i].item_code);
+        }
         if(this.setting_item_data[i].num < 1){
           mux.Util.showAlert('필요 수량을 확인해주세요.');
           return;
@@ -8349,6 +8371,10 @@ export default {
 
       loaded_obtain_cost_calc_code: '',
       lastSearchInputs: [],
+
+      defaultRules: [
+        v => (!!v) || '필수 입력'
+      ],
     }
   },
 }
