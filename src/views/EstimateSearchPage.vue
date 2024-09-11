@@ -142,7 +142,7 @@
           cols="12"
           sm="11"
         >
-          <v-card ref="printLaborTable" style="border: 1px solid #ccc;" elevation="0">
+        <v-card ref="printLaborTable" style="padding:0px" elevation="0">
             <v-card-title>
             </v-card-title>
             <v-card-text>
@@ -153,6 +153,7 @@
                 :items="labor_cost_data"
                 hide-default-footer
                 disable-pagination
+                style="border:1px solid #b6b6b6"
                 class="elevation-1 labor_cost_list no-scroll"
                 disable-sort
               >
@@ -504,7 +505,7 @@
           </v-tab-item>
           <!-- 산출내역서 -->
           <v-tab-item>
-            <v-card ref="calcDetailCard" style="border: 1px solid #ccc;" elevation="0">
+            <v-card style="border: 1px solid #ccc;" elevation="0">
               <v-card-title>
                 <v-menu offset-y>
                   <template v-slot:activator="{ on, attrs }">
@@ -537,7 +538,8 @@
                   </v-list>
                 </v-menu>
               </v-card-title>
-              <v-card-text>
+              <v-card-text ref="calcDetailCard">
+              <p v-if="costTitlePrint" class="text-h7 font-weight-black black--text mb-2">산출내역서</p>
                 <v-form ref="surveyCostForm">
                   <CostTableComponent
                     :headers="survey_cost_headers"
@@ -693,6 +695,7 @@ export default {
       clickedProductCost: {},
       bid_write: true,
       mailDialog: false,
+      costTitlePrint: false,
       tab_search: null,
       receivingInspectionThumbnail: '',
       inspectionReportThumbnail: '',
@@ -1358,7 +1361,7 @@ export default {
         document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
         navClicked = true;
       }
-      if (!this.$refs.printLaborTable){ 
+      if (!this.$refs.printLaborTable){
         let refLoadCount = 0
         while(refLoadCount < 50){
           if (this.$refs.printLaborTable){
@@ -1372,7 +1375,7 @@ export default {
       setTimeout(async () => {
         if (fileName){
           await mux.Util.downloadPDF(this.$refs.printLaborTable, fileName);
-          
+
           if (navClicked) {
             document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
           }
@@ -1433,12 +1436,16 @@ export default {
 
       this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
 
+      this.costTitlePrint = true;
+
       // UI 적용을 위한 editable = false 1초 후 작동
       setTimeout(async () => {
         if (fileName){
           await mux.Util.downloadPDF(element, fileName);
+          this.costTitlePrint = false;
         }else {
           await mux.Util.print(element);
+          this.costTitlePrint = false;
         }
         this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
 
@@ -1983,7 +1990,7 @@ export default {
             navClicked = true;
           }
           this.print_labor_table = true;
-          if (!this.$refs.printLaborTable){ 
+          if (!this.$refs.printLaborTable){
             let refLoadCount = 0
             while(refLoadCount < 50){
               if (this.$refs.printLaborTable){

@@ -435,7 +435,7 @@
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="9">
-                          <p class="text-h5 black--text mb-0 font-weight-black"  style="font-weight: bold;">산출내역서</p>
+                          <p class="text-h7 black--text mb-0 font-weight-black"  style="font-weight: bold;">산출내역서</p>
                         </v-col>
 
                         <v-col v-show="edit_buttons_show" cols="12" sm="3">
@@ -554,7 +554,7 @@
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
-                          <p class="text-h5 font-weight-black black--text mb-0">노무비 산출</p>
+                          <p class="text-h7 font-weight-black black--text mb-0">노무비 산출</p>
                         </v-col>
                         <v-col v-show="edit_buttons_show" cols="12" sm="2">
                           <v-menu offset-y>
@@ -916,34 +916,47 @@
         </v-tab-item>
       </v-tabs-items>
       <!-- 노무비 산출 출력 화면 -->
-      <div ref="calcLaborCard" style="background-color: white; max-width:800px" v-show="print_labor_table" id="print_labor_cost">
-        <p class="text-h5 font-weight-black black--text mb-5">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 노무비 산출</p>
-          <v-data-table
-            dense
-            :headers="labor_cost_headers"
-            :items="labor_cost_data"
-            hide-default-footer
-            disable-pagination
-            disable-sort
-          >
-            <template v-slot:item="{ item, index }">
-              <tr>
-                <td align="center">{{ item.no }}</td>
-                <td align="center">{{ item.name }}</td>
-                <td align="center">{{ item.type }}</td>
-                <td align="center">{{ item.occupation }}</td>
-                <td align="center">{{ item.man_per_day }}</td>
-                <td align="center">{{ Math.round(item.surcharge_ratio * 100 * 10000000) / 10000000 }}%</td>
-                <td align="center">{{ item.adjustment_ratio }}</td>
-                <td align="center">{{ item.man_per_hour }}</td>
-                <td align="center">{{ mux.Number.withComma(item.unit_price) }}</td>
-                <td align="center">{{ mux.Number.withComma(item.quantity) }}</td>
-                <td align="center">{{  item.total_amount ? mux.Number.withComma(item.total_amount) : mux.Number.withComma((item.man_per_hour * item.quantity * item.unit_price).toFixed(0)) }}</td>
-                <td align="center" :class="calcRowSpan(item.name, index) == 0? 'print_labor_cost_dnone' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? mux.Number.withComma(item.no_total_amount) : mux.Number.withComma(calcNoTotalAmount(item.name)) }}</td>
-              </tr>
-            </template>
-          </v-data-table>
-      </div>
+      <v-row v-if="print_labor_table" justify="center">
+        <v-col
+          cols="12"
+          sm="11"
+        >
+        <v-card ref="printLaborTable" style="padding:0px" elevation="0">
+            <v-card-title>
+            </v-card-title>
+            <v-card-text>
+              <p class="text-h5 font-weight-black black--text mb-5">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 노무비 산출</p>
+              <v-data-table
+                dense
+                :headers="labor_cost_headers"
+                :items="labor_cost_data"
+                hide-default-footer
+                style="border:1px solid #b6b6b6"
+                disable-pagination
+                class="elevation-1 labor_cost_list no-scroll"
+                disable-sort
+              >
+                <template v-slot:item="{ item, index }">
+                  <tr>
+                    <td align="center">{{ item.no }}</td>
+                    <td align="center">{{ item.name }}</td>
+                    <td align="center">{{ item.type }}</td>
+                    <td align="center">{{ item.occupation }}</td>
+                    <td align="center">{{ item.man_per_day }}</td>
+                    <td align="center">{{ Math.round(item.surcharge_ratio * 100 * 10000000) / 10000000 }}%</td>
+                    <td align="center">{{ item.adjustment_ratio }}</td>
+                    <td align="center">{{ item.man_per_hour }}</td>
+                    <td align="center">{{ mux.Number.withComma(item.unit_price) }}</td>
+                    <td align="center">{{ mux.Number.withComma(item.quantity) }}</td>
+                    <td align="center">{{  item.total_amount ? mux.Number.withComma(item.total_amount) : mux.Number.withComma((item.man_per_hour * item.quantity * item.unit_price).toFixed(0)) }}</td>
+                    <td align="center" :class="calcRowSpan(item.name, index) == 0? 'd-none' : '' " :rowspan="calcRowSpan(item.name, index)">{{  item.no_total_amount ? mux.Number.withComma(item.no_total_amount) : mux.Number.withComma(calcNoTotalAmount(item.name)) }}</td>
+                  </tr>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-main>
 
     <div class="text-center" v-if="tab_main === 0">
@@ -2870,15 +2883,39 @@ export default {
       }
       return rowspan;
     },
-    printLaborCost(fileName){
+    async printLaborCost(fileName){
       this.print_labor_table = true;
+
+      let navClicked = false;
+      if (!document.querySelector(".v-navigation-drawer--close")){
+        document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+        navClicked = true;
+      }
+      if (!this.$refs.printLaborTable){
+        let refLoadCount = 0
+        while(refLoadCount < 50){
+          if (this.$refs.printLaborTable){
+            break;
+          }
+          await new Promise(resolve => setTimeout(resolve, 100));
+          refLoadCount++;
+        }
+      }
 
       setTimeout(async () => {
         if (fileName){
-          mux.Util.downloadPDF(this.$refs.calcLaborCard, fileName);
+          await mux.Util.downloadPDF(this.$refs.printLaborTable, fileName);
+
+          if (navClicked) {
+            document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+          }
           this.print_labor_table = false;
         }else {
-          mux.Util.print(this.$refs.calcLaborCard);
+          await mux.Util.print(this.$refs.printLaborTable);
+
+          if (navClicked) {
+            document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+          }
           this.print_labor_table = false;
         }
       }, 500);
