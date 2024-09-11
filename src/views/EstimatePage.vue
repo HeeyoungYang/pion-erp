@@ -3355,6 +3355,27 @@ export default {
       const validate = this.$refs.estimateInfoForm.validate();
       if(validate) {
 
+        let fileNames = [];
+        if (this.input_approval_file.value) {
+          fileNames.push(this.input_approval_file.value.name);
+        }
+        if (this.input_blueprint_file.value) {
+          fileNames.push(this.input_blueprint_file.value.name);
+        }
+        if (Array.isArray(this.input_etc_file.value)){
+          for (let i = 0; i < this.input_etc_file.value.length; i++){
+            fileNames.push(this.input_etc_file.value[i].name);
+          }
+        }
+        // 파일명 중복 체크
+        fileNames.sort();
+        for (let i = 0; i < fileNames.length - 1; i++){
+          if (fileNames[i] === fileNames[i + 1]){
+            mux.Util.showAlert('중복되는 이름의 파일을 첨부할 수 없습니다.');
+            return;
+          }
+        }
+
         let isRejected = false;
         if (this.clickedProductCost.rejected_date){
           isRejected = true;
@@ -4061,6 +4082,9 @@ export default {
         this.tab_write = 0;
         return;
       }
+      console.log(this.input_approval_file2.value);
+      console.log(this.input_blueprint_file2.value);
+      console.log(this.input_etc_file2.value);
       if (!this.input_approval_file2.value){
         mux.Util.showAlert('승인서 파일을 첨부해야 합니다.');
         this.tab_write = 0;
@@ -4070,6 +4094,21 @@ export default {
         mux.Util.showAlert('도면 파일을 첨부해야 합니다.');
         this.tab_write = 0;
         return;
+      }
+      let fileNames = [this.input_approval_file2.value.name, this.input_blueprint_file2.value.name];
+      if (Array.isArray(this.input_etc_file2.value)){
+        for (let i = 0; i < this.input_etc_file2.value.length; i++){
+          fileNames.push(this.input_etc_file2.value[i].name);
+        }
+      }
+      // 파일명 중복 체크
+      fileNames.sort();
+      for (let i = 0; i < fileNames.length - 1; i++){
+        if (fileNames[i] === fileNames[i + 1]){
+          mux.Util.showAlert('중복되는 이름의 파일을 첨부할 수 없습니다.');
+          this.tab_write = 0;
+          return;
+        }
       }
       if (!this.estimate_member_info2[1].user_id){
         mux.Util.showAlert('확인자, 승인자를 선택하여 주십시오.');

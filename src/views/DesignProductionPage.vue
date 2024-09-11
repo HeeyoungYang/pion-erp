@@ -4965,6 +4965,42 @@ export default {
       const validate = this.$refs.estimateInfoForm.validate();
       if(validate) {
 
+        let fileNames = [];
+        if (this.input_layout_file.value) {
+          fileNames.push(this.input_layout_file.value.name);
+        }
+        if (this.input_structure_file.value) {
+          fileNames.push(this.input_structure_file.value.name);
+        }
+        if (this.input_single_line_file.value) {
+          fileNames.push(this.input_single_line_file.value.name);
+        }
+        if (this.input_trilinear_file.value) {
+          fileNames.push(this.input_trilinear_file.value.name);
+        }
+        if (this.input_circuit_file.value) {
+          fileNames.push(this.input_circuit_file.value.name);
+        }
+        if (this.input_approval_file.value) {
+          fileNames.push(this.input_approval_file.value.name);
+        }
+        if (this.input_build_sheet_file.value) {
+          fileNames.push(this.input_build_sheet_file.value.name);
+        }
+        if (Array.isArray(this.input_etc_file.value)){
+          for (let i = 0; i < this.input_etc_file.value.length; i++){
+            fileNames.push(this.input_etc_file.value[i].name);
+          }
+        }
+        // 파일명 중복 체크
+        fileNames.sort();
+        for (let i = 0; i < fileNames.length - 1; i++){
+          if (fileNames[i] === fileNames[i + 1]){
+            mux.Util.showAlert('중복되는 이름의 파일을 첨부할 수 없습니다.');
+            return;
+          }
+        }
+
         let isRejected = false;
         if (this.clickedProductCost.rejected_date){
           isRejected = true;
@@ -7173,6 +7209,41 @@ export default {
       ){
         mux.Util.showAlert('상세 도면을 1개 이상 첨부해야 합니다.');
         return;
+      }
+      let fileNames = [];
+      if (this.input_layout_file2.value) {
+        fileNames.push(this.input_layout_file2.value.name);
+      }
+      if (this.input_structure_file2.value) {
+        fileNames.push(this.input_structure_file2.value.name);
+      }
+      if (this.input_single_line_file2.value) {
+        fileNames.push(this.input_single_line_file2.value.name);
+      }
+      if (this.input_trilinear_file2.value) {
+        fileNames.push(this.input_trilinear_file2.value.name);
+      }
+      if (this.input_circuit_file2.value) {
+        fileNames.push(this.input_circuit_file2.value.name);
+      }
+      if (this.input_approval_file2.value) {
+        fileNames.push(this.input_approval_file2.value.name);
+      }
+      if (this.input_build_sheet_file2.value) {
+        fileNames.push(this.input_build_sheet_file2.value.name);
+      }
+      if (Array.isArray(this.input_etc_file2.value)){
+        for (let i = 0; i < this.input_etc_file2.value.length; i++){
+          fileNames.push(this.input_etc_file2.value[i].name);
+        }
+      }
+      // 파일명 중복 체크
+      fileNames.sort();
+      for (let i = 0; i < fileNames.length - 1; i++){
+        if (fileNames[i] === fileNames[i + 1]){
+          mux.Util.showAlert('중복되는 이름의 파일을 첨부할 수 없습니다.');
+          return;
+        }
       }
       this.production_steppers = step+1;
     },
