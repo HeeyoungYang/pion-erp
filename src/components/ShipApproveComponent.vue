@@ -4,8 +4,8 @@
     <div style="position:relative">
       <p class="print_doc_title" style="border-bottom:1px solid #ccc">출고 요청서</p>
       <v-row style="margin-top:15px">
-        <v-col cols="6">
-          <v-img
+        <v-col cols="7">
+          <img
             alt="Pionelectric Logo"
             class="shrink mr-2"
             contain
@@ -14,7 +14,7 @@
             style="margin-top:10px; width: 150px;"
           />
         </v-col>
-        <v-col cols="6">
+        <v-col cols="5">
           <table style="border-spacing: 0;width: 100%; text-align: center;">
               <tr>
               <td rowspan="3" class="approve_list_title">결재</td>
@@ -28,14 +28,14 @@
               <td  class="approve_list_name">{{  shipData.approver }}</td>
             </tr>
             <tr>
-              <td class="approve_list_date">{{  shipData.created_time }}</td>
-              <td class="approve_list_date">{{  shipData.checked_date }}</td>
-              <td class="approve_list_date">{{  shipData.approved_date }}</td>
+              <td class="approve_list_date">{{  shipData.created_time.split(' ')[0] }}</td>
+              <td class="approve_list_date">{{  shipData.checked_date.split(' ')[0] }}</td>
+              <td class="approve_list_date">{{  shipData.approved_date.split(' ')[0] }}</td>
             </tr>
           </table>
-          <p style="text-align: center; font-size:11px; margin-top:5px">아래와 같이 출고를 요청합니다. 검토 후 결제를 바랍니다.</p>
+          <p style="text-align: center; font-size:11px; margin-top:5px; margin-bottom: 0px;">아래와 같이 출고를 요청합니다. 검토 후 결제를 바랍니다.</p>
         </v-col>
-        <v-col cols="12">
+        <v-col cols="12" style="padding-top:0px">
           <p class="doc_list_title">요청내용</p>
           <table class="doc_table">
             <tr>

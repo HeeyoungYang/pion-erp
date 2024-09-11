@@ -143,7 +143,7 @@
                           </p>
                         </v-col>
                         <v-col align-self="center" cols="12" sm="2">
-                          <v-img
+                          <img
                             alt="Pionelectric Logo"
                             class="float-right"
                             contain
@@ -805,7 +805,7 @@
                       </p>
                     </v-col>
                     <v-col align-self="center" cols="12" sm="2">
-                      <v-img
+                      <img
                         alt="Pionelectric Logo"
                         class="float-right"
                         contain

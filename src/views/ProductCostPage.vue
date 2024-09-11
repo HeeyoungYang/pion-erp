@@ -149,7 +149,7 @@
                             </table>
                         </v-col>
                         <v-col align-self="center" cols="12" sm="2">
-                          <v-img
+                          <img
                             alt="Pionelectric Logo"
                             class="float-right"
                             contain
@@ -434,7 +434,7 @@
                       </p>
                     </v-col>
                     <v-col align-self="center" cols="12" sm="2">
-                      <v-img
+                      <img
                         alt="Pionelectric Logo"
                         class="float-right"
                         contain
@@ -781,7 +781,7 @@ import ProductCostPageConfig from "@/configure/ProductCostPageConfig.json";
 
 
 export default {
-  
+
   components: {
                 NavComponent,
                 ModalDialogComponent,
@@ -1196,12 +1196,12 @@ export default {
   },
 
   async mounted() {
-    
+
   },
 
   methods: {
     // eslint-disable-next-line no-unused-vars
-    
+
 
     async initialize (){
       this.username = this.$cookies.get(this.$configJson.cookies.name.key);
@@ -1731,10 +1731,10 @@ export default {
 
       setTimeout(async () => {
         if (fileName){
-          mux.Util.downloadPDF(this.$refs.calcLaborCard, fileName);
+          await mux.Util.downloadPDF(this.$refs.calcLaborCard, fileName);
           this.print_labor_table = false;
         }else {
-          mux.Util.print(this.$refs.calcLaborCard);
+          await mux.Util.print(this.$refs.calcLaborCard);
           this.print_labor_table = false;
         }
       }, 500);

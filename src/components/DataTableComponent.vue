@@ -216,6 +216,8 @@
                       :inbound-data="item"
                       :belong-data="inbound_approve_belong"
                       :belong-files="inbound_approve_files"
+                      @print="printInboundApprove"
+                      @closeInboundApprove="closeInboundConfirmationDialog"
                       />
                     </ModalDialogComponent>
                     <ModalDialogComponent
@@ -1106,6 +1108,18 @@ export default {
         this.ship_approve_belong.push(data);
       })
       this.confirmationDialog = true;
+    },
+    closeInboundConfirmationDialog(){
+      this.confirmationDialog = false;
+    },
+    printInboundApprove(refs,fileName){
+      setTimeout(async () => {
+        if (fileName){
+          await mux.Util.downloadPDF(refs, fileName);
+        }else {
+          await mux.Util.print(refs);
+        }
+      }, 500);
     },
     printShipApprove(fileName){
       setTimeout(async () => {
