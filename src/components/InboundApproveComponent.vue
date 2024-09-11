@@ -1,10 +1,10 @@
 
 <template >
   <v-container>
-    <div style="position:relative">
+    <div ref="inboundApproveForm">
       <p class="print_doc_title">입고 확인서</p>
       <v-row style="margin-top:15px">
-        <v-col cols="6">
+        <v-col cols="6" style="padding-bottom: 0px;">
           <v-img
             alt="Pionelectric Logo"
             class="shrink mr-2"
@@ -14,7 +14,7 @@
             style="margin-top:10px; width: 150px;"
           />
         </v-col>
-        <v-col cols="6">
+        <v-col cols="6" style="padding-bottom: 0px;">
           <table style="border-spacing: 0;width: 100%; text-align: center;">
               <tr>
               <td rowspan="3" class="approve_list_title">결재</td>
@@ -33,9 +33,9 @@
               <td class="approve_list_date">{{  inboundData.approved_date }}</td>
             </tr>
           </table>
-          <p style="text-align: center; font-size:11px; margin-top:5px">아래와 같이 입고를 요청합니다. 검토 후 결제를 바랍니다.</p>
+          <p style="text-align: center; font-size:11px; margin-top:5px; margin-bottom: 0px;">아래와 같이 입고를 요청합니다. 검토 후 결제를 바랍니다.</p>
         </v-col>
-        <v-col cols="12">
+        <v-col cols="12" style="padding-top:0px">
           <p class="doc_list_title">개요</p>
           <table class="doc_table">
             <tr>
@@ -57,7 +57,7 @@
               <td class="approve_text">{{inboundData.project_code}}</td>
             </tr>
           </table>
-          <p class="doc_list_title" style="margin-top:28px">내용</p>
+          <p class="doc_list_title" style="margin-top:20px">내용</p>
           <table class="doc_detail_table">
             <thead>
                 <tr>
@@ -112,6 +112,51 @@
         </v-col>
       </v-row>
     </div>
+
+    <div style="position: sticky; bottom: 60px;">
+      <p style="text-align: right;">
+        <v-menu offset-x>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              fab
+              x-small
+              elevation="1"
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon small>mdi-content-save</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              dense
+              @click="printInboundApprove('입고확인서')"
+            >
+              <v-list-item-title>PDF</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              dense
+              @click="printInboundApprove()"
+            >
+              <v-list-item-title>출력</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </p>
+      <p style="text-align: right;">
+        <v-btn
+          fab
+          color="blue-grey darken-1"
+          x-small
+          class="white--text"
+          elevation="1"
+          @click="confirmationDialog=false"
+        >
+          <v-icon> mdi-close-thick </v-icon>
+        </v-btn>
+      </p>
+    </div>
   </v-container>
 
 </template>
@@ -126,6 +171,7 @@
  * @property {Array} belongData - 데이터 배열
  * @property {Array} belongFiles - 데이터 배열
 **/
+import mux from "@/mux";
 export default {
   props: {
     inboundData: Array,
@@ -133,11 +179,21 @@ export default {
     belongFiles: Array,
   },
   methods: {
+    printInboundApprove(fileName){
+      setTimeout(async () => {
+        if (fileName){
+          mux.Util.downloadPDF(this.$refs.inboundApproveForm, fileName);
+        }else {
+          mux.Util.print(this.$refs.inboundApproveForm);
+        }
+      }, 500);
+    },
   },
   components: {
   },
   data(){
     return{
+      mux: mux,
       content_save_items: [
         {title:'출력', click:'print'},
         {title:'PDF', click:'pdf'},

@@ -5,7 +5,6 @@
   ],
   "content_save_items": [
     {"title":"출력", "click":"print"},
-    {"title":"엑셀", "click":"excel"},
     {"title":"PDF", "click":"pdf"}
   ],
   "tab_main_items": [
