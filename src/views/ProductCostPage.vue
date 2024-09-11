@@ -1731,10 +1731,10 @@ export default {
 
       setTimeout(async () => {
         if (fileName){
-          mux.Util.downloadPDF(this.$refs.calcLaborCard, fileName);
+          await mux.Util.downloadPDF(this.$refs.calcLaborCard, fileName);
           this.print_labor_table = false;
         }else {
-          mux.Util.print(this.$refs.calcLaborCard);
+          await mux.Util.print(this.$refs.calcLaborCard);
           this.print_labor_table = false;
         }
       }, 500);
