@@ -241,7 +241,7 @@
           <div>
             <p class="print_doc_title">발주서</p>
             <v-row style="margin-top:15px">
-              <v-col cols="12" sm="6">
+              <v-col cols="12" sm="7">
                 <img
                   alt="Pionelectric Logo"
                   class="shrink mr-2"
@@ -251,7 +251,7 @@
                   style="margin-top:10px; width: 150px;"
                 />
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="12" sm="5">
                 <table style="border-spacing: 0;width: 100%; text-align: center;">
                     <tr>
                     <td rowspan="3" class="approve_list_title">결재</td>
@@ -265,54 +265,54 @@
                     <td class="approve_list_name">{{ order_form_info.approver }}</td>
                   </tr>
                   <tr>
-                    <td class="approve_list_date">{{ order_form_info.created_time }}</td>
-                    <td class="approve_list_date">{{ order_form_info.checked_date }}</td>
-                    <td class="approve_list_date">{{ order_form_info.approved_date === '' ? '미승인' : order_form_info.approved_date }}</td>
+                    <td class="approve_list_date">{{ order_form_info.created_time.split(' ')[0] }}</td>
+                    <td class="approve_list_date">{{ order_form_info.checked_date.split(' ')[0] }}</td>
+                    <td class="approve_list_date">{{ order_form_info.approved_date === '' ? '미승인' : order_form_info.approved_date.split(' ')[0] }}</td>
                   </tr>
                 </table>
               </v-col>
 
               <v-col cols="12" sm="12" style="padding-top:0px;padding-bottom:0px">
                 <table style="border-spacing: 0px; width: 100%;">
-                  <tr class="text-body-1">
-                    <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">관리번호</td>
-                    <td class="order_info">{{ order_form_info.code }}</td>
-                    <td class="order_info order_title text-center" >발행일</td>
-                    <td class="order_info">{{ order_form_info.order_date === null ? '미발행' : order_form_info.order_date }}</td>
-                    <td class="order_info order_title text-center">납기일</td>
-                    <td class="order_info">{{ order_form_info.due_date }}</td>
+                  <tr>
+                    <td class="order_info order_title text-center" style="width:9%; border-left:1px solid #b6b6b6">관리번호</td>
+                    <td class="order_info" style="width:24.3%;">{{ order_form_info.code }}</td>
+                    <td class="order_info order_title text-center" style="width:9%;" >발행일</td>
+                    <td class="order_info" style="width:24.3%;">{{ order_form_info.order_date === null ? '미발행' : order_form_info.order_date }}</td>
+                    <td class="order_info order_title text-center" style="width:9%;">납기일</td>
+                    <td class="order_info" style="width:24.3%;">{{ order_form_info.due_date }}</td>
                   </tr>
                 </table>
               </v-col>
 
               <v-col cols="12" sm="6" style="padding-bottom:0px">
-                <table style="table-layout: fixed; border-spacing: 0px; width: 100%; ">
+                <table style="border-spacing: 0px; width: 100%; ">
 
                   <tr>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">수신업체</td>
                     <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_name }}</td>
                   </tr>
-                  <tr class="text-body-1">
+                  <tr>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-                    <td class="order_info" style="WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">{{ order_form_info.company_registration_number }}</td>
+                    <td class="order_info" style="width:32%; WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">{{ order_form_info.company_registration_number }}</td>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
-                    <td class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_manager }}</td>
+                    <td class="order_info" style="width:32%; border-bottom: 0px;">{{ order_form_info.company_manager }}</td>
                   </tr>
                   <tr>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
                     <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_address }}</td>
                   </tr>
-                  <tr class="text-body-1">
+                  <tr>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">전화</td>
-                    <td class="order_info" style="border-bottom: 0px;border-right: 0px;">{{ order_form_info.company_phone }}</td>
+                    <td class="order_info" style="width:32%; border-bottom: 0px;border-right: 0px;">{{ order_form_info.company_phone }}</td>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">팩스</td>
-                    <td class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_fax }}</td>
+                    <td class="order_info" style="width:32%; border-bottom: 0px;">{{ order_form_info.company_fax }}</td>
                   </tr>
-                  <tr class="text-body-1">
+                  <tr>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">결제조건</td>
-                    <td class="order_info" style="border-bottom: 0px;border-right: 0px;">{{ order_form_info.payment_terms }}</td>
+                    <td class="order_info" style="width:32%; border-bottom: 0px;border-right: 0px;">{{ order_form_info.payment_terms }}</td>
                     <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트</td>
-                    <td class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_registration_number }}</td>
+                    <td class="order_info" style="width:32%; border-bottom: 0px;">{{ order_form_info.company_registration_number }}</td>
                   </tr>
                   <tr>
                     <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">계좌정보</td>

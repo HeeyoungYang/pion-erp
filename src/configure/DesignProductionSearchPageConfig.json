@@ -3,7 +3,7 @@
     "수주서", "수주 확인서", "BOM LIST", "구매 요청 내역", "산출내역서", "노무비 산출", "생산 의뢰서"
   ],
   
-  "save_confirmation": [
+  "content_save_items": [
     {"title":"출력", "click":"print"},
     {"title":"PDF", "click":"pdf"}
   ],

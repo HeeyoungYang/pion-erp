@@ -216,52 +216,7 @@
                       :inbound-data="item"
                       :belong-data="inbound_approve_belong"
                       :belong-files="inbound_approve_files"
-                      ref="inboundApproveComponent"
                       />
-                      <div style="position: sticky; bottom: 60px;">
-                        <p style="text-align: right;">
-                          <v-menu offset-x>
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-btn
-                                color="primary"
-                                fab
-                                x-small
-                                elevation="1"
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                <v-icon small>mdi-content-save</v-icon>
-                              </v-btn>
-                            </template>
-                            <v-list>
-                              <v-list-item
-                                dense
-                                @click="printInboundApprove('입고확인서')"
-                              >
-                                <v-list-item-title>PDF</v-list-item-title>
-                              </v-list-item>
-                              <v-list-item
-                                dense
-                                @click="printInboundApprove()"
-                              >
-                                <v-list-item-title>출력</v-list-item-title>
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
-                        </p>
-                        <p style="text-align: right;">
-                          <v-btn
-                            fab
-                            color="blue-grey darken-1"
-                            x-small
-                            class="white--text"
-                            elevation="1"
-                            @click="confirmationDialog=false"
-                          >
-                            <v-icon> mdi-close-thick </v-icon>
-                          </v-btn>
-                        </p>
-                      </div>
                     </ModalDialogComponent>
                     <ModalDialogComponent
                       v-else-if="approval == 'ship'"
@@ -1151,15 +1106,6 @@ export default {
         this.ship_approve_belong.push(data);
       })
       this.confirmationDialog = true;
-    },
-    printInboundApprove(fileName){
-      setTimeout(async () => {
-        if (fileName){
-          mux.Util.downloadPDF(this.$refs.inboundApproveComponent, fileName);
-        }else {
-          mux.Util.print(this.$refs.inboundApproveComponent);
-        }
-      }, 500);
     },
     printShipApprove(fileName){
       setTimeout(async () => {

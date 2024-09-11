@@ -141,11 +141,11 @@
               </template>
               <v-list>
                 <v-list-item
-                  v-for="(item, index) in save_estimates"
+                  v-for="(item, index) in content_save_items"
                   :key="index"
                   dense
                   @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                          : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                          : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '수주확인서') : ''"
                 >
                   <v-list-item-title>{{ item.title }}</v-list-item-title>
                 </v-list-item>
@@ -519,7 +519,7 @@
                 </template>
                 <v-list>
                   <v-list-item
-                    v-for="(item, index) in save_estimates"
+                    v-for="(item, index) in content_save_items"
                     :key="index"
                     dense
                     @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
@@ -571,7 +571,7 @@
                 </template>
                 <v-list>
                   <v-list-item
-                    v-for="(item, index) in save_estimates"
+                    v-for="(item, index) in content_save_items"
                     :key="index"
                     dense
                     @click="item.click === 'print' ? printLaborCost()
@@ -682,7 +682,7 @@
               </template>
               <v-list>
                 <v-list-item
-                  v-for="(item, index) in save_estimates"
+                  v-for="(item, index) in content_save_items"
                   :key="index"
                   dense
                   @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
@@ -876,7 +876,7 @@ export default {
 
       searched_products:[],
 
-      save_estimates: DesignProductionSearchPageConfig.save_estimates,
+      content_save_items: DesignProductionSearchPageConfig.content_save_items,
       login_info: DesignProductionSearchPageConfig.login_info,
       searchCardInputs:DesignProductionSearchPageConfig.searchCardInputs,
       estimate_approve_headers:DesignProductionSearchPageConfig.estimate_approve_headers,
