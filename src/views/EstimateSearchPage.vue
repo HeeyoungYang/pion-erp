@@ -1883,8 +1883,8 @@ export default {
 
         // 산출내역서 PDF 파일 생성
         if (sendData.specification) {
+          const origin_tab = this.tab_search;
           if (!this.$refs.calcDetailCard){ // 산출내역서 탭을 load 한 적이 없는 것을 대비
-            const origin_tab = this.tab_search;
             this.tab_search = 1;
             let refLoadCount = 0
             while(refLoadCount < 50){
@@ -1894,15 +1894,17 @@ export default {
               await new Promise(resolve => setTimeout(resolve, 100));
               refLoadCount++;
             }
-            this.tab_search = origin_tab;
+            
           }
           const specification = this.$refs.calcDetailCard.$el;
           try {
             // await mux.Util.downloadPDF(specification, 'specification');
             specificationFile = await mux.Util.getPDF(specification, '산출내역서');
             sendData.files.push(specificationFile);
+            this.tab_search = origin_tab;
           } catch (error) {
             this.mailDialog = true;
+            this.tab_search = origin_tab;
             mux.Util.showAlert('산출내역서 PDF 파일 생성 중 오류가 발생했습니다.');
             return;
           }
@@ -1911,8 +1913,8 @@ export default {
 
         // 노무비 산출 PDF 파일 생성
         if (sendData.labor) {
+          const origin_tab = this.tab_search;
           if (!this.$refs.calcLaborCard){ // 노무비 산출 탭을 load 한 적이 없는 것을 대비
-            const origin_tab = this.tab_search;
             this.tab_search = 2;
             let refLoadCount = 0
             while(refLoadCount < 50){
@@ -1929,8 +1931,10 @@ export default {
             // await mux.Util.downloadPDF(labor, 'labor');
             laborFile = await mux.Util.getPDF(labor, '노무비 산출');
             sendData.files.push(laborFile);
+            this.tab_search = origin_tab;
           } catch (error) {
             this.mailDialog = true;
+            this.tab_search = origin_tab;
             mux.Util.showAlert('노무비 산출 PDF 파일 생성 중 오류가 발생했습니다.');
             return;
           }
