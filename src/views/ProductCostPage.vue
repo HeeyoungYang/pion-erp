@@ -149,7 +149,7 @@
                             </table>
                         </v-col>
                         <v-col align-self="center" cols="12" sm="2">
-                          <v-img
+                          <img
                             alt="Pionelectric Logo"
                             class="float-right"
                             contain
@@ -434,7 +434,7 @@
                       </p>
                     </v-col>
                     <v-col align-self="center" cols="12" sm="2">
-                      <v-img
+                      <img
                         alt="Pionelectric Logo"
                         class="float-right"
                         contain
@@ -781,7 +781,7 @@ import ProductCostPageConfig from "@/configure/ProductCostPageConfig.json";
 
 
 export default {
-  
+
   components: {
                 NavComponent,
                 ModalDialogComponent,
@@ -1196,12 +1196,12 @@ export default {
   },
 
   async mounted() {
-    
+
   },
 
   methods: {
     // eslint-disable-next-line no-unused-vars
-    
+
 
     async initialize (){
       this.username = this.$cookies.get(this.$configJson.cookies.name.key);

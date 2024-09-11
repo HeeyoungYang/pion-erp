@@ -5,7 +5,7 @@
       <p class="print_doc_title">입고 확인서</p>
       <v-row style="margin-top:15px">
         <v-col cols="6" style="padding-bottom: 0px;">
-          <v-img
+          <img
             alt="Pionelectric Logo"
             class="shrink mr-2"
             contain
@@ -28,9 +28,9 @@
               <td class="approve_list_name">{{  inboundData.approver }}</td>
             </tr>
             <tr>
-              <td class="approve_list_date">{{  inboundData.created_time }}</td>
-              <td class="approve_list_date">{{  inboundData.checked_date }}</td>
-              <td class="approve_list_date">{{  inboundData.approved_date }}</td>
+              <td class="approve_list_date">{{  inboundData.created_time.split(' ')[0] }}</td>
+              <td class="approve_list_date">{{  inboundData.checked_date.split(' ')[0] }}</td>
+              <td class="approve_list_date">{{  inboundData.approved_date.split(' ')[0] }}</td>
             </tr>
           </table>
           <p style="text-align: center; font-size:11px; margin-top:5px; margin-bottom: 0px;">아래와 같이 입고를 요청합니다. 검토 후 결제를 바랍니다.</p>
@@ -131,13 +131,13 @@
           <v-list>
             <v-list-item
               dense
-              @click="printInboundApprove('입고확인서')"
+              @click="print('입고확인서')"
             >
               <v-list-item-title>PDF</v-list-item-title>
             </v-list-item>
             <v-list-item
               dense
-              @click="printInboundApprove()"
+              @click="print()"
             >
               <v-list-item-title>출력</v-list-item-title>
             </v-list-item>
@@ -151,7 +151,7 @@
           x-small
           class="white--text"
           elevation="1"
-          @click="confirmationDialog=false"
+          @click="close"
         >
           <v-icon> mdi-close-thick </v-icon>
         </v-btn>
@@ -179,15 +179,21 @@ export default {
     belongFiles: Array,
   },
   methods: {
-    printInboundApprove(fileName){
-      setTimeout(async () => {
-        if (fileName){
-          mux.Util.downloadPDF(this.$refs.inboundApproveForm, fileName);
-        }else {
-          mux.Util.print(this.$refs.inboundApproveForm);
-        }
-      }, 500);
+    print(fileName){
+      this.$emit("print", this.$refs.inboundApproveForm, fileName);
     },
+    close(){
+      this.$emit("closeInboundApprove");
+    },
+    // printInboundApprove(fileName){
+    //   setTimeout(async () => {
+    //     if (fileName){
+    //       await mux.Util.downloadPDF(this.$refs.inboundApproveForm, fileName);
+    //     }else {
+    //       await mux.Util.print(this.$refs.inboundApproveForm);
+    //     }
+    //   }, 500);
+    // },
   },
   components: {
   },

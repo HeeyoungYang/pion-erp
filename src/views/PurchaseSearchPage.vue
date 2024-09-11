@@ -708,7 +708,7 @@
                         <p class="print_doc_title">발주서</p>
                         <v-row style="margin-top:15px">
                           <v-col cols="6">
-                            <v-img
+                            <img
                               alt="Pionelectric Logo"
                               class="shrink mr-2"
                               contain
