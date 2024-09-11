@@ -1884,18 +1884,17 @@ export default {
         // 산출내역서 PDF 파일 생성
         if (sendData.specification) {
           const origin_tab = this.tab_search;
-          // if (!this.$refs.calcDetailCard){ // 산출내역서 탭을 load 한 적이 없는 것을 대비
-            this.tab_search = 1;
-          //   let refLoadCount = 0
-          //   while(refLoadCount < 50){
-          //     if (this.$refs.calcDetailCard){
-          //       break;
-          //     }
-          //     await new Promise(resolve => setTimeout(resolve, 100));
-          //     refLoadCount++;
-          //   }
-            
-          // }
+          this.tab_search = 1;
+          if (!this.$refs.calcDetailCard){ // 산출내역서 탭을 load 한 적이 없는 것을 대비
+            let refLoadCount = 0
+            while(refLoadCount < 50){
+              if (this.$refs.calcDetailCard){
+                break;
+              }
+              await new Promise(resolve => setTimeout(resolve, 100));
+              refLoadCount++;
+            }
+          }
           const specification = this.$refs.calcDetailCard.$el;
           try {
             // await mux.Util.downloadPDF(specification, 'specification');
@@ -1914,18 +1913,17 @@ export default {
         // 노무비 산출 PDF 파일 생성
         if (sendData.labor) {
           const origin_tab = this.tab_search;
-          // if (!this.$refs.calcLaborCard){ // 노무비 산출 탭을 load 한 적이 없는 것을 대비
-            this.tab_search = 2;
-          //   let refLoadCount = 0
-          //   while(refLoadCount < 50){
-          //     if (this.$refs.calcLaborCard){
-          //       break;
-          //     }
-          //     await new Promise(resolve => setTimeout(resolve, 100));
-          //     refLoadCount++;
-          //   }
-          //   this.tab_search = origin_tab;
-          // }
+          this.tab_search = 2;
+          if (!this.$refs.calcLaborCard){ // 노무비 산출 탭을 load 한 적이 없는 것을 대비
+            let refLoadCount = 0
+            while(refLoadCount < 50){
+              if (this.$refs.calcLaborCard){
+                break;
+              }
+              await new Promise(resolve => setTimeout(resolve, 100));
+              refLoadCount++;
+            }
+          }
           const labor = this.$refs.calcLaborCard.$el;
           try {
             // await mux.Util.downloadPDF(labor, 'labor');
