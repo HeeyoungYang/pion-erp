@@ -86,7 +86,7 @@
                         :src="mux.Util.imageBinary(relatedClickedProductCost[0].obtain_thumbnail)"
                         transition="scale-transition"
                         width="100%"
-                        @click="download('obtain/obtain', relatedClickedProductCost[0].obtain_file.replace(clickedProductCost.obtain_file.split('_')[0]+'_'+clickedProductCost.obtain_file.split('_')[1]+'_', ''), clickedProductCost.obtain_file.split('_')[0]+'_'+clickedProductCost.obtain_file.split('_')[1]+'_')"
+                        @click="download('obtain/obtain', relatedClickedProductCost[0].obtain_file.replace(relatedClickedProductCost[0].obtain_file.split('_')[0]+'_'+relatedClickedProductCost[0].obtain_file.split('_')[1]+'_', ''), relatedClickedProductCost[0].obtain_file.split('_')[0]+'_'+relatedClickedProductCost[0].obtain_file.split('_')[1]+'_')"
                         style="cursor: pointer;"
                       />
                     </div>
