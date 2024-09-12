@@ -1825,7 +1825,7 @@ export default {
                   "model" : data.model,
                   "manufacturer" : data.manufacturer,
                   "unit_price" : inbound_unit_price,
-                  "ship_code" : ship_code_info,
+                  "ship_code" : data.type === '원부자재' ? '미선택' : ship_code_info,
                 },
                 "select_where": {"code": this.inbound_confirmation_data.code, "product_code": data._code},
                 "rollback": "yes"

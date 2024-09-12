@@ -935,7 +935,7 @@ export default {
       let update_module_data = [];
       let update_product_data = [];
       const prevURL = window.location.href;
-      
+
       for(let i=0; i<products.length; i++){
         let product = products[i];
         let inbound_check = await mux.Server.post({
@@ -954,14 +954,20 @@ export default {
           inbound_check = JSON.parse(inbound_check);
         }
         if(inbound_check['code'] == 0){
-          searched_inbound_data.push(...inbound_check['data'].filter(x=>x.left_num !== 0));
-          // inbound_num과 created_time으로 sort
-          searched_inbound_data.sort((a, b) => new Date(a.inbound_date) - new Date(b.inbound_date));
-          set_data.push(searched_inbound_data[0])
+          if(inbound_check['data'].filter(x=>x.left_num !== 0).length > 0){
+            searched_inbound_data.push(...inbound_check['data'].filter(x=>x.left_num !== 0));
+            // inbound_num과 created_time으로 sort
+            searched_inbound_data.sort((a, b) => new Date(a.inbound_date) - new Date(b.inbound_date));
+            set_data.push(searched_inbound_data[0])
+          }else{
+            searched_inbound_data.push(...inbound_check['data']);
+            searched_inbound_data.sort((a, b) => new Date(b.inbound_date) - new Date(a.inbound_date));
+            set_data.push(searched_inbound_data[0])
+          }
         }
       }
 
-      // 가장 오래된 단가로 원부자재 혹은 반제품 혹은 완제품 단가 수정
+      // 원부자재 혹은 반제품 혹은 완제품 단가 수정
       set_data.forEach(data => {
         if(data.type === '원부자재'){
           update_material_data.push({
@@ -1083,15 +1089,21 @@ export default {
 
       console.log(phase);
 
+      mux.Util.showLoading();
       let sendData = {};
-
+      let update_inbound_data_products = [];
       //취소 미승인에서 취소로 변경하는 경우
       if(send_data_belong.length > 0){
         let insert_product_data = [];
         let update_stock_data = [];
+        let update_inbound_data = [];
 
         for (let i = 0; i < send_data_belong.length; i++) {
           const belong = send_data_belong[i];
+          update_inbound_data_products.push({
+            "product_code": belong.product_code,
+            "type": belong.type
+          })
           // product_code기준 재고(자재)검색
           let stock_check = await mux.Server.post({
             path: '/api/common_rest_api/',
@@ -1106,10 +1118,24 @@ export default {
             "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
             "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
           });
+          let inbound_check = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: [
+              {
+                "inbound_product_table.product_code": belong.product_code,
+                "inbound_confirmation_table.approval_phase": "승인"
+              }
+            ],
+            "script_file_name": "rooting_입고_상세_검색_24_05_22_10_53_9P7.json",
+            "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_상세_검색_24_05_22_10_54_7AL"
+          });
           if (prevURL !== window.location.href) return;
 
           if (typeof stock_check === 'string'){
             stock_check = JSON.parse(stock_check);
+          }
+          if (typeof inbound_check === 'string'){
+            inbound_check = JSON.parse(inbound_check);
           }
           if(stock_check['code'] == 0){
             let searched_stock_data = [];
@@ -1157,13 +1183,56 @@ export default {
               "select_where": {"product_code": "!JUST_INSERT!"},
               "rollback": "no"
             })
+          }
 
-            sendData["ship_product_table-insert"] = insert_product_data;
-            sendData["stock_table-update"] = update_stock_data;
+          if(inbound_check['code'] == 0){
+            let searched_inbound_data = [];
+            if(inbound_check['data'].length > 0){
+              searched_inbound_data = inbound_check['data'].filter(x=>x.spot === belong.spot && x.inbound_num !== x.left_num);
+            }
+            searched_inbound_data.sort((a, b) => new Date(b.inbound_date) - new Date(a.inbound_date));
+            let ship_num = belong.ship_num
+            for(let i = 0; i<searched_inbound_data.length; i++){
+              let calc_left_num = searched_inbound_data[i].left_num
+              let inbound_num = searched_inbound_data[i].inbound_num
+              if(ship_num > 0){
+                calc_left_num = calc_left_num + ship_num;
+                if(calc_left_num > inbound_num){
+                  calc_left_num = inbound_num;
+                  ship_num = calc_left_num - ship_num;
+                }else{
+                  ship_num = 0;
+                }
+                update_inbound_data.push({
+                  "user_info": {
+                      "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                      "role": "modifier"
+                    },
+                    "data":{
+                      "left_num": calc_left_num
+                    },
+                    "update_where": {"id": searched_inbound_data[i].id},
+                    "rollback": "yes"
+                })
+              }
+            }
 
           }
         }
 
+        sendData["inbound_product_table-update"] = update_inbound_data;
+        sendData["ship_product_table-insert"] = insert_product_data;
+        sendData["stock_table-update"] = update_stock_data;
+
+
+
+        update_inbound_data_products = update_inbound_data_products.reduce((prev, now) => {
+          if(!prev.some(obj => obj.product_code === now.product_code )){
+            prev.push(now);
+          }
+          return prev;
+        }, [])
+        console.log(update_inbound_data_products);
       }
 
 
@@ -1179,7 +1248,6 @@ export default {
       console.log(sendData);
 
       try {
-        mux.Util.showLoading();
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1190,6 +1258,10 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+          if(phase === '취소 승인'){
+            await this.refreshUnitPrice(update_inbound_data_products)
+          }
+
           let minus_send_product_data = [];
           item.approval_phase = send_data.approval_phase;
           switch (item.approval_phase) {
@@ -1353,14 +1425,20 @@ export default {
         send_confirmation_data.approved_date = null;
       }
 
+      mux.Util.showLoading();
       let sendData = {};
-
+      let update_inbound_data_products = [];
       if(send_product_data.length > 0){
         let insert_product_data = [];
         let update_stock_data = [];
+        let update_inbound_data = [];
 
         for (let i = 0; i < send_product_data.length; i++) {
           const product = send_product_data[i];
+          update_inbound_data_products.push({
+            "product_code": product.product_code,
+            "type": product.type
+          })
           // product_code기준 재고(자재)검색
           let stock_check = await mux.Server.post({
             path: '/api/common_rest_api/',
@@ -1375,10 +1453,24 @@ export default {
             "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
             "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
           });
+          let inbound_check = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: [
+              {
+                "inbound_product_table.product_code": product.product_code,
+                "inbound_confirmation_table.approval_phase": "승인"
+              }
+            ],
+            "script_file_name": "rooting_입고_상세_검색_24_05_22_10_53_9P7.json",
+            "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_상세_검색_24_05_22_10_54_7AL"
+          });
           if (prevURL !== window.location.href) return;
 
           if (typeof stock_check === 'string'){
             stock_check = JSON.parse(stock_check);
+          }
+          if (typeof inbound_check === 'string'){
+            inbound_check = JSON.parse(inbound_check);
           }
           if(stock_check['code'] == 0){
             let searched_stock_data = [];
@@ -1426,11 +1518,56 @@ export default {
               "select_where": {"product_code": "!JUST_INSERT!"},
               "rollback": "no"
             })
+          }
 
-            sendData["ship_product_table-insert"] = insert_product_data;
-            sendData["stock_table-update"] = update_stock_data;
+          if(inbound_check['code'] == 0){
+            let searched_inbound_data = [];
+            if(inbound_check['data'].length > 0){
+              searched_inbound_data = inbound_check['data'].filter(x=>x.spot === product.spot && x.inbound_num !== x.left_num);
+            }
+            searched_inbound_data.sort((a, b) => new Date(b.inbound_date) - new Date(a.inbound_date));
+            let ship_num = product.ship_num
+            for(let i = 0; i<searched_inbound_data.length; i++){
+              let calc_left_num = searched_inbound_data[i].left_num
+              let inbound_num = searched_inbound_data[i].inbound_num
+              if(ship_num > 0){
+                calc_left_num = calc_left_num + ship_num;
+                if(calc_left_num > inbound_num){
+                  calc_left_num = inbound_num;
+                  ship_num = calc_left_num - ship_num;
+                }else{
+                  ship_num = 0;
+                }
+                update_inbound_data.push({
+                  "user_info": {
+                      "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                      "role": "modifier"
+                    },
+                    "data":{
+                      "left_num": calc_left_num
+                    },
+                    "update_where": {"id": searched_inbound_data[i].id},
+                    "rollback": "yes"
+                })
+              }
+            }
+
           }
         }
+
+        sendData["inbound_product_table-update"] = update_inbound_data;
+        sendData["ship_product_table-insert"] = insert_product_data;
+        sendData["stock_table-update"] = update_stock_data;
+
+
+
+        update_inbound_data_products = update_inbound_data_products.reduce((prev, now) => {
+          if(!prev.some(obj => obj.product_code === now.product_code )){
+            prev.push(now);
+          }
+          return prev;
+        }, [])
+        console.log(update_inbound_data_products);
 
       }
 
@@ -1444,8 +1581,8 @@ export default {
         "rollback": "yes"
       }];
 
+
       try {
-        mux.Util.showLoading();
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
           params: sendData
@@ -1456,6 +1593,9 @@ export default {
           result = JSON.parse(result);
         }
         if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+          if(send_confirmation_data.approval_phase === '취소'){
+            await this.refreshUnitPrice(update_inbound_data_products)
+          }
           let minus_send_product_data = [];
           item.approval_phase = send_confirmation_data.approval_phase;
           switch (send_confirmation_data.approval_phase) {
