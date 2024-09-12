@@ -164,37 +164,39 @@
         </v-tab-item>
         <!-- 수주 확인서 -->
         <v-tab-item key="수주 확인서">
-          <v-card ref="calcCostCard" style="border: 1px solid #ccc;" elevation="0">
-            <v-menu offset-y>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  color="success"
-                  fab
-                  x-small
-                  class="dont_print"
-                  elevation="0"
-                  v-bind="attrs"
-                  v-on="on"
-                  data-html2canvas-ignore="true"
-                >
-                  <v-icon
-                    small
-                  >mdi-content-save</v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for="(item, index) in save_confirmation"
-                  :key="index"
-                  dense
-                  @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                          : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '수주확인서') : ''"
-                >
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+          <v-card style="border: 1px solid #ccc;" elevation="0">
             <v-card-title style="max-width: 868.5px;">
+              <v-menu offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    color="success"
+                    fab
+                    x-small
+                    class="dont_print"
+                    elevation="0"
+                    v-bind="attrs"
+                    v-on="on"
+                    data-html2canvas-ignore="true"
+                  >
+                    <v-icon
+                      small
+                    >mdi-content-save</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item
+                    v-for="(item, index) in save_confirmation"
+                    :key="index"
+                    dense
+                    @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                            : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '수주확인서') : ''"
+                  >
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-card-title>
+            <v-card-text ref="calcCostCard" style="max-width: 868.5px;">
               <v-row
                 class="px-3"
                 style="background: #efefef;"
@@ -215,8 +217,6 @@
                   />
                 </v-col>
               </v-row>
-            </v-card-title>
-            <v-card-text style="max-width: 868.5px;">
               <v-row class="mt-5" justify="space-between">
                 <v-col align-self="center" cols="12" sm="5" class="pb-0">
                   <v-row style="border-bottom:1px solid #b4b4b4; font-size: 15px;" class="mb-4">

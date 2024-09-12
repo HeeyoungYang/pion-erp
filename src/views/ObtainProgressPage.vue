@@ -95,55 +95,57 @@
               </v-tab-item>
               <!-- 수주 확인서 -->
               <v-tab-item>
-                <v-card ref="calcCostCard" style="border: 1px solid #ccc;" elevation="0">
-                  <v-row>
-                    <v-col cols="12" sm="5">
-                      <v-combobox
-                        label="version"
-                        filled
-                        v-model="version"
-                        :items="versions"
-                        hide-details
-                        dense
-                      ></v-combobox>
-                    </v-col>
-                    <v-col cols="12" sm="7" align-self="center">
-                      <v-menu offset-y>
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-btn
-                            color="success"
-                            fab
-                            x-small
-                            class="dont_print"
-                            elevation="0"
-                            v-bind="attrs"
-                            v-on="on"
-                            data-html2canvas-ignore="true"
-                          >
-                            <v-icon
-                              small
-                            >mdi-content-save</v-icon>
-                          </v-btn>
-                        </template>
-                        <v-list>
-                          <v-list-item
-                            v-for="(item, index) in save_estimates"
-                            :key="index"
-                            dense
-                            @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                                    : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '수주확인서') : ''"
-                          >
-                            <v-list-item-title>{{ item.title }}</v-list-item-title>
-                          </v-list-item>
-                        </v-list>
-                      </v-menu>
-                    </v-col>
-                  </v-row>
-
-                  <v-card-title style="max-width: 868.5px;margin-top:20px">
+                <v-card style="border: 1px solid #ccc;" elevation="0">
+                  <v-card-title style="max-width: 868.5px; padding: 5px;">
+                    <v-row>
+                      <v-col cols="12" sm="5">
+                        <v-combobox
+                          class="dont_print"
+                          label="version"
+                          filled
+                          v-model="version"
+                          :items="versions"
+                          hide-details
+                          dense
+                        ></v-combobox>
+                      </v-col>
+                      <v-col cols="12" sm="7" align-self="center">
+                        <v-menu offset-y>
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              color="success"
+                              fab
+                              x-small
+                              class="dont_print"
+                              elevation="0"
+                              v-bind="attrs"
+                              v-on="on"
+                              data-html2canvas-ignore="true"
+                            >
+                              <v-icon
+                                small
+                              >mdi-content-save</v-icon>
+                            </v-btn>
+                          </template>
+                          <v-list>
+                            <v-list-item
+                              v-for="(item, index) in save_estimates"
+                              :key="index"
+                              dense
+                              @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                                      : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '수주확인서') : ''"
+                            >
+                              <v-list-item-title>{{ item.title }}</v-list-item-title>
+                            </v-list-item>
+                          </v-list>
+                        </v-menu>
+                      </v-col>
+                    </v-row>
+                  </v-card-title>
+                  <v-card-text  ref="calcCostCard" style="max-width: 868.5px;">
                     <v-row
                       class="px-3"
-                      style="background: #efefef;"
+                      style="background: #efefef;margin-top:20px"
                     >
                       <v-col align-self="center" cols="12" sm="10">
                         <p style="font-weight: bold; font-size: 30px;" class="mb-0">수주 확인서
@@ -161,8 +163,6 @@
                         />
                       </v-col>
                     </v-row>
-                  </v-card-title>
-                  <v-card-text style="max-width: 868.5px;">
                     <v-row class="mt-5" justify="space-between">
                       <v-col align-self="center" cols="12" sm="5" class="pb-0">
                         <v-row style="border-bottom:1px solid #b4b4b4; font-size: 15px;" class="mb-4">
@@ -1554,6 +1554,77 @@ export default {
       return info;
 
     },
+    // 파일명 인자 있을 경우 PDF download, 없을 경우 print
+    async costDetailPrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
+      let items = this[itemsThisKeyStr];
+      const originItems = JSON.parse(JSON.stringify(items));
+      items = items.map(item => {
+        for (let i = Object.keys(item).length - 1; i >= 0; i--) {
+          const key = Object.keys(item)[i];
+          if (key.includes('editable')){
+            delete item[key];
+          }
+          if (key === 'belong_data'){
+            for (let j = 0; j < item.belong_data.length; j++) {
+              const innerItem = item.belong_data[j];
+              for (let ii = Object.keys(innerItem).length - 1; ii >= 0; ii--) {
+                const innerKey = Object.keys(innerItem)[ii];
+                if (innerKey.includes('editable')){
+                  delete innerItem[innerKey];
+                }
+                if (innerKey === 'belong_data'){
+                  for (let j = 0; j < innerItem.belong_data.length; j++) {
+                    const belongInnerItem = innerItem.belong_data[j];
+                    for (let ii = Object.keys(belongInnerItem).length - 1; ii >= 0; ii--) {
+                      const belongInnerKey = Object.keys(belongInnerItem)[ii];
+                      if (belongInnerKey.includes('editable')){
+                        delete belongInnerItem[belongInnerKey];
+                      }
+                      // if (belongInnerKey === 'belong_data'){
+
+                      // }
+                    }
+
+                  }
+                }
+              }
+
+            }
+          }
+        }
+        return item;
+
+      });
+
+      this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+      this.costTitlePrint = true;
+
+      // UI 적용을 위한 editable = false 1초 후 작동
+      setTimeout(async () => {
+        if (fileName){
+          await mux.Util.downloadPDF(element, fileName);
+          this.costTitlePrint = false;
+        }else {
+          await mux.Util.print(element);
+          this.costTitlePrint = false;
+        }
+        this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+        this[itemsThisKeyStr] = originItems;
+      }, 1000);
+
+
+    },
+    async download(foldername, filename, prefix) {
+      mux.Util.showLoading();
+      try {
+        await mux.Server.downloadFile(foldername, filename, prefix);
+      } catch (error) {
+        mux.Util.showAlert(error);
+      }
+      mux.Util.hideLoading();
+    },
   },
   data(){
     return{
@@ -1565,7 +1636,7 @@ export default {
       versions2:[], // '1차 수주 설계', '2차 수주 설계' ...
       version2: '',
       design_production_approval_phase: '',
-      save_costs: ObtainProgressPageConfig.save_costs,
+      save_estimates: ObtainProgressPageConfig.save_estimates,
       search_estimate_headers: ObtainProgressPageConfig.search_estimate_headers,
       purchase_detail_headers: ObtainProgressPageConfig.purchase_detail_headers,
       bom_list_headers: ObtainProgressPageConfig.bom_list_headers,

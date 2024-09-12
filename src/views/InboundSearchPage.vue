@@ -1941,6 +1941,121 @@ export default {
       mux.Util.hideLoading();
     }
   },
+
+  async refreshUnitPrice(products){
+    console.log(products);
+    let searched_inbound_data = [];
+    let sendProductData = {};
+    let set_data = [];
+    let update_material_data = [];
+    let update_module_data = [];
+    let update_product_data = [];
+    const prevURL = window.location.href;
+
+    for(let i=0; i<products.length; i++){
+      let product = products[i];
+      let inbound_check = await mux.Server.post({
+        path: '/api/common_rest_api/',
+        params: [
+          {
+            "inbound_product_table.product_code": product.product_code,
+            "inbound_confirmation_table.approval_phase": "승인"
+          }
+        ],
+        "script_file_name": "rooting_입고_상세_검색_24_05_22_10_53_9P7.json",
+        "script_file_path": "data_storage_pion\\json_sql\\inbound\\입고_상세_검색_24_05_22_10_54_7AL"
+      });
+      if (prevURL !== window.location.href) return;
+      if (typeof inbound_check === 'string'){
+        inbound_check = JSON.parse(inbound_check);
+      }
+      if(inbound_check['code'] == 0){
+        if(inbound_check['data'].filter(x=>x.left_num !== 0).length > 0){
+          searched_inbound_data.push(...inbound_check['data'].filter(x=>x.left_num !== 0));
+          // inbound_num과 created_time으로 sort
+          searched_inbound_data.sort((a, b) => new Date(a.inbound_date) - new Date(b.inbound_date));
+          set_data.push(searched_inbound_data[0])
+        }else{
+          searched_inbound_data.push(...inbound_check['data']);
+          searched_inbound_data.sort((a, b) => new Date(b.inbound_date) - new Date(a.inbound_date));
+          set_data.push(searched_inbound_data[0])
+        }
+      }
+    }
+
+    // 원부자재 혹은 반제품 혹은 완제품 단가 수정
+    set_data.forEach(data => {
+      if(data.type === '원부자재'){
+        update_material_data.push({
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{
+            "unit_price": data.unit_price
+          },
+          "update_where": {"material_code": data.product_code},
+          "rollback": "yes"
+        });
+      }else if(data.type === '반제품'){
+        update_module_data.push({
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{
+            "unit_price": data.unit_price
+          },
+          "update_where": {"module_code": data.product_code},
+          "rollback": "yes"
+        });
+      }else if(data.type === '완제품'){
+        update_product_data.push({
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data":{
+            "unit_price": data.unit_price
+          },
+          "update_where": {"product_code": data.product_code},
+          "rollback": "yes"
+        });
+      }
+    })
+    sendProductData["material_table-update"] = update_material_data;
+    sendProductData["module_table-update"] = update_module_data;
+    sendProductData["product_table-update"] = update_product_data;
+    console.log("sendData ::: ", sendProductData);
+
+    try {
+      let resultUpdate = await mux.Server.post({
+        path: '/api/common_rest_api/',
+        params: sendProductData
+      });
+      if (prevURL !== window.location.href) return;
+
+      if (typeof resultUpdate === 'string'){
+        resultUpdate = JSON.parse(resultUpdate);
+      }
+      if(resultUpdate['code'] == 0){
+        console.log(resultUpdate['message']);
+        return true;
+      } else {
+        if (prevURL !== window.location.href) return;
+        mux.Util.showAlert(resultUpdate['failed_info']);
+        return false;
+      }
+    } catch (error) {
+      if (prevURL !== window.location.href) return;
+      if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+        mux.Util.showAlert(error.response['data']['failed_info'].msg);
+      else
+        mux.Util.showAlert(error);
+
+      return false;
+    }
+  },
 }
 </script>
 

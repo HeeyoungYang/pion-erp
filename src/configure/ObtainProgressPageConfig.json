@@ -1,5 +1,5 @@
 {
-  "save_costs": [
+  "save_estimates": [
     {"title":"출력", "click":"print"},
     {"title":"PDF", "click":"pdf"}
   ],
