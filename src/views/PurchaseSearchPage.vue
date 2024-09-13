@@ -760,7 +760,7 @@
                               </tr>
                               <tr class="text-body-1">
                                 <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-                                <td class="order_info" style=" style='WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">{{ order_confirm_data.company_registration_number }}</td>
+                                <td class="order_info" style="WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">{{ order_confirm_data.company_registration_number }}</td>
                                 <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
                                 <td class="order_info" style="border-bottom: 0px;">{{ order_confirm_data.company_manager }}</td>
                               </tr>
@@ -1072,6 +1072,7 @@ export default {
       order_item_note_data:[],
       search_product_to_check_obtain:[],
 
+      mailData: PurchaseSearchPageConfig.default_mail_data,
       defaultMailData: PurchaseSearchPageConfig.default_mail_data,
       search_tab_items: PurchaseSearchPageConfig.search_tab_items,
       order_member_info:PurchaseSearchPageConfig.order_member_info,

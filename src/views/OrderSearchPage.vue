@@ -803,6 +803,7 @@ export default {
       searchCardInputs:OrderSearchPageConfig.searchCardInputs,
       project_code_data_headers:OrderSearchPageConfig.project_code_data_headers,
       order_detail_headers:OrderSearchPageConfig.order_detail_headers,
+      mailData: OrderSearchPageConfig.mail_data,
       defaultMailData: OrderSearchPageConfig.default_mail_data,
     }
   },

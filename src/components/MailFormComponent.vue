@@ -261,7 +261,7 @@ export default {
     titleClass: String,
     mailCardClass: String,
     addCardClass: String,
-    loginInfo: String,
+    loginInfo: Object,
     toItems: {
       type: Array,
       default: () => []

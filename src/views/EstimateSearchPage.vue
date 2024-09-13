@@ -722,6 +722,7 @@ export default {
 
       etcRequestInputs: EstimateSearchPageConfig.etcRequestInputs,
       save_estimates: EstimateSearchPageConfig.save_estimates,
+      mailData: EstimateSearchPageConfig.default_mail_data,
       defaultMailData: EstimateSearchPageConfig.default_mail_data,
       login_info: EstimateSearchPageConfig.login_info,
       searchCardInputs:EstimateSearchPageConfig.searchCardInputs,
@@ -1966,7 +1967,7 @@ export default {
               refLoadCount++;
             }
           }
-          const specification = this.$refs.calcDetailCard.$el;
+          const specification = this.$refs.calcDetailCard;
           try {
             // await mux.Util.downloadPDF(specification, 'specification');
             specificationFile = await mux.Util.getPDF(specification, '산출내역서');
