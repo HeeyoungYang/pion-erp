@@ -416,7 +416,8 @@
               </v-card>
             </v-col>
             <v-col cols="12" sm="7">
-              <v-card style="position: fixed; min-width:930px">
+              <!-- <v-card style="position: fixed; min-width:930px"> -->
+              <v-card>
                 <v-card-title>
                   <v-row>
                     <v-col align-self="center" cols="12" sm="10">

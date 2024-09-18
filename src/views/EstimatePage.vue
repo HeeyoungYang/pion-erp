@@ -763,7 +763,8 @@
               </v-tabs-items>
             </v-col>
             <v-col cols="12" sm="7">
-              <v-card style="position: fixed; max-width:920px">
+              <!-- <v-card style="position: fixed; max-width:920px"> -->
+              <v-card>
                 <v-row>
                   <v-col cols="12" sm="12">
                     <v-btn
