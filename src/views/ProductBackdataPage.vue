@@ -2302,7 +2302,7 @@ export default {
 
           let stock_data = [];
           if (stock_item.length === 0){
-            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+            stock_item.push({spot: 'EMPTY', stock_num: 0, usable_num: 0, conditions: 'E'});
           }
           stock_item.forEach(data =>{
             data.usable_num = data.stock_num
@@ -2386,7 +2386,7 @@ export default {
 
           let stock_data = [];
           if (stock_item.length === 0){
-            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+            stock_item.push({spot: 'EMPTY', stock_num: 0, usable_num: 0, conditions: 'E'});
           }
           stock_item.forEach(data =>{
             stock_data.push({
@@ -2845,7 +2845,7 @@ export default {
 
           let stock_data = [];
           if (stock_item.length === 0){
-            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+            stock_item.push({spot: 'EMPTY', stock_num: 0, usable_num: 0, conditions: 'E'});
           }
           stock_item.forEach(data =>{
             data.usable_num = data.stock_num
@@ -2970,7 +2970,7 @@ export default {
 
           let stock_data = [];
           if (stock_item.length === 0){
-            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+            stock_item.push({spot: 'EMPTY', stock_num: 0, usable_num: 0, conditions: 'E'});
           }
           stock_item.forEach(data =>{
             stock_data.push({
@@ -3484,7 +3484,7 @@ export default {
 
           let stock_data = [];
           if (stock_item.length === 0){
-            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+            stock_item.push({spot: 'EMPTY', stock_num: 0, usable_num: 0, conditions: 'E'});
           }
           stock_item.forEach(data =>{
             data.usable_num = data.stock_num
@@ -3608,7 +3608,7 @@ export default {
 
           let stock_data = [];
           if (stock_item.length === 0){
-            stock_item.push({spot: 'EMPTY', stock_num: 0, conditions: 'E'});
+            stock_item.push({spot: 'EMPTY', stock_num: 0, usable_num: 0, conditions: 'E'});
           }
           stock_item.forEach(data =>{
             stock_data.push({
