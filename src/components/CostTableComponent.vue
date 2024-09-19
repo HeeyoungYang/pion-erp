@@ -6,6 +6,7 @@
     :hide-default-footer="true"
     :item-key="itemKey"
     :class="tableClass ? tableClass : 'elevation-1'"
+    style="border:1px solid #b6b6b6"
     disable-sort
   >
 
@@ -72,7 +73,7 @@
             type="number"
             v-model="item.cost_unit_price"
           ></v-text-field>
-          {{ 
+          {{
             !costNumEditDisabled && !preventEditable && item.cost_unit_price_editable ? ''
             : mux.Number.withComma(item.cost_unit_price ? item.cost_unit_price : item.cost_total ? item.cost_total :
               (item.belong_data ? (item.belong_data.reduce((prev, cur)=>{
@@ -163,13 +164,13 @@
               type="number"
               v-model="innerItem.cost_unit_price"
             ></v-text-field>
-            {{ 
+            {{
               !costNumEditDisabled && !preventEditable && innerItem.cost_unit_price_editable ? ''
                 : mux.Number.withComma(innerItem.cost_unit_price ? innerItem.cost_unit_price : innerItem.cost_num * innerItem.cost_unit_price ? innerItem.cost_num * innerItem.cost_unit_price :
                 innerItem.belong_data ? innerItem.belong_data.reduce((prev, cur)=>{
                   return (prev += cur.cost_total ? cur.cost_total : cur.cost_num && cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price : 0);
                 }, 0) : 0
-              ) 
+              )
             }}</td>
           <td v-if="!innerItem.cost_list_colspan || innerItem.cost_list_colspan < 5 || (hideGrandChildren && (!showGrandChildsParentIndexArr || !showGrandChildsParentIndexArr.includes(index)))">{{ mux.Number.withComma(Math.round(innerItem.cost_total ? innerItem.cost_total : innerItem.cost_num * innerItem.cost_unit_price ? innerItem.cost_num * innerItem.cost_unit_price :
             innerItem.belong_data ? innerItem.belong_data.reduce((prev, cur)=>{
@@ -223,15 +224,15 @@
               type="number"
               v-model="innerBelongItem.cost_unit_price"
             ></v-text-field>
-            {{ 
+            {{
               !costNumEditDisabled && !preventEditable && innerBelongItem.cost_unit_price_editable ? ''
-              : mux.Number.withComma(innerBelongItem.cost_unit_price) 
+              : mux.Number.withComma(innerBelongItem.cost_unit_price)
             }}
           </td>
           <td v-if="!innerBelongItem.cost_list_colspan || innerBelongItem.cost_list_colspan < 5">{{ mux.Number.withComma(Math.round(innerBelongItem.cost_total ? innerBelongItem.cost_total : innerBelongItem.cost_num && innerBelongItem.cost_unit_price ? innerBelongItem.cost_num * innerBelongItem.cost_unit_price : '')) }}</td>
         </tr>
       </template>
-      <tr v-if="index === items.length-1" class="font-weight-black amber lighten-5">
+      <tr v-if="index === items.length-1" class="font-weight-black amber lighten-5" style="font-weight: bold; background-color: #fff8e1;">
         <td colspan="5" style="font-size: 15px;">합계 (TOTAL)</td>
         <td style="font-size: 15px;">{{ mux.Number.withComma(Math.round(items.reduce((prev, cur)=>{
           return (prev += cur.cost_total ? cur.cost_total : cur.cost_num * cur.cost_unit_price ? cur.cost_num * cur.cost_unit_price :
