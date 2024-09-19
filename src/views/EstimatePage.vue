@@ -149,36 +149,6 @@
                       </div>
                       <div class="estimate_content">
                         <div style="width:40%; float:left;">
-                          <!-- <v-simple-table style="margin-bottom:12px;">
-                            <template v-slot:default>
-                              <tr>
-                                <td  style="border-bottom:2px solid #b4b4b4; font-size: 15px; padding: 0px 10px 5px 10px;height: 35px!important;" >
-                                  <p style="font-weight:bold;display: inline-block; float: left; margin-bottom: 0px;">{{ clickedProductCost.company_name ? clickedProductCost.company_name : '' }}</p>
-                                  <p style="display: inline-block; float:right; margin-bottom:0px">귀하</p>
-                                </td>
-                              </tr>
-                            </template>
-                          </v-simple-table>
-                          <v-simple-table>
-                            <template v-slot:default>
-                              <tr>
-                                <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">발행일</td>
-                                <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.issue_date ? mux.Date.format(clickedProductCost.issue_date, 'yyyy-MM-dd') : '' }}</td>
-                              </tr>
-                              <tr>
-                                <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역명</td>
-                                <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_name ? clickedProductCost.service_name : '' }}</td>
-                              </tr>
-                              <tr>
-                                <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역기간</td>
-                                <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_period ? clickedProductCost.service_period : '' }}</td>
-                              </tr>
-                              <tr>
-                                <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">유효기간</td>
-                                <td class="estimate_info"> 발행일로부터 30일 이내 </td>
-                              </tr>
-                            </template>
-                          </v-simple-table> -->
                           <table style="border-spacing: 0px; width: 100%; margin-bottom:10px">
                             <tr>
                               <td  style="border-bottom:2px solid #b4b4b4; font-size: 15px; padding: 0px 10px 5px 10px;" >

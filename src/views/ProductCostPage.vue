@@ -104,41 +104,80 @@
                 <!-- 원가 계산서 -->
                 <v-tab-item>
                   <v-card ref="calcCostCard">
-                    <v-menu offset-y>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                          color="success"
-                          fab
-                          x-small
-                          class="float-right dont_print"
-                          elevation="0"
-                          v-bind="attrs"
-                          v-on="on"
-                          data-html2canvas-ignore="true"
-                        >
-                          <v-icon
-                            small
-                          >mdi-content-save</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          v-for="(item, index) in save_costs"
-                          :key="index"
-                          dense
-                          @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                                  : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
-                        >
-                          <v-list-item-title>{{ item.title }}</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                    <v-card-title>
-                      <v-row>
+                    <div style="text-align: right;margin-bottom:10px">
+                      <v-menu offset-y>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                            color="success"
+                            fab
+                            x-small
+                            class="dont_print"
+                            elevation="0"
+                            v-bind="attrs"
+                            v-on="on"
+                            data-html2canvas-ignore="true"
+                          >
+                            <v-icon
+                              small
+                            >mdi-content-save</v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            v-for="(item, index) in save_costs"
+                            :key="index"
+                            dense
+                            @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                                    : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                          >
+                            <v-list-item-title>{{ item.title }}</v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </div>
+                    <div  ref="calcCostCard">
+                      <div class="cost_search_top">
+                        <div style="float:left">
+                          <p style="font-weight: bold; font-size: 23px; margin-bottom:10px">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }}
+                          </p>
+                            <table style=" border-spacing: 0px;" class="mt-1">
+                              <tr class="text-body-1">
+                                <td class="cost_search_info info_title pb-0" style="border-left:1px solid #b6b6b6">
+                                  <span style="display: block;margin-top:-3px">
+                                    작성자
+                                  </span>
+                                </td>
+                                <td class="cost_search_info pb-0">
+                                  <span style="display: block;margin-top:-3px">
+                                    {{ clickedProductCost.given_name ? clickedProductCost.given_name.trim() : '' }}
+                                  </span>
+                                </td>
+                                <td class="cost_search_info info_title pb-0">
+                                  <span style="display: block;margin-top:-3px">
+                                    작성일
+                                  </span>
+                                </td>
+                                <td class="cost_search_info pb-0">
+                                  <span style="display: block;margin-top:-3px">
+                                    {{ clickedProductCost.created_time ? clickedProductCost.created_time : '' }}
+                                  </span>
+                                </td>
+                              </tr>
+                            </table>
+                        </div>
+                        <img
+                          alt="Pionelectric Logo"
+                          contain
+                          src="../assets/img/pion_logo.png"
+                          transition="scale-transition"
+                          width="140"
+                          style="margin-top:10px; float:right"
+                        />
+                      </div>
+                      <!-- <v-row>
                         <v-col align-self="center" cols="12" sm="10">
                           <p style="font-weight: bold; font-size: 23px; margin-bottom:10px">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }}
                           </p>
-                            <!-- <span>2024-02-29</span> -->
                             <table style=" border-spacing: 0px;" class="mt-1">
                               <tr class="text-body-1">
                                 <td class="cost_search_info info_title" style="border-left:1px solid #b6b6b6">작성자</td>
@@ -159,9 +198,8 @@
                             style="margin-top:10px"
                           />
                         </v-col>
-                      </v-row>
-                    </v-card-title>
-                    <v-card-text>
+                      </v-row> -->
+
                       <CostTableComponent
                         :headers="survey_cost_headers"
                         :items="calc_cost_detail_data"
@@ -173,7 +211,7 @@
                         :show-childs-parent-index-arr="[0]"
                         class="cost_table_border"
                       />
-                    </v-card-text>
+                    </div>
                   </v-card>
                 </v-tab-item>
 
@@ -2317,6 +2355,8 @@ export default {
 .tab_search .v-tabs-bar{height: 30px;}
 .tab_search .v-tab{background-color: white; padding: 0px;border-radius: 10px 10px 0px 0px;}
 .tab_search .v-tab--active{background-color: #1976d2 ; color: white; font-weight: bold;}
+.cost_search_top{margin-bottom: 20px;width: 100%}
+.cost_search_top::after{content: ''; display: block; clear: both;}
 .cost_search_info{border:1px solid #b6b6b6; padding: 5px 15px; font-size: 13px; border-left: 0px;}
 .info_title{background-color: #efefef;}
 .labor_cost_list th{border-right: 1px solid #b6b6b6;}
