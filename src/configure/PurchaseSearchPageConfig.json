@@ -3,7 +3,7 @@
     "요청 내역", "견적서"
   ],
   "searchCardInputs":[
-    {"label":"승인", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All","미확인", "미승인", "승인", "반려"]},
+    {"label":"승인", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value":"All", "list":["All","요청", "진행중", "반려", "발주완료"]},
     {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"견적 업체명", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"관리코드", "col":"12", "sm":"4", "lg":"3", "value": ""},

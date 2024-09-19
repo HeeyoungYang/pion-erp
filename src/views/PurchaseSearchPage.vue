@@ -1562,9 +1562,12 @@ export default {
     async searchButton(){
       mux.Util.showLoading();
       let searchCode = this.search_by_code;
+      let setApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
       let searchApprovalPhase = this.searchCardInputs.find(x=>x.label === '승인').value;
       if (searchApprovalPhase === 'All')
         searchApprovalPhase = '';
+      else if (searchApprovalPhase === '발주완료')
+        searchApprovalPhase = '진행중';
       let searchProjectCode = this.searchCardInputs.find(x=>x.label === '프로젝트 코드').value;
       if (searchProjectCode)
         searchProjectCode = searchProjectCode.trim();
@@ -1645,6 +1648,12 @@ export default {
           data.order_situation = check_unordered + '건 미발주';
         }
 
+      }
+
+      if(setApprovalPhase === '발주완료'){
+        this.purchase_data = this.purchase_data.filter(x => x.approval_phase === '발주완료');
+      }else if(setApprovalPhase === '진행중'){
+        this.purchase_data = this.purchase_data.filter(x => x.approval_phase === '진행중');
       }
       mux.Util.hideLoading();
     },
