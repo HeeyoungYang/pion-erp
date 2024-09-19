@@ -221,7 +221,7 @@
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
-                          <p class="text-h5 black--text mb-0 font-weight-black"  style="font-weight: bold;">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 산출내역서</p>
+                          <h3 style="font-weight: black; font-size: 23px; margin-bottom:10px">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 산출내역서</h3>
                         </v-col>
 
                         <v-col v-show="edit_buttons_show" cols="12" sm="2">
@@ -325,7 +325,7 @@
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
-                          <p class="text-h5 font-weight-black black--text mb-0">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 노무비 산출</p>
+                          <h3 style="font-weight: black; font-size: 23px; margin-bottom:10px">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 노무비 산출</h3>
                         </v-col>
                         <v-col v-show="edit_buttons_show" cols="12" sm="2">
                           <v-menu offset-y>
@@ -543,7 +543,7 @@
             <v-card-title>
             </v-card-title>
             <v-card-text>
-              <p class="text-h5 font-weight-black black--text mb-5">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 노무비 산출</p>
+              <h3 style="font-weight: black; font-size: 23px; margin-bottom:10px">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 노무비 산출</h3>
               <v-data-table
                 dense
                 :headers="labor_cost_headers"

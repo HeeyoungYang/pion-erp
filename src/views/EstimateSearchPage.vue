@@ -247,9 +247,9 @@
           </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab_search" class="pb-1">
-          <!-- 원가 계산서 -->
+          <!-- 견적서 -->
           <v-tab-item>
-            <v-card ref="calcCostCard" style="border: 1px solid #ccc; overflow-x: auto" elevation="0">
+            <v-card style="border: 1px solid #ccc; overflow-x: auto" elevation="0">
               <v-row style="max-width: 868.5px;" class="dont_print" data-html2canvas-ignore="true">
                 <v-col align-self="center" cols="12" sm="12" class="dont_print" data-html2canvas-ignore="true">
                   <v-checkbox
@@ -340,7 +340,7 @@
 
                 </v-col>
               </v-row>
-              <v-card-title style="max-width: 868.5px;">
+              <!-- <v-card-title style="max-width: 868.5px;">
                 <v-row
                   class="px-3"
                   style="background: #efefef;"
@@ -361,100 +361,239 @@
                     />
                   </v-col>
                 </v-row>
-              </v-card-title>
-              <v-card-text style="max-width: 868.5px;">
-                <v-row class="mt-5" justify="space-between">
-                  <v-col align-self="center" cols="12" sm="5" class="pb-0">
-                    <v-row style="border-bottom:1px solid #b4b4b4; font-size: 15px;" class="mb-4">
-                      <v-col cols="12" sm="10" class="font-weight-bold">{{ clickedProductCost.company_name ? clickedProductCost.company_name : '' }}</v-col>
-                      <v-col cols="12" sm="2">귀하</v-col>
-                    </v-row>
-                    <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
-                      <tr class="text-body-1">
-                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">발행일</td>
-                        <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.issue_date ? mux.Date.format(clickedProductCost.issue_date, 'yyyy-MM-dd') : '' }}</td>
-                      </tr>
+              </v-card-title> -->
+              <!-- <v-card-text style="max-width: 868.5px;"  ref="calcCostCard"> -->
+              <div ref="calcCostCard">
+                <div
+                  class="estimate_top"
+                >
+                  <p>견적서</p>
+                  <img
+                    alt="Pionelectric Logo"
+                    class="float-right"
+                    contain
+                    src="../assets/img/pion_logo.png"
+                    transition="scale-transition"
+                    width="140"
+                  />
+                </div>
+                <div class="estimate_content">
+                  <div style="width:40%; float:left;">
+                    <table style="border-spacing: 0px; width: 100%; margin-bottom:10px">
                       <tr>
-                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역명</td>
-                        <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_name ? clickedProductCost.service_name : '' }}</td>
-                      </tr>
-                      <tr>
-                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">용역기간</td>
-                        <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_period ? clickedProductCost.service_period : '' }}</td>
-                      </tr>
-                      <tr>
-                        <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">유효기간</td>
-                        <td class="estimate_info"> 발행일로부터 30일 이내 </td>
+                        <td  style="border-bottom:2px solid #b4b4b4; font-size: 15px; padding: 0px 10px 5px 10px;" >
+                          <p style="font-weight:bold;display: inline-block; float: left; margin-bottom: 0px;">{{ clickedProductCost.company_name ? clickedProductCost.company_name : '' }}</p>
+                          <p style="display: inline-block; float:right; margin-bottom:0px">귀하</p>
+                        </td>
                       </tr>
                     </table>
-                    <p style=" font-size: 12px;" class="mt-3 text-center font-weight-bold">하기와 같이 견적 드립니다.</p>
-                  </v-col>
-                  <v-col align-self="center" cols="12" sm="6" style="position: relative;" class="pb-0">
+                    <table style=" border-spacing: 0px; width: 100%;">
+                      <tr>
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <span style="display: block;margin-top:-2px">
+                            발행일
+                          </span>
+                        </td>
+                        <td class="estimate_info" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            {{ clickedProductCost.issue_date ? mux.Date.format(clickedProductCost.issue_date, 'yyyy-MM-dd') : '' }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <span style="display: block;margin-top:-2px">
+                            용역명
+                          </span>
+                        </td>
+                        <td class="estimate_info" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            {{ clickedProductCost.service_name ? clickedProductCost.service_name : '' }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <span style="display: block;margin-top:-2px">
+                            용역기간
+                          </span>
+                        </td>
+                        <td class="estimate_info" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            {{ clickedProductCost.service_period ? clickedProductCost.service_period : '' }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                          <span style="display: block;margin-top:-2px">
+                            유효기간
+                          </span>
+                        </td>
+                        <td class="estimate_info">
+                          <span style="display: block;margin-top:-2px">
+                            발행일로부터 30일 이내
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div style="width:50%; position:relative; float:right;">
                     <v-img
                       alt="직인"
                       contain
                       src="../assets/img/pion_stamp.png"
                       transition="scale-transition"
                       width="40"
-                      style="position: absolute; right:25px; top:25px"
+                      style="position: absolute; right:10px; top:25px"
                     />
-                    <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
+                    <table style=" border-spacing: 0px; width: 100%;">
                       <tr>
-                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-                        <td colspan="3" class="estimate_info" style="border-bottom: 0px;">851 - 86 - 00038</td>
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <span style="display: block;margin-top:-2px">
+                            등록번호
+                          </span>
+                        </td>
+                        <td colspan="3" class="estimate_info" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            851 - 86 - 00038
+                          </span>
+                        </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">상호</td>
-                        <td class="estimate_info" style="border-bottom: 0px;">파이온일렉트릭(주)</td>
-                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">대표자</td>
-                        <td class="estimate_info" style="border-bottom: 0px;">윤광희</td>
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <span style="display: block;margin-top:-2px">
+                            상호
+                          </span>
+                        </td>
+                        <td class="estimate_info" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            파이온일렉트릭(주)
+                          </span>
+                        </td>
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            대표자
+                          </span>
+                        </td>
+                        <td class="estimate_info" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            윤광희
+                          </span>
+                        </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
-                        <td colspan="3" class="estimate_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호 (연세대학교 공학원)</td>
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <span style="display: block;margin-top:-2px">
+                            주소
+                          </span>
+                        </td>
+                        <td colspan="3" class="estimate_info" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            서울특별시 서대문구 연세로 50, 116호 (연세대학교 공학원)
+                          </span>
+                        </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업태</td>
-                        <td class="estimate_info" style="border-bottom: 0px;">제조업</td>
-                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">종목</td>
-                        <td class="estimate_info" style="border-bottom: 0px;">전력전자기기</td>
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <span style="display: block;margin-top:-2px">
+                            업태
+                          </span>
+                        </td>
+                        <td class="estimate_info" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            제조업
+                          </span>
+                        </td>
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            종목
+                          </span>
+                        </td>
+                        <td class="estimate_info" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            전력전자기기
+                          </span>
+                        </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표전화</td>
-                        <td class="estimate_info" style="border-bottom: 0px;">070-5096-4179</td>
-                        <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;">팩스</td>
-                        <td class="estimate_info" style="border-bottom: 0px;">0505-300-4179</td>
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <span style="display: block;margin-top:-2px">
+                            대표전화
+                          </span>
+                        </td>
+                        <td class="estimate_info" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            070-5096-4179
+                          </span>
+                        </td>
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            팩스
+                          </span>
+                        </td>
+                        <td class="estimate_info" style="border-bottom: 0px;">
+                          <span style="display: block;margin-top:-2px">
+                            0505-300-4179
+                          </span>
+                        </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
-                        <td class="estimate_info" >{{ clickedProductCost.given_name ? clickedProductCost.given_name : '' }}</td>
-                        <td class="estimate_info estimate_title text-center" >연락처</td>
-                        <td class="estimate_info">{{ clickedProductCost.office_phone_number ? clickedProductCost.office_phone_number : '' }}</td>
+                        <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                          <span style="display: block;margin-top:-2px">
+                            담당자
+                          </span>
+                        </td>
+                        <td class="estimate_info" >
+                          <span style="display: block;margin-top:-2px">
+                            {{ clickedProductCost.given_name ? clickedProductCost.given_name : '' }}
+                          </span>
+                        </td>
+                        <td class="estimate_info estimate_title" >
+                          <span style="display: block;margin-top:-2px">
+                            연락처
+                          </span>
+                        </td>
+                        <td class="estimate_info">
+                          <span style="display: block;margin-top:-2px">
+                            {{ clickedProductCost.office_phone_number ? clickedProductCost.office_phone_number : '' }}
+                          </span>
+                        </td>
                       </tr>
                     </table>
-                  </v-col>
-                  <v-col cols="12" sm="12" class="pt-0">
-                    <table style=" border-spacing: 0px; width: 100%;" class="mb-5">
+                  </div>
+                </div>
+                <div class="estimate_content" style="margin-top:10px">
+                  <div>
+                    <p style=" font-size: 11px;margin-top:5px;font-weight:bold;margin-bottom:0px">하기와 같이 견적 드립니다.</p>
+                    <table style=" border-spacing: 0px; width: 100%; margin: 5px 0px 15px">
                       <tr>
-                        <td class="estimate_price_info estimate_price_title text-center">일금</td>
-                        <td class="estimate_price_info"><span class="font-weight-bold">{{ !total_cost || isNaN(total_cost) ? '' : mux.Number.toKorean(total_cost, ' 원정') }} </span>{{ !total_cost || isNaN(total_cost) ? '' : `(￦ ${mux.Number.withComma(total_cost)})` }} <span style="font-size:11px" class="pl-10">* 부가가치세(VAT) 별도</span></td>
+                        <td class="estimate_price_info estimate_price_title">
+                          <span class="mt-1" style="display:block; margin-top:-2px;">
+                            일금
+                          </span>
+                        </td>
+                        <td class="estimate_price_info">
+                          <span class="mt-1" style="font-weight:bold; display:block; margin-top:-2px;float:left">{{ !total_cost || isNaN(total_cost) ? '' : mux.Number.toKorean(total_cost, ' 원정') }} </span>
+                          <span class="mt-1" style="display:block; margin-top:-2px;float:left">{{ !total_cost || isNaN(total_cost) ? '' : `(￦ ${mux.Number.withComma(total_cost)})` }}</span>
+                          <span class="mt-2" style="font-size:11px; padding-left:30px;display:block; margin-top:3px;float:left">* 부가가치세(VAT) 별도</span></td>
                       </tr>
                     </table>
-                  </v-col>
-                </v-row>
-                <CostTableComponent
-                  :headers="survey_cost_headers"
-                  :items="estimate_detail_data"
-                  item-key="product_code"
-                  :childTrStyle="'background-color:#efefef'"
-                  prevent-editable
-                  prevent-button
-                  hide-children
-                  :show-childs-parent-index-arr="show_childs_parent_index_arr"
-                  :show-grand-childs-parent-index-arr="show_grand_childs_parent_index_arr"
-                  class="cost_table_border"
-                />
-              </v-card-text>
+                  </div>
+                  <CostTableComponent
+                    :headers="survey_cost_headers"
+                    :items="estimate_detail_data"
+                    item-key="product_code"
+                    :childTrStyle="'background-color:#efefef'"
+                    prevent-editable
+                    prevent-button
+                    hide-children
+                    :show-childs-parent-index-arr="show_childs_parent_index_arr"
+                    :show-grand-childs-parent-index-arr="show_grand_childs_parent_index_arr"
+                    class="cost_table_border"
+                  />
+                </div>
+              </div>
             </v-card>
             <v-row class="mt-3">
               <v-col cols="12" sm="4">
