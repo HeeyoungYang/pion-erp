@@ -35,13 +35,45 @@
                   </v-chip>
 
                   <v-chip
-                    v-if="item.approval_phase !== '요청'"
+                    v-if="item.approval_phase !== '요청' && item.approval_phase !== '반려'"
                     class="ma-2"
                     small
                     :color="item.approval_phase == '진행중' ? 'amber lighten-4' : 'primary'"
                   >
                     {{ item.approval_phase }}
                   </v-chip>
+
+                  <v-menu
+                    v-if="item.approval_phase == '반려'"
+                    open-on-hover
+                    :close-on-content-click="false"
+                    :nudge-width="150"
+                    offset-x
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+
+                      <v-chip
+                        class="ma-2"
+                        small
+                        color="error"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        {{ item.approval_phase }}
+                      </v-chip>
+                    </template>
+
+                    <v-card class="pa-0">
+                      <v-list class="pa-0">
+                        <v-list-item class="pa-0">
+                          <v-list-item-content class="pa-3">
+                            <v-list-item-subtitle class="error--text font-weight-black">[ 반려사유 ]</v-list-item-subtitle>
+                            <v-list-item-title>{{ item.rejecter }} : {{ item.reject_reason }}</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
                   <!-- 확인 또는 승인자에 해당될 경우 노출되는 list형 chip -->
                   <v-menu
                     v-if="(item.approval_phase == '요청' && item.approver_id == userID)"
@@ -65,10 +97,56 @@
                       <v-list class="pa-0">
                         <v-list-item class="pa-0">
                           <v-list-item-content class="pa-6">
-                            <v-row style="width: 250px;">
-                              <v-col cols="12" sm="12" class="pb-0 error--text font-weight-black">진행중으로 상태가 변경됩니다.</v-col>
-                              <v-col cols="12" sm="8" align-self="center">변경하시겠습니까?</v-col>
-                              <v-col cols="12" sm="4">
+                            <v-radio-group
+                              v-model="approve_radio"
+                              dense
+                              hide-details
+                              row
+                              class="mt-0"
+                            >
+                              <v-radio
+                                label="구매 진행"
+                                :value=true
+                              ></v-radio>
+                              <v-radio
+                                label="반려"
+                                :value=false
+                              ></v-radio>
+                            </v-radio-group>
+                            <v-row
+                              v-if="!approve_radio"
+                              style="width: 220px;"
+                              class="mt-2"
+                            >
+                              <v-col cols="12" sm="10" align-self="center">
+                                <v-text-field
+                                  v-model="reject_reason"
+                                  dense
+                                  hide-details
+                                  filled
+                                  label="사유"
+                                ></v-text-field>
+                              </v-col>
+                              <v-col cols="12" sm="2" align-self="center">
+                                <v-btn
+                                  small
+                                  color="error"
+                                  @click="returnApprovalPhase(item, reject_reason)"
+                                >
+                                    저장
+                                </v-btn>
+                              </v-col>
+                            </v-row>
+                            <v-row
+                              v-if="approve_radio"
+                              style="width: 150px;"
+                              class="mt-1"
+                            >
+                              <v-col cols="12" sm="9" align-self="center">
+                                <span class="error--text font-weight-black">진행중으로 상태가 변경됩니다.</span><br>
+                                변경하시겠습니까?
+                              </v-col>
+                              <v-col cols="12" sm="3">
                                 <v-btn
                                   small
                                   color="primary"
@@ -339,6 +417,9 @@ export default {
     },
     changeApprovalPhase(item){
       this.$emit("setApprovalPhase", item);
+    },
+    returnApprovalPhase(item,reason){
+      this.$emit("rejectApprovalPhase", item, reason);
     },
     changeCanclePhase(item, change, reason){
       this.$emit("setCanclePhase", item, change, reason);

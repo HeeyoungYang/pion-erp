@@ -60,6 +60,7 @@
                 :loginId="login_info.id"
                 @clickTr="clickApproveData"
                 @setApprovalPhase="setApprovalPhase"
+                @rejectApprovalPhase="rejectApprovalPhase"
               />
             </div>
           </CardComponent>
@@ -2043,6 +2044,198 @@ export default {
         else
           mux.Util.showAlert(error);
       }
+    },
+    async rejectApprovalPhase(item, reason){
+
+      if(reason === undefined || reason === null || reason === ''){
+        mux.Util.showAlert('반려 사유를 입력해주세요.');
+        return;
+      }
+      const currDate = new Date();
+      const prevURL = window.location.href;
+
+      mux.Util.showLoading();
+      //구매 승인 단계 업데이트
+      let purchase_data = {};
+      purchase_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+      purchase_data.reject_reason = reason;
+      purchase_data.rejecter = this.login_info.name;
+      purchase_data.approval_phase = '반려';
+
+      let sendData = {};
+
+      sendData["purchase_confirmation_table-update"] = [{
+        "user_info": {
+          "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+          "role": "modifier"
+        },
+        "data": purchase_data,
+        "update_where": {"code": item.code},
+        "rollback": "yes"
+      }];
+
+      //설계와 연결되어있는 경우 (=cost_calc_code 가지고 있는 경우) 설계 승인 단계 업데이트
+      if(item.cost_calc_code !== null){
+        let design_production_data = {};
+        design_production_data.rejected_date = mux.Date.format(currDate, 'yyyy-MM-dd HH:mm:ss');
+        design_production_data.reject_reason = reason;
+        design_production_data.rejecter = this.login_info.name;
+        design_production_data.approval_phase = '구매반려';
+        sendData["design_confirmation_table-update"] = [{
+          "user_info": {
+            "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            "role": "modifier"
+          },
+          "data": design_production_data,
+          "update_where": {"cost_calc_code": item.cost_calc_code},
+          "rollback": "yes"
+        }];
+      }else if(item.cost_calc_code === null && item.product_code !== null){
+        //선주문의 경우 (=cost_calc_code는 없지만 product_code를 가지고 있는 경우) 사용가능 수량 조정
+        let bom_data = item.belong_data;
+        let update_stock_data = [];
+        let bom_num_calc = [];
+        for(let bd=0; bd<bom_data.length; bd++){
+          let bom = bom_data[bd];
+          if(bom_num_calc.length === 0){
+            bom_num_calc.push({"item_code": bom.item_code, "num": Number(bom.purchase_num)});
+          }else{
+            if(bom_num_calc.some(x => x.item_code === bom.item_code)){
+              bom_num_calc.find(x => x.item_code === bom.item_code).num += Number(bom.purchase_num);
+            }else{
+              bom_num_calc.push({"item_code": bom.item_code, "num": Number(bom.purchase_num)});
+            }
+          }
+        }
+        console.log(bom_num_calc);
+
+        for(let calc =0; calc<bom_num_calc.length; calc++){
+          let bomCalc = bom_num_calc[calc];
+          let stock_check = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: [
+              {
+                "product_table.product_code": bomCalc.item_code,
+                "module_table.module_code": bomCalc.item_code,
+                "material_table.material_code": bomCalc.item_code,
+                "material_table.directly_written": 0,
+              }
+            ],
+            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof stock_check === 'string'){
+            stock_check = JSON.parse(stock_check);
+          }
+          if(stock_check['code'] == 0){
+            if(stock_check['data'].length > 0){
+              let searched_stock_data = stock_check['data'][0];
+              let searched_usable_num = searched_stock_data.usable_num;
+              let searched_spot = searched_stock_data.spot;
+              update_stock_data.push({
+                "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "modifier"
+                  },
+                  "data":{
+                    "usable_num": Number(searched_usable_num) + Number(bomCalc.num)
+                  },
+                  "update_where": {"product_code": bomCalc.item_code, "spot": searched_spot},
+                  "rollback": "yes"
+              })
+            }
+          }
+        }
+        sendData["stock_table-update"] = update_stock_data;
+      }
+      console.log("sendData ::: ", sendData);
+
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: sendData
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0){
+          mux.Util.showAlert('반려 처리가 완료되었습니다', '반려', 3000);
+          //메일 알림 관련
+          let mailTo = [];
+          mailTo.push(item.creater);
+
+          // 메일 본문 내용
+          let content=`
+            <html>
+              <body>
+                <div style="width: 600px; border:1px solid #aaaaaa; padding:30px 40px">
+                  <h2 style="text-align: center; color:#13428a">구매 반려 알림</h2>
+                  <table style="width: 100%;border-spacing: 10px 10px;">
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">프로젝트 코드</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.project_code === '' ? '-' : item.project_code}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">비고</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.note === '' ? '-' : item.note}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">신청자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.given_name}</td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight:bold; font-size:18px; padding:10px; text-align:center; background:#cae3eccc">구매담당자</td>
+                      <td style="font-size:18px; padding-left:20px; border:1px solid #b8b8b8cc">${item.approver}</td>
+                    </tr>
+                  </table>
+                  <a style="color: white; text-decoration:none"href="${prevURL.substring(0,prevURL.lastIndexOf('/'))}/purchase-search?code=${item.code}">
+                    <p style="cursor:pointer; background: #13428a;color: white;font-weight: bold;padding: 13px;border-radius: 40px;font-size: 16px;text-align: center;margin-top: 25px; margin-bottom: 40px;">
+                      확인하기
+                    </p>
+                  </a>
+                </div>
+              </body>
+            </html>
+          `;
+          try {
+            let sendEmailAlam = await mux.Server.post({
+              path: '/api/send_email/',
+              to_addrs: mailTo,
+              subject: "구매 반려 알림",
+              content: content
+            });
+            if (prevURL !== window.location.href) return;
+            if(sendEmailAlam['code'] == 0){
+              console.log(sendEmailAlam['message']);
+            } else {
+              if (prevURL !== window.location.href) return;
+              mux.Util.showAlert(sendEmailAlam['failed_info']);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
+            else
+              mux.Util.showAlert(error);
+          }
+        } else {
+          if (prevURL !== window.location.href) return;
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+
+      mux.Util.hideLoading();
+
     },
     async changePurchaseEstimatePhase(){
       // 견적 상태 변경
