@@ -699,7 +699,7 @@
                   :items="calc_cost_detail_data"
                   item-key="product_code"
                   trStyle="background-color:#efefef; "
-                  trClass="font-weight-black estimate_title"
+                  trClass="font-weight-black cost_table_tr"
                   :cost-num-edit-disabled="true"
                   class="cost_table_border print_cost_table"
                 >

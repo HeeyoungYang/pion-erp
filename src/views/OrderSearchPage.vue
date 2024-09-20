@@ -225,39 +225,46 @@
           </v-btn>
         </v-col>
       </v-row>
-      <v-row
+      <div
         v-if="orderPurchase"
-        style="border: 1px solid #c3c3c3;"
-          class="pa-4"
+        style="border: 1px solid #c3c3c3;padding: 25px;"
       >
-        <v-col
+        <div
           ref="orderForm"
-          cols="12"
-          sm="12"
         >
           <!-- <orderPurchaseComponent
             ref="orderPurchaseComponent"
           /> -->
           <div>
             <p class="print_doc_title">발주서</p>
-            <v-row style="margin-top:15px">
-              <v-col cols="12" sm="7">
+            <div style="margin-top:15px">
+              <div class="order_doc_top">
                 <img
                   alt="Pionelectric Logo"
                   class="shrink mr-2"
                   contain
                   src="../assets/img/pion_logo.png"
                   transition="scale-transition"
-                  style="margin-top:10px; width: 150px;"
+                  style="margin-top:10px; width: 150px;float:left"
                 />
-              </v-col>
-              <v-col cols="12" sm="5">
-                <table style="border-spacing: 0;width: 100%; text-align: center;">
+                <table style="border-spacing: 0; width:300px; text-align: center;float:right">
                     <tr>
                     <td rowspan="3" class="approve_list_title">결재</td>
-                    <td class="approve_list_title approve_list_title_border">작성</td>
-                    <td class="approve_list_title approve_list_title_border">확인</td>
-                    <td class="approve_list_title approve_list_title_border">승인</td>
+                    <td class="approve_list_title approve_list_title_border">
+                      <span style="display: block;margin-top:-2px">
+                        작성
+                      </span>
+                    </td>
+                    <td class="approve_list_title approve_list_title_border">
+                      <span style="display: block;margin-top:-2px">
+                        확인
+                      </span>
+                    </td>
+                    <td class="approve_list_title approve_list_title_border">
+                      <span style="display: block;margin-top:-2px">
+                        승인
+                      </span>
+                    </td>
                   </tr>
                   <tr>
                     <td class="approve_list_name">{{ order_form_info.given_name }}</td>
@@ -265,106 +272,293 @@
                     <td class="approve_list_name">{{ order_form_info.approver }}</td>
                   </tr>
                   <tr>
-                    <td class="approve_list_date">{{ order_form_info.created_time.split(' ')[0] }}</td>
-                    <td class="approve_list_date">{{ order_form_info.checked_date.split(' ')[0] }}</td>
-                    <td class="approve_list_date">{{ order_form_info.approved_date === '' ? '미승인' : order_form_info.approved_date.split(' ')[0] }}</td>
+                    <td class="approve_list_date">
+                      <span style="display: block;margin-top:-3px">
+                        {{ order_form_info.created_time.split(' ')[0] }}
+                      </span>
+                    </td>
+                    <td class="approve_list_date">
+                      <span style="display: block;margin-top:-3px">
+                        {{ order_form_info.checked_date.split(' ')[0] }}
+                      </span>
+                    </td>
+                    <td class="approve_list_date">
+                      <span style="display: block;margin-top:-3px">
+                        {{ order_form_info.approved_date === '' ? '미승인' : order_form_info.approved_date.split(' ')[0] }}
+                      </span>
+                    </td>
                   </tr>
                 </table>
-              </v-col>
-
-              <v-col cols="12" sm="12" style="padding-top:0px;padding-bottom:0px">
+              </div>
+              <div style="margin-bottom:10px">
                 <table style="border-spacing: 0px; width: 100%;">
                   <tr>
-                    <td class="order_info order_title text-center" style="width:9%; border-left:1px solid #b6b6b6">관리번호</td>
-                    <td class="order_info" style="width:24.3%;">{{ order_form_info.code }}</td>
-                    <td class="order_info order_title text-center" style="width:9%;" >발행일</td>
-                    <td class="order_info" style="width:24.3%;">{{ order_form_info.order_date === null ? '미발행' : order_form_info.order_date }}</td>
-                    <td class="order_info order_title text-center" style="width:9%;">납기일</td>
-                    <td class="order_info" style="width:24.3%;">{{ order_form_info.due_date }}</td>
+                    <td class="order_info order_title " style="border-left:1px solid #b6b6b6">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        관리번호
+                      </span>
+                    </td>
+                    <td class="order_info">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.code }}
+                      </span>
+                    </td>
+                    <td class="order_info order_title " >
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        발행일
+                      </span>
+                    </td>
+                    <td class="order_info">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.order_date === null ? '미발행' : order_form_info.order_date }}
+                      </span>
+                    </td>
+                    <td class="order_info order_title " >
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        납기일
+                      </span>
+                    </td>
+                    <td class="order_info">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.due_date }}
+                      </span>
+                    </td>
                   </tr>
                 </table>
-              </v-col>
+              </div>
 
-              <v-col cols="12" sm="6" style="padding-bottom:0px">
-                <table style="border-spacing: 0px; width: 100%; ">
+              <div class="order_doc_top">
+                <table style="border-spacing: 0px; width: 49%; float:left ">
+                  <tr>
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        수신업체
+                      </span>
+                    </td>
+                    <td colspan="3" class="order_info" style="border-bottom: 0px;">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.company_name }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        등록번호
+                      </span>
+                    </td>
+                    <td class="order_info" style="width:32%; WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.company_registration_number }}
+                      </span>
+                    </td>
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        대표자
+                      </span>
+                    </td>
+                    <td class="order_info" style="width:32%; border-bottom: 0px;">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.company_manager }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        주소
+                      </span>
+                    </td>
+                    <td colspan="3" class="order_info" style="border-bottom: 0px;">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.company_address }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        전화
+                      </span>
+                    </td>
+                    <td class="order_info" style="width:32%; border-bottom: 0px;border-right: 0px;">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.company_phone }}
+                      </span>
+                    </td>
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        팩스
+                      </span>
+                    </td>
+                    <td class="order_info" style="width:32%; border-bottom: 0px;">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.company_fax }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        결제조건
+                      </span>
+                    </td>
+                    <td class="order_info" style="width:32%; border-bottom: 0px;border-right: 0px;">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.payment_terms }}
+                      </span>
+                    </td>
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        프로젝트
+                      </span>
+                    </td>
+                    <td class="order_info" style="width:32%; border-bottom: 0px;">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.company_registration_number }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="order_info order_title" style="border-left:1px solid #b6b6b6">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        계좌정보
+                      </span>
+                    </td>
+                    <td colspan="3" class="order_info">
+                      <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                        {{ order_form_info.account_number }}
+                      </span>
+                    </td>
+                  </tr>
+                </table>
 
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">수신업체</td>
-                    <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_name }}</td>
-                  </tr>
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-                    <td class="order_info" style="width:32%; WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">{{ order_form_info.company_registration_number }}</td>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
-                    <td class="order_info" style="width:32%; border-bottom: 0px;">{{ order_form_info.company_manager }}</td>
-                  </tr>
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
-                    <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ order_form_info.company_address }}</td>
-                  </tr>
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">전화</td>
-                    <td class="order_info" style="width:32%; border-bottom: 0px;border-right: 0px;">{{ order_form_info.company_phone }}</td>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">팩스</td>
-                    <td class="order_info" style="width:32%; border-bottom: 0px;">{{ order_form_info.company_fax }}</td>
-                  </tr>
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">결제조건</td>
-                    <td class="order_info" style="width:32%; border-bottom: 0px;border-right: 0px;">{{ order_form_info.payment_terms }}</td>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트</td>
-                    <td class="order_info" style="width:32%; border-bottom: 0px;">{{ order_form_info.company_registration_number }}</td>
-                  </tr>
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">계좌정보</td>
-                    <td colspan="3" class="order_info">{{ order_form_info.account_number }}</td>
-                  </tr>
-                </table>
-              </v-col>
-              <v-col cols="12" sm="6" style="position: relative;padding-bottom:0px">
-                <v-img
-                  alt="직인"
-                  contain
-                  src="../assets/img/pion_stamp.png"
-                  transition="scale-transition"
-                  width="30"
-                  style="position: absolute; right:25px; top:25px"
-                />
-                <table style=" border-spacing: 0px; width: 100%;">
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
-                    <td colspan="3" class="order_info" style="border-bottom: 0px;">851 - 86 - 00038</td>
-                  </tr>
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">상호</td>
-                    <td class="order_info" style="border-bottom: 0px;">파이온일렉트릭(주)</td>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;">대표자</td>
-                    <td class="order_info" style="border-bottom: 0px;">윤광희</td>
-                  </tr>
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
-                    <td colspan="3" class="order_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호(연세대학교 공학원)</td>
-                  </tr>
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업태</td>
-                    <td class="order_info" style="border-bottom: 0px;">제조업</td>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;">종목</td>
-                    <td class="order_info" style="border-bottom: 0px;">전력전자기기</td>
-                  </tr>
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표전화</td>
-                    <td class="order_info" style="border-bottom: 0px;">070-5096-4179</td>
-                    <td class="order_info order_title text-center" style="border-bottom: 0px;">팩스</td>
-                    <td class="order_info" style="border-bottom: 0px;">0505-300-4179</td>
-                  </tr>
-                  <tr>
-                    <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
-                    <td class="order_info" >{{ order_form_info.given_name }}</td>
-                    <td class="order_info order_title text-center" >연락처</td>
-                    <td class="order_info">070-1234-5678</td>
-                  </tr>
-                </table>
-              </v-col>
-              <v-col cols="12" sm="12" style="padding-bottom:0px">
+                <div style="position: relative;padding-bottom:0px; width:49%; float:right">
+                  <v-img
+                    alt="직인"
+                    contain
+                    src="../assets/img/pion_stamp.png"
+                    transition="scale-transition"
+                    width="30"
+                    style="position: absolute; right:20px; top:25px"
+                  />
+                  <table style=" border-spacing: 0px; width: 100%;">
+                    <tr>
+                      <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          등록번호
+                        </span>
+                      </td>
+                      <td colspan="3" class="order_info" style="border-bottom: 0px;">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          851 - 86 - 00038
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          상호
+                        </span>
+                      </td>
+                      <td class="order_info" style="border-bottom: 0px;">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          파이온일렉트릭(주)
+                        </span>
+                      </td>
+                      <td class="order_info order_title" style="border-bottom: 0px;">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          대표자
+                        </span>
+                      </td>
+                      <td class="order_info" style="border-bottom: 0px;">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          윤광희
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          주소
+                        </span>
+                      </td>
+                      <td colspan="3" class="order_info" style="border-bottom: 0px;">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          서울특별시 서대문구 연세로 50, 116호(연세대학교 공학원)
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          업태
+                        </span>
+                      </td>
+                      <td class="order_info" style="border-bottom: 0px;">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          제조업
+                        </span>
+                      </td>
+                      <td class="order_info order_title" style="border-bottom: 0px;">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          종목
+                        </span>
+                      </td>
+                      <td class="order_info" style="border-bottom: 0px;">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          전력전자기기
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          대표전화
+                        </span>
+                      </td>
+                      <td class="order_info" style="border-bottom: 0px;">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          070-5096-4179
+                        </span>
+                      </td>
+                      <td class="order_info order_title" style="border-bottom: 0px;">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          팩스
+                        </span>
+                      </td>
+                      <td class="order_info" style="border-bottom: 0px;">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          0505-300-4179
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="order_info order_title" style="border-left:1px solid #b6b6b6">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          담당자
+                        </span>
+                      </td>
+                      <td class="order_info" >
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          {{ order_form_info.given_name }}
+                        </span>
+                      </td>
+                      <td class="order_info order_title" >
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          연락처
+                        </span>
+                      </td>
+                      <td class="order_info">
+                        <span style="display: block;margin-top:-2px;margin-bottom:1px">
+                          070-1234-5678
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <div style="padding-bottom:0px">
                 <v-data-table
                   :headers="order_form_headers"
                   :items="order_form_data"
@@ -399,11 +593,11 @@
                     </tr>
                   </template>
                 </v-data-table>
-              </v-col>
-            </v-row>
+              </div>
+            </div>
           </div>
-        </v-col>
-      </v-row>
+        </div>
+      </div>
       <v-row>
         <v-col cols="12" class="mt-6">
           <p class="font-weight-bold primary--text mb-0" style="font-size: 18px;">
