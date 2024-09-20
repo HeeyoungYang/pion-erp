@@ -271,7 +271,7 @@
                             >mdi-undo-variant</v-icon>
                           </v-btn>
                           <v-btn
-                            v-if="edit_survey_cost_num_disabled"
+                            v-if="edit_survey_cost_num_disabled && clickedProductCost.creater === $cookies.get($configJson.cookies.id.key)"
                             color="primary"
                             fab
                             x-small
@@ -360,6 +360,7 @@
                           </v-menu>
 
                           <v-btn
+                            v-if="clickedProductCost.creater === $cookies.get($configJson.cookies.id.key)"
                             color="primary"
                             fab
                             x-small

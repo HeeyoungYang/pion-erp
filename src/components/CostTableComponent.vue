@@ -43,7 +43,7 @@
           }}
         </td>
         <td v-if="!item.cost_list_colspan || item.cost_list_colspan < 3 || (hideChildren && (!showChildsParentIndexArr || !showChildsParentIndexArr.includes(index)))">
-          <v-text-field v-if="!preventEditable && item.cost_num_editable"
+          <v-text-field v-if="!preventEditable && item.cost_num_editable && !costNumEditDisabled"
             dense
             style="max-width: 50px;"
             :rules="item.allow_integer ? integerRules : item.allow_one_or_greater ? integerOneOrGreaterRules : item.allow_edit_decimal_point ? profiteMaintenanceFeeNumRules : expensesNumRules"
@@ -52,7 +52,7 @@
             v-model="item.cost_num"
           ></v-text-field>
           {{
-            !preventEditable && item.cost_num_editable ? ''
+            !preventEditable && item.cost_num_editable && !costNumEditDisabled ? ''
               : item.cost_num ? item.cost_num
                 : (item.belong_data && item.belong_data.length > 0 ?
                     (item.belong_data.findIndex(x=>x.cost_num) >= 0 ? 1
@@ -134,7 +134,7 @@
             }}
           </td>
           <td v-if="!innerItem.cost_list_colspan || innerItem.cost_list_colspan < 3 || (hideGrandChildren && (!showGrandChildsParentIndexArr || !showGrandChildsParentIndexArr.includes(index)))">
-            <v-text-field v-if="!preventEditable && innerItem.cost_num_editable"
+            <v-text-field v-if="!preventEditable && innerItem.cost_num_editable && !costNumEditDisabled"
               dense
               style="max-width: 50px;"
               :rules="innerItem.allow_integer ? integerRules : innerItem.allow_one_or_greater ? integerOneOrGreaterRules : innerItem.allow_edit_decimal_point ? profiteMaintenanceFeeNumRules : expensesNumRules"
@@ -143,7 +143,7 @@
               v-model="innerItem.cost_num"
             ></v-text-field>
             {{
-              !preventEditable && innerItem.cost_num_editable ? ''
+              !preventEditable && innerItem.cost_num_editable && !costNumEditDisabled ? ''
                 : innerItem.cost_num ? innerItem.cost_num
                   : (innerItem.belong_data && innerItem.belong_data.length > 0 ?
                       (innerItem.belong_data.findIndex(x=>x.cost_num) >= 0 ? 1
@@ -205,7 +205,7 @@
           </td>
           <td v-if="!innerBelongItem.cost_list_colspan || innerBelongItem.cost_list_colspan < 2">{{ innerBelongItem.cost_unit }}</td>
           <td v-if="!innerBelongItem.cost_list_colspan || innerBelongItem.cost_list_colspan < 3">
-            <v-text-field v-if="!preventEditable && innerBelongItem.cost_num_editable"
+            <v-text-field v-if="!preventEditable && innerBelongItem.cost_num_editable && !costNumEditDisabled"
               dense
               style="max-width: 50px;"
               :rules="innerBelongItem.allow_integer ? integerRules : innerBelongItem.allow_one_or_greater ? integerOneOrGreaterRules : innerBelongItem.allow_edit_decimal_point ? profiteMaintenanceFeeNumRules : expensesNumRules"
@@ -213,7 +213,7 @@
               type="number"
               v-model="innerBelongItem.cost_num"
             ></v-text-field>
-            {{ !preventEditable && innerBelongItem.cost_num_editable ? '' : innerBelongItem.cost_num }}
+            {{ !preventEditable && innerBelongItem.cost_num_editable && !costNumEditDisabled ? '' : innerBelongItem.cost_num }}
           </td>
           <td v-if="!innerBelongItem.cost_list_colspan || innerBelongItem.cost_list_colspan < 4">
             <v-text-field v-if="!costNumEditDisabled && !preventEditable && innerBelongItem.cost_unit_price_editable"
