@@ -338,7 +338,7 @@
                           <p style=" font-size: 11px;margin-top:5px;font-weight:bold;margin-bottom:0px">하기와 같이 견적 드립니다.</p>
                           <table style=" border-spacing: 0px; width: 100%; margin: 5px 0px 15px">
                             <tr>
-                              <td class="estimate_price_info estimate_price_title">
+                              <td class="estimate_price_info estimate_price_title" style="width: 94px;">
                                 <span class="mt-1" style="display:block; margin-top:-2px;">
                                   일금
                                 </span>
@@ -551,7 +551,7 @@
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="9">
-                          <p class="text-h7 black--text mb-0 font-weight-black"  style="font-weight: bold;">산출내역서</p>
+                          <h3 style="font-weight: black; font-size: 23px; margin-bottom:10px">산출내역서</h3>
                         </v-col>
 
                         <v-col v-show="edit_buttons_show" cols="12" sm="3">
@@ -653,7 +653,7 @@
                           :items="calc_cost_detail_data"
                           item-key="product_code"
                           trStyle="background-color:#efefef; "
-                          trClass="font-weight-black estimate_title"
+                          trClass="font-weight-black cost_table_tr"
                           :cost-num-edit-disabled="edit_survey_cost_num_disabled"
                           :preventButton="true"
                           class="cost_table_border print_cost_table"
@@ -670,7 +670,7 @@
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
-                          <p class="text-h7 font-weight-black black--text mb-0">노무비 산출</p>
+                          <h3 style="font-weight: black; font-size: 23px; margin-bottom:10px">노무비 산출</h3>
                         </v-col>
                         <v-col v-show="edit_buttons_show" cols="12" sm="2">
                           <v-menu offset-y>
@@ -839,9 +839,9 @@
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
-                          <p class="text-h5 black--text mb-0 font-weight-black float-left "  style="font-weight: bold;">
+                          <h3 style="font-weight: black; font-size: 23px; margin-bottom:10px">
                             산출내역서
-                          </p>
+                          </h3>
                           <v-radio-group
                             v-show="false"
                             v-model="estimate_type"
@@ -868,7 +868,7 @@
                           :items="calc_cost_detail_data2"
                           item-key="product_code"
                           trStyle="background-color:#efefef; "
-                          trClass="font-weight-black estimate_title"
+                          trClass="font-weight-black cost_table_tr"
                           class="cost_table_border print_cost_table"
                         >
                         </CostTableComponent>
@@ -1140,7 +1140,7 @@
                       <p style=" font-size: 11px;margin-top:5px;font-weight:bold;margin-bottom:0px">하기와 같이 견적 드립니다.</p>
                       <table style=" border-spacing: 0px; width: 100%; margin: 5px 0px 15px">
                         <tr>
-                          <td class="estimate_price_info estimate_price_title">
+                          <td class="estimate_price_info estimate_price_title" style="width: 94px;">
                             <span class="mt-1" style="display:block; margin-top:-2px;">
                               일금
                             </span>
@@ -1181,7 +1181,7 @@
             <v-card-title>
             </v-card-title>
             <v-card-text>
-              <p class="text-h5 font-weight-black black--text mb-5">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 노무비 산출</p>
+              <h3 style="font-weight: black; font-size: 23px; margin-bottom:10px">{{ clickedProductCost.product_name ? clickedProductCost.product_name : '' }} 노무비 산출</h3>
               <v-data-table
                 dense
                 :headers="labor_cost_headers"
@@ -4965,16 +4965,5 @@ export default {
 }
 </script>
 <style>
-.estimate_top{background: #efefef; width: 100%; padding: 20px;}
-.estimate_top p{font-weight: bold; font-size: 30px; float:left; line-height: 65px; margin-bottom: 0px;}
-.estimate_top img{float:right;}
-.estimate_content{width:100%; margin-top:20px}
-.estimate_top::after,
-.estimate_content::after{content: ""; display: block; clear: both;}
-
-.estimate_info{border:1px solid #b6b6b6; padding: 2px 15px; font-size: 11px!important; border-left: 0px; height: 25px!important; line-height: 19px!important;}
-.estimate_title{background-color: #efefef; font-weight: bold;text-align:center;width: 94px;}
-.estimate_price_info{border-top:3px solid #b6b6b6; border-bottom:3px solid #b6b6b6;  padding: 2px 15px 5px!important; font-size: 16px; border-left: 0px;}
-.estimate_price_title{background-color: #efefef; font-weight: bold; text-align:center}
 
 </style>
