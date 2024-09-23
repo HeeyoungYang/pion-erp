@@ -121,7 +121,7 @@
                     </v-card>
                   </v-menu>
                   <v-menu
-                    v-else-if="item.approval_phase == '반려'"
+                    v-else-if="item.approval_phase.includes('반려')"
                     open-on-hover
                     :close-on-content-click="false"
                     :nudge-width="150"

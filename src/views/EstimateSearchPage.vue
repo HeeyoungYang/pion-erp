@@ -146,7 +146,7 @@
             <v-card-title>
             </v-card-title>
             <v-card-text>
-              <p class="text-h5 font-weight-black black--text mb-5">노무비 산출</p>
+              <h3 style="font-weight: black; font-size: 23px; margin-bottom:10px">노무비 산출</h3>
               <v-data-table
                 dense
                 :headers="labor_cost_headers"
@@ -568,7 +568,7 @@
                     <p style=" font-size: 11px;margin-top:5px;font-weight:bold;margin-bottom:0px">하기와 같이 견적 드립니다.</p>
                     <table style=" border-spacing: 0px; width: 100%; margin: 5px 0px 15px">
                       <tr>
-                        <td class="estimate_price_info estimate_price_title">
+                        <td class="estimate_price_info estimate_price_title" style="width: 94px;">
                           <span class="mt-1" style="display:block; margin-top:-2px;">
                             일금
                           </span>
@@ -685,7 +685,7 @@
                     :items="calc_cost_detail_data"
                     item-key="product_code"
                     trStyle="background-color:#efefef; "
-                    trClass="font-weight-black estimate_title"
+                    trClass="font-weight-black cost_table_tr"
                     :cost-num-edit-disabled="true"
                     class="cost_table_border print_cost_table"
                   >

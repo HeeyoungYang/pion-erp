@@ -9,7 +9,7 @@
   ],
 
   "purchaseInfoInputs":[
-    {"label":"프로젝트 코드", "col":"12", "sm":"4", "lg":"3", "value": ""},
+    {"label":"프로젝트 코드", "type":"auto", "col":"12", "sm":"4", "lg":"3", "value": ""},
     {"label":"비고", "col":"12", "sm":"4", "lg":"7", "value": ""}
   ],
   "estimateInfoInputs":[

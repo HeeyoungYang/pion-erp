@@ -38,12 +38,28 @@
 .doc_table tr td:first-child{width: 150px;}
 .doc_table tr td{ font-size: 12px!important}
 
+/* 견적서 및 수주확인서 */
 
+.cost_table_tr{background-color: #efefef; font-weight: bold;}
 
+.estimate_top{background: #efefef; width: 100%; padding: 20px;}
+.estimate_top p{font-weight: bold; font-size: 30px; float:left; line-height: 65px; margin-bottom: 0px;}
+.estimate_top img{float:right;}
+.estimate_content{width:100%; margin-top:20px}
+.estimate_top::after,
+.estimate_content::after{content: ""; display: block; clear: both;}
+
+.estimate_info{border:1px solid #b6b6b6; padding: 2px 15px; font-size: 11px!important; border-left: 0px; height: 25px!important; line-height: 19px!important;}
+.estimate_title{background-color: #efefef; font-weight: bold;text-align:center;width: 94px;}
+.estimate_price_info{border-top:3px solid #b6b6b6; border-bottom:3px solid #b6b6b6;  padding: 2px 15px 5px!important; font-size: 16px; border-left: 0px;}
+.estimate_price_title{background-color: #efefef; font-weight: bold; text-align:center}
+
+.order_doc_top{margin-bottom:10px}
+.order_doc_top::after{content: ""; display: block; clear: both;}
 .order_info{border:1px solid #b6b6b6; padding: 2px 10px; font-size: 10px; border-left: 0px; text-overflow: ellipsis;white-space: normal;
   word-wrap: break-word;
   word-break: break-all;}
-.order_title{background-color: #efefef; font-weight: bold;width:18%}
+.order_title{background-color: #efefef; font-weight: bold;width:94px;text-align: center;}
 
 .print_doc_title{font-weight: bold;font-size: 25px; text-align: center; padding-bottom: 30px; margin-bottom: 30px!important; color: black;border-bottom:1px solid #ccc};
 @media print{
