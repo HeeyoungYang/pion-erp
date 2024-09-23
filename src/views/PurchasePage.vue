@@ -632,7 +632,7 @@ export default {
       product_data:[],
       selected_item_data:[],
       purchasers:[],
-      project_code_list:[],
+      // project_code_list:[],
 
       type_list:PurchasePageConfig.type_list,
       searchProductCardInputs:PurchasePageConfig.searchProductCardInputs,
@@ -723,7 +723,7 @@ export default {
         return;
       }
 
-      // project_code_list
+      // 수주 기준 프로젝트 코드 가져오기
       try {
         let result = await mux.Server.post({
           path: '/api/common_rest_api/',
@@ -754,9 +754,9 @@ export default {
           let set = new Set(project_codes);
           project_codes = [...set];
 
-          this.project_code_list = project_codes;
+          // this.project_code_list = project_codes;
 
-          this.purchaseInfoInputs.find(x=>x.label === '프로젝트 코드').list = this.project_code_list;
+          this.purchaseInfoInputs.find(x=>x.label === '프로젝트 코드').list = project_codes;
           // result.data.obtain_cost_calc_detail;
         } else {
           mux.Util.showAlert(result['failed_info']);

@@ -1022,6 +1022,51 @@ export default {
         mux.Util.showAlert(error);
       }
 
+      // 수주 기준 프로젝트 코드 가져오기
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "obtain_confirmation_table.approval_phase": "승인"
+            }
+          ],
+          "script_file_name": "rooting_수주_정보_검색_24_08_08_13_53_89S.json",
+          "script_file_path": "data_storage_pion\\json_sql\\obtain\\수주_정보_검색_24_08_08_13_54_EFQ"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          if(result['data'].length === 0){
+            mux.Util.showAlert('검색 결과가 없습니다.');
+          }
+
+          let project_codes = [];
+          result.data.obtain_confirmation.forEach(data => {
+            project_codes.push(data.project_code);
+          });
+
+          let set = new Set(project_codes);
+          project_codes = [...set];
+
+
+          this.inboundCardInfoInputs.find(x=>x.column_name === 'project_code').list = project_codes;
+          // result.data.obtain_cost_calc_detail;
+        } else {
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+
     },
     async searchOrder(){
       mux.Util.showLoading();

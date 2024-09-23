@@ -18,7 +18,7 @@
 
 
   "shipCardInputs":[
-    {"label":"프로젝트", "column_name":"project_code", "col":"12", "sm":"4", "lg":"3", "value": "", "rule_set":true},
+    {"label":"프로젝트 코드", "type":"auto", "column_name":"project_code", "col":"12", "sm":"4", "lg":"3", "value": "", "rule_set":true, "list":["미선택"]},
     {"label":"출하장소", "column_name":"ship_place", "col":"12", "sm":"4", "lg":"3", "value": "", "rule_set":true},
     {"label":"출고(반출)요청일", "column_name":"ship_date", "type":"dateSingle", "col":"12", "sm":"4", "lg":"3", "rule_set":true},
     {"label":"시험성적서", "column_name":"inspection_report", "type":"file", "col":"12", "sm":"4", "lg":"3", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},
