@@ -3740,7 +3740,7 @@ export default {
         }
 
         let isRejected = false;
-        if (this.clickedProductCost.rejected_date){
+        if (this.origin_clickedProductCost.rejected_date){
           isRejected = true;
         }
         let needReConfirm = false;
@@ -3791,7 +3791,7 @@ export default {
               "rejected_date": null,
               "reject_reason": '',
             },
-            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "update_where": {"cost_calc_code": this.origin_clickedProductCost.cost_calc_code},
             "rollback": "yes"
           }],
           "obtain_cost_table-update": [{
@@ -3800,7 +3800,7 @@ export default {
               "role": "modifier"
             },
             "data":{"cost_calc_code": new_cost_calc_code},
-            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "update_where": {"cost_calc_code": this.origin_clickedProductCost.cost_calc_code},
             "rollback": "yes"
           }],
           "obtain_cost_calc_detail_table-update": [{
@@ -3809,7 +3809,7 @@ export default {
               "role": "modifier"
             },
             "data":{"cost_calc_code": new_cost_calc_code},
-            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "update_where": {"cost_calc_code": this.origin_clickedProductCost.cost_calc_code},
             "rollback": "no"
           }],
           "obtain_construction_detail_table-update": [{
@@ -3818,7 +3818,7 @@ export default {
               "role": "modifier"
             },
             "data":{"cost_calc_code": new_cost_calc_code},
-            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "update_where": {"cost_calc_code": this.origin_clickedProductCost.cost_calc_code},
             "rollback": "no"
           }],
           "obtain_labor_cost_calc_detail_table-update": [{
@@ -3827,7 +3827,7 @@ export default {
               "role": "modifier"
             },
             "data":{"cost_calc_code": new_cost_calc_code},
-            "update_where": {"cost_calc_code": this.clickedProductCost.cost_calc_code},
+            "update_where": {"cost_calc_code": this.origin_clickedProductCost.cost_calc_code},
             "rollback": "yes"
           }]
         };
@@ -3891,21 +3891,21 @@ export default {
             const newBlueprintFile = this.estimateFilesInputs.find(x=>x.column_name === 'blueprint').value;
             const newEtcFiles = this.estimateFilesInputs.find(x=>x.column_name === 'files').value;
 
-            let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.clickedProductCost.cost_calc_code);
+            let targetConfirmation = this.searched_datas.confirmation.find(item => item.cost_calc_code === this.origin_clickedProductCost.cost_calc_code);
             targetConfirmation.cost_calc_code = new_cost_calc_code;
-            this.searched_datas.last_confirmation.find(x=>x.cost_calc_code === this.clickedProductCost.cost_calc_code).cost_calc_code = new_cost_calc_code;
+            this.searched_datas.last_confirmation.find(x=>x.cost_calc_code === this.origin_clickedProductCost.cost_calc_code).cost_calc_code = new_cost_calc_code;
             this.searched_datas.product_cost_calc_detail.forEach(item => {
-              if (item.cost_calc_code === this.clickedProductCost.cost_calc_code){
+              if (item.cost_calc_code === this.origin_clickedProductCost.cost_calc_code){
                 item.cost_calc_code = new_cost_calc_code;
               }
             });
             this.searched_datas.construction_materials_data.forEach(item => {
-              if (item.cost_calc_code === this.clickedProductCost.cost_calc_code){
+              if (item.cost_calc_code === this.origin_clickedProductCost.cost_calc_code){
                 item.cost_calc_code = new_cost_calc_code;
               }
             });
             this.searched_datas.labor_cost_calc_detail.forEach(item => {
-              if (item.cost_calc_code === this.clickedProductCost.cost_calc_code){
+              if (item.cost_calc_code === this.origin_clickedProductCost.cost_calc_code){
                 item.cost_calc_code = new_cost_calc_code;
               }
             });
