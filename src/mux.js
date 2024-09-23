@@ -1538,11 +1538,28 @@ mux.Set = {
  */
 mux.Util = {
 
+  getDPI() {
+    const dpiDiv = document.createElement("div");
+    dpiDiv.style.width = "1in";
+    dpiDiv.style.height = "1in";
+    dpiDiv.style.position = "absolute";
+    dpiDiv.style.left = "-100%";
+    document.body.appendChild(dpiDiv);
+    const dpi = dpiDiv.offsetWidth; // 1인치의 픽셀 수
+    document.body.removeChild(dpiDiv);
+    return dpi;
+  },
+
+  mmToPx(mm) {
+      const dpi = this.getDPI();
+      return (mm / 25.4) * dpi;
+  },
+
   /**
    * 전달 받은 HTML 의 출력 미리보기 팝업창을 띄우며 프린트 도구 시작
    * @param {HTMLElement} element
    */
-  async print(element, marginTopBottom = 10, sinceSecondPagePlusMargin = 0, marginLeftRight = 10) {
+  async print(element, rowCountPerPage = 10, marginTopBottom = 10, marginLeftRight = 10) {
     return new Promise(async (resolve, reject) => {
       try {
         let thisElement;
@@ -1552,12 +1569,62 @@ mux.Util = {
           thisElement = element;
         }
 
-        // const clonedElement = thisElement.cloneNode(true);
-        // clonedElement 를 A4 사이즈로 설정
-        
+        let tableList = thisElement.querySelectorAll('table');
+        let lastTable = tableList[tableList.length - 1];
+        let tbody = lastTable.querySelector('tbody');
+        let trList = tbody.querySelectorAll('tr:not([style*="display: none"])');
+
+        // NodeList를 배열로 변환
+        let trArray = Array.from(trList);
+
+        // rowCountPerPage 기준으로 행을 나누기
+        let startIndex = 0;
+        let endIndex = rowCountPerPage;
+        let pageCount = Math.ceil(trArray.length / rowCountPerPage);
+
+        // 페이지 만들기
+        let htmlBody = '';
+        for (let i = 0; i < pageCount; i++) {
+          let copiedElement = thisElement.cloneNode(true);
+
+          let tables = copiedElement.querySelectorAll('table');
+          let last = tables[tables.length - 1];
+          let tb = last.querySelector('tbody');
+          let trs = tb.querySelectorAll('tr:not([style*="display: none"])');
+
+          // NodeList를 배열로 변환
+          let array = Array.from(trs);
+          for (let ii = 0; ii < array.length; ii++) {
+            const node = array[ii];
+            if (ii < startIndex || ii >= endIndex) {
+              tb.removeChild(node);
+            }
+          }
+
+          let diff = rowCountPerPage - tb.querySelectorAll('tr:not([style*="display: none"])').length;
+          if (diff > 0) {
+            for (let ii = 0; ii < diff; ii++) {
+              let tr = document.createElement('tr');
+              let td = document.createElement('td');
+              td.setAttribute('colspan', '100');
+              tr.appendChild(td);
+              // tb 의 마지막 tr 바로 앞에 추가
+              tb.insertBefore(tr, tb.querySelector('tr:last-of-type'));
+            }
+          }
+
+          // copiedElement.style.marginBottom = `${marginTopBottom}mm`;
+          // if (i > 0) {
+          //   copiedElement.style.marginTop = `${marginTopBottom}mm`;
+          // }
+          htmlBody += `<div style="height: ${297+marginTopBottom*2}mm;"> ${copiedElement.outerHTML} </div>`;
+
+          startIndex = endIndex;
+          endIndex += rowCountPerPage;
+        }
 
         const a4Width = `${210+marginLeftRight*2}mm`;
-        const a4Height = `${297+marginTopBottom*2}mm`;
+        const a4Height = `${pageCount*(297+marginTopBottom*2)}mm`;
 
         const styleCopy = this.copyStyleToNewWindowWithoutHover();
         // 미리보기 팝업을 띄우기
@@ -1567,7 +1634,7 @@ mux.Util = {
         }else {
           // 미리보기 팝업을 띄우기
           const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
-          const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
+          const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body style="margin: 0px;">${htmlBody}</body></html>`;
           previewPopup.document.write(previewContent);
 
           previewPopup.document.childNodes[0].style.width = a4Width;
@@ -1593,9 +1660,11 @@ mux.Util = {
                 const pdfWidth = 210; // A4 너비(mm)
                 const pdfHeight = 297; // A4 높이(mm)
                 
+                // mm
                 const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
                 const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
 
+                // mm
                 let heightLeft = imgHeight; // 남은 높이 계산
                 let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
                 
@@ -1606,9 +1675,6 @@ mux.Util = {
                   if (heightLeft < pdfHeightMinusMargin){
                     imgHeightPerPageArr.push(heightLeft);
                   }else {
-                    if (imgHeightPerPageArr.length === 1) {
-                      pdfHeightMinusMargin = pdfHeightMinusMargin - 2 * sinceSecondPagePlusMargin;
-                    }
                     imgHeightPerPageArr.push(pdfHeightMinusMargin);
                   }
                   heightLeft -= pdfHeightMinusMargin;
@@ -1625,14 +1691,22 @@ mux.Util = {
                   cuttedCanvas.width = canvas.width;
                   cuttedCanvas.height = pxHeight;
                   const cuttedCtx = cuttedCanvas.getContext('2d');
+                  // drawImage(image: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number)
                   cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
+                  // // 남는 아래 공간을 흰색 여백으로 채우기
+                  // if (pxHeight < cuttedCanvas.height) {
+                  //   cuttedCtx.fillStyle = 'white';
+                  //   cuttedCtx.fillRect(0, pxHeight, cuttedCanvas.width, cuttedCanvas.height - pxHeight);
+                  // }
                   cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
+                  // 캔버스 초기화
+                  cuttedCtx.clearRect(0, 0, cuttedCanvas.width, cuttedCanvas.height);
                 }
 
                 // 이미지를 삽입
                 cuttedImgDataArr.forEach((imgData, index) => {
                   if (index > 0) pdf.addPage();
-                  pdf.addImage(imgData, "JPEG", marginLeftRight, index === 0 ? position : position+sinceSecondPagePlusMargin, imgWidth, imgHeightPerPageArr[index]);
+                  pdf.addImage(imgData, "JPEG", marginLeftRight, position, imgWidth, imgHeightPerPageArr[index]);
                 });
 
                 // // PDF 저장
@@ -1641,15 +1715,81 @@ mux.Util = {
                 // PDF 인쇄
                 pdf.autoPrint();
                 pdf.output('dataurlnewwindow');
+                
+                setTimeout(() => {
+                  resolve();
+                  // 프린트 도구가 닫히면 팝업도 닫기
+                  setTimeout(() => {
+                    previewPopup.close();
+                  }, 500);
+                }, 500);
               });
 
-              setTimeout(() => {
-                resolve();
-                // 프린트 도구가 닫히면 팝업도 닫기
-                setTimeout(() => {
-                  previewPopup.close();
-                }, 500);
-              }, 500);
+              // // HTML 요소를 캡처하여 캔버스로 변환
+              // html2canvas(previewPopup.document.childNodes[0], { scale: 2 }).then((canvas) => {
+
+              //   const pdf = new jsPDF("p", "mm", "a4");
+              //   const pdfWidth = 210; // A4 너비(mm)
+              //   const pdfHeight = 297; // A4 높이(mm)
+                
+              //   const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
+              //   const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
+
+              //   let heightLeft = imgHeight; // 남은 높이 계산
+              //   let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
+                
+              //   // pdf 높이에서 상하 여백을 뺀 높이
+              //   let pdfHeightMinusMargin = pdfHeight - 2 * marginTopBottom;
+              //   let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
+              //   while(heightLeft > 0){
+              //     if (heightLeft < pdfHeightMinusMargin){
+              //       imgHeightPerPageArr.push(heightLeft);
+              //     }else {
+              //       if (imgHeightPerPageArr.length === 1) {
+              //         pdfHeightMinusMargin = pdfHeightMinusMargin - 2 * sinceSecondPagePlusMargin;
+              //       }
+              //       imgHeightPerPageArr.push(pdfHeightMinusMargin);
+              //     }
+              //     heightLeft -= pdfHeightMinusMargin;
+              //   }
+
+              //   let cuttedImgDataArr = [];
+              //   for (let i = 0; i < imgHeightPerPageArr.length; i++) {
+              //     let prevPxHeight = 0;
+              //     for (let ii = 0; ii < i; ii++) {
+              //       prevPxHeight += imgHeightPerPageArr[ii] * canvas.width / imgWidth;
+              //     }
+              //     const pxHeight = imgHeightPerPageArr[i] * canvas.width / imgWidth;
+              //     const cuttedCanvas = document.createElement('canvas');
+              //     cuttedCanvas.width = canvas.width;
+              //     cuttedCanvas.height = pxHeight;
+              //     const cuttedCtx = cuttedCanvas.getContext('2d');
+              //     cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
+              //     cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
+              //   }
+
+              //   // 이미지를 삽입
+              //   cuttedImgDataArr.forEach((imgData, index) => {
+              //     if (index > 0) pdf.addPage();
+              //     pdf.addImage(imgData, "JPEG", marginLeftRight, index === 0 ? position : position+sinceSecondPagePlusMargin, imgWidth, imgHeightPerPageArr[index]);
+              //   });
+
+              //   // // PDF 저장
+              //   // pdf.save(fileName+'.pdf');
+                
+              //   // PDF 인쇄
+              //   pdf.autoPrint();
+              //   pdf.output('dataurlnewwindow');
+                
+              //   setTimeout(() => {
+              //     resolve();
+              //     // 프린트 도구가 닫히면 팝업도 닫기
+              //     setTimeout(() => {
+              //       previewPopup.close();
+              //     }, 500);
+              //   }, 500);
+              // });
+
             }, 1000);
 
           }, 500);
