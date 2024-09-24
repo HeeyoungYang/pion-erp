@@ -180,19 +180,19 @@
         </tr>
         <tr v-for="(innerBelongItem, inIdx) in innerItem.belong_data"
           :class="grandChildTrClass ? grandChildTrClass : ''"
-          :style="grandChildTrStyle ? grandChildTrStyle : ''"
+          :style="grandChildTrStyle ? 'height: 32px;' + grandChildTrStyle : 'height: 32px;'"
           :key="'surveycost_'+index+'_'+idx+'_'+inIdx"
           v-show="!item.hidden && !innerItem.hidden && !innerBelongItem.hidden && (!hideChildren && !hideGrandChildren || (showChildsParentIndexArr && showChildsParentIndexArr.includes(index) && showGrandChildsParentIndexArr && showGrandChildsParentIndexArr.includes(idx)))">
           <td>
             <v-icon v-if="!preventEditable && !costNumEditDisabled && innerBelongItem.deletable_row" small color="error" style="cursor:pointer" @click="innerItem.belong_data.splice(inIdx, 1)">mdi-minus-thick</v-icon>
             {{ preventEditable || !innerBelongItem.deletable_row ? innerBelongItem.cost_no : '' }}
           </td>
-          <td style="padding-left:40px;" :colspan="innerBelongItem.cost_list_colspan">
+          <td style="padding-left:40px;line-height: 13px;" :colspan="innerBelongItem.cost_list_colspan">
             {{ innerBelongItem.cost_list_sub ? '' : innerBelongItem.cost_list }}
-            <strong v-if="innerBelongItem.cost_list_sub">{{ innerBelongItem.cost_list }}</strong>
-            <br v-if="innerBelongItem.cost_list_sub">
+            <p class="mb-0" style="font-weight: bold;" v-if="innerBelongItem.cost_list_sub">{{ innerBelongItem.cost_list }}</p>
+            <!-- <br v-if="innerBelongItem.cost_list_sub"> -->
             <v-text-field v-if="innerBelongItem.cost_list_sub && !costNumEditDisabled && !preventEditable && innerBelongItem.cost_list_sub_editable" v-model="innerBelongItem.cost_list_sub" dense style="max-width: 200px;"></v-text-field>
-            {{ innerBelongItem.cost_list_sub && !costNumEditDisabled && !preventEditable && innerBelongItem.cost_list_sub_editable ? '' : innerBelongItem.cost_list_sub ? innerBelongItem.cost_list_sub : '' }}
+            <span style="font-size: 11px;">{{ innerBelongItem.cost_list_sub && !costNumEditDisabled && !preventEditable && innerBelongItem.cost_list_sub_editable ? '' : innerBelongItem.cost_list_sub ? innerBelongItem.cost_list_sub : '' }}</span>
             <v-btn v-if="!preventButton && innerBelongItem.costListBtn"
               :color="innerBelongItem.costListBtn.color ? innerBelongItem.costListBtn.color : 'primary'"
               x-small
