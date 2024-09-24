@@ -3227,7 +3227,7 @@ export default {
         if (fileName){
           await mux.Util.downloadPDF(element, fileName);
         }else {
-          await mux.Util.print(element, 25);
+          await mux.Util.print(element, 27, 10, 10, true);
         }
         this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
 

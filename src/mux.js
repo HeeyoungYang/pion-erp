@@ -1559,7 +1559,7 @@ mux.Util = {
    * 전달 받은 HTML 의 출력 미리보기 팝업창을 띄우며 프린트 도구 시작
    * @param {HTMLElement} element
    */
-  async print(element, rowCountPerPage = 10, marginTopBottom = 10, marginLeftRight = 10) {
+  async print(element, rowCountPerPage = 10, marginTopBottom = 10, marginLeftRight = 10, printPagesPerDiv) {
     return new Promise(async (resolve, reject) => {
       try {
         let thisElement;
@@ -1617,14 +1617,17 @@ mux.Util = {
           // if (i > 0) {
           //   copiedElement.style.marginTop = `${marginTopBottom}mm`;
           // }
-          htmlBody += `<div style="height: ${297+marginTopBottom*2}mm;"> ${copiedElement.outerHTML} </div>`;
+          htmlBody += `<div style="position: relative; margin-top: ${marginTopBottom}mm; margin-bottom: ${marginTopBottom}mm; height: ${297+marginTopBottom*2*2}mm;"> 
+                          ${copiedElement.outerHTML}
+                          ${pageCount > 1 ? `<p style="position: absolute; bottom: -1mm; right: 50%;">${i+1}/${pageCount}</p>` : ''}
+                        </div>`;
 
           startIndex = endIndex;
           endIndex += rowCountPerPage;
         }
 
         const a4Width = `${210+marginLeftRight*2}mm`;
-        const a4Height = `${pageCount*(297+marginTopBottom*2)}mm`;
+        const a4Height = `${pageCount*(297+marginTopBottom*2*2)}mm`;
 
         const styleCopy = this.copyStyleToNewWindowWithoutHover();
         // 미리보기 팝업을 띄우기
@@ -1642,7 +1645,7 @@ mux.Util = {
 
 
           // 포커스를 설정하고 0.5초 뒤에 프린트 도구 시작
-          setTimeout(() => {
+          setTimeout(async () => {
             previewPopup.focus();
 
             
@@ -1650,26 +1653,83 @@ mux.Util = {
             imgTags.forEach((img) => {
               img.style.imageRendering = 'optimizeQuality';
             });
+            
+            const pdf = new jsPDF("p", "mm", "a4");
+            const pdfWidth = 210; // A4 너비(mm)
+            const pdfHeight = 297; // A4 높이(mm)
 
-            setTimeout(async() => {
+            if (printPagesPerDiv){
+              for (let d = 0; d < previewPopup.document.childNodes[0].childNodes[1].childNodes.length; d++) {
+                const div = previewPopup.document.childNodes[0].childNodes[1].childNodes[d];
+                // HTML 요소를 캡처하여 캔버스로 변환
+                await html2canvas(div, { scale: 2 }).then((canvas) => {
+                  
+                  // mm
+                  const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
+                  const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
+  
+                  // mm
+                  let heightLeft = imgHeight; // 남은 높이 계산
+                  // let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
+                  
+                  // pdf 높이에서 상하 여백을 뺀 높이
+                  let pdfHeightMinusMargin = pdfHeight;
+                  let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
+                  while(heightLeft > 0){
+                    if (heightLeft < pdfHeightMinusMargin){
+                      imgHeightPerPageArr.push(heightLeft);
+                    }else {
+                      imgHeightPerPageArr.push(pdfHeightMinusMargin);
+                    }
+                    heightLeft -= pdfHeightMinusMargin;
+                  }
+  
+                  let cuttedImgDataArr = [];
+                  for (let i = 0; i < imgHeightPerPageArr.length; i++) {
+                    let prevPxHeight = 0;
+                    for (let ii = 0; ii < i; ii++) {
+                      prevPxHeight += imgHeightPerPageArr[ii] * canvas.width / imgWidth;
+                    }
+                    const pxHeight = imgHeightPerPageArr[i] * canvas.width / imgWidth;
+                    const cuttedCanvas = document.createElement('canvas');
+                    cuttedCanvas.width = canvas.width;
+                    cuttedCanvas.height = pxHeight;
+                    const cuttedCtx = cuttedCanvas.getContext('2d');
+                    // drawImage(image: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number)
+                    cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
+                    // // 남는 아래 공간을 흰색 여백으로 채우기
+                    // if (pxHeight < cuttedCanvas.height) {
+                    //   cuttedCtx.fillStyle = 'white';
+                    //   cuttedCtx.fillRect(0, pxHeight, cuttedCanvas.width, cuttedCanvas.height - pxHeight);
+                    // }
+                    cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
 
+                  }
+  
+                  // 이미지를 삽입
+                  cuttedImgDataArr.forEach((imgData, index) => {
+                    if (d > 0 || index > 0) pdf.addPage();
+                    pdf.addImage(imgData, "JPEG", marginLeftRight, marginTopBottom, imgWidth, imgHeightPerPageArr[index]);
+                  });
+  
+                });
+              }
+            }else {
+
+  
               // HTML 요소를 캡처하여 캔버스로 변환
-              html2canvas(previewPopup.document.childNodes[0], { scale: 2 }).then((canvas) => {
+              await html2canvas(previewPopup.document.childNodes[0], { scale: 2 }).then((canvas) => {
 
-                const pdf = new jsPDF("p", "mm", "a4");
-                const pdfWidth = 210; // A4 너비(mm)
-                const pdfHeight = 297; // A4 높이(mm)
-                
                 // mm
                 const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
                 const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
 
                 // mm
                 let heightLeft = imgHeight; // 남은 높이 계산
-                let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
+                // let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
                 
                 // pdf 높이에서 상하 여백을 뺀 높이
-                let pdfHeightMinusMargin = pdfHeight - 2 * marginTopBottom;
+                let pdfHeightMinusMargin = pdfHeight;
                 let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
                 while(heightLeft > 0){
                   if (heightLeft < pdfHeightMinusMargin){
@@ -1699,98 +1759,31 @@ mux.Util = {
                   //   cuttedCtx.fillRect(0, pxHeight, cuttedCanvas.width, cuttedCanvas.height - pxHeight);
                   // }
                   cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
-                  // 캔버스 초기화
-                  cuttedCtx.clearRect(0, 0, cuttedCanvas.width, cuttedCanvas.height);
+
                 }
 
                 // 이미지를 삽입
                 cuttedImgDataArr.forEach((imgData, index) => {
                   if (index > 0) pdf.addPage();
-                  pdf.addImage(imgData, "JPEG", marginLeftRight, position, imgWidth, imgHeightPerPageArr[index]);
+                  pdf.addImage(imgData, "JPEG", marginLeftRight, 0, imgWidth, imgHeightPerPageArr[index]);
                 });
-
-                // // PDF 저장
-                // pdf.save(fileName+'.pdf');
-                
-                // PDF 인쇄
-                pdf.autoPrint();
-                pdf.output('dataurlnewwindow');
-                
-                setTimeout(() => {
-                  resolve();
-                  // 프린트 도구가 닫히면 팝업도 닫기
-                  setTimeout(() => {
-                    previewPopup.close();
-                  }, 500);
-                }, 500);
               });
-
-              // // HTML 요소를 캡처하여 캔버스로 변환
-              // html2canvas(previewPopup.document.childNodes[0], { scale: 2 }).then((canvas) => {
-
-              //   const pdf = new jsPDF("p", "mm", "a4");
-              //   const pdfWidth = 210; // A4 너비(mm)
-              //   const pdfHeight = 297; // A4 높이(mm)
-                
-              //   const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
-              //   const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
-
-              //   let heightLeft = imgHeight; // 남은 높이 계산
-              //   let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
-                
-              //   // pdf 높이에서 상하 여백을 뺀 높이
-              //   let pdfHeightMinusMargin = pdfHeight - 2 * marginTopBottom;
-              //   let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
-              //   while(heightLeft > 0){
-              //     if (heightLeft < pdfHeightMinusMargin){
-              //       imgHeightPerPageArr.push(heightLeft);
-              //     }else {
-              //       if (imgHeightPerPageArr.length === 1) {
-              //         pdfHeightMinusMargin = pdfHeightMinusMargin - 2 * sinceSecondPagePlusMargin;
-              //       }
-              //       imgHeightPerPageArr.push(pdfHeightMinusMargin);
-              //     }
-              //     heightLeft -= pdfHeightMinusMargin;
-              //   }
-
-              //   let cuttedImgDataArr = [];
-              //   for (let i = 0; i < imgHeightPerPageArr.length; i++) {
-              //     let prevPxHeight = 0;
-              //     for (let ii = 0; ii < i; ii++) {
-              //       prevPxHeight += imgHeightPerPageArr[ii] * canvas.width / imgWidth;
-              //     }
-              //     const pxHeight = imgHeightPerPageArr[i] * canvas.width / imgWidth;
-              //     const cuttedCanvas = document.createElement('canvas');
-              //     cuttedCanvas.width = canvas.width;
-              //     cuttedCanvas.height = pxHeight;
-              //     const cuttedCtx = cuttedCanvas.getContext('2d');
-              //     cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
-              //     cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
-              //   }
-
-              //   // 이미지를 삽입
-              //   cuttedImgDataArr.forEach((imgData, index) => {
-              //     if (index > 0) pdf.addPage();
-              //     pdf.addImage(imgData, "JPEG", marginLeftRight, index === 0 ? position : position+sinceSecondPagePlusMargin, imgWidth, imgHeightPerPageArr[index]);
-              //   });
-
-              //   // // PDF 저장
-              //   // pdf.save(fileName+'.pdf');
-                
-              //   // PDF 인쇄
-              //   pdf.autoPrint();
-              //   pdf.output('dataurlnewwindow');
-                
-              //   setTimeout(() => {
-              //     resolve();
-              //     // 프린트 도구가 닫히면 팝업도 닫기
-              //     setTimeout(() => {
-              //       previewPopup.close();
-              //     }, 500);
-              //   }, 500);
-              // });
-
-            }, 1000);
+            }
+            
+            // // PDF 저장
+            // pdf.save(fileName+'.pdf');
+            
+            // PDF 인쇄
+            pdf.autoPrint();
+            pdf.output('dataurlnewwindow');
+            
+            setTimeout(() => {
+              resolve();
+              // 프린트 도구가 닫히면 팝업도 닫기
+              setTimeout(() => {
+                previewPopup.close();
+              }, 500);
+            }, 500);
 
           }, 500);
         }
@@ -1800,34 +1793,6 @@ mux.Util = {
         console.warn(error);
         reject();
       }
-
-      // let thisElement;
-      // if (element.$el){
-      //   thisElement = element.$el;
-      // }else {
-      //   thisElement = element;
-      // }
-
-      // const a4Width = 1240;
-      // const a4Height = 1754;
-
-      // const styleCopy = this.copyStyleToNewWindowWithoutHover();
-      // // 미리보기 팝업을 띄우기
-      // const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
-      // const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
-      // previewPopup.document.write(previewContent);
-
-      // // 포커스를 설정하고 0.5초 뒤에 프린트 도구 시작
-      // setTimeout(() => {
-      //   previewPopup.focus();
-
-      //   previewPopup.print();
-
-      //   // 프린트 도구가 닫히면 팝업도 닫기
-      //   setTimeout(() => {
-      //     previewPopup.close();
-      //   }, 500);
-      // }, 500);
     });
   },
 
