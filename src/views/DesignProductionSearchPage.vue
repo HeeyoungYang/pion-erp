@@ -186,8 +186,8 @@
                     v-for="(item, index) in content_save_items"
                     :key="index"
                     dense
-                    @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                            : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '수주확인서') : ''"
+                    @click="item.click === 'print' ? estimatePrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                            : item.click === 'pdf' ? estimatePrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '수주확인서') : ''"
                   >
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
                   </v-list-item>
@@ -682,7 +682,7 @@
                     v-for="(item, index) in content_save_items"
                     :key="index"
                     dense
-                    @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                    @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data')
                             : item.click === 'excel' ? mux.Excel.downloadTable(survey_cost_headers, calc_cost_detail_data, '산출내역서')
                             : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data', '산출내역서') : ''"
                   >
@@ -778,7 +778,7 @@
         <v-tab-item key="생산 의뢰서" v-if="clickedProductCost.obtain_file
                     && searched_datas.last_confirmation
                     && searched_datas.last_confirmation.find(item => item.cost_calc_code === clickedProductCost.cost_calc_code)">
-          <v-card style="border: 1px solid #ccc;" elevation="0">
+          <v-card ref="calcRequestCard" style="border: 1px solid #ccc;" elevation="0">
             <v-menu
               v-if="clickedProductCost.approved_date
               && clickedProductCost.creater === login_info.id"
@@ -846,8 +846,8 @@
                   v-for="(item, index) in content_save_items"
                   :key="index"
                   dense
-                  @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                          : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '생산의뢰서') : ''"
+                  @click="item.click === 'print' ? requestPrintOrPDF('calc_cost_detail_data', $refs.calcRequestCard, 'edit_survey_cost_data')
+                          : item.click === 'pdf' ? requestPrintOrPDF('calc_cost_detail_data', $refs.calcRequestCard, 'edit_survey_cost_data', '생산의뢰서') : ''"
                 >
                   <v-list-item-title>{{ item.title }}</v-list-item-title>
                 </v-list-item>
@@ -1543,6 +1543,67 @@ export default {
     },
 
     // 파일명 인자 있을 경우 PDF download, 없을 경우 print
+    async estimatePrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
+      let items = this[itemsThisKeyStr];
+      const originItems = JSON.parse(JSON.stringify(items));
+      items = items.map(item => {
+        for (let i = Object.keys(item).length - 1; i >= 0; i--) {
+          const key = Object.keys(item)[i];
+          if (key.includes('editable')){
+            delete item[key];
+          }
+          if (key === 'belong_data'){
+            for (let j = 0; j < item.belong_data.length; j++) {
+              const innerItem = item.belong_data[j];
+              for (let ii = Object.keys(innerItem).length - 1; ii >= 0; ii--) {
+                const innerKey = Object.keys(innerItem)[ii];
+                if (innerKey.includes('editable')){
+                  delete innerItem[innerKey];
+                }
+                if (innerKey === 'belong_data'){
+                  for (let j = 0; j < innerItem.belong_data.length; j++) {
+                    const belongInnerItem = innerItem.belong_data[j];
+                    for (let ii = Object.keys(belongInnerItem).length - 1; ii >= 0; ii--) {
+                      const belongInnerKey = Object.keys(belongInnerItem)[ii];
+                      if (belongInnerKey.includes('editable')){
+                        delete belongInnerItem[belongInnerKey];
+                      }
+                      // if (belongInnerKey === 'belong_data'){
+
+                      // }
+                    }
+
+                  }
+                }
+              }
+
+            }
+          }
+        }
+        return item;
+
+      });
+
+      this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+      this.costTitlePrint = true;
+      // UI 적용을 위한 editable = false 1초 후 작동
+      setTimeout(async () => {
+        if (fileName){
+          await mux.Util.downloadPDF(element, {fileName, hasTotalRow: true});
+          this.costTitlePrint = false;
+        }else {
+          await mux.Util.print(element, {hasTotalRow: true});
+          this.costTitlePrint = false;
+        }
+        this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+        this[itemsThisKeyStr] = originItems;
+      }, 1000);
+
+
+    },
+    // 파일명 인자 있을 경우 PDF download, 없을 경우 print
     async costDetailPrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
       let items = this[itemsThisKeyStr];
       const originItems = JSON.parse(JSON.stringify(items));
@@ -1590,10 +1651,71 @@ export default {
       // UI 적용을 위한 editable = false 1초 후 작동
       setTimeout(async () => {
         if (fileName){
-          await mux.Util.downloadPDF(element, fileName);
+          await mux.Util.downloadPDF(element, {fileName, rowCountPerPage: 34, hasTotalRow: true});
           this.costTitlePrint = false;
         }else {
-          await mux.Util.print(element);
+          await mux.Util.print(element, {rowCountPerPage: 34, hasTotalRow: true});
+          this.costTitlePrint = false;
+        }
+        this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+        this[itemsThisKeyStr] = originItems;
+      }, 1000);
+
+
+    },
+    // 파일명 인자 있을 경우 PDF download, 없을 경우 print
+    async requestPrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
+      let items = this[itemsThisKeyStr];
+      const originItems = JSON.parse(JSON.stringify(items));
+      items = items.map(item => {
+        for (let i = Object.keys(item).length - 1; i >= 0; i--) {
+          const key = Object.keys(item)[i];
+          if (key.includes('editable')){
+            delete item[key];
+          }
+          if (key === 'belong_data'){
+            for (let j = 0; j < item.belong_data.length; j++) {
+              const innerItem = item.belong_data[j];
+              for (let ii = Object.keys(innerItem).length - 1; ii >= 0; ii--) {
+                const innerKey = Object.keys(innerItem)[ii];
+                if (innerKey.includes('editable')){
+                  delete innerItem[innerKey];
+                }
+                if (innerKey === 'belong_data'){
+                  for (let j = 0; j < innerItem.belong_data.length; j++) {
+                    const belongInnerItem = innerItem.belong_data[j];
+                    for (let ii = Object.keys(belongInnerItem).length - 1; ii >= 0; ii--) {
+                      const belongInnerKey = Object.keys(belongInnerItem)[ii];
+                      if (belongInnerKey.includes('editable')){
+                        delete belongInnerItem[belongInnerKey];
+                      }
+                      // if (belongInnerKey === 'belong_data'){
+
+                      // }
+                    }
+
+                  }
+                }
+              }
+
+            }
+          }
+        }
+        return item;
+
+      });
+
+      this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+      this.costTitlePrint = true;
+      // UI 적용을 위한 editable = false 1초 후 작동
+      setTimeout(async () => {
+        if (fileName){
+          await mux.Util.downloadPDF(element, {fileName, rowCountPerPage: 29});
+          this.costTitlePrint = false;
+        }else {
+          await mux.Util.print(element, {rowCountPerPage: 29});
           this.costTitlePrint = false;
         }
         this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];

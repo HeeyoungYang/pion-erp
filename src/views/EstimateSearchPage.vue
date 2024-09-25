@@ -330,8 +330,8 @@
                         v-for="(item, index) in save_estimates"
                         :key="index"
                         dense
-                        @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                                : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '견적서') : ''"
+                        @click="item.click === 'print' ? estimatePrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                                : item.click === 'pdf' ? estimatePrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '견적서') : ''"
                       >
                         <v-list-item-title>{{ item.title }}</v-list-item-title>
                       </v-list-item>
@@ -1514,14 +1514,14 @@ export default {
 
       setTimeout(async () => {
         if (fileName){
-          await mux.Util.downloadPDF(this.$refs.printLaborTable, fileName);
+          await mux.Util.downloadPDF(this.$refs.printLaborTable, {fileName, rowCountPerPage: 85, isWidePage: true});
 
           if (navClicked) {
             document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
           }
           this.print_labor_table = false;
         }else {
-          await mux.Util.print(this.$refs.printLaborTable);
+          await mux.Util.print(this.$refs.printLaborTable, {rowCountPerPage: 85, isWidePage: true});
 
           if (navClicked) {
             document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
@@ -1532,6 +1532,68 @@ export default {
 
     },
 
+    // 파일명 인자 있을 경우 PDF download, 없을 경우 print
+    async estimatePrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
+      let items = this[itemsThisKeyStr];
+      const originItems = JSON.parse(JSON.stringify(items));
+      items = items.map(item => {
+        for (let i = Object.keys(item).length - 1; i >= 0; i--) {
+          const key = Object.keys(item)[i];
+          if (key.includes('editable')){
+            delete item[key];
+          }
+          if (key === 'belong_data'){
+            for (let j = 0; j < item.belong_data.length; j++) {
+              const innerItem = item.belong_data[j];
+              for (let ii = Object.keys(innerItem).length - 1; ii >= 0; ii--) {
+                const innerKey = Object.keys(innerItem)[ii];
+                if (innerKey.includes('editable')){
+                  delete innerItem[innerKey];
+                }
+                if (innerKey === 'belong_data'){
+                  for (let j = 0; j < innerItem.belong_data.length; j++) {
+                    const belongInnerItem = innerItem.belong_data[j];
+                    for (let ii = Object.keys(belongInnerItem).length - 1; ii >= 0; ii--) {
+                      const belongInnerKey = Object.keys(belongInnerItem)[ii];
+                      if (belongInnerKey.includes('editable')){
+                        delete belongInnerItem[belongInnerKey];
+                      }
+                      // if (belongInnerKey === 'belong_data'){
+
+                      // }
+                    }
+
+                  }
+                }
+              }
+
+            }
+          }
+        }
+        return item;
+
+      });
+
+      this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+      this.costTitlePrint = true;
+
+      // UI 적용을 위한 editable = false 1초 후 작동
+      setTimeout(async () => {
+        if (fileName){
+          await mux.Util.downloadPDF(element, {fileName, hasTotalRow: true});
+          this.costTitlePrint = false;
+        }else {
+          await mux.Util.print(element, {hasTotalRow: true});
+          this.costTitlePrint = false;
+        }
+        this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+        this[itemsThisKeyStr] = originItems;
+      }, 1000);
+
+
+    },
     // 파일명 인자 있을 경우 PDF download, 없을 경우 print
     async costDetailPrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
       let items = this[itemsThisKeyStr];
@@ -1581,10 +1643,10 @@ export default {
       // UI 적용을 위한 editable = false 1초 후 작동
       setTimeout(async () => {
         if (fileName){
-          await mux.Util.downloadPDF(element, fileName);
+          await mux.Util.downloadPDF(element, {fileName, rowCountPerPage: 34, hasTotalRow: true});
           this.costTitlePrint = false;
         }else {
-          await mux.Util.print(element);
+          await mux.Util.print(element, {rowCountPerPage: 34, hasTotalRow: true});
           this.costTitlePrint = false;
         }
         this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
@@ -2079,10 +2141,9 @@ export default {
       }else{
         // 견적서 PDF 파일 생성
         if (sendData.estimate) {
-          const estimate = this.$refs.calcCostCard.$el;
+          const estimate = this.$refs.calcCostCard;
           try {
-            // await mux.Util.downloadPDF(estimate, 'estimate');
-            estimateFile = await mux.Util.getPDF(estimate, '견적서');
+            estimateFile = await mux.Util.getPDF(estimate, {fileName: '견적서', hasTotalRow: true});
             sendData.files.push(estimateFile);
           } catch (error) {
             this.mailDialog = true;
@@ -2108,8 +2169,7 @@ export default {
           }
           const specification = this.$refs.calcDetailCard;
           try {
-            // await mux.Util.downloadPDF(specification, 'specification');
-            specificationFile = await mux.Util.getPDF(specification, '산출내역서');
+            specificationFile = await mux.Util.getPDF(specification, {fileName: '산출내역서', rowCountPerPage: 34, hasTotalRow: true});
             sendData.files.push(specificationFile);
             this.tab_search = origin_tab;
           } catch (error) {
@@ -2142,8 +2202,7 @@ export default {
           }
           const labor = this.$refs.printLaborTable.$el;
           try {
-            // await mux.Util.downloadPDF(labor, 'labor');
-            laborFile = await mux.Util.getPDF(labor, '노무비 산출');
+            laborFile = await mux.Util.getPDF(labor, {fileName: '노무비 산출', rowCountPerPage: 85, isWidePage: true});
             sendData.files.push(laborFile);
             this.tab_search = origin_tab;
             this.print_labor_table = false;

@@ -127,8 +127,8 @@
                             v-for="(item, index) in save_costs"
                             :key="index"
                             dense
-                            @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                                    : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
+                            @click="item.click === 'print' ? estimatePrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                                    : item.click === 'pdf' ? estimatePrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '원가계산서') : ''"
                           >
                             <v-list-item-title>{{ item.title }}</v-list-item-title>
                           </v-list-item>
@@ -1829,14 +1829,14 @@ export default {
 
       setTimeout(async () => {
         if (fileName){
-          await mux.Util.downloadPDF(this.$refs.printLaborTable, fileName);
+          await mux.Util.downloadPDF(this.$refs.printLaborTable, {fileName, rowCountPerPage: 85, isWidePage: true});
 
           if (navClicked) {
             document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
           }
           this.print_labor_table = false;
         }else {
-          await mux.Util.print(this.$refs.printLaborTable);
+          await mux.Util.print(this.$refs.printLaborTable, {rowCountPerPage: 85, isWidePage: true});
 
           if (navClicked) {
             document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
@@ -1846,21 +1846,65 @@ export default {
       }, 500);
 
     },
-    // printLaborCost(fileName){
-    //   this.print_labor_table = true;
 
-    //   setTimeout(async () => {
-    //     if (fileName){
-    //       await mux.Util.downloadPDF(this.$refs.calcLaborCard, fileName);
-    //       this.print_labor_table = false;
-    //     }else {
-    //       await mux.Util.print(this.$refs.calcLaborCard);
-    //       this.print_labor_table = false;
-    //     }
-    //   }, 500);
+    // 파일명 인자 있을 경우 PDF download, 없을 경우 print
+    async estimatePrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
+      let items = this[itemsThisKeyStr];
+      const originItems = JSON.parse(JSON.stringify(items));
+      items = items.map(item => {
+        for (let i = Object.keys(item).length - 1; i >= 0; i--) {
+          const key = Object.keys(item)[i];
+          if (key.includes('editable')){
+            delete item[key];
+          }
+          if (key === 'belong_data'){
+            for (let j = 0; j < item.belong_data.length; j++) {
+              const innerItem = item.belong_data[j];
+              for (let ii = Object.keys(innerItem).length - 1; ii >= 0; ii--) {
+                const innerKey = Object.keys(innerItem)[ii];
+                if (innerKey.includes('editable')){
+                  delete innerItem[innerKey];
+                }
+                if (innerKey === 'belong_data'){
+                  for (let j = 0; j < innerItem.belong_data.length; j++) {
+                    const belongInnerItem = innerItem.belong_data[j];
+                    for (let ii = Object.keys(belongInnerItem).length - 1; ii >= 0; ii--) {
+                      const belongInnerKey = Object.keys(belongInnerItem)[ii];
+                      if (belongInnerKey.includes('editable')){
+                        delete belongInnerItem[belongInnerKey];
+                      }
+                      // if (belongInnerKey === 'belong_data'){
 
-    // },
+                      // }
+                    }
 
+                  }
+                }
+              }
+
+            }
+          }
+        }
+        return item;
+
+      });
+
+      this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+      // UI 적용을 위한 editable = false 1초 후 작동
+      setTimeout(async () => {
+        if (fileName){
+          await mux.Util.downloadPDF(element, {fileName, hasTotalRow: true});
+        }else {
+          await mux.Util.print(element, {hasTotalRow: true});
+        }
+        this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
+
+        this[itemsThisKeyStr] = originItems;
+      }, 1000);
+
+
+    },
     // 파일명 인자 있을 경우 PDF download, 없을 경우 print
     async costDetailPrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
       let items = this[itemsThisKeyStr];
@@ -1908,9 +1952,9 @@ export default {
       // UI 적용을 위한 editable = false 1초 후 작동
       setTimeout(async () => {
         if (fileName){
-          await mux.Util.downloadPDF(element, fileName);
+          await mux.Util.downloadPDF(element, {fileName, rowCountPerPage: 34, hasTotalRow: true});
         }else {
-          await mux.Util.print(element);
+          await mux.Util.print(element, {rowCountPerPage: 34, hasTotalRow: true});
         }
         this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];
 

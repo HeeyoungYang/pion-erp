@@ -1798,8 +1798,7 @@ export default {
       if (sendData.order) {
         const order = this.$refs.orderForm;
         try {
-          // await mux.Util.downloadPDF(order, 'order');
-          orderFile = await mux.Util.getPDF(order, '발주서');
+          orderFile = await mux.Util.getPDF(order, {fileName: '발주서', rowCountPerPage: 28});
           sendData.files.push(orderFile);
         } catch (error) {
           this.mailDialog = true;
@@ -1919,9 +1918,9 @@ export default {
     printOrder(fileName){
       setTimeout(async () => {
         if (fileName){
-          mux.Util.downloadPDF(this.$refs.orderForm, fileName, 11.5);
+          mux.Util.downloadPDF(this.$refs.orderForm, {fileName, rowCountPerPage: 28});
         }else {
-          mux.Util.print(this.$refs.orderForm, 11.5);
+          mux.Util.print(this.$refs.orderForm, {rowCountPerPage: 28});
         }
       }, 500);
     },

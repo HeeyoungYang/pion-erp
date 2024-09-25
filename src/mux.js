@@ -1555,110 +1555,225 @@ mux.Util = {
       return (mm / 25.4) * dpi;
   },
 
+  pxToMm(px) {
+      const dpi = this.getDPI();
+      return (px / dpi) * 25.4;
+  },
+
   /**
    * 전달 받은 HTML 의 출력 미리보기 팝업창을 띄우며 프린트 도구 시작
    * @param {HTMLElement} element
+   * @param {Object} paramObj
+   * @param {number} paramObj.countingTableIndex - 테이블 인덱스(기본: 마지막 테이블)
+   * @param {number} paramObj.rowCountPerPage - 페이지당 행 수(기본값: 27)
+   * @param {number} paramObj.marginTopBottom - 페이지 상하 여백(기본값: 10)
+   * @param {number} paramObj.marginLeftRight - 페이지 좌우 여백(기본값: 10)
+   * @param {boolean} paramObj.isWidePage - 넓은 페이지 여부(기본값: false)
+   * @param {boolean} paramObj.hasTotalRow - 총합 행 여부(기본값: false
+   * @param {boolean} paramObj.trTdClass - tr, td에 추가할 클래스명(기본값: '')
+   * @param {boolean} paramObj.originPrintLogic - 기존 프린트 로직 사용 여부(기본값: false)
+   * @example
+   * mux.Util.print(element, {countingTableIndex: 3, rowCountPerPage: 27, marginTopBottom: 10, marginLeftRight: 10, isWidePage: false, hasTotalRow: false, trTdClass: 'approve_text', originPrintLogic: false});
+   * @memberof mux.Util
+   * @inner
+   * @private
+   * @returns {Promise}
    */
-  async print(element, rowCountPerPage = 10, marginTopBottom = 10, marginLeftRight = 10, printPagesPerDiv) {
+  async print(element, paramObj) {
+    let countingTableIndex = -1;
+    let rowCountPerPage = 27;
+    let marginTopBottom = 10;
+    let marginLeftRight = 10;
+    let isWidePage = false;
+    let hasTotalRow = false;
+    let trTdClass = '';
+    let originPrintLogic = false;
+    if (typeof paramObj === 'object'){
+      if (paramObj.countingTableIndex){
+        countingTableIndex = paramObj.countingTableIndex;
+      }
+      if (paramObj.rowCountPerPage){
+        rowCountPerPage = paramObj.rowCountPerPage;
+      }
+      if (paramObj.marginTopBottom){
+        marginTopBottom = paramObj.marginTopBottom;
+      }
+      if (paramObj.marginLeftRight){
+        marginLeftRight = paramObj.marginLeftRight;
+      }
+      if (paramObj.isWidePage){
+        isWidePage = paramObj.isWidePage;
+      }
+      if (paramObj.hasTotalRow){
+        hasTotalRow = paramObj.hasTotalRow;
+      }
+      if (paramObj.trTdClass){
+        trTdClass = paramObj.trTdClass;
+      }
+      if (paramObj.originPrintLogic){
+        originPrintLogic = paramObj.originPrintLogic;
+      }
+    }
+
     return new Promise(async (resolve, reject) => {
-      try {
-        let thisElement;
-        if (element.$el){
-          thisElement = element.$el;
-        }else {
-          thisElement = element;
-        }
+      if (!originPrintLogic){
+        try {
+          let thisElement;
+          if (element.$el){
+            thisElement = element.$el;
+          }else {
+            thisElement = element;
+          }
+  
+          let a4Width;
+          let a4Height;
+          let htmlBody = '';
 
-        let tableList = thisElement.querySelectorAll('table');
-        let lastTable = tableList[tableList.length - 1];
-        let tbody = lastTable.querySelector('tbody');
-        let trList = tbody.querySelectorAll('tr:not([style*="display: none"])');
-
-        // NodeList를 배열로 변환
-        let trArray = Array.from(trList);
-
-        // rowCountPerPage 기준으로 행을 나누기
-        let startIndex = 0;
-        let endIndex = rowCountPerPage;
-        let pageCount = Math.ceil(trArray.length / rowCountPerPage);
-
-        // 페이지 만들기
-        let htmlBody = '';
-        for (let i = 0; i < pageCount; i++) {
-          let copiedElement = thisElement.cloneNode(true);
-
-          let tables = copiedElement.querySelectorAll('table');
-          let last = tables[tables.length - 1];
-          let tb = last.querySelector('tbody');
-          let trs = tb.querySelectorAll('tr:not([style*="display: none"])');
-
+          let tableList = thisElement.querySelectorAll('table');
+          let countingTable = tableList[countingTableIndex < 0 ? tableList.length - 1 : countingTableIndex];
+          let tbody = countingTable.querySelector('tbody');
+          let trList = tbody.querySelectorAll('tr:not([style*="display: none"])');
+  
           // NodeList를 배열로 변환
-          let array = Array.from(trs);
-          for (let ii = 0; ii < array.length; ii++) {
-            const node = array[ii];
-            if (ii < startIndex || ii >= endIndex) {
-              tb.removeChild(node);
+          let trArray = Array.from(trList);
+  
+          // rowCountPerPage 기준으로 행을 나누기
+          let startIndex = 0;
+          let endIndex = rowCountPerPage;
+          let pageCount = Math.ceil(trArray.length / rowCountPerPage);
+  
+          let tmpRowspanArr = [];
+          // 페이지 만들기
+          for (let i = 0; i < pageCount; i++) {
+            let copiedElement = thisElement.cloneNode(true);
+  
+            let tables = copiedElement.querySelectorAll('table');
+            let targetTable = tables[countingTableIndex < 0 ? tables.length - 1 : countingTableIndex];
+            let tb = targetTable.querySelector('tbody');
+            let trs = tb.querySelectorAll('tr:not([style*="display: none"])');
+  
+            // NodeList를 배열로 변환
+            let array = Array.from(trs);
+            
+            for (let ii = 0; ii < array.length; ii++) {
+              const node = array[ii];
+              
+              if (ii < startIndex || ii >= endIndex) {
+                tb.removeChild(node);
+              }else {
+                
+                if (ii === startIndex){
+                  tmpRowspanArr.forEach((tmp) => {
+                    let toInsertTd = tmp.node.cloneNode(true);
+                    if (trs[ii].children.length >= tmp.cellIndex+1){
+                      trs[ii].insertBefore(toInsertTd, trs[ii].children[tmp.cellIndex]);
+                    }else {
+                      trs[ii].appendChild(toInsertTd);
+                    }
+                    // node.insertBefore(toInsertTd, node.children[tmp.cellIndex]);
+                  });
+                }
+
+                node.childNodes.forEach((child) => {
+                  if (typeof child.style !== 'undefined'){
+                    // display none 이 아니며 d-none 클래스가 없는 경우
+                    if ((child.style.display !== 'none' && !child.classList.contains('d-none'))) {
+                      // child 가 rowspan을 가지고 있을 경우
+                      if (child.hasAttribute('rowspan') && parseInt(child.getAttribute('rowspan')) > 1) {
+                        let tdObj = child.cloneNode(true);
+                        tmpRowspanArr.push({
+                          node: tdObj,
+                          cellIndex: child.cellIndex,
+                        });
+                      }
+                    }
+                  }
+                });
+
+                for (let t = tmpRowspanArr.length - 1; t >= 0; t--) {
+                  const tmp = tmpRowspanArr[t];
+                  tmp.node.setAttribute('rowspan', parseInt(tmp.node.getAttribute('rowspan')) - 1);
+                  if (parseInt(tmp.node.getAttribute('rowspan')) === 0) {
+                    tmpRowspanArr.splice(t, 1);
+                  }
+                }
+
+              }
             }
-          }
-
-          let diff = rowCountPerPage - tb.querySelectorAll('tr:not([style*="display: none"])').length;
-          if (diff > 0) {
-            for (let ii = 0; ii < diff; ii++) {
-              let tr = document.createElement('tr');
-              let td = document.createElement('td');
-              td.setAttribute('colspan', '100');
-              tr.appendChild(td);
-              // tb 의 마지막 tr 바로 앞에 추가
-              tb.insertBefore(tr, tb.querySelector('tr:last-of-type'));
+  
+            let diff = rowCountPerPage - tb.querySelectorAll('tr:not([style*="display: none"])').length;
+            if (diff > 0) {
+              for (let ii = 0; ii < diff; ii++) {
+                let tr = document.createElement('tr');
+                let td = document.createElement('td');
+                if (trTdClass){
+                  tr.classList.add(trTdClass);
+                  td.classList.add(trTdClass);
+                }
+                // td 높이 맞춤을 위한 빈 특수문자 삽입
+                td.innerText = '　';
+                td.setAttribute('colspan', '100');
+                tr.appendChild(td);
+                if (hasTotalRow){
+                  // tb 의 마지막 tr 바로 앞에 추가
+                  tb.insertBefore(tr, tb.querySelector('tr:last-of-type'));
+                }else {
+                  tb.appendChild(tr);
+                }
+              }
             }
+  
+            htmlBody += `<div style="position: relative; margin-top: ${marginTopBottom}mm; margin-bottom: ${marginTopBottom}mm;"> 
+                            ${copiedElement.outerHTML}
+                          </div>`;
+  
+            startIndex = endIndex;
+            endIndex += rowCountPerPage;
           }
-
-          // copiedElement.style.marginBottom = `${marginTopBottom}mm`;
-          // if (i > 0) {
-          //   copiedElement.style.marginTop = `${marginTopBottom}mm`;
-          // }
-          htmlBody += `<div style="position: relative; margin-top: ${marginTopBottom}mm; margin-bottom: ${marginTopBottom}mm; height: ${297+marginTopBottom*2*2}mm;"> 
-                          ${copiedElement.outerHTML}
-                          ${pageCount > 1 ? `<p style="position: absolute; bottom: -1mm; right: 50%;">${i+1}/${pageCount}</p>` : ''}
-                        </div>`;
-
-          startIndex = endIndex;
-          endIndex += rowCountPerPage;
-        }
-
-        const a4Width = `${210+marginLeftRight*2}mm`;
-        const a4Height = `${pageCount*(297+marginTopBottom*2*2)}mm`;
-
-        const styleCopy = this.copyStyleToNewWindowWithoutHover();
-        // 미리보기 팝업을 띄우기
-        if (await this.showConfirm(`프린트를 위한 팝업창을 허용하시겠습니까?`) === false) {
-          reject('팝업창 허용이 필요합니다.');
-          return;
-        }else {
+  
+          if (isWidePage){
+            const toCalcSizeElement = document.createElement('div');
+            document.body.appendChild(toCalcSizeElement);
+            toCalcSizeElement.innerHTML = htmlBody;
+            a4Width = `${this.pxToMm(toCalcSizeElement.offsetWidth)+marginLeftRight*2}mm`;
+            a4Height = `${pageCount*(this.pxToMm(toCalcSizeElement.offsetWidth)*1.4141+marginTopBottom*2*2)}mm`;
+            document.body.removeChild(toCalcSizeElement);
+          }else {
+            a4Width = `${210+marginLeftRight*2}mm`;
+            a4Height = `${pageCount*(297+marginTopBottom*2*2)}mm`;
+          }
+  
+          const styleCopy = this.copyStyleToNewWindowWithoutHover();
           // 미리보기 팝업을 띄우기
-          const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
-          const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body style="margin: 0px;">${htmlBody}</body></html>`;
-          previewPopup.document.write(previewContent);
+          if (await this.showConfirm(`프린트를 위한 팝업창을 허용하시겠습니까?`) === false) {
+            resolve('팝업창 허용이 필요합니다.');
+            return;
+          }else {
+            let previewPopup;
+            let previewContent;
 
-          previewPopup.document.childNodes[0].style.width = a4Width;
-          previewPopup.document.childNodes[0].style.height = a4Height;
+            // 미리보기 팝업을 띄우기
+            previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
+            previewContent = `<html><head><title>Print Preview</title><style>.d-none{display:none}${styleCopy}</style></head><body style="margin: 0px;">${htmlBody}</body></html>`;
+            previewPopup.document.write(previewContent);
+  
+            previewPopup.document.childNodes[0].style.width = a4Width;
+            previewPopup.document.childNodes[0].style.height = a4Height;
+  
+  
+            // 포커스를 설정하고 0.5초 뒤에 프린트 도구 시작
+            setTimeout(async () => {
+              previewPopup.focus();
 
+              const imgTags = previewPopup.document.childNodes[0].querySelectorAll('img');
+              imgTags.forEach((img) => {
+                img.style.imageRendering = 'optimizeQuality';
+              });
+              
+              const pdf = new jsPDF("p", "mm", "a4");
+              const pdfWidth = 210; // A4 너비(mm)
+              const pdfHeight = 297; // A4 높이(mm)
 
-          // 포커스를 설정하고 0.5초 뒤에 프린트 도구 시작
-          setTimeout(async () => {
-            previewPopup.focus();
-
-            
-            const imgTags = previewPopup.document.childNodes[0].querySelectorAll('img');
-            imgTags.forEach((img) => {
-              img.style.imageRendering = 'optimizeQuality';
-            });
-            
-            const pdf = new jsPDF("p", "mm", "a4");
-            const pdfWidth = 210; // A4 너비(mm)
-            const pdfHeight = 297; // A4 높이(mm)
-
-            if (printPagesPerDiv){
               for (let d = 0; d < previewPopup.document.childNodes[0].childNodes[1].childNodes.length; d++) {
                 const div = previewPopup.document.childNodes[0].childNodes[1].childNodes[d];
                 // HTML 요소를 캡처하여 캔버스로 변환
@@ -1697,300 +1812,83 @@ mux.Util = {
                     const cuttedCtx = cuttedCanvas.getContext('2d');
                     // drawImage(image: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number)
                     cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
-                    // // 남는 아래 공간을 흰색 여백으로 채우기
-                    // if (pxHeight < cuttedCanvas.height) {
-                    //   cuttedCtx.fillStyle = 'white';
-                    //   cuttedCtx.fillRect(0, pxHeight, cuttedCanvas.width, cuttedCanvas.height - pxHeight);
-                    // }
                     cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
 
                   }
   
-                  // 이미지를 삽입
+                  // 이미지를 삽입(origin 로직이 아니라 사실상 반복문이 아님)
                   cuttedImgDataArr.forEach((imgData, index) => {
                     if (d > 0 || index > 0) pdf.addPage();
                     pdf.addImage(imgData, "JPEG", marginLeftRight, marginTopBottom, imgWidth, imgHeightPerPageArr[index]);
                   });
+
+                  if (previewPopup.document.childNodes[0].childNodes[1].childNodes.length > 1){
+                    // 페이지 번호 추가
+                    const pageNumber = pdf.internal.getNumberOfPages();
+                    pdf.setFontSize(10);
+                    pdf.text(`${pageNumber}/${previewPopup.document.childNodes[0].childNodes[1].childNodes.length}`, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 5, { align: 'center' });
+                  }
   
                 });
               }
-            }else {
-
+              
+              // // PDF 저장
+              // pdf.save(fileName+'.pdf');
+              
+              // PDF 인쇄
+              pdf.autoPrint();
+              pdf.output('dataurlnewwindow');
   
-              // HTML 요소를 캡처하여 캔버스로 변환
-              await html2canvas(previewPopup.document.childNodes[0], { scale: 2 }).then((canvas) => {
-
-                // mm
-                const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
-                const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
-
-                // mm
-                let heightLeft = imgHeight; // 남은 높이 계산
-                // let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
-                
-                // pdf 높이에서 상하 여백을 뺀 높이
-                let pdfHeightMinusMargin = pdfHeight;
-                let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
-                while(heightLeft > 0){
-                  if (heightLeft < pdfHeightMinusMargin){
-                    imgHeightPerPageArr.push(heightLeft);
-                  }else {
-                    imgHeightPerPageArr.push(pdfHeightMinusMargin);
-                  }
-                  heightLeft -= pdfHeightMinusMargin;
-                }
-
-                let cuttedImgDataArr = [];
-                for (let i = 0; i < imgHeightPerPageArr.length; i++) {
-                  let prevPxHeight = 0;
-                  for (let ii = 0; ii < i; ii++) {
-                    prevPxHeight += imgHeightPerPageArr[ii] * canvas.width / imgWidth;
-                  }
-                  const pxHeight = imgHeightPerPageArr[i] * canvas.width / imgWidth;
-                  const cuttedCanvas = document.createElement('canvas');
-                  cuttedCanvas.width = canvas.width;
-                  cuttedCanvas.height = pxHeight;
-                  const cuttedCtx = cuttedCanvas.getContext('2d');
-                  // drawImage(image: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number)
-                  cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
-                  // // 남는 아래 공간을 흰색 여백으로 채우기
-                  // if (pxHeight < cuttedCanvas.height) {
-                  //   cuttedCtx.fillStyle = 'white';
-                  //   cuttedCtx.fillRect(0, pxHeight, cuttedCanvas.width, cuttedCanvas.height - pxHeight);
-                  // }
-                  cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
-
-                }
-
-                // 이미지를 삽입
-                cuttedImgDataArr.forEach((imgData, index) => {
-                  if (index > 0) pdf.addPage();
-                  pdf.addImage(imgData, "JPEG", marginLeftRight, 0, imgWidth, imgHeightPerPageArr[index]);
-                });
-              });
-            }
-            
-            // // PDF 저장
-            // pdf.save(fileName+'.pdf');
-            
-            // PDF 인쇄
-            pdf.autoPrint();
-            pdf.output('dataurlnewwindow');
-            
-            setTimeout(() => {
-              resolve();
-              // 프린트 도구가 닫히면 팝업도 닫기
+              // // PDF 반환
+              // const pdfBlob = pdf.output('blob');
+              // const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
+              // resolve(file);
+              
               setTimeout(() => {
-                previewPopup.close();
+                resolve();
+                // 프린트 도구가 닫히면 팝업도 닫기
+                setTimeout(() => {
+                  previewPopup.close();
+                }, 500);
               }, 500);
+  
             }, 500);
-
-          }, 500);
+          }
+          
+  
+        } catch (error) {
+          console.warn(error);
+          reject();
         }
-        
 
-      } catch (error) {
-        console.warn(error);
-        reject();
-      }
-    });
-  },
-
-  async getPDF(element, fileName = 'data', marginTopBottom = 10, sinceSecondPagePlusMargin = 0, marginLeftRight = 10){
-    return new Promise(async (resolve, reject) => {
-      try {
-        let thisElement;
-        if (element.$el){
-          thisElement = element.$el;
-        }else {
-          thisElement = element;
-        }
-        const imgTags = thisElement.querySelectorAll('img');
-        imgTags.forEach((img) => {
-          img.style.imageRendering = 'optimizeQuality';
-        });
-
-        setTimeout(async() => {
-
-          // HTML 요소를 캡처하여 캔버스로 변환
-          html2canvas(thisElement, { scale: 2 }).then((canvas) => {
-
-            const pdf = new jsPDF("p", "mm", "a4");
-            const pdfWidth = 210; // A4 너비(mm)
-            const pdfHeight = 297; // A4 높이(mm)
-            
-            const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
-            const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
-
-            let heightLeft = imgHeight; // 남은 높이 계산
-            let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
-            
-            // pdf 높이에서 상하 여백을 뺀 높이
-            let pdfHeightMinusMargin = pdfHeight - 2 * marginTopBottom;
-            let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
-            while(heightLeft > 0){
-              if (heightLeft < pdfHeightMinusMargin){
-                imgHeightPerPageArr.push(heightLeft);
-              }else {
-                if (imgHeightPerPageArr.length === 1) {
-                  pdfHeightMinusMargin = pdfHeightMinusMargin - 2 * sinceSecondPagePlusMargin;
-                }
-                imgHeightPerPageArr.push(pdfHeightMinusMargin);
-              }
-              heightLeft -= pdfHeightMinusMargin;
-            }
-
-            let cuttedImgDataArr = [];
-            for (let i = 0; i < imgHeightPerPageArr.length; i++) {
-              let prevPxHeight = 0;
-              for (let ii = 0; ii < i; ii++) {
-                prevPxHeight += imgHeightPerPageArr[ii] * canvas.width / imgWidth;
-              }
-              const pxHeight = imgHeightPerPageArr[i] * canvas.width / imgWidth;
-              const cuttedCanvas = document.createElement('canvas');
-              cuttedCanvas.width = canvas.width;
-              cuttedCanvas.height = pxHeight;
-              const cuttedCtx = cuttedCanvas.getContext('2d');
-              cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
-              cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
-            }
-
-            // 이미지를 삽입
-            cuttedImgDataArr.forEach((imgData, index) => {
-              if (index > 0) pdf.addPage();
-              pdf.addImage(imgData, "JPEG", marginLeftRight, index === 0 ? position : position+sinceSecondPagePlusMargin, imgWidth, imgHeightPerPageArr[index]);
-            });
-
-            // // PDF 저장
-            // pdf.save(fileName+'.pdf');
-
-            // // PDF 인쇄
-            // pdf.autoPrint();
-            // pdf.output('dataurlnewwindow');
-
-            // PDF 반환
-            const pdfBlob = pdf.output('blob');
-            const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
-            resolve(file);
+      }else { // originPrintLogic
+        try {
+          let thisElement;
+          if (element.$el){
+            thisElement = element.$el;
+          }else {
+            thisElement = element;
+          }
+          const imgTags = thisElement.querySelectorAll('img');
+          imgTags.forEach((img) => {
+            img.style.imageRendering = 'optimizeQuality';
           });
-
-          setTimeout(() => {
-            resolve();
-          }, 500);
-        }, 1000);
-
-      } catch (error) {
-        // console.warn(error);
-        reject(error);
-      }
-      // try {
-      //   let thisElement;
-      //   if (element.$el){
-      //     thisElement = element.$el;
-      //   }else {
-      //     thisElement = element;
-      //   }
-      //   const a4Width = 1240;
-      //   const a4Height = 1754;
-
-      //   const styleCopy = this.copyStyleToNewWindowWithoutHover();
-      //   // 미리보기 팝업을 띄우기
-      //   if (await this.showConfirm(`${fileName} PDF 파일 생성을 위한 팝업창을 허용하시겠습니까?`) === false) {
-      //     reject('팝업창 허용이 필요합니다.');
-      //     return;
-      //   }else {
-      //     const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
-      //     const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
-      //     previewPopup.document.write(previewContent);
-
-      //     // 포커스를 설정하고 1초 뒤에 프린트 도구 시작
-      //     setTimeout(async() => {
-      //       previewPopup.focus();
-
-      //       // PDF 생성 옵션 설정
-      //       const options = {
-      //         // margin: [15, 0, 15, 0], // top, right, bottom, left 마진 여백
-      //         margin: 10,
-      //         filename: fileName+'.pdf', // Pdf 파일 명
-      //         pagebreak: { mode: 'avoid-all' }, // pagebreak 옵션
-      //         // image: { type: 'pdf', quality: 1 },
-      //         image: { type: 'jpeg', quality: 1 }, // 이미지 퀄리티 (pdf 들어갈 영역을 사진을 찍어 변환 하기 때문에 이미지 퀄리티 = pdf 퀄리티
-      //         html2canvas: { // html2canvas 옵션
-      //           useCORS: true, // 영역 안에 로컬 이미지를 삽입 할 때 옵션 필요
-      //           scrollY: 0, // 스크롤 이슈 때문에 필수
-      //           scale: 2, // browsers device pixel ratio !! 1로 하면 부분적으로 회색 영역 생겨서 2로 해야 함
-      //           dpi: 300,
-      //           letterRendering: true,
-      //           allowTaint: false, //useCORS를 true로 설정 시 반드시 allowTaint를 false처리 해주어야함
-      //         },
-      //         // jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' }
-      //         jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
-      //       };
-
-      //       // HTML을 PDF로 변환하여 다운로드
-      //       const pdfBlob = await html2pdf().set(options).from(previewPopup.document.body).output('blob');
-      //       const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
-      //       resolve(file);
-
-      //       // 프린트 도구가 닫히면 팝업도 닫기
-      //       setTimeout(() => {
-      //         previewPopup.close();
-      //         resolve();
-      //       }, 500);
-      //     }, 1000);
-      //   }
-
-      // } catch (error) {
-      //   // console.warn(error);
-      //   reject(error);
-      // }
-    });
-  },
-
-  async downloadPDF(element, fileName = 'data', marginTopBottom = 10, sinceSecondPagePlusMargin = 0, marginLeftRight = 10){
-    return new Promise(async (resolve, reject) => {
-      try {
-        let thisElement;
-        if (element.$el){
-          thisElement = element.$el;
-        }else {
-          thisElement = element;
-        }
-        const imgTags = thisElement.querySelectorAll('img');
-        imgTags.forEach((img) => {
-          img.style.imageRendering = 'optimizeQuality';
-        });
-        // const a4Width = 1240;
-        // const a4Height = 1754;
-
-        // const styleCopy = this.copyStyleToNewWindowWithoutHover();
-        // 미리보기 팝업을 띄우기
-        // if (await this.showConfirm(`${fileName} PDF 파일을 다운로드하시겠습니까?`) === false) {
-        //   resolve();
-        //   return;
-        // }else {
-          // const previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
-          // const previewContent = `<html><head><title>Print Preview</title><style>${styleCopy}</style></head><body>${thisElement.outerHTML}</body></html>`;
-          // previewPopup.document.write(previewContent);
-
-          // 포커스를 설정하고 1초 뒤에 프린트 도구 시작
+  
           setTimeout(async() => {
-            // previewPopup.focus();
-
+  
             // HTML 요소를 캡처하여 캔버스로 변환
             html2canvas(thisElement, { scale: 2 }).then((canvas) => {
-              // const imgData = canvas.toDataURL("image/jpeg", 1.0);  // 캡처한 이미지를 JPEG 형식으로 저장
-
+  
               const pdf = new jsPDF("p", "mm", "a4");
               const pdfWidth = 210; // A4 너비(mm)
               const pdfHeight = 297; // A4 높이(mm)
-
+              
               const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
               const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
-
+  
               let heightLeft = imgHeight; // 남은 높이 계산
               let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
-
+              
               // pdf 높이에서 상하 여백을 뺀 높이
               let pdfHeightMinusMargin = pdfHeight - 2 * marginTopBottom;
               let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
@@ -1998,14 +1896,11 @@ mux.Util = {
                 if (heightLeft < pdfHeightMinusMargin){
                   imgHeightPerPageArr.push(heightLeft);
                 }else {
-                  if (imgHeightPerPageArr.length === 1) {
-                    pdfHeightMinusMargin = pdfHeightMinusMargin - 2 * sinceSecondPagePlusMargin;
-                  }
                   imgHeightPerPageArr.push(pdfHeightMinusMargin);
                 }
                 heightLeft -= pdfHeightMinusMargin;
               }
-
+  
               let cuttedImgDataArr = [];
               for (let i = 0; i < imgHeightPerPageArr.length; i++) {
                 let prevPxHeight = 0;
@@ -2020,68 +1915,820 @@ mux.Util = {
                 cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
                 cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
               }
-
+  
               // 이미지를 삽입
               cuttedImgDataArr.forEach((imgData, index) => {
                 if (index > 0) pdf.addPage();
-                pdf.addImage(imgData, "JPEG", marginLeftRight, index === 0 ? position : position+sinceSecondPagePlusMargin, imgWidth, imgHeightPerPageArr[index]);
+                pdf.addImage(imgData, "JPEG", marginLeftRight, position, imgWidth, imgHeightPerPageArr[index]);
               });
-
-              // PDF 저장
-              pdf.save(fileName+'.pdf');
-
-              // // PDF 인쇄
-              // pdf.autoPrint();
-              // pdf.output('dataurlnewwindow');
+  
+              // // PDF 저장
+              // pdf.save(fileName+'.pdf');
+              
+              // PDF 인쇄
+              pdf.autoPrint();
+              pdf.output('dataurlnewwindow');
+  
+              // // PDF 반환
+              // const pdfBlob = pdf.output('blob');
+              // const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
+              // resolve(file);
             });
-            // html2canvas(thisElement, { scale: 3 }).then((canvas) => {
-            //   const imgData = canvas.toDataURL("image/jpeg", 1.0);  // 캡처한 이미지를 JPEG 형식으로 저장
-
-            //   // A4 크기의 PDF 생성
-            //   const pdf = new jsPDF("p", "mm", "a4");
-            //   const pdfWidth = 210; // A4 너비(mm)
-            //   const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
-
-            //   // 이미지가 A4 크기에 맞게 조정되어 삽입
-            //   pdf.addImage(imgData, "JPEG", 10, 10, pdfWidth - 20, pdfHeight - 20);
-
-            //   // PDF 저장
-            //   pdf.save(fileName+'.pdf');
-            // });
-            // // PDF 생성 옵션 설정
-            // const options = {
-            //   // margin: [15, 0, 15, 0], // top, right, bottom, left 마진 여백
-            //   margin: 10,
-            //   filename: fileName+'.pdf', // Pdf 파일 명
-            //   pagebreak: { mode: 'avoid-all' }, // pagebreak 옵션
-            //   // image: { type: 'pdf', quality: 1 },
-            //   image: { type: 'jpeg', quality: 1 }, // 이미지 퀄리티 (pdf 들어갈 영역을 사진을 찍어 변환 하기 때문에 이미지 퀄리티 = pdf 퀄리티
-            //   html2canvas: { // html2canvas 옵션
-            //     useCORS: true, // 영역 안에 로컬 이미지를 삽입 할 때 옵션 필요
-            //     scrollY: 0, // 스크롤 이슈 때문에 필수
-            //     scale: 2, // browsers device pixel ratio !! 1로 하면 부분적으로 회색 영역 생겨서 2로 해야 함
-            //     dpi: 300,
-            //     letterRendering: true,
-            //     allowTaint: false, //useCORS를 true로 설정 시 반드시 allowTaint를 false처리 해주어야함
-            //   },
-            //   // jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' }
-            //   jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
-            // };
-
-            // // HTML을 PDF로 변환하여 다운로드
-            // html2pdf().set(options).from(previewPopup.document.body).save();
-
-            // 프린트 도구가 닫히면 팝업도 닫기
+  
             setTimeout(() => {
-              // previewPopup.close();
               resolve();
             }, 500);
           }, 1000);
-        // }
+  
+        } catch (error) {
+          console.warn(error);
+          reject();
+        }
+      }
+    });
+  },
 
-      } catch (error) {
-        // console.warn(error);
-        reject(error);
+  /**
+   * 전달 받은 HTML 의 PDF 파일 생성
+   * @param {HTMLElement} element
+   * @param {Object} paramObj
+   * @param {string} paramObj.fileName - 파일명(기본값: 'data')
+   * @param {number} paramObj.countingTableIndex - 테이블 인덱스(기본: 마지막 테이블)
+   * @param {number} paramObj.rowCountPerPage - 페이지당 행 수(기본값: 27)
+   * @param {number} paramObj.marginTopBottom - 페이지 상하 여백(기본값: 10)
+   * @param {number} paramObj.marginLeftRight - 페이지 좌우 여백(기본값: 10)
+   * @param {boolean} paramObj.isWidePage - 넓은 페이지 여부(기본값: false)
+   * @param {boolean} paramObj.hasTotalRow - 총합 행 여부(기본값: false
+   * @param {boolean} paramObj.trTdClass - tr, td에 추가할 클래스명(기본값: '')
+   * @param {boolean} paramObj.originPrintLogic - 기존 프린트 로직 사용 여부(기본값: false)
+   * @example
+   * mux.Util.getPDF(element, {fileName: 'data', countingTableIndex: 3, rowCountPerPage: 27, marginTopBottom: 10, marginLeftRight: 10, isWidePage: false, hasTotalRow: false, trTdClass: 'approve_text', originPrintLogic: false});
+   * @memberof mux.Util
+   * @inner
+   * @private
+   * @returns {Promise}
+   */
+  async getPDF(element, paramObj){
+    let fileName = 'data';
+    let countingTableIndex = -1;
+    let rowCountPerPage = 27;
+    let marginTopBottom = 10;
+    let marginLeftRight = 10;
+    let isWidePage = false;
+    let hasTotalRow = false;
+    let trTdClass = '';
+    let originPrintLogic = false;
+    if (typeof paramObj === 'object'){
+      if (paramObj.fileName){
+        fileName = paramObj.fileName;
+      }
+      if (paramObj.countingTableIndex){
+        countingTableIndex = paramObj.countingTableIndex;
+      }
+      if (paramObj.rowCountPerPage){
+        rowCountPerPage = paramObj.rowCountPerPage;
+      }
+      if (paramObj.marginTopBottom){
+        marginTopBottom = paramObj.marginTopBottom;
+      }
+      if (paramObj.marginLeftRight){
+        marginLeftRight = paramObj.marginLeftRight;
+      }
+      if (paramObj.isWidePage){
+        isWidePage = paramObj.isWidePage;
+      }
+      if (paramObj.hasTotalRow){
+        hasTotalRow = paramObj.hasTotalRow;
+      }
+      if (paramObj.trTdClass){
+        trTdClass = paramObj.trTdClass;
+      }
+      if (paramObj.originPrintLogic){
+        originPrintLogic = paramObj.originPrintLogic;
+      }
+    }
+
+    return new Promise(async (resolve, reject) => {
+      if (!originPrintLogic){
+        try {
+          let thisElement;
+          if (element.$el){
+            thisElement = element.$el;
+          }else {
+            thisElement = element;
+          }
+  
+          let a4Width;
+          let a4Height;
+          let htmlBody = '';
+
+          let tableList = thisElement.querySelectorAll('table');
+          let countingTable = tableList[countingTableIndex < 0 ? tableList.length - 1 : countingTableIndex];
+          let tbody = countingTable.querySelector('tbody');
+          let trList = tbody.querySelectorAll('tr:not([style*="display: none"])');
+  
+          // NodeList를 배열로 변환
+          let trArray = Array.from(trList);
+  
+          // rowCountPerPage 기준으로 행을 나누기
+          let startIndex = 0;
+          let endIndex = rowCountPerPage;
+          let pageCount = Math.ceil(trArray.length / rowCountPerPage);
+  
+          let tmpRowspanArr = [];
+          // 페이지 만들기
+          for (let i = 0; i < pageCount; i++) {
+            let copiedElement = thisElement.cloneNode(true);
+  
+            let tables = copiedElement.querySelectorAll('table');
+            let targetTable = tables[countingTableIndex < 0 ? tables.length - 1 : countingTableIndex];
+            let tb = targetTable.querySelector('tbody');
+            let trs = tb.querySelectorAll('tr:not([style*="display: none"])');
+  
+            // NodeList를 배열로 변환
+            let array = Array.from(trs);
+            
+            for (let ii = 0; ii < array.length; ii++) {
+              const node = array[ii];
+              
+              if (ii < startIndex || ii >= endIndex) {
+                tb.removeChild(node);
+              }else {
+                
+                if (ii === startIndex){
+                  tmpRowspanArr.forEach((tmp) => {
+                    let toInsertTd = tmp.node.cloneNode(true);
+                    if (trs[ii].children.length >= tmp.cellIndex+1){
+                      trs[ii].insertBefore(toInsertTd, trs[ii].children[tmp.cellIndex]);
+                    }else {
+                      trs[ii].appendChild(toInsertTd);
+                    }
+                    // node.insertBefore(toInsertTd, node.children[tmp.cellIndex]);
+                  });
+                }
+
+                node.childNodes.forEach((child) => {
+                  if (typeof child.style !== 'undefined'){
+                    // display none 이 아니며 d-none 클래스가 없는 경우
+                    if ((child.style.display !== 'none' && !child.classList.contains('d-none'))) {
+                      // child 가 rowspan을 가지고 있을 경우
+                      if (child.hasAttribute('rowspan') && parseInt(child.getAttribute('rowspan')) > 1) {
+                        let tdObj = child.cloneNode(true);
+                        tmpRowspanArr.push({
+                          node: tdObj,
+                          cellIndex: child.cellIndex,
+                        });
+                      }
+                    }
+                  }
+                });
+
+                for (let t = tmpRowspanArr.length - 1; t >= 0; t--) {
+                  const tmp = tmpRowspanArr[t];
+                  tmp.node.setAttribute('rowspan', parseInt(tmp.node.getAttribute('rowspan')) - 1);
+                  if (parseInt(tmp.node.getAttribute('rowspan')) === 0) {
+                    tmpRowspanArr.splice(t, 1);
+                  }
+                }
+
+              }
+            }
+  
+            let diff = rowCountPerPage - tb.querySelectorAll('tr:not([style*="display: none"])').length;
+            if (diff > 0) {
+              for (let ii = 0; ii < diff; ii++) {
+                let tr = document.createElement('tr');
+                let td = document.createElement('td');
+                if (trTdClass){
+                  tr.classList.add(trTdClass);
+                  td.classList.add(trTdClass);
+                }
+                // td 높이 맞춤을 위한 빈 특수문자 삽입
+                td.innerText = '　';
+                td.setAttribute('colspan', '100');
+                tr.appendChild(td);
+                if (hasTotalRow){
+                  // tb 의 마지막 tr 바로 앞에 추가
+                  tb.insertBefore(tr, tb.querySelector('tr:last-of-type'));
+                }else {
+                  tb.appendChild(tr);
+                }
+              }
+            }
+  
+            htmlBody += `<div style="position: relative; margin-top: ${marginTopBottom}mm; margin-bottom: ${marginTopBottom}mm;"> 
+                            ${copiedElement.outerHTML}
+                          </div>`;
+  
+            startIndex = endIndex;
+            endIndex += rowCountPerPage;
+          }
+  
+          if (isWidePage){
+            const toCalcSizeElement = document.createElement('div');
+            document.body.appendChild(toCalcSizeElement);
+            toCalcSizeElement.innerHTML = htmlBody;
+            a4Width = `${this.pxToMm(toCalcSizeElement.offsetWidth)+marginLeftRight*2}mm`;
+            a4Height = `${pageCount*(this.pxToMm(toCalcSizeElement.offsetWidth)*1.4141+marginTopBottom*2*2)}mm`;
+            document.body.removeChild(toCalcSizeElement);
+          }else {
+            a4Width = `${210+marginLeftRight*2}mm`;
+            a4Height = `${pageCount*(297+marginTopBottom*2*2)}mm`;
+          }
+  
+          const styleCopy = this.copyStyleToNewWindowWithoutHover();
+          // 미리보기 팝업을 띄우기
+          if (await this.showConfirm(`PDF 파일 생성을 위한 팝업창을 허용하시겠습니까?`) === false) {
+            resolve('팝업창 허용이 필요합니다.');
+            return;
+          }else {
+            let previewPopup;
+            let previewContent;
+
+            // 미리보기 팝업을 띄우기
+            previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
+            previewContent = `<html><head><title>Print Preview</title><style>.d-none{display:none}${styleCopy}</style></head><body style="margin: 0px;">${htmlBody}</body></html>`;
+            previewPopup.document.write(previewContent);
+  
+            previewPopup.document.childNodes[0].style.width = a4Width;
+            previewPopup.document.childNodes[0].style.height = a4Height;
+  
+  
+            // 포커스를 설정하고 0.5초 뒤에 프린트 도구 시작
+            setTimeout(async () => {
+              previewPopup.focus();
+
+              const imgTags = previewPopup.document.childNodes[0].querySelectorAll('img');
+              imgTags.forEach((img) => {
+                img.style.imageRendering = 'optimizeQuality';
+              });
+              
+              const pdf = new jsPDF("p", "mm", "a4");
+              const pdfWidth = 210; // A4 너비(mm)
+              const pdfHeight = 297; // A4 높이(mm)
+
+              for (let d = 0; d < previewPopup.document.childNodes[0].childNodes[1].childNodes.length; d++) {
+                const div = previewPopup.document.childNodes[0].childNodes[1].childNodes[d];
+                // HTML 요소를 캡처하여 캔버스로 변환
+                await html2canvas(div, { scale: 2 }).then((canvas) => {
+                  
+                  // mm
+                  const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
+                  const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
+  
+                  // mm
+                  let heightLeft = imgHeight; // 남은 높이 계산
+                  // let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
+                  
+                  // pdf 높이에서 상하 여백을 뺀 높이
+                  let pdfHeightMinusMargin = pdfHeight;
+                  let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
+                  while(heightLeft > 0){
+                    if (heightLeft < pdfHeightMinusMargin){
+                      imgHeightPerPageArr.push(heightLeft);
+                    }else {
+                      imgHeightPerPageArr.push(pdfHeightMinusMargin);
+                    }
+                    heightLeft -= pdfHeightMinusMargin;
+                  }
+  
+                  let cuttedImgDataArr = [];
+                  for (let i = 0; i < imgHeightPerPageArr.length; i++) {
+                    let prevPxHeight = 0;
+                    for (let ii = 0; ii < i; ii++) {
+                      prevPxHeight += imgHeightPerPageArr[ii] * canvas.width / imgWidth;
+                    }
+                    const pxHeight = imgHeightPerPageArr[i] * canvas.width / imgWidth;
+                    const cuttedCanvas = document.createElement('canvas');
+                    cuttedCanvas.width = canvas.width;
+                    cuttedCanvas.height = pxHeight;
+                    const cuttedCtx = cuttedCanvas.getContext('2d');
+                    // drawImage(image: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number)
+                    cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
+                    cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
+
+                  }
+  
+                  // 이미지를 삽입(origin 로직이 아니라 사실상 반복문이 아님)
+                  cuttedImgDataArr.forEach((imgData, index) => {
+                    if (d > 0 || index > 0) pdf.addPage();
+                    pdf.addImage(imgData, "JPEG", marginLeftRight, marginTopBottom, imgWidth, imgHeightPerPageArr[index]);
+                  });
+
+                  if (previewPopup.document.childNodes[0].childNodes[1].childNodes.length > 1){
+                    // 페이지 번호 추가
+                    const pageNumber = pdf.internal.getNumberOfPages();
+                    pdf.setFontSize(10);
+                    pdf.text(`${pageNumber}/${previewPopup.document.childNodes[0].childNodes[1].childNodes.length}`, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 5, { align: 'center' });
+                  }
+  
+                });
+              }
+              
+              // // PDF 저장
+              // pdf.save(fileName+'.pdf');
+              
+              // // PDF 인쇄
+              // pdf.autoPrint();
+              // pdf.output('dataurlnewwindow');
+  
+              // PDF 반환
+              const pdfBlob = pdf.output('blob');
+              const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
+              
+              setTimeout(() => {
+                resolve(file);
+                // 프린트 도구가 닫히면 팝업도 닫기
+                setTimeout(() => {
+                  previewPopup.close();
+                }, 500);
+              }, 500);
+  
+            }, 500);
+          }
+          
+  
+        } catch (error) {
+          console.warn(error);
+          reject();
+        }
+
+      }else { // originPrintLogic
+        try {
+          let thisElement;
+          if (element.$el){
+            thisElement = element.$el;
+          }else {
+            thisElement = element;
+          }
+          const imgTags = thisElement.querySelectorAll('img');
+          imgTags.forEach((img) => {
+            img.style.imageRendering = 'optimizeQuality';
+          });
+  
+          setTimeout(async() => {
+  
+            // HTML 요소를 캡처하여 캔버스로 변환
+            html2canvas(thisElement, { scale: 2 }).then((canvas) => {
+  
+              const pdf = new jsPDF("p", "mm", "a4");
+              const pdfWidth = 210; // A4 너비(mm)
+              const pdfHeight = 297; // A4 높이(mm)
+              
+              const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
+              const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
+  
+              let heightLeft = imgHeight; // 남은 높이 계산
+              let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
+              
+              // pdf 높이에서 상하 여백을 뺀 높이
+              let pdfHeightMinusMargin = pdfHeight - 2 * marginTopBottom;
+              let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
+              while(heightLeft > 0){
+                if (heightLeft < pdfHeightMinusMargin){
+                  imgHeightPerPageArr.push(heightLeft);
+                }else {
+                  imgHeightPerPageArr.push(pdfHeightMinusMargin);
+                }
+                heightLeft -= pdfHeightMinusMargin;
+              }
+  
+              let cuttedImgDataArr = [];
+              for (let i = 0; i < imgHeightPerPageArr.length; i++) {
+                let prevPxHeight = 0;
+                for (let ii = 0; ii < i; ii++) {
+                  prevPxHeight += imgHeightPerPageArr[ii] * canvas.width / imgWidth;
+                }
+                const pxHeight = imgHeightPerPageArr[i] * canvas.width / imgWidth;
+                const cuttedCanvas = document.createElement('canvas');
+                cuttedCanvas.width = canvas.width;
+                cuttedCanvas.height = pxHeight;
+                const cuttedCtx = cuttedCanvas.getContext('2d');
+                cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
+                cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
+              }
+  
+              // 이미지를 삽입
+              cuttedImgDataArr.forEach((imgData, index) => {
+                if (index > 0) pdf.addPage();
+                pdf.addImage(imgData, "JPEG", marginLeftRight, position, imgWidth, imgHeightPerPageArr[index]);
+              });
+  
+              // // PDF 저장
+              // pdf.save(fileName+'.pdf');
+              
+              // PDF 인쇄
+              pdf.autoPrint();
+              pdf.output('dataurlnewwindow');
+  
+              // // PDF 반환
+              // const pdfBlob = pdf.output('blob');
+              // const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
+              // resolve(file);
+            });
+  
+            setTimeout(() => {
+              resolve();
+            }, 500);
+          }, 1000);
+  
+        } catch (error) {
+          console.warn(error);
+          reject();
+        }
+      }
+    });
+  },
+
+  /**
+   * 전달 받은 HTML 의 PDF 파일 다운로드
+   * @param {HTMLElement} element
+   * @param {Object} paramObj
+   * @param {string} paramObj.fileName - 파일명(기본값: 'data')
+   * @param {number} paramObj.countingTableIndex - 테이블 인덱스(기본: 마지막 테이블)
+   * @param {number} paramObj.rowCountPerPage - 페이지당 행 수(기본값: 27)
+   * @param {number} paramObj.marginTopBottom - 페이지 상하 여백(기본값: 10)
+   * @param {number} paramObj.marginLeftRight - 페이지 좌우 여백(기본값: 10)
+   * @param {boolean} paramObj.isWidePage - 넓은 페이지 여부(기본값: false)
+   * @param {boolean} paramObj.hasTotalRow - 총합 행 여부(기본값: false
+   * @param {boolean} paramObj.trTdClass - tr, td에 추가할 클래스명(기본값: '')
+   * @param {boolean} paramObj.originPrintLogic - 기존 프린트 로직 사용 여부(기본값: false)
+   * @example
+   * mux.Util.downloadPDF(element, {fileName: 'data', countingTableIndex: 3, rowCountPerPage: 27, marginTopBottom: 10, marginLeftRight: 10, isWidePage: false, hasTotalRow: false, trTdClass: 'approve_text', originPrintLogic: false});
+   * @memberof mux.Util
+   * @inner
+   * @private
+   * @returns {Promise}
+   */
+  async downloadPDF(element, paramObj){
+    let fileName = 'data';
+    let countingTableIndex = -1;
+    let rowCountPerPage = 27;
+    let marginTopBottom = 10;
+    let marginLeftRight = 10;
+    let isWidePage = false;
+    let hasTotalRow = false;
+    let trTdClass = '';
+    let originPrintLogic = false;
+    if (typeof paramObj === 'object'){
+      if (paramObj.fileName){
+        fileName = paramObj.fileName;
+      }
+      if (paramObj.countingTableIndex){
+        countingTableIndex = paramObj.countingTableIndex;
+      }
+      if (paramObj.rowCountPerPage){
+        rowCountPerPage = paramObj.rowCountPerPage;
+      }
+      if (paramObj.marginTopBottom){
+        marginTopBottom = paramObj.marginTopBottom;
+      }
+      if (paramObj.marginLeftRight){
+        marginLeftRight = paramObj.marginLeftRight;
+      }
+      if (paramObj.isWidePage){
+        isWidePage = paramObj.isWidePage;
+      }
+      if (paramObj.hasTotalRow){
+        hasTotalRow = paramObj.hasTotalRow;
+      }
+      if (paramObj.trTdClass){
+        trTdClass = paramObj.trTdClass;
+      }
+      if (paramObj.originPrintLogic){
+        originPrintLogic = paramObj.originPrintLogic;
+      }
+    }
+
+    return new Promise(async (resolve, reject) => {
+      if (!originPrintLogic){
+        try {
+          let thisElement;
+          if (element.$el){
+            thisElement = element.$el;
+          }else {
+            thisElement = element;
+          }
+  
+          let a4Width;
+          let a4Height;
+          let htmlBody = '';
+
+          let tableList = thisElement.querySelectorAll('table');
+          let countingTable = tableList[countingTableIndex < 0 ? tableList.length - 1 : countingTableIndex];
+          let tbody = countingTable.querySelector('tbody');
+          let trList = tbody.querySelectorAll('tr:not([style*="display: none"])');
+  
+          // NodeList를 배열로 변환
+          let trArray = Array.from(trList);
+  
+          // rowCountPerPage 기준으로 행을 나누기
+          let startIndex = 0;
+          let endIndex = rowCountPerPage;
+          let pageCount = Math.ceil(trArray.length / rowCountPerPage);
+  
+          let tmpRowspanArr = [];
+          // 페이지 만들기
+          for (let i = 0; i < pageCount; i++) {
+            let copiedElement = thisElement.cloneNode(true);
+  
+            let tables = copiedElement.querySelectorAll('table');
+            let targetTable = tables[countingTableIndex < 0 ? tables.length - 1 : countingTableIndex];
+            let tb = targetTable.querySelector('tbody');
+            let trs = tb.querySelectorAll('tr:not([style*="display: none"])');
+  
+            // NodeList를 배열로 변환
+            let array = Array.from(trs);
+            
+            for (let ii = 0; ii < array.length; ii++) {
+              const node = array[ii];
+              
+              if (ii < startIndex || ii >= endIndex) {
+                tb.removeChild(node);
+              }else {
+                
+                if (ii === startIndex){
+                  tmpRowspanArr.forEach((tmp) => {
+                    let toInsertTd = tmp.node.cloneNode(true);
+                    if (trs[ii].children.length >= tmp.cellIndex+1){
+                      trs[ii].insertBefore(toInsertTd, trs[ii].children[tmp.cellIndex]);
+                    }else {
+                      trs[ii].appendChild(toInsertTd);
+                    }
+                    // node.insertBefore(toInsertTd, node.children[tmp.cellIndex]);
+                  });
+                }
+
+                node.childNodes.forEach((child) => {
+                  if (typeof child.style !== 'undefined'){
+                    // display none 이 아니며 d-none 클래스가 없는 경우
+                    if ((child.style.display !== 'none' && !child.classList.contains('d-none'))) {
+                      // child 가 rowspan을 가지고 있을 경우
+                      if (child.hasAttribute('rowspan') && parseInt(child.getAttribute('rowspan')) > 1) {
+                        let tdObj = child.cloneNode(true);
+                        tmpRowspanArr.push({
+                          node: tdObj,
+                          cellIndex: child.cellIndex,
+                        });
+                      }
+                    }
+                  }
+                });
+
+                for (let t = tmpRowspanArr.length - 1; t >= 0; t--) {
+                  const tmp = tmpRowspanArr[t];
+                  tmp.node.setAttribute('rowspan', parseInt(tmp.node.getAttribute('rowspan')) - 1);
+                  if (parseInt(tmp.node.getAttribute('rowspan')) === 0) {
+                    tmpRowspanArr.splice(t, 1);
+                  }
+                }
+
+              }
+            }
+  
+            let diff = rowCountPerPage - tb.querySelectorAll('tr:not([style*="display: none"])').length;
+            if (diff > 0) {
+              for (let ii = 0; ii < diff; ii++) {
+                let tr = document.createElement('tr');
+                let td = document.createElement('td');
+                if (trTdClass){
+                  tr.classList.add(trTdClass);
+                  td.classList.add(trTdClass);
+                }
+                // td 높이 맞춤을 위한 빈 특수문자 삽입
+                td.innerText = '　';
+                td.setAttribute('colspan', '100');
+                tr.appendChild(td);
+                if (hasTotalRow){
+                  // tb 의 마지막 tr 바로 앞에 추가
+                  tb.insertBefore(tr, tb.querySelector('tr:last-of-type'));
+                }else {
+                  tb.appendChild(tr);
+                }
+              }
+            }
+  
+            htmlBody += `<div style="position: relative; margin-top: ${marginTopBottom}mm; margin-bottom: ${marginTopBottom}mm;"> 
+                            ${copiedElement.outerHTML}
+                          </div>`;
+  
+            startIndex = endIndex;
+            endIndex += rowCountPerPage;
+          }
+  
+          if (isWidePage){
+            const toCalcSizeElement = document.createElement('div');
+            document.body.appendChild(toCalcSizeElement);
+            toCalcSizeElement.innerHTML = htmlBody;
+            a4Width = `${this.pxToMm(toCalcSizeElement.offsetWidth)+marginLeftRight*2}mm`;
+            a4Height = `${pageCount*(this.pxToMm(toCalcSizeElement.offsetWidth)*1.4141+marginTopBottom*2*2)}mm`;
+            document.body.removeChild(toCalcSizeElement);
+          }else {
+            a4Width = `${210+marginLeftRight*2}mm`;
+            a4Height = `${pageCount*(297+marginTopBottom*2*2)}mm`;
+          }
+  
+          const styleCopy = this.copyStyleToNewWindowWithoutHover();
+          // 미리보기 팝업을 띄우기
+          if (await this.showConfirm(`PDF 다운로드를 위한 팝업창을 허용하시겠습니까?`) === false) {
+            resolve('팝업창 허용이 필요합니다.');
+            return;
+          }else {
+            let previewPopup;
+            let previewContent;
+
+            // 미리보기 팝업을 띄우기
+            previewPopup = window.open('', '_blank', `width=${a4Width},height=${a4Height}`);
+            previewContent = `<html><head><title>Print Preview</title><style>.d-none{display:none}${styleCopy}</style></head><body style="margin: 0px;">${htmlBody}</body></html>`;
+            previewPopup.document.write(previewContent);
+  
+            previewPopup.document.childNodes[0].style.width = a4Width;
+            previewPopup.document.childNodes[0].style.height = a4Height;
+  
+  
+            // 포커스를 설정하고 0.5초 뒤에 프린트 도구 시작
+            setTimeout(async () => {
+              previewPopup.focus();
+
+              const imgTags = previewPopup.document.childNodes[0].querySelectorAll('img');
+              imgTags.forEach((img) => {
+                img.style.imageRendering = 'optimizeQuality';
+              });
+              
+              const pdf = new jsPDF("p", "mm", "a4");
+              const pdfWidth = 210; // A4 너비(mm)
+              const pdfHeight = 297; // A4 높이(mm)
+
+              for (let d = 0; d < previewPopup.document.childNodes[0].childNodes[1].childNodes.length; d++) {
+                const div = previewPopup.document.childNodes[0].childNodes[1].childNodes[d];
+                // HTML 요소를 캡처하여 캔버스로 변환
+                await html2canvas(div, { scale: 2 }).then((canvas) => {
+                  
+                  // mm
+                  const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
+                  const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
+  
+                  // mm
+                  let heightLeft = imgHeight; // 남은 높이 계산
+                  // let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
+                  
+                  // pdf 높이에서 상하 여백을 뺀 높이
+                  let pdfHeightMinusMargin = pdfHeight;
+                  let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
+                  while(heightLeft > 0){
+                    if (heightLeft < pdfHeightMinusMargin){
+                      imgHeightPerPageArr.push(heightLeft);
+                    }else {
+                      imgHeightPerPageArr.push(pdfHeightMinusMargin);
+                    }
+                    heightLeft -= pdfHeightMinusMargin;
+                  }
+  
+                  let cuttedImgDataArr = [];
+                  for (let i = 0; i < imgHeightPerPageArr.length; i++) {
+                    let prevPxHeight = 0;
+                    for (let ii = 0; ii < i; ii++) {
+                      prevPxHeight += imgHeightPerPageArr[ii] * canvas.width / imgWidth;
+                    }
+                    const pxHeight = imgHeightPerPageArr[i] * canvas.width / imgWidth;
+                    const cuttedCanvas = document.createElement('canvas');
+                    cuttedCanvas.width = canvas.width;
+                    cuttedCanvas.height = pxHeight;
+                    const cuttedCtx = cuttedCanvas.getContext('2d');
+                    // drawImage(image: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number)
+                    cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
+                    cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
+
+                  }
+  
+                  // 이미지를 삽입(origin 로직이 아니라 사실상 반복문이 아님)
+                  cuttedImgDataArr.forEach((imgData, index) => {
+                    if (d > 0 || index > 0) pdf.addPage();
+                    pdf.addImage(imgData, "JPEG", marginLeftRight, marginTopBottom, imgWidth, imgHeightPerPageArr[index]);
+                  });
+
+                  if (previewPopup.document.childNodes[0].childNodes[1].childNodes.length > 1){
+                    // 페이지 번호 추가
+                    const pageNumber = pdf.internal.getNumberOfPages();
+                    pdf.setFontSize(10);
+                    pdf.text(`${pageNumber}/${previewPopup.document.childNodes[0].childNodes[1].childNodes.length}`, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 5, { align: 'center' });
+                  }
+  
+                });
+              }
+              
+              // PDF 저장
+              pdf.save(fileName+'.pdf');
+              
+              // // PDF 인쇄
+              // pdf.autoPrint();
+              // pdf.output('dataurlnewwindow');
+  
+              // // PDF 반환
+              // const pdfBlob = pdf.output('blob');
+              // const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
+              // resolve(file);
+              
+              setTimeout(() => {
+                resolve();
+                // 프린트 도구가 닫히면 팝업도 닫기
+                setTimeout(() => {
+                  previewPopup.close();
+                }, 500);
+              }, 500);
+  
+            }, 500);
+          }
+          
+  
+        } catch (error) {
+          console.warn(error);
+          reject();
+        }
+
+      }else { // originPrintLogic
+        try {
+          let thisElement;
+          if (element.$el){
+            thisElement = element.$el;
+          }else {
+            thisElement = element;
+          }
+          const imgTags = thisElement.querySelectorAll('img');
+          imgTags.forEach((img) => {
+            img.style.imageRendering = 'optimizeQuality';
+          });
+  
+          setTimeout(async() => {
+  
+            // HTML 요소를 캡처하여 캔버스로 변환
+            html2canvas(thisElement, { scale: 2 }).then((canvas) => {
+  
+              const pdf = new jsPDF("p", "mm", "a4");
+              const pdfWidth = 210; // A4 너비(mm)
+              const pdfHeight = 297; // A4 높이(mm)
+              
+              const imgWidth = pdfWidth - 2 * marginLeftRight; // 여백을 뺀 이미지 너비
+              const imgHeight = (canvas.height * imgWidth) / canvas.width; // 이미지 비율에 맞는 높이 계산
+  
+              let heightLeft = imgHeight; // 남은 높이 계산
+              let position = marginTopBottom; // 시작 위치 (상단 여백 적용)
+              
+              // pdf 높이에서 상하 여백을 뺀 높이
+              let pdfHeightMinusMargin = pdfHeight - 2 * marginTopBottom;
+              let imgHeightPerPageArr = []; // 페이지별 이미지 높이 배열
+              while(heightLeft > 0){
+                if (heightLeft < pdfHeightMinusMargin){
+                  imgHeightPerPageArr.push(heightLeft);
+                }else {
+                  imgHeightPerPageArr.push(pdfHeightMinusMargin);
+                }
+                heightLeft -= pdfHeightMinusMargin;
+              }
+  
+              let cuttedImgDataArr = [];
+              for (let i = 0; i < imgHeightPerPageArr.length; i++) {
+                let prevPxHeight = 0;
+                for (let ii = 0; ii < i; ii++) {
+                  prevPxHeight += imgHeightPerPageArr[ii] * canvas.width / imgWidth;
+                }
+                const pxHeight = imgHeightPerPageArr[i] * canvas.width / imgWidth;
+                const cuttedCanvas = document.createElement('canvas');
+                cuttedCanvas.width = canvas.width;
+                cuttedCanvas.height = pxHeight;
+                const cuttedCtx = cuttedCanvas.getContext('2d');
+                cuttedCtx.drawImage(canvas, 0, prevPxHeight, canvas.width, pxHeight, 0, 0, canvas.width, pxHeight);
+                cuttedImgDataArr.push(cuttedCanvas.toDataURL("image/jpeg", 1.0));
+              }
+  
+              // 이미지를 삽입
+              cuttedImgDataArr.forEach((imgData, index) => {
+                if (index > 0) pdf.addPage();
+                pdf.addImage(imgData, "JPEG", marginLeftRight, position, imgWidth, imgHeightPerPageArr[index]);
+              });
+  
+              // // PDF 저장
+              // pdf.save(fileName+'.pdf');
+              
+              // PDF 인쇄
+              pdf.autoPrint();
+              pdf.output('dataurlnewwindow');
+  
+              // // PDF 반환
+              // const pdfBlob = pdf.output('blob');
+              // const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
+              // resolve(file);
+            });
+  
+            setTimeout(() => {
+              resolve();
+            }, 500);
+          }, 1000);
+  
+        } catch (error) {
+          console.warn(error);
+          reject();
+        }
       }
     });
   },

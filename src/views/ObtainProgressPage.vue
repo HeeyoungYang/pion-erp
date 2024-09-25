@@ -132,8 +132,8 @@
                               v-for="(item, index) in save_estimates"
                               :key="index"
                               dense
-                              @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                                      : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '수주확인서') : ''"
+                              @click="item.click === 'print' ? estimatePrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                                      : item.click === 'pdf' ? estimatePrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '수주확인서') : ''"
                             >
                               <v-list-item-title>{{ item.title }}</v-list-item-title>
                             </v-list-item>
@@ -1673,7 +1673,7 @@ export default {
 
     },
     // 파일명 인자 있을 경우 PDF download, 없을 경우 print
-    async costDetailPrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
+    async estimatePrintOrPDF(itemsThisKeyStr, element, editableVarThisKeyStr, fileName) {
       let items = this[itemsThisKeyStr];
       const originItems = JSON.parse(JSON.stringify(items));
       items = items.map(item => {
@@ -1721,10 +1721,10 @@ export default {
       // UI 적용을 위한 editable = false 1초 후 작동
       setTimeout(async () => {
         if (fileName){
-          await mux.Util.downloadPDF(element, fileName);
+          await mux.Util.downloadPDF(element, {fileName, hasTotalRow: true});
           this.costTitlePrint = false;
         }else {
-          await mux.Util.print(element);
+          await mux.Util.print(element, {hasTotalRow: true});
           this.costTitlePrint = false;
         }
         this[editableVarThisKeyStr] = !this[editableVarThisKeyStr];

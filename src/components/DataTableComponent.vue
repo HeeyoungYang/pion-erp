@@ -1115,18 +1115,18 @@ export default {
     printInboundApprove(refs,fileName){
       setTimeout(async () => {
         if (fileName){
-          await mux.Util.downloadPDF(refs, fileName);
+          await mux.Util.downloadPDF(refs, {fileName, countingTableIndex: 2, rowCountPerPage: 20, trTdClass: 'approve_text'});
         }else {
-          await mux.Util.print(refs);
+          await mux.Util.print(refs, {countingTableIndex: 2, rowCountPerPage: 20, trTdClass: 'approve_text'});
         }
       }, 500);
     },
     printShipApprove(fileName){
       setTimeout(async () => {
         if (fileName){
-          mux.Util.downloadPDF(this.$refs.shipApproveComponent, fileName);
+          mux.Util.downloadPDF(this.$refs.shipApproveComponent, {fileName, countingTableIndex: 2, rowCountPerPage: 28, trTdClass: 'approve_text'});
         }else {
-          mux.Util.print(this.$refs.shipApproveComponent);
+          mux.Util.print(this.$refs.shipApproveComponent, {countingTableIndex: 2, rowCountPerPage: 28, trTdClass: 'approve_text'});
         }
       }, 500);
     },

@@ -188,9 +188,9 @@ export default {
     // printInboundApprove(fileName){
     //   setTimeout(async () => {
     //     if (fileName){
-    //       await mux.Util.downloadPDF(this.$refs.inboundApproveForm, fileName);
+    //       await mux.Util.downloadPDF(this.$refs, {fileName, countingTableIndex: 2, rowCountPerPage: 20, trTdClass: 'approve_text'});
     //     }else {
-    //       await mux.Util.print(this.$refs.inboundApproveForm);
+    //       await mux.Util.print(this.$refs, {countingTableIndex: 2, rowCountPerPage: 20, trTdClass: 'approve_text'});
     //     }
     //   }, 500);
     // },
