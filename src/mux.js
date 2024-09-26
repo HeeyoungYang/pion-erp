@@ -1615,12 +1615,13 @@ mux.Util = {
    * @param {number} paramObj.rowCountPerPage - 페이지당 행 수(기본값: 27)
    * @param {number} paramObj.marginTopBottom - 페이지 상하 여백(기본값: 10)
    * @param {number} paramObj.marginLeftRight - 페이지 좌우 여백(기본값: 10)
-   * @param {boolean} paramObj.isWidePage - 넓은 페이지 여부(기본값: false)
+   * @param {boolean} paramObj.mmWidth - 가로 mm(기본값: 210)
+   * @param {boolean} paramObj.isLandscape - 가로 용지 여부(기본값: false)
    * @param {boolean} paramObj.hasTotalRow - 총합 행 여부(기본값: false
    * @param {boolean} paramObj.trTdClass - tr, td에 추가할 클래스명(기본값: '')
    * @param {boolean} paramObj.originPrintLogic - 기존 프린트 로직 사용 여부(기본값: false)
    * @example
-   * mux.Util.print(element, {countingTableIndex: 3, rowCountPerPage: 27, marginTopBottom: 10, marginLeftRight: 10, isWidePage: false, hasTotalRow: false, trTdClass: 'approve_text', originPrintLogic: false});
+   * mux.Util.print(element, {countingTableIndex: 3, rowCountPerPage: 27, marginTopBottom: 10, marginLeftRight: 10, mmWidth: 210, isLandscape:false, hasTotalRow: false, trTdClass: 'approve_text', originPrintLogic: false});
    * @memberof mux.Util
    * @inner
    * @private
@@ -1631,7 +1632,8 @@ mux.Util = {
     let rowCountPerPage = 27;
     let marginTopBottom = 10;
     let marginLeftRight = 10;
-    let isWidePage = false;
+    let mmWidth = 210;
+    let isLandscape = false;
     let hasTotalRow = false;
     let trTdClass = '';
     let originPrintLogic = false;
@@ -1648,8 +1650,11 @@ mux.Util = {
       if (paramObj.marginLeftRight){
         marginLeftRight = paramObj.marginLeftRight;
       }
-      if (paramObj.isWidePage){
-        isWidePage = paramObj.isWidePage;
+      if (paramObj.mmWidth){
+        mmWidth = paramObj.mmWidth;
+      }
+      if (paramObj.isLandscape){
+        isLandscape = paramObj.isLandscape;
       }
       if (paramObj.hasTotalRow){
         hasTotalRow = paramObj.hasTotalRow;
@@ -1778,17 +1783,8 @@ mux.Util = {
             endIndex += rowCountPerPage;
           }
 
-          if (isWidePage){
-            const toCalcSizeElement = document.createElement('div');
-            document.body.appendChild(toCalcSizeElement);
-            toCalcSizeElement.innerHTML = htmlBody;
-            a4Width = `${this.pxToMm(toCalcSizeElement.offsetWidth)+marginLeftRight*2}mm`;
-            a4Height = `${pageCount*(this.pxToMm(toCalcSizeElement.offsetWidth)*1.4141+marginTopBottom*2*2)}mm`;
-            document.body.removeChild(toCalcSizeElement);
-          }else {
-            a4Width = `${210+marginLeftRight*2}mm`;
-            a4Height = `${pageCount*(297+marginTopBottom*2*2)}mm`;
-          }
+          a4Width = `${mmWidth+marginLeftRight*2}mm`;
+          a4Height = `${pageCount*((isLandscape ? mmWidth/1.4141 : mmWidth*1.4141)+marginTopBottom*2*2)}mm`;
 
           const styleCopy = this.copyStyleToNewWindowWithoutHover();
           // 미리보기 팝업을 띄우기
@@ -1817,9 +1813,9 @@ mux.Util = {
                 img.style.imageRendering = 'optimizeQuality';
               });
 
-              const pdf = new jsPDF("p", "mm", "a4");
-              const pdfWidth = 210; // A4 너비(mm)
-              const pdfHeight = 297; // A4 높이(mm)
+              const pdf = new jsPDF(isLandscape ? "l" : "p", "mm", "a4");
+              const pdfWidth = isLandscape ? 297 : 210; // A4 너비(mm)
+              const pdfHeight = isLandscape ? 210 : 297; // A4 높이(mm)
 
               for (let d = 0; d < previewPopup.document.childNodes[0].childNodes[1].childNodes.length; d++) {
                 const div = previewPopup.document.childNodes[0].childNodes[1].childNodes[d];
@@ -1979,7 +1975,6 @@ mux.Util = {
               // // PDF 반환
               // const pdfBlob = pdf.output('blob');
               // const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
-              // resolve(file);
             });
 
             setTimeout(() => {
@@ -2004,12 +1999,13 @@ mux.Util = {
    * @param {number} paramObj.rowCountPerPage - 페이지당 행 수(기본값: 27)
    * @param {number} paramObj.marginTopBottom - 페이지 상하 여백(기본값: 10)
    * @param {number} paramObj.marginLeftRight - 페이지 좌우 여백(기본값: 10)
-   * @param {boolean} paramObj.isWidePage - 넓은 페이지 여부(기본값: false)
+   * @param {boolean} paramObj.mmWidth - 가로 mm(기본값: 210)
+   * @param {boolean} paramObj.isLandscape - 가로 용지 여부(기본값: false)
    * @param {boolean} paramObj.hasTotalRow - 총합 행 여부(기본값: false
    * @param {boolean} paramObj.trTdClass - tr, td에 추가할 클래스명(기본값: '')
    * @param {boolean} paramObj.originPrintLogic - 기존 프린트 로직 사용 여부(기본값: false)
    * @example
-   * mux.Util.getPDF(element, {fileName: 'data', countingTableIndex: 3, rowCountPerPage: 27, marginTopBottom: 10, marginLeftRight: 10, isWidePage: false, hasTotalRow: false, trTdClass: 'approve_text', originPrintLogic: false});
+   * mux.Util.getPDF(element, {fileName: 'data', countingTableIndex: 3, rowCountPerPage: 27, marginTopBottom: 10, marginLeftRight: 10, mmWidth: 210, isLandscape:false, hasTotalRow: false, trTdClass: 'approve_text', originPrintLogic: false});
    * @memberof mux.Util
    * @inner
    * @private
@@ -2021,7 +2017,8 @@ mux.Util = {
     let rowCountPerPage = 27;
     let marginTopBottom = 10;
     let marginLeftRight = 10;
-    let isWidePage = false;
+    let mmWidth = 210;
+    let isLandscape = false;
     let hasTotalRow = false;
     let trTdClass = '';
     let originPrintLogic = false;
@@ -2041,8 +2038,11 @@ mux.Util = {
       if (paramObj.marginLeftRight){
         marginLeftRight = paramObj.marginLeftRight;
       }
-      if (paramObj.isWidePage){
-        isWidePage = paramObj.isWidePage;
+      if (paramObj.mmWidth){
+        mmWidth = paramObj.mmWidth;
+      }
+      if (paramObj.isLandscape){
+        isLandscape = paramObj.isLandscape;
       }
       if (paramObj.hasTotalRow){
         hasTotalRow = paramObj.hasTotalRow;
@@ -2171,21 +2171,12 @@ mux.Util = {
             endIndex += rowCountPerPage;
           }
 
-          if (isWidePage){
-            const toCalcSizeElement = document.createElement('div');
-            document.body.appendChild(toCalcSizeElement);
-            toCalcSizeElement.innerHTML = htmlBody;
-            a4Width = `${this.pxToMm(toCalcSizeElement.offsetWidth)+marginLeftRight*2}mm`;
-            a4Height = `${pageCount*(this.pxToMm(toCalcSizeElement.offsetWidth)*1.4141+marginTopBottom*2*2)}mm`;
-            document.body.removeChild(toCalcSizeElement);
-          }else {
-            a4Width = `${210+marginLeftRight*2}mm`;
-            a4Height = `${pageCount*(297+marginTopBottom*2*2)}mm`;
-          }
+          a4Width = `${mmWidth+marginLeftRight*2}mm`;
+          a4Height = `${pageCount*((isLandscape ? mmWidth/1.4141 : mmWidth*1.4141)+marginTopBottom*2*2)}mm`;
 
           const styleCopy = this.copyStyleToNewWindowWithoutHover();
           // 미리보기 팝업을 띄우기
-          if (await this.showConfirm(`PDF 파일 생성을 위한 팝업창을 허용하시겠습니까?`) === false) {
+          if (await this.showConfirm(`프린트를 위한 팝업창을 허용하시겠습니까?`) === false) {
             resolve('팝업창 허용이 필요합니다.');
             return;
           }else {
@@ -2210,9 +2201,9 @@ mux.Util = {
                 img.style.imageRendering = 'optimizeQuality';
               });
 
-              const pdf = new jsPDF("p", "mm", "a4");
-              const pdfWidth = 210; // A4 너비(mm)
-              const pdfHeight = 297; // A4 높이(mm)
+              const pdf = new jsPDF(isLandscape ? "l" : "p", "mm", "a4");
+              const pdfWidth = isLandscape ? 297 : 210; // A4 너비(mm)
+              const pdfHeight = isLandscape ? 210 : 297; // A4 높이(mm)
 
               for (let d = 0; d < previewPopup.document.childNodes[0].childNodes[1].childNodes.length; d++) {
                 const div = previewPopup.document.childNodes[0].childNodes[1].childNodes[d];
@@ -2364,19 +2355,19 @@ mux.Util = {
               // // PDF 저장
               // pdf.save(fileName+'.pdf');
 
-              // PDF 인쇄
-              pdf.autoPrint();
-              pdf.output('dataurlnewwindow');
+              // // PDF 인쇄
+              // pdf.autoPrint();
+              // pdf.output('dataurlnewwindow');
 
-              // // PDF 반환
-              // const pdfBlob = pdf.output('blob');
-              // const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
-              // resolve(file);
+              // PDF 반환
+              const pdfBlob = pdf.output('blob');
+              const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
+
+              setTimeout(() => {
+                resolve(file);
+              }, 500);
             });
 
-            setTimeout(() => {
-              resolve();
-            }, 500);
           }, 1000);
 
         } catch (error) {
@@ -2396,12 +2387,13 @@ mux.Util = {
    * @param {number} paramObj.rowCountPerPage - 페이지당 행 수(기본값: 27)
    * @param {number} paramObj.marginTopBottom - 페이지 상하 여백(기본값: 10)
    * @param {number} paramObj.marginLeftRight - 페이지 좌우 여백(기본값: 10)
-   * @param {boolean} paramObj.isWidePage - 넓은 페이지 여부(기본값: false)
+   * @param {boolean} paramObj.mmWidth - 가로 mm(기본값: 210)
+   * @param {boolean} paramObj.isLandscape - 가로 용지 여부(기본값: false)
    * @param {boolean} paramObj.hasTotalRow - 총합 행 여부(기본값: false
    * @param {boolean} paramObj.trTdClass - tr, td에 추가할 클래스명(기본값: '')
    * @param {boolean} paramObj.originPrintLogic - 기존 프린트 로직 사용 여부(기본값: false)
    * @example
-   * mux.Util.downloadPDF(element, {fileName: 'data', countingTableIndex: 3, rowCountPerPage: 27, marginTopBottom: 10, marginLeftRight: 10, isWidePage: false, hasTotalRow: false, trTdClass: 'approve_text', originPrintLogic: false});
+   * mux.Util.downloadPDF(element, {fileName: 'data', countingTableIndex: 3, rowCountPerPage: 27, marginTopBottom: 10, marginLeftRight: 10, mmWidth: 210, isLandscape:false, hasTotalRow: false, trTdClass: 'approve_text', originPrintLogic: false});
    * @memberof mux.Util
    * @inner
    * @private
@@ -2413,7 +2405,8 @@ mux.Util = {
     let rowCountPerPage = 27;
     let marginTopBottom = 10;
     let marginLeftRight = 10;
-    let isWidePage = false;
+    let mmWidth = 210;
+    let isLandscape = false;
     let hasTotalRow = false;
     let trTdClass = '';
     let originPrintLogic = false;
@@ -2433,8 +2426,11 @@ mux.Util = {
       if (paramObj.marginLeftRight){
         marginLeftRight = paramObj.marginLeftRight;
       }
-      if (paramObj.isWidePage){
-        isWidePage = paramObj.isWidePage;
+      if (paramObj.mmWidth){
+        mmWidth = paramObj.mmWidth;
+      }
+      if (paramObj.isLandscape){
+        isLandscape = paramObj.isLandscape;
       }
       if (paramObj.hasTotalRow){
         hasTotalRow = paramObj.hasTotalRow;
@@ -2563,21 +2559,12 @@ mux.Util = {
             endIndex += rowCountPerPage;
           }
 
-          if (isWidePage){
-            const toCalcSizeElement = document.createElement('div');
-            document.body.appendChild(toCalcSizeElement);
-            toCalcSizeElement.innerHTML = htmlBody;
-            a4Width = `${this.pxToMm(toCalcSizeElement.offsetWidth)+marginLeftRight*2}mm`;
-            a4Height = `${pageCount*(this.pxToMm(toCalcSizeElement.offsetWidth)*1.4141+marginTopBottom*2*2)}mm`;
-            document.body.removeChild(toCalcSizeElement);
-          }else {
-            a4Width = `${210+marginLeftRight*2}mm`;
-            a4Height = `${pageCount*(297+marginTopBottom*2*2)}mm`;
-          }
+          a4Width = `${mmWidth+marginLeftRight*2}mm`;
+          a4Height = `${pageCount*((isLandscape ? mmWidth/1.4141 : mmWidth*1.4141)+marginTopBottom*2*2)}mm`;
 
           const styleCopy = this.copyStyleToNewWindowWithoutHover();
           // 미리보기 팝업을 띄우기
-          if (await this.showConfirm(`PDF 다운로드를 위한 팝업창을 허용하시겠습니까?`) === false) {
+          if (await this.showConfirm(`프린트를 위한 팝업창을 허용하시겠습니까?`) === false) {
             resolve('팝업창 허용이 필요합니다.');
             return;
           }else {
@@ -2754,22 +2741,23 @@ mux.Util = {
                 pdf.addImage(imgData, "JPEG", marginLeftRight, position, imgWidth, imgHeightPerPageArr[index]);
               });
 
-              // // PDF 저장
-              // pdf.save(fileName+'.pdf');
+              // PDF 저장
+              pdf.save(fileName+'.pdf');
 
-              // PDF 인쇄
-              pdf.autoPrint();
-              pdf.output('dataurlnewwindow');
+              // // PDF 인쇄
+              // pdf.autoPrint();
+              // pdf.output('dataurlnewwindow');
 
               // // PDF 반환
               // const pdfBlob = pdf.output('blob');
               // const file = new File([pdfBlob], fileName + '.pdf', { type: 'application/pdf' });
               // resolve(file);
+
+              setTimeout(() => {
+                resolve();
+              }, 500);
             });
 
-            setTimeout(() => {
-              resolve();
-            }, 500);
           }, 1000);
 
         } catch (error) {

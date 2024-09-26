@@ -62,7 +62,7 @@
           </CardComponent>
         </v-col>
       </v-row>
-      <v-row v-if="print_labor_table" justify="center">
+      <!-- <v-row v-if="print_labor_table" justify="center">
         <v-col
           cols="12"
           sm="11"
@@ -102,7 +102,7 @@
             </v-card-text>
           </v-card>
         </v-col>
-      </v-row>
+      </v-row> -->
     </v-main>
 
     <ModalDialogComponent
@@ -711,7 +711,7 @@
 
         <!-- 노무비 산출 -->
         <v-tab-item key="노무비 산출">
-          <v-card ref="calcLaborCard" style="border: 1px solid #ccc;" elevation="0">
+          <v-card ref="printLaborTable" style="border: 1px solid #ccc;" elevation="0">
             <v-card-title>
               <v-menu offset-y>
                 <template v-slot:activator="{ on, attrs }">
@@ -1055,7 +1055,7 @@ export default {
       estimate_detail_data: [],
       estimate_approve_data:[],
 
-      print_labor_table: false,
+      // print_labor_table: false,
 
       versions:['수주 원본'], // '1차 수주 설계', '2차 수주 설계' ...
       version: '수주 원본',
@@ -1504,13 +1504,13 @@ export default {
       return rowspan;
     },
     async printLaborCost(fileName){
-      this.print_labor_table = true;
+      // this.print_labor_table = true;
 
-      let navClicked = false;
-      if (!document.querySelector(".v-navigation-drawer--close")){
-        document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-        navClicked = true;
-      }
+      // let navClicked = false;
+      // if (!document.querySelector(".v-navigation-drawer--close")){
+      //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+      //   navClicked = true;
+      // }
       if (!this.$refs.printLaborTable){
         let refLoadCount = 0
         while(refLoadCount < 50){
@@ -1524,19 +1524,19 @@ export default {
 
       setTimeout(async () => {
         if (fileName){
-          await mux.Util.downloadPDF(this.$refs.printLaborTable, fileName);
+          await mux.Util.downloadPDF(this.$refs.printLaborTable, {fileName, rowCountPerPage: 37, mmWidth: 500, isLandscape: true});
 
-          if (navClicked) {
-            document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-          }
-          this.print_labor_table = false;
+          // if (navClicked) {
+          //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+          // }
+          // this.print_labor_table = false;
         }else {
-          await mux.Util.print(this.$refs.printLaborTable);
+          await mux.Util.print(this.$refs.printLaborTable, {rowCountPerPage: 37, mmWidth: 500, isLandscape: true});
 
-          if (navClicked) {
-            document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-          }
-          this.print_labor_table = false;
+          // if (navClicked) {
+          //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+          // }
+          // this.print_labor_table = false;
         }
       }, 500);
 
