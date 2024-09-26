@@ -137,7 +137,7 @@
           </CardComponent>
         </v-col>
       </v-row>
-      <v-row v-if="print_labor_table" justify="center">
+      <!-- <v-row v-if="print_labor_table" justify="center">
         <v-col
           cols="12"
           sm="11"
@@ -177,7 +177,7 @@
             </v-card-text>
           </v-card>
         </v-col>
-      </v-row>
+      </v-row> -->
     </v-main>
 
     <!-- 행 클릭 시 노출되는 모달 -->
@@ -668,7 +668,7 @@
                       v-for="(item, index) in save_estimates"
                       :key="index"
                       dense
-                      @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
+                      @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data')
                               : item.click === 'excel' ? mux.Excel.downloadTable(survey_cost_headers, calc_cost_detail_data, '산출내역서')
                               : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data', '산출내역서') : ''"
                     >
@@ -697,7 +697,7 @@
 
           <!-- 노무비 산출 -->
           <v-tab-item>
-            <v-card ref="calcLaborCard" style="border: 1px solid #ccc;" elevation="0">
+            <v-card ref="printLaborTable" style="border: 1px solid #ccc;" elevation="0">
               <v-card-title>
                 <v-menu offset-y>
                   <template v-slot:activator="{ on, attrs }">
@@ -878,7 +878,7 @@ export default {
       estimate_approve_data:[],
       members: [],
 
-      print_labor_table: false,
+      // print_labor_table: false,
     }
   },
 
@@ -1494,13 +1494,13 @@ export default {
       return rowspan;
     },
     async printLaborCost(fileName){
-      this.print_labor_table = true;
+      // this.print_labor_table = true;
 
-      let navClicked = false;
-      if (!document.querySelector(".v-navigation-drawer--close")){
-        document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-        navClicked = true;
-      }
+      // let navClicked = false;
+      // if (!document.querySelector(".v-navigation-drawer--close")){
+      //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+      //   navClicked = true;
+      // }
       if (!this.$refs.printLaborTable){
         let refLoadCount = 0
         while(refLoadCount < 50){
@@ -1514,19 +1514,19 @@ export default {
 
       setTimeout(async () => {
         if (fileName){
-          await mux.Util.downloadPDF(this.$refs.printLaborTable, {fileName, rowCountPerPage: 85, isWidePage: true});
+          await mux.Util.downloadPDF(this.$refs.printLaborTable, {fileName, rowCountPerPage: 37, mmWidth: 500, isLandscape: true});
 
-          if (navClicked) {
-            document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-          }
-          this.print_labor_table = false;
+          // if (navClicked) {
+          //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+          // }
+          // this.print_labor_table = false;
         }else {
-          await mux.Util.print(this.$refs.printLaborTable, {rowCountPerPage: 85, isWidePage: true});
+          await mux.Util.print(this.$refs.printLaborTable, {rowCountPerPage: 37, mmWidth: 500, isLandscape: true});
 
-          if (navClicked) {
-            document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-          }
-          this.print_labor_table = false;
+          // if (navClicked) {
+          //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+          // }
+          // this.print_labor_table = false;
         }
       }, 500);
 
@@ -2184,12 +2184,13 @@ export default {
         // 노무비 산출 PDF 파일 생성
         if (sendData.labor) {
           const origin_tab = this.tab_search;
-          let navClicked = false;
-          if (!document.querySelector(".v-navigation-drawer--close")){
-            document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-            navClicked = true;
-          }
-          this.print_labor_table = true;
+          this.tab_search = 2;
+          // let navClicked = false;
+          // if (!document.querySelector(".v-navigation-drawer--close")){
+          //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+          //   navClicked = true;
+          // }
+          // this.print_labor_table = true;
           if (!this.$refs.printLaborTable){
             let refLoadCount = 0
             while(refLoadCount < 50){
@@ -2200,22 +2201,22 @@ export default {
               refLoadCount++;
             }
           }
-          const labor = this.$refs.printLaborTable.$el;
+          const labor = this.$refs.printLaborTable;
           try {
-            laborFile = await mux.Util.getPDF(labor, {fileName: '노무비 산출', rowCountPerPage: 85, isWidePage: true});
+            laborFile = await mux.Util.getPDF(labor, {fileName: '노무비 산출', rowCountPerPage: 37, mmWidth: 500, isLandscape: true});
             sendData.files.push(laborFile);
             this.tab_search = origin_tab;
-            this.print_labor_table = false;
-            if (navClicked){
-              document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-            }
+            // this.print_labor_table = false;
+            // if (navClicked){
+            //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+            // }
           } catch (error) {
             this.mailDialog = true;
             this.tab_search = origin_tab;
-            this.print_labor_table = false;
-            if (navClicked){
-              document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-            }
+            // this.print_labor_table = false;
+            // if (navClicked){
+            //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+            // }
             mux.Util.showAlert('노무비 산출 PDF 파일 생성 중 오류가 발생했습니다.');
             return;
           }

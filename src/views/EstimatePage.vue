@@ -666,7 +666,7 @@
 
                 <!-- 노무비 산출 -->
                 <v-tab-item>
-                  <v-card>
+                  <v-card ref="printLaborTable">
                     <v-card-title>
                       <v-row>
                         <v-col cols="12" sm="10">
@@ -1172,12 +1172,12 @@
         </v-tab-item>
       </v-tabs-items>
       <!-- 노무비 산출 출력 화면 -->
-      <v-row v-if="print_labor_table" justify="center">
+      <!-- <v-row v-if="print_labor_table" justify="center">
         <v-col
           cols="12"
           sm="11"
         >
-        <v-card ref="printLaborTable" style="padding:0px" elevation="0">
+        <v-card style="padding:0px" elevation="0">
             <v-card-title>
             </v-card-title>
             <v-card-text>
@@ -1212,7 +1212,7 @@
             </v-card-text>
           </v-card>
         </v-col>
-      </v-row>
+      </v-row> -->
     </v-main>
 
     <div class="text-center" v-if="tab_main === 0">
@@ -3140,13 +3140,13 @@ export default {
       return rowspan;
     },
     async printLaborCost(fileName){
-      this.print_labor_table = true;
+      // this.print_labor_table = true;
 
-      let navClicked = false;
-      if (!document.querySelector(".v-navigation-drawer--close")){
-        document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-        navClicked = true;
-      }
+      // let navClicked = false;
+      // if (!document.querySelector(".v-navigation-drawer--close")){
+      //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+      //   navClicked = true;
+      // }
       if (!this.$refs.printLaborTable){
         let refLoadCount = 0
         while(refLoadCount < 50){
@@ -3160,19 +3160,19 @@ export default {
 
       setTimeout(async () => {
         if (fileName){
-          await mux.Util.downloadPDF(this.$refs.printLaborTable, {fileName, rowCountPerPage: 85, isWidePage: true});
+          await mux.Util.downloadPDF(this.$refs.printLaborTable, {fileName, rowCountPerPage: 37, mmWidth: 500, isLandscape: true});
 
-          if (navClicked) {
-            document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-          }
-          this.print_labor_table = false;
+          // if (navClicked) {
+          //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+          // }
+          // this.print_labor_table = false;
         }else {
-          await mux.Util.print(this.$refs.printLaborTable, {rowCountPerPage: 85, isWidePage: true});
+          await mux.Util.print(this.$refs.printLaborTable, {rowCountPerPage: 37, mmWidth: 500, isLandscape: true});
 
-          if (navClicked) {
-            document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
-          }
-          this.print_labor_table = false;
+          // if (navClicked) {
+          //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
+          // }
+          // this.print_labor_table = false;
         }
       }, 500);
 
@@ -4903,7 +4903,7 @@ export default {
       construction_materials_headers: EstimatePageConfig.construction_materials_headers,
 
       dialogDelete: false,
-      print_labor_table: false,
+      // print_labor_table: false,
       editedIndex: -1,
       save_costs: ProductCostPageConfig.save_costs,
       labor_selectable: [],
