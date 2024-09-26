@@ -778,7 +778,7 @@
                             class="mr-3 float-right dont_print"
                             elevation="0"
                             data-html2canvas-ignore="true"
-                            @click="bom_list_purchase_data_copy = JSON.parse(JSON.stringify(bom_list_purchase_data)); dialog_edit_purchase_requested = true"
+                            @click="editPurchaseList"
                           >
                             <v-icon
                               small
@@ -1334,13 +1334,13 @@
                                 label="미선택"
                                 color="primary"
                                 hide-details
-                                class="float-left mr-3 mt-0 pt-0"
+                                class="float-left mt-0 pt-0"
                                 v-model="item.purchase_estimate_check"
                                 @click="clickDontSelect(item.product_code, item.item_code)"
                               ></v-checkbox>
                               <v-btn
                                 :color="item.purchase_estimate_company === '' ?'grey' : 'primary' "
-                                :class="item.purchase_estimate_company === '' ? 'float-left white--text':'float-left mr-3'"
+                                :class="item.purchase_estimate_company === '' ? 'float-right white--text':'float-right'"
                                 x-small
                                 elevation="0"
                                 @click="estimateDialog(item)"
@@ -1349,14 +1349,46 @@
                               </v-btn>
                               <v-btn
                                 :color="!item.belong_data ?'grey' : 'success' "
-                                :class="!item.belong_data ? 'float-left white--text':'float-left mr-3'"
-                                class="float-left"
+                                :class="!item.belong_data ? 'float-right white--text':'float-right'"
+                                class="float-right"
                                 x-small
                                 elevation="0"
                                 @click="searchPreOdered('select', item)"
                               >
                                 선주문
                               </v-btn>
+                              <v-menu
+                                v-if="item.purchase_estimate_company !== ''"
+                                open-on-hover
+                                top
+                                offset-y
+                              >
+                                <template v-slot:activator="{ on, attrs }">
+                                  <v-chip
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    small
+                                    class="primary--text mb-0 float-left"
+                                    style="width:100%"
+                                  >견적서 : {{ item.purchase_estimate_company }}
+                                  </v-chip>
+                                </template>
+
+                                <v-list>
+                                  <v-list-item>
+                                    <v-list-item-content>
+                                      <v-img
+                                        alt="thumbnail"
+                                        class="shrink mr-2"
+                                        contain
+                                        :src="item.purchase_estimate_thumbnail_img"
+                                        transition="scale-transition"
+                                        width="600"
+                                      />
+                                    </v-list-item-content>
+                                  </v-list-item>
+                                </v-list>
+                              </v-menu>
                             </div>
                           </template>
                           <template v-slot:[`item.cancle`] = "{ item }">
@@ -2339,7 +2371,7 @@
                 ></v-checkbox>
                 <v-btn
                   :color="item.purchase_estimate_company === '' ?'grey' : 'primary' "
-                  :class="item.purchase_estimate_company === '' ? 'float-left white--text':'float-left mr-3'"
+                  class="float-right white--text"
                   x-small
                   elevation="0"
                   @click="estimateDialog(item)"
@@ -2347,15 +2379,46 @@
                   견적서
                 </v-btn>
                 <v-btn
-                  :color="!item.belong_data ?'grey' : 'success' "
-                  :class="!item.belong_data ? 'float-left white--text':'float-left mr-3'"
-                  class="float-left"
+                  :color="item.code.includes('PRE') ?'success' : 'grey' "
+                  class="float-right white--text"
                   x-small
                   elevation="0"
                   @click="searchPreOdered('select', item)"
                 >
                   선주문
                 </v-btn>
+                <v-menu
+                  v-if="item.purchase_estimate_company !== ''"
+                  open-on-hover
+                  top
+                  offset-y
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-chip
+                      v-bind="attrs"
+                      v-on="on"
+                      small
+                      class="primary--text mb-0 float-left"
+                      style="width:100%"
+                    >견적서 : {{ item.purchase_estimate_company }}
+                    </v-chip>
+                  </template>
+
+                  <v-list>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-img
+                          alt="thumbnail"
+                          class="shrink mr-2"
+                          contain
+                          :src="mux.Util.imageBinary(item.purchase_estimate_thumbnail)"
+                          transition="scale-transition"
+                          width="600"
+                        />
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </div>
             </template>
             <template v-slot:[`item.cancle`] = "{ item }">
@@ -2761,6 +2824,7 @@ export default {
                   a.num = item_num;
                   a.usable_num = usable_num;
 
+                  a.purchase_estimate_check = a.purchase_estimate_code ? false : ( a.code.includes('PRE') ? false : true);
                   a.purchase_estimate_file = a.purchase_estimate_file ? a.purchase_estimate_file : '';
                   a.purchase_estimate_thumbnail = a.purchase_estimate_thumbnail ? a.purchase_estimate_thumbnail : '';
                   return a;
@@ -6704,7 +6768,7 @@ export default {
       sendData.prefix = new_cost_calc_code + '_';
       sendData.files = [];
 
-      let purchaseSendData = this.savePurchaseData(false);
+      let purchaseSendData = await this.savePurchaseData(false);
       for (let i = 0; i < Object.keys(purchaseSendData).length; i++) {
         const key = Object.keys(purchaseSendData)[i];
         if (key === 'files'){
@@ -6778,6 +6842,8 @@ export default {
           });
         });
       }
+
+      console.log(sendData);
 
       const prevURL = window.location.href;
       try {
@@ -7103,8 +7169,8 @@ export default {
         await this.setPurchaseRequest(false);
         mux.Util.showAlert('구매 요청 내역으로 이동합니다.', '확인', 2000);
         this.tab_search = 3;
-        this.dialog_edit_purchase_requested = true
-
+        // this.dialog_edit_purchase_requested = true
+        this.editPurchaseList();
       }else if(this.tab_search ===3){
 
         let test = await this.checkPurchaseRequest(false);
@@ -7260,22 +7326,37 @@ export default {
               }];
 
               sendData['purchase_product_table-delete'] = [];
-              this.bom_list_purchase_data.forEach(data => {
-                sendData['purchase_product_table-delete'].push({
-                  "user_info": {
-                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                    "role": "modifier"
-                  },
-                  "data": {
-                    "cost_calc_code": new_cost_calc_code
-                  },
-                  "delete_where": { code: data.code, product_code: data.product_code, item_code: data.item_code },
-                  "rollback": "no"
-                });
+              sendData['purchase_product_table-update'] = [];
+              this.bom_list_purchase_data.forEach(data => {                
+                if(!data.code.includes('PRE')){
+                  sendData['purchase_product_table-delete'].push({
+                    "user_info": {
+                      "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                      "role": "modifier"
+                    },
+                    "data": {
+                      "cost_calc_code": new_cost_calc_code
+                    },
+                    "delete_where": { code: data.code, product_code: data.product_code, item_code: data.item_code },
+                    "rollback": "no"
+                  });
+                }else{
+                  sendData['purchase_product_table-update'].push({
+                    "user_info": {
+                      "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                      "role": "modifier"
+                    },
+                    "data": {
+                      "code": data.code.split('_PRE')[0]
+                    },
+                    "update_where": { code: data.code, product_code: data.product_code, item_code: data.item_code },
+                    "rollback": "yes"
+                  });
+                }
               });
             }
 
-            let purchaseSendData = this.savePurchaseData(true);
+            let purchaseSendData = await this.savePurchaseData(true);
             for (let i = 0; i < Object.keys(purchaseSendData).length; i++) {
               const key = Object.keys(purchaseSendData)[i];
               if (key === 'files'){
@@ -7864,6 +7945,61 @@ export default {
       }
 
     },
+    editPurchaseList(){
+      this.bom_list_purchase_data_copy = JSON.parse(JSON.stringify(this.bom_list_purchase_data)); 
+      this.dialog_edit_purchase_requested = true;
+
+      this.bom_list_purchase_data_copy.forEach(async data => {
+        if(data.code.includes('PRE')){
+          const prevURL = window.location.href;
+          try {
+            let result = await mux.Server.post({
+              path: '/api/common_rest_api/',
+              params: [
+                {
+                  "purchase_confirmation_table.code": data.code
+                }
+              ],
+              "script_file_name": "rooting_구매요청_검색_24_08_08_11_45_79G.json",
+              "script_file_path": "data_storage_pion\\json_sql\\purchase\\구매요청_검색_24_08_08_11_45_QAW"
+            });
+            if (prevURL !== window.location.href) return;
+
+            if (typeof result === 'string'){
+              result = JSON.parse(result);
+            }
+            if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+              let searched_data = result.data;
+
+              let set_purchase_data = [];
+              searched_data.forEach(data =>{
+                for(let i=0; i<data.belong_data.length; i++){
+                  let belong_data = data.belong_data[i];
+                  if(belong_data.purchase_estimate_phase === '미요청'){
+                    belong_data.purchase_estimate_company = '*견적서 미요청';
+                  }
+                  belong_data.product_id = belong_data.id
+                  Object.assign(belong_data, data);
+                  delete belong_data.belong_data
+                  set_purchase_data.push(belong_data);
+                }
+              })
+              data.belong_data = set_purchase_data;
+            } else {
+              mux.Util.showAlert(result);
+            }
+          } catch (error) {
+            if (prevURL !== window.location.href) return;
+            mux.Util.hideLoading();
+            if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+              mux.Util.showAlert(error.response['data']['failed_info'].msg);
+            else
+              mux.Util.showAlert(error);
+          }
+        }
+      })
+    },
     addBomList(item){
       if (!Object.keys(item).includes('product_num')){
         item.product_num = 0;
@@ -8207,7 +8343,7 @@ export default {
           if(result.length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
-          let searched_data = result.data.filter(data => data.cost_calc_code === '' || data.cost_calc_code === null);
+          let searched_data = result.data.filter(data => (data.cost_calc_code === '' || data.cost_calc_code === null) && data.approval_phase !== '반려');
 
           let set_purchase_data = [];
           searched_data.forEach(data =>{
@@ -8216,6 +8352,7 @@ export default {
               if(belong_data.purchase_estimate_phase === '미요청'){
                 belong_data.purchase_estimate_company = '*견적서 미요청';
               }
+              belong_data.product_id = belong_data.id
               Object.assign(belong_data, data);
               delete belong_data.belong_data
               set_purchase_data.push(belong_data);
@@ -8239,7 +8376,12 @@ export default {
     async savePurchaseEstimate(){
       let selected_data = this.selected_unestimated_data;
       let estimate_info = this.estimateInfoInputs;
-      let product_data = this.bom_list_purchase_data2;
+      let product_data;
+      if (this.tab_main === 0){
+        product_data = this.bom_list_purchase_data_copy;
+      }else {
+        product_data = this.bom_list_purchase_data2;
+      }
 
 
       const validate = this.$refs.estimateForm[0].validate();
@@ -8312,7 +8454,7 @@ export default {
     //   sendData['design_cost_calc_detail_table'] = bom_insert;
     //   console.log("sendData BOM : ", sendData);
     // },
-    savePurchaseData(isUpdate){
+    async savePurchaseData(isUpdate){
       // DB의 purchase_product_table = bom_list_purchase_data
       const currDate = new Date();
       let sendData = {};
@@ -8320,8 +8462,19 @@ export default {
       let purchase_product_insert = [];
       let purchase_confirmation_update = [];
       let purchase_product_update = [];
-      let purchase_code = 'PEPR_' + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
       let files = [];
+
+      let set_code = 'PEPR_' + mux.Date.format(currDate, 'yyMMdd') + '_';
+      let currentCode = await this.searchCurrentCode(set_code);
+      // let purchase_code = 'PEPR_' + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
+      let purchase_code = '';
+      if(currentCode === ''){
+        purchase_code = set_code + '001';
+      }else{
+        let calc_current_code = Number(currentCode.split('_')[2]) + 1;
+        calc_current_code = ('00' + calc_current_code).slice(-3);
+        purchase_code = set_code + calc_current_code;
+      }
 
       let confirmation_inserted = false;
 
@@ -8331,44 +8484,77 @@ export default {
       }else {
         purchase_data = this.bom_list_purchase_data2;
       }
-      purchase_data.forEach(data => {
+
+      for(let pd=0; pd<purchase_data.length; pd++){
+        let data = purchase_data[pd]
         if(data.belong_data){ //선주문일 경우
           let belong_data = data.belong_data[0];
+
+          let set_pre_order_code = belong_data.code + '_PRE_';
+          let findCurrentCode = await this.searchCurrentCode(set_pre_order_code);
+          // let purchase_code = 'PEPR_' + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
+          let new_pre_order_code = '';
+          if(findCurrentCode === ''){
+            new_pre_order_code = set_pre_order_code + '001';
+          }else{
+            let calc_current_code = Number(findCurrentCode.split('_')[2]) + 1;
+            calc_current_code = ('00' + calc_current_code).slice(-3);
+            new_pre_order_code = set_pre_order_code + calc_current_code;
+          }
+          purchase_confirmation_insert.push({
+            "user_info": {
+                "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                "role": "creater"
+              },
+              "data":{
+                "code" : new_pre_order_code,
+                "cost_calc_code" : '',
+                "project_code" : '',
+                "approval_phase": belong_data.approval_phase,
+                "checker" : belong_data.checker,
+                "checker_id" : belong_data.checker_id,
+                "checked_date" : belong_data.checked_date,
+                "approver" : belong_data.approver,
+                "approver_id" : belong_data.approver_id,
+                "approved_date" : belong_data.approved_date,
+                "note" : '기존 선주문 연결 건 (' + belong_data.code + ')'
+              },
+              "select_where": {"code": new_pre_order_code},
+              "rollback": "yes"
+          })
           // 선주문 수량과 선주문 사용 수량이 동일할 경우 기존 선주문 데이터의 project_code, cost_calc_code, note만 update
           if(belong_data.purchase_num === belong_data.purchase_set_num){
-            purchase_confirmation_update.push({
+            purchase_product_update.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
                 "role": "modifier"
               },
               "data":{
-                "project_code": "",
-                "cost_calc_code": "",
-                "note": belong_data.note + ' :: 프로젝트 코드와 연결 완료(' + belong_data.purchase_set_num + '개)'
+                "code": new_pre_order_code,
               },
-              "update_where": {"id": belong_data.id },
+              "update_where": {"id": belong_data.product_id },
               "rollback": "yes"
             })
           }else{// 다를 경우 기존 선주문 데이터의 선주문 수량 update 및 구매 요청에 데이터 복사 & 선주문 사용 수량 설정
-            purchase_confirmation_insert.push({
-              "user_info": {
-                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
-                  "role": "creater"
-                },
-                "data":{
-                  "code" : belong_data.code +'-'+ mux.Date.format(currDate, 'yyyyMMdd HH:mm:ss'),
-                  "cost_calc_code" : '',
-                  "project_code" : data.project_code ,
-                  "approval_phase": belong_data.approval_phase,
-                  "checker" : belong_data.checker,
-                  "checker_id" : belong_data.checker_id,
-                  "checked_date" : belong_data.checked_date,
-                  "approver" : belong_data.approver,
-                  "approver_id" : belong_data.approver_id
-                },
-                "select_where": {"code": belong_data.code +'-'+ mux.Date.format(currDate, 'yyyyMMdd HH:mm:ss')},
-                "rollback": "yes"
-            })
+            // purchase_confirmation_insert.push({
+            //   "user_info": {
+            //       "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+            //       "role": "creater"
+            //     },
+            //     "data":{
+            //       "code" : belong_data.code +'-'+ mux.Date.format(currDate, 'yyyyMMdd HH:mm:ss'),
+            //       "cost_calc_code" : '',
+            //       "project_code" : data.project_code ,
+            //       "approval_phase": belong_data.approval_phase,
+            //       "checker" : belong_data.checker,
+            //       "checker_id" : belong_data.checker_id,
+            //       "checked_date" : belong_data.checked_date,
+            //       "approver" : belong_data.approver,
+            //       "approver_id" : belong_data.approver_id
+            //     },
+            //     "select_where": {"code": belong_data.code +'-'+ mux.Date.format(currDate, 'yyyyMMdd HH:mm:ss')},
+            //     "rollback": "yes"
+            // })
 
             purchase_product_update.push({
               "user_info": {
@@ -8387,7 +8573,7 @@ export default {
                 "role": "creater"
               },
               "data":{
-                "code" : belong_data.code +'-'+ mux.Date.format(currDate, 'yyyyMMdd HH:mm:ss'),
+                "code" : new_pre_order_code,
                 "type" : belong_data.type,
                 "classification" : belong_data.classification,
                 "product_code" : belong_data.product_code,
@@ -8403,7 +8589,7 @@ export default {
                 "purchase_estimate_file" : belong_data.purchase_estimate_file_name,
                 "purchase_estimate_thumbnail" : belong_data.purchase_estimate_thumbnail,
               },
-              "select_where": {"code": belong_data.code +'-'+ mux.Date.format(currDate, 'yyyyMMdd HH:mm:ss'), "product_code": data.product_code, "item_code": data.item_code},
+              "select_where": {"code": new_pre_order_code, "product_code": data.product_code, "item_code": data.item_code},
               "rollback": "yes"
             })
           }
@@ -8419,7 +8605,7 @@ export default {
                   "data":{
                     "code" : purchase_code,
                     "cost_calc_code" : '',
-                    "project_code" : data.project_code ,
+                    "project_code" : '' ,
                     "approval_phase": data.approval_phase,
                     "checker" : data.checker,
                     "checker_id" : data.checker_id,
@@ -8468,7 +8654,7 @@ export default {
                 "data":{
                   "code" : purchase_code,
                   "cost_calc_code" : '',
-                  "project_code" : data.project_code ,
+                  "project_code" : '' ,
                   "approval_phase": data.approval_phase,
                   "checker" : data.checker,
                   "checker_id" : data.checker_id,
@@ -8500,7 +8686,7 @@ export default {
               "unit_price" : typeof data.unit_price === 'number' ? data.unit_price : data.unit_price ? Number(data.unit_price.replace(/,/g, '').replace('₩ ', '').trim()) : 0,
               "purchase_num" : data.purchase_num,
               "purchase_estimate_phase" : data.purchase_estimate_company === '' ? '미요청' : '완료',
-              "purchase_estimate_code" : data.purchase_estimate_company === '' ? '' : purchase_code,
+              "purchase_estimate_code" : data.purchase_estimate_company === '' ? '' : data.purchase_estimate_company + '_' + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff') + '_' + this.$cookies.get(this.$configJson.cookies.id.key),
               "purchase_estimate_company" : data.purchase_estimate_company,
               "purchase_estimate_file" : data.purchase_estimate_file_name,
               "purchase_estimate_thumbnail" : data.purchase_estimate_thumbnail,
@@ -8518,7 +8704,9 @@ export default {
             });
           }
         }
-      })
+      }
+      // purchase_data.forEach(async data => {
+      // })
 
       sendData["purchase_confirmation_table-insert"] = purchase_confirmation_insert;
       sendData["purchase_confirmation_table-update"] = purchase_confirmation_update;
@@ -8536,6 +8724,51 @@ export default {
       this.purchaseEstimateThumbnail = item.purchase_estimate_thumbnail;
       this.purchaseEstimateFile = item.purchase_estimate_file;
       this.purchaseEstimateCode = item.code;
+    },
+
+    async searchCurrentCode(code){
+      const prevURL = window.location.href;
+      // let code = 'PEPR_' + mux.Date.format(currDate, 'yyyy-MM-dd HH-mm-ss-fff') + '-' + this.$cookies.get(this.$configJson.cookies.id.key);
+      // let code = 'PEPR_' + mux.Date.format(currDate, 'yyMMdd') + '_';
+      let current_code = '';
+      try {
+        let result = await mux.Server.post({
+          path: '/api/common_rest_api/',
+          params: [
+            {
+              "purchase_confirmation_table.code": code
+            }
+          ],
+          "script_file_name": "rooting_구매요청_검색_24_08_08_11_45_79G.json",
+          "script_file_path": "data_storage_pion\\json_sql\\purchase\\구매요청_검색_24_08_08_11_45_QAW"
+        });
+        if (prevURL !== window.location.href) return;
+
+        if (typeof result === 'string'){
+          result = JSON.parse(result);
+        }
+        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+
+          let searched = result.data;
+          // 정렬
+          if(searched.length > 0){
+            searched.sort((a,b) => a.code.localeCompare(b.code));
+            current_code = searched[searched.length-1].code;
+          } else {
+            current_code = '';
+          }
+        } else {
+          mux.Util.showAlert(result['failed_info']);
+        }
+      } catch (error) {
+        if (prevURL !== window.location.href) return;
+        mux.Util.hideLoading();
+        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
+          mux.Util.showAlert(error.response['data']['failed_info'].msg);
+        else
+          mux.Util.showAlert(error);
+      }
+      return current_code;
     },
 
   },

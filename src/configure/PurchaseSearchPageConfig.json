@@ -33,7 +33,8 @@
     { "text": "프로젝트 코드", "align": "start", "value": "project_code"},
     { "text": "요청일", "align": "start", "value": "created_time"},
     { "text": "구매 견적", "align": "start", "value": "purchase_estimate"},
-    { "text": "발주 진행", "align": "start", "value": "order_situation"}
+    { "text": "발주 진행", "align": "start", "value": "order_situation"},
+    { "text": "비고", "align": "start", "value": "note"}
   ],
 
   "purchase_detail_headers": [

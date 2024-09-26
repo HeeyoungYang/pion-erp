@@ -1609,7 +1609,7 @@ export default {
           if(result.length === 0){
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
-          this.purchase_data = result.data.filter(data => data.approval_phase !== '설계미승인');
+          this.purchase_data = result.data.filter(data => data.approval_phase !== '설계미승인' && data.belong_data);
         } else {
           mux.Util.showAlert(result['failed_info']);
         }

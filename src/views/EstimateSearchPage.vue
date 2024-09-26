@@ -2306,53 +2306,6 @@ export default {
         this.show_grand_childs_parent_index_arr = [];
       }
     },
-
-
-    async searchCurrentCode(){
-      const currDate = new Date();
-      const prevURL = window.location.href;
-      let code = 'PEPQ_' + mux.Date.format(currDate, 'yyMMdd') + '_';
-      let current_code = '';
-      try {
-        //견적서 REST API 스크립트 전달 받으면 수정 예정
-        let result = await mux.Server.post({
-          path: '/api/common_rest_api/',
-          params: [
-            {
-              "order_confirmation_table.code": code
-            }
-          ],
-          "script_file_name": "rooting_발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_OKJ.json",
-          "script_file_path": "data_storage_pion\\json_sql\\order\\발주_데이터_order_product_confirm_fst_검색_24_08_08_09_39_3Q8"
-        });
-        if (prevURL !== window.location.href) return;
-
-        if (typeof result === 'string'){
-          result = JSON.parse(result);
-        }
-        if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-
-          let searched = result.data;
-          // 정렬
-          if(searched.length > 0){
-            searched.sort((a,b) => a.code.localeCompare(b.code));
-            current_code = searched[searched.length-1].code;
-          } else {
-            current_code = '';
-          }
-        } else {
-          mux.Util.showAlert(result['failed_info']);
-        }
-      } catch (error) {
-        if (prevURL !== window.location.href) return;
-        mux.Util.hideLoading();
-        if(error.response !== undefined && error.response['data'] !== undefined && error.response['data']['failed_info'] !== undefined)
-          mux.Util.showAlert(error.response['data']['failed_info'].msg);
-        else
-          mux.Util.showAlert(error);
-      }
-      return current_code;
-    },
   },
 }
 </script>
