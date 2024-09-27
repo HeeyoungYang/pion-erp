@@ -141,7 +141,7 @@
       <v-tabs-items v-model="tab_search" class="pb-1">
         <!-- 수주서 미리보기 -->
         <v-tab-item v-if="clickedProductCost.obtain_file" key="수주서">
-          <v-card ref="calcCostCard" style="border: 1px solid #ccc;" elevation="0">
+          <v-card style="border: 1px solid #ccc;" elevation="0">
             <v-card-text>
               <div style="width:100%; background-color: #ccc; min-height:700px">
                 {{ clickedProductCost.obtain_file ? '' : '※ 수주서 PDF 미리보기 영역' }}
@@ -615,7 +615,7 @@
         </v-tab-item>
         <!-- BOM List -->
         <v-tab-item v-if="!clickedProductCost.obtain_file" key="BOM LIST">
-          <v-card ref="calcCostCard" style="border: 1px solid #ccc;" class="pa-4 elevation-0">
+          <v-card style="border: 1px solid #ccc;" class="pa-4 elevation-0">
             <v-row>
               <v-col cols="12" sm="12">
                 <DataTableComponent
