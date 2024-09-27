@@ -2176,7 +2176,7 @@ mux.Util = {
 
           const styleCopy = this.copyStyleToNewWindowWithoutHover();
           // 미리보기 팝업을 띄우기
-          if (await this.showConfirm(`프린트를 위한 팝업창을 허용하시겠습니까?`) === false) {
+          if (await this.showConfirm(`PDF 파일 생성을 위한 팝업창을 허용하시겠습니까?`) === false) {
             resolve('팝업창 허용이 필요합니다.');
             return;
           }else {
@@ -2564,7 +2564,7 @@ mux.Util = {
 
           const styleCopy = this.copyStyleToNewWindowWithoutHover();
           // 미리보기 팝업을 띄우기
-          if (await this.showConfirm(`프린트를 위한 팝업창을 허용하시겠습니까?`) === false) {
+          if (await this.showConfirm(`PDF 파일 다운로드를 위한 팝업창을 허용하시겠습니까?`) === false) {
             resolve('팝업창 허용이 필요합니다.');
             return;
           }else {
