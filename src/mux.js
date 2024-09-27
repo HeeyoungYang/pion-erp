@@ -1707,9 +1707,14 @@ mux.Util = {
             // NodeList를 배열로 변환
             let array = Array.from(trs);
 
+            let zeroDiff = false;
             for (let ii = 0; ii < array.length; ii++) {
               const node = array[ii];
 
+              if (hasTotalRow && i === pageCount - 2 && endIndex === array.length - 1){
+                endIndex -= 1;
+                zeroDiff = true;
+              }
               if (ii < startIndex || ii >= endIndex) {
                 tb.removeChild(node);
               }else {
@@ -1753,7 +1758,7 @@ mux.Util = {
               }
             }
 
-            let diff = rowCountPerPage - tb.querySelectorAll('tr:not([style*="display: none"])').length;
+            let diff = zeroDiff ? 0 : rowCountPerPage - tb.querySelectorAll('tr:not([style*="display: none"])').length;
             if (diff > 0) {
               for (let ii = 0; ii < diff; ii++) {
                 let tr = document.createElement('tr');
@@ -2095,9 +2100,14 @@ mux.Util = {
             // NodeList를 배열로 변환
             let array = Array.from(trs);
 
+            let zeroDiff = false;
             for (let ii = 0; ii < array.length; ii++) {
               const node = array[ii];
 
+              if (hasTotalRow && i === pageCount - 2 && endIndex === array.length - 1){
+                endIndex -= 1;
+                zeroDiff = true;
+              }
               if (ii < startIndex || ii >= endIndex) {
                 tb.removeChild(node);
               }else {
@@ -2141,7 +2151,7 @@ mux.Util = {
               }
             }
 
-            let diff = rowCountPerPage - tb.querySelectorAll('tr:not([style*="display: none"])').length;
+            let diff = zeroDiff ? 0 : rowCountPerPage - tb.querySelectorAll('tr:not([style*="display: none"])').length;
             if (diff > 0) {
               for (let ii = 0; ii < diff; ii++) {
                 let tr = document.createElement('tr');
@@ -2483,9 +2493,14 @@ mux.Util = {
             // NodeList를 배열로 변환
             let array = Array.from(trs);
 
+            let zeroDiff = false;
             for (let ii = 0; ii < array.length; ii++) {
               const node = array[ii];
 
+              if (hasTotalRow && i === pageCount - 2 && endIndex === array.length - 1){
+                endIndex -= 1;
+                zeroDiff = true;
+              }
               if (ii < startIndex || ii >= endIndex) {
                 tb.removeChild(node);
               }else {
@@ -2529,7 +2544,7 @@ mux.Util = {
               }
             }
 
-            let diff = rowCountPerPage - tb.querySelectorAll('tr:not([style*="display: none"])').length;
+            let diff = zeroDiff ? 0 : rowCountPerPage - tb.querySelectorAll('tr:not([style*="display: none"])').length;
             if (diff > 0) {
               for (let ii = 0; ii < diff; ii++) {
                 let tr = document.createElement('tr');
