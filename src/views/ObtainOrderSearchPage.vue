@@ -779,7 +779,7 @@
         <v-tab-item key="생산 의뢰서" v-if="clickedProductCost.obtain_file
                     && searched_datas.last_confirmation
                     && searched_datas.last_confirmation.find(item => item.cost_calc_code === clickedProductCost.cost_calc_code)">
-          <v-card style="border: 1px solid #ccc;" elevation="0">
+          <v-card ref="calcRequestCard" style="border: 1px solid #ccc;" elevation="0">
             <v-menu
               v-if="clickedProductCost.approved_date
               && clickedProductCost.creater === login_info.id"
@@ -847,8 +847,8 @@
                   v-for="(item, index) in save_confirmation"
                   :key="index"
                   dense
-                  @click="item.click === 'print' ? requestPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data')
-                          : item.click === 'pdf' ? requestPrintOrPDF('calc_cost_detail_data', $refs.calcCostCard, 'edit_survey_cost_data', '생산의뢰서') : ''"
+                  @click="item.click === 'print' ? requestPrintOrPDF('calc_cost_detail_data', $refs.calcRequestCard, 'edit_survey_cost_data')
+                          : item.click === 'pdf' ? requestPrintOrPDF('calc_cost_detail_data', $refs.calcRequestCard, 'edit_survey_cost_data', '생산의뢰서') : ''"
                 >
                   <v-list-item-title>{{ item.title }}</v-list-item-title>
                 </v-list-item>
