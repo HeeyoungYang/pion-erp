@@ -2284,7 +2284,7 @@ export default {
               tool_rent_fee_formula: this.new_tool_rent_fee_formula,
               transportation_fee_num: this.calc_cost_detail_data_transportation_fee2.cost_num,
               transportation_fee_ratio: this.new_transportation_fee_ratio,
-              transportation_fee_fomula: this.new_transportation_fee_fomula,
+              transportation_fee_formula: this.new_transportation_fee_formula,
               industrial_accident_num: this.calc_cost_detail_data_industrial_accident2.cost_num,
               industrial_accident_ratio: this.new_industrial_accident_ratio,
               industrial_accident_formula: this.new_industrial_accident_formula,
