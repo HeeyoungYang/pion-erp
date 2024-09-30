@@ -7745,6 +7745,7 @@ export default {
             belong_data.purchase_estimate_file_name = '';
             belong_data.purchase_estimate_thumbnail = '';
             belong_data.purchase_num = 0;
+            belong_data.code = '';
             if (step){
               this.bom_list_purchase_data2.push(belong_data);
             }else {
@@ -8064,6 +8065,7 @@ export default {
           data.purchase_estimate_file_name = '';
           data.purchase_estimate_thumbnail = '';
           data.purchase_num = 0;
+          data.code = '';
         })
         if (this.tab_main === 0){
           this.bom_list_purchase_data_copy = this.bom_list_purchase_data_copy.filter(param => param.product_code != item.product_code);
@@ -8082,6 +8084,7 @@ export default {
           item.belong_data[idx].purchase_estimate_file_name = '';
           item.belong_data[idx].purchase_estimate_thumbnail = '';
           item.belong_data[idx].purchase_num = 0;
+          item.belong_data[idx].code = '';
           this.bom_list_purchase_data_copy.push(item.belong_data[idx]);
         }else{
           let add_data = {};
@@ -8095,6 +8098,7 @@ export default {
               item.belong_data[idx].purchase_estimate_file_name = '';
               item.belong_data[idx].purchase_estimate_thumbnail = '';
               item.belong_data[idx].purchase_num = 0;
+              item.belong_data[idx].code = '';
               add_data=item.belong_data[idx];
             }
           }
@@ -8107,6 +8111,7 @@ export default {
           item.belong_data[idx].purchase_estimate_file_name = '';
           item.belong_data[idx].purchase_estimate_thumbnail = '';
           item.belong_data[idx].purchase_num = 0;
+          item.belong_data[idx].code = '';
           this.bom_list_purchase_data2.push(item.belong_data[idx]);
         }else{
           let add_data = {};
@@ -8120,6 +8125,7 @@ export default {
               item.belong_data[idx].purchase_estimate_file_name = '';
               item.belong_data[idx].purchase_estimate_thumbnail = '';
               item.belong_data[idx].purchase_num = 0;
+              item.belong_data[idx].code = '';
               add_data=item.belong_data[idx];
             }
           }
@@ -8177,6 +8183,7 @@ export default {
             bom_data[i].purchase_estimate_file_name = '';
             bom_data[i].purchase_estimate_thumbnail = '';
             bom_data[i].purchase_estimate_thumbnail_img = '';
+            bom_data[i].code = '';
           }
           if(bom_data[i].belong_data){
             const confirm = await mux.Util.showConfirm('미선택 체크 시 적용한 선택한 선주문 내역은 초기화됩니다.  ', '선택 확인');
@@ -8264,6 +8271,7 @@ export default {
           item.purchase_estimate_file_name = '';
           item.purchase_estimate_thumbnail = '';
           item.purchase_estimate_thumbnail_img = '';
+          item.code = '';
           this.searchPurchaseInputs.find(x=>x.label === '관리코드').value = item_code;
         }
       }
