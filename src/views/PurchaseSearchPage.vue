@@ -742,7 +742,7 @@
                           <v-col cols="12" sm="12" class="pb-0">
                             <table style="border-spacing: 0px; width: 100%;">
                               <tr class="text-body-1">
-                                <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">관리번호</td>
+                                <td class="order_info order_title text-center" style="border-left:thin solid rgba(0, 0, 0, 0.12)">관리번호</td>
                                 <td class="order_info">PE-20240425</td>
                                 <td class="order_info order_title text-center" >발행일</td>
                                 <td class="order_info">2024-00-00</td>
@@ -756,33 +756,33 @@
                             <table style="table-layout: fixed; border-spacing: 0px; width: 100%; ">
 
                               <tr>
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">수신업체</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">수신업체</td>
                                 <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ order_confirm_data.company_name }}</td>
                               </tr>
                               <tr class="text-body-1">
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">등록번호</td>
                                 <td class="order_info" style="WORD-BREAK:break-all; border-bottom: 0px;border-right: 0px;">{{ order_confirm_data.company_registration_number }}</td>
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표자</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">대표자</td>
                                 <td class="order_info" style="border-bottom: 0px;">{{ order_confirm_data.company_manager }}</td>
                               </tr>
                               <tr>
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">주소</td>
                                 <td colspan="3" class="order_info" style="border-bottom: 0px;">{{ order_confirm_data.company_address }}</td>
                               </tr>
                               <tr class="text-body-1">
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">전화</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">전화</td>
                                 <td class="order_info" style="border-bottom: 0px;border-right: 0px;">{{ order_confirm_data.company_phone }}</td>
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">팩스</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">팩스</td>
                                 <td class="order_info" style="border-bottom: 0px;">{{ order_confirm_data.company_fax }}</td>
                               </tr>
                               <tr class="text-body-1">
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">결제조건</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">결제조건</td>
                                 <td class="order_info" style="border-bottom: 0px;border-right: 0px;">{{ order_confirm_data.payment_terms }}</td>
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">프로젝트</td>
                                 <td class="order_info" style="border-bottom: 0px;">{{ order_confirm_data.company_fax }}</td>
                               </tr>
                               <tr>
-                                <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">계좌정보</td>
+                                <td class="order_info order_title text-center" style="border-left:thin solid rgba(0, 0, 0, 0.12)">계좌정보</td>
                                 <td colspan="3" class="order_info">{{ order_confirm_data.account_number }}</td>
                               </tr>
                             </table>
@@ -798,33 +798,33 @@
                             />
                             <table style=" border-spacing: 0px; width: 100%;">
                               <tr>
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">등록번호</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">등록번호</td>
                                 <td colspan="3" class="order_info" style="border-bottom: 0px;">851 - 86 - 00038</td>
                               </tr>
                               <tr>
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">상호</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">상호</td>
                                 <td class="order_info" style="border-bottom: 0px;">파이온일렉트릭(주)</td>
                                 <td class="order_info order_title text-center" style="border-bottom: 0px;">대표자</td>
                                 <td class="order_info" style="border-bottom: 0px;">윤광희</td>
                               </tr>
                               <tr>
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">주소</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">주소</td>
                                 <td colspan="3" class="order_info" style="border-bottom: 0px;">서울특별시 서대문구 연세로 50, 116호 (연세대학교 공학원)</td>
                               </tr>
                               <tr>
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업태</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">업태</td>
                                 <td class="order_info" style="border-bottom: 0px;">제조업</td>
                                 <td class="order_info order_title text-center" style="border-bottom: 0px;">종목</td>
                                 <td class="order_info" style="border-bottom: 0px;">전력전자기기</td>
                               </tr>
                               <tr>
-                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">대표전화</td>
+                                <td class="order_info order_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">대표전화</td>
                                 <td class="order_info" style="border-bottom: 0px;">070-5096-4179</td>
                                 <td class="order_info order_title text-center" style="border-bottom: 0px;">팩스</td>
                                 <td class="order_info" style="border-bottom: 0px;">0505-300-4179</td>
                               </tr>
                               <tr>
-                                <td class="order_info order_title text-center" style="border-left:1px solid #b6b6b6">담당자</td>
+                                <td class="order_info order_title text-center" style="border-left:thin solid rgba(0, 0, 0, 0.12)">담당자</td>
                                 <td class="order_info" >{{ login_info.name }}</td>
                                 <td class="order_info order_title text-center" >연락처</td>
                                 <td class="order_info">070-1234-5678</td>

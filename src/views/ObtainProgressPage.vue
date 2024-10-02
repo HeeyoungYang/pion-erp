@@ -168,7 +168,7 @@
                         </table>
                         <table style=" border-spacing: 0px; width: 100%;">
                           <tr>
-                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                               <span style="display: block;margin-top:-2px">
                                 발행일
                               </span>
@@ -180,7 +180,7 @@
                             </td>
                           </tr>
                           <tr>
-                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                               <span style="display: block;margin-top:-2px">
                                 {{ clickedProductCost.obtain_type === '용역' ? '용역명' : '프로젝트명' }}
                               </span>
@@ -192,7 +192,7 @@
                             </td>
                           </tr>
                           <tr>
-                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                               <span style="display: block;margin-top:-2px">
                                 {{ clickedProductCost.obtain_type === '용역' ? '용역기간' : '프로젝트기간' }}
                               </span>
@@ -204,7 +204,7 @@
                             </td>
                           </tr>
                           <tr>
-                            <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                            <td class="estimate_info estimate_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                               <span style="display: block;margin-top:-2px">
                                 유효기간
                               </span>
@@ -228,7 +228,7 @@
                         />
                         <table style=" border-spacing: 0px; width: 100%;">
                           <tr>
-                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                               <span style="display: block;margin-top:-2px">
                                 등록번호
                               </span>
@@ -240,7 +240,7 @@
                             </td>
                           </tr>
                           <tr>
-                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                               <span style="display: block;margin-top:-2px">
                                 상호
                               </span>
@@ -262,7 +262,7 @@
                             </td>
                           </tr>
                           <tr>
-                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                               <span style="display: block;margin-top:-2px">
                                 주소
                               </span>
@@ -274,7 +274,7 @@
                             </td>
                           </tr>
                           <tr>
-                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                               <span style="display: block;margin-top:-2px">
                                 업태
                               </span>
@@ -296,7 +296,7 @@
                             </td>
                           </tr>
                           <tr>
-                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                            <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                               <span style="display: block;margin-top:-2px">
                                 대표전화
                               </span>
@@ -318,7 +318,7 @@
                             </td>
                           </tr>
                           <tr>
-                            <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                            <td class="estimate_info estimate_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                               <span style="display: block;margin-top:-2px">
                                 담당자
                               </span>

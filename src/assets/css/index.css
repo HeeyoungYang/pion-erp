@@ -49,14 +49,14 @@
 .estimate_top::after,
 .estimate_content::after{content: ""; display: block; clear: both;}
 
-.estimate_info{border:1px solid #b6b6b6; padding: 2px 15px; font-size: 11px!important; border-left: 0px; height: 25px!important; line-height: 19px!important;}
+.estimate_info{border:thin solid rgba(0, 0, 0, 0.12); padding: 2px 15px; font-size: 11px!important; border-left: 0px; height: 25px!important; line-height: 19px!important;}
 .estimate_title{background-color: #efefef; font-weight: bold;text-align:center;width: 94px;}
 .estimate_price_info{border-top:3px solid #b6b6b6; border-bottom:3px solid #b6b6b6;  padding: 2px 15px 5px!important; font-size: 16px; border-left: 0px;}
 .estimate_price_title{background-color: #efefef; font-weight: bold; text-align:center}
 
 .order_doc_top{margin-bottom:10px}
 .order_doc_top::after{content: ""; display: block; clear: both;}
-.order_info{border:1px solid #b6b6b6; padding: 2px 10px; font-size: 10px; border-left: 0px; text-overflow: ellipsis;white-space: normal;
+.order_info{border:thin solid rgba(0, 0, 0, 0.12); padding: 2px 10px; font-size: 10px; border-left: 0px; text-overflow: ellipsis;white-space: normal;
   word-wrap: break-word;
   word-break: break-all;}
 .order_title{background-color: #efefef; font-weight: bold;width:94px;text-align: center;}

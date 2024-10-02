@@ -6,7 +6,7 @@
     :hide-default-footer="true"
     :item-key="itemKey"
     :class="tableClass ? tableClass : 'elevation-1'"
-    style="border:1px solid #b6b6b6"
+    style="border:thin solid rgba(0, 0, 0, 0.12)"
     disable-sort
   >
 
@@ -354,9 +354,9 @@ export default {
 };
 </script>
 <style>
-  .cost_table_border th{border-right: 1px solid #b6b6b6;}
+  .cost_table_border th{border-right: thin solid rgba(0, 0, 0, 0.12);}
   .cost_table_border thead th:first-child{width: 35px;}
   .cost_table_border thead th:last-child,
   .cost_table_border tbody td:last-child{border-right: 0px;}
-  .cost_table_border td{border-right: 1px solid #b6b6b6; }
+  .cost_table_border td{border-right: thin solid rgba(0, 0, 0, 0.12); }
 </style>

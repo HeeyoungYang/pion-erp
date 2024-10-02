@@ -293,7 +293,7 @@
               <div style="margin-bottom:10px">
                 <table style="border-spacing: 0px; width: 100%;">
                   <tr>
-                    <td class="order_info order_title " style="border-left:1px solid #b6b6b6">
+                    <td class="order_info order_title " style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                       <span style="display: block;margin-top:-2px;margin-bottom:1px">
                         관리번호
                       </span>
@@ -330,7 +330,7 @@
               <div class="order_doc_top">
                 <table style="border-spacing: 0px; width: 49%; float:left ">
                   <tr>
-                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                       <span style="display: block;margin-top:-2px;margin-bottom:1px">
                         수신업체
                       </span>
@@ -342,7 +342,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                       <span style="display: block;margin-top:-2px;margin-bottom:1px">
                         등록번호
                       </span>
@@ -352,7 +352,7 @@
                         {{ order_form_info.company_registration_number }}
                       </span>
                     </td>
-                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                       <span style="display: block;margin-top:-2px;margin-bottom:1px">
                         대표자
                       </span>
@@ -364,7 +364,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                       <span style="display: block;margin-top:-2px;margin-bottom:1px">
                         주소
                       </span>
@@ -376,7 +376,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                       <span style="display: block;margin-top:-2px;margin-bottom:1px">
                         전화
                       </span>
@@ -386,7 +386,7 @@
                         {{ order_form_info.company_phone }}
                       </span>
                     </td>
-                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                       <span style="display: block;margin-top:-2px;margin-bottom:1px">
                         팩스
                       </span>
@@ -398,7 +398,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                    <td class="order_info order_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                       <span style="display: block;margin-top:-2px;margin-bottom:1px">
                         결제조건
                       </span>
@@ -408,7 +408,7 @@
                         {{ order_form_info.payment_terms }}
                       </span>
                     </td>
-                    <td class="order_info order_title " style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                    <td class="order_info order_title " style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                       <span style="display: block;margin-top:-2px;margin-bottom:1px">
                         프로젝트
                       </span>
@@ -420,7 +420,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td class="order_info order_title" style="border-left:1px solid #b6b6b6">
+                    <td class="order_info order_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                       <span style="display: block;margin-top:-2px;margin-bottom:1px">
                         계좌정보
                       </span>
@@ -444,7 +444,7 @@
                   />
                   <table style=" border-spacing: 0px; width: 100%;">
                     <tr>
-                      <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="order_info order_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px;margin-bottom:1px">
                           등록번호
                         </span>
@@ -456,7 +456,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="order_info order_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px;margin-bottom:1px">
                           상호
                         </span>
@@ -478,7 +478,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="order_info order_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px;margin-bottom:1px">
                           주소
                         </span>
@@ -490,7 +490,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="order_info order_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px;margin-bottom:1px">
                           업태
                         </span>
@@ -512,7 +512,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="order_info order_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="order_info order_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px;margin-bottom:1px">
                           대표전화
                         </span>
@@ -534,7 +534,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="order_info order_title" style="border-left:1px solid #b6b6b6">
+                      <td class="order_info order_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px;margin-bottom:1px">
                           담당자
                         </span>

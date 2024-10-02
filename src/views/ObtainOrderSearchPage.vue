@@ -78,7 +78,7 @@
                 :items="labor_cost_data"
                 hide-default-footer
                 disable-pagination
-                style="border:1px solid #b6b6b6"
+                style="border:thin solid rgba(0, 0, 0, 0.12)"
                 class="elevation-1 labor_cost_list no-scroll"
                 disable-sort
               >
@@ -222,7 +222,7 @@
                   </table>
                   <table style=" border-spacing: 0px; width: 100%;">
                     <tr>
-                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px">
                           발행일
                         </span>
@@ -234,7 +234,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px">
                           {{ clickedProductCost.obtain_type === '용역' ? '용역명' : '프로젝트명' }}
                         </span>
@@ -246,7 +246,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px">
                           {{ clickedProductCost.obtain_type === '용역' ? '용역기간' : '프로젝트기간' }}
                         </span>
@@ -258,7 +258,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                      <td class="estimate_info estimate_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px">
                           유효기간
                         </span>
@@ -282,7 +282,7 @@
                   />
                   <table style=" border-spacing: 0px; width: 100%;">
                     <tr>
-                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px">
                           등록번호
                         </span>
@@ -294,7 +294,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px">
                           상호
                         </span>
@@ -316,7 +316,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px">
                           주소
                         </span>
@@ -328,7 +328,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px">
                           업태
                         </span>
@@ -350,7 +350,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                      <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px">
                           대표전화
                         </span>
@@ -372,7 +372,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                      <td class="estimate_info estimate_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                         <span style="display: block;margin-top:-2px">
                           담당자
                         </span>
@@ -660,7 +660,7 @@
         <!-- 산출내역서 -->
         <v-tab-item key="산출내역서">
           <v-card style="border: 1px solid #ccc;" elevation="0">
-            <v-card-title>
+            <div class="mb-3">
               <v-menu offset-y>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
@@ -691,9 +691,9 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
-            </v-card-title>
-            <v-card-text ref="calcDetailCard">
-              <h3 v-if="costTitlePrint" style="font-weight: black; font-size: 23px; margin-bottom:10px">산출내역서</h3>
+            </div>
+            <div ref="calcDetailCard">
+              <h3 v-if="costTitlePrint" style="font-weight: black; font-size: 23px; margin-bottom:40px">산출내역서</h3>
               <v-form ref="surveyCostForm">
                 <CostTableComponent
                   :headers="survey_cost_headers"
@@ -706,14 +706,14 @@
                 >
                 </CostTableComponent>
               </v-form>
-            </v-card-text>
+            </div>
           </v-card>
         </v-tab-item>
 
         <!-- 노무비 산출 -->
         <v-tab-item key="노무비 산출">
-          <v-card ref="printLaborTable" style="border: 1px solid #ccc;" elevation="0">
-            <v-card-title>
+          <v-card style="border: 1px solid #ccc;" elevation="0">
+            <div>
               <v-menu offset-y>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
@@ -744,8 +744,9 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
-            </v-card-title>
-            <v-card-text>
+            </div>
+            <div ref="printLaborTable">
+              <h3 v-if="costTitlePrint" style="font-weight: black; font-size: 23px; margin-bottom:40px">노무비 산출</h3>
               <v-data-table
                 dense
                 :headers="labor_cost_headers"
@@ -772,14 +773,14 @@
                   </tr>
                 </template>
               </v-data-table>
-            </v-card-text>
+            </div>
           </v-card>
         </v-tab-item>
         <!-- 생산 의뢰서 -->
         <v-tab-item key="생산 의뢰서" v-if="clickedProductCost.obtain_file
                     && searched_datas.last_confirmation
                     && searched_datas.last_confirmation.find(item => item.cost_calc_code === clickedProductCost.cost_calc_code)">
-          <v-card ref="calcRequestCard" style="border: 1px solid #ccc;" elevation="0">
+          <v-card style="border: 1px solid #ccc;" elevation="0">
             <v-menu
               v-if="clickedProductCost.approved_date
               && clickedProductCost.creater === login_info.id"
@@ -854,7 +855,7 @@
                 </v-list-item>
               </v-list>
             </v-menu>
-            <v-card-title>
+            <!-- <v-card-title>
               <v-row
                 class="px-3"
                 style="background: #efefef;"
@@ -863,86 +864,80 @@
                   <p style="font-weight: bold; font-size: 30px;text-align: center;" class="mb-0 py-3">생산 의뢰서
                   </p>
                 </v-col>
-                <!-- <v-col align-self="center" cols="12" sm="2">
-                  <v-img
-                    alt="Pionelectric Logo"
-                    class="float-right"
-                    contain
-                    src="../assets/img/pion_logo.png"
-                    transition="scale-transition"
-                    width="140"
-                    style="margin-top:10px"
-                  />
-                </v-col> -->
               </v-row>
-            </v-card-title>
-            <v-card-text>
-              <v-row class="mt-5" justify="space-between">
-                <v-col cols="12" sm="12" class="pb-0">
-                  <p class="mb-0 font-weight-bold">설계 담당자 : {{ clickedProductCost.send_production_request ? clickedProductCost.send_production_request : '' }}</p>
-                </v-col>
-                <v-col align-self="center" cols="12" sm="6" class="pb-0">
+            </v-card-title> -->
+            <div ref="calcRequestCard">
+              <div
+                style="background: #efefef; padding:20px 0px"
+              >
+                <p style="font-weight: bold; font-size: 30px;text-align: center;" class="mb-0 py-3">생산 의뢰서</p>
+              </div>
+              <p style="font-weight: bold; margin-bottom: 0px; margin-top:30px">설계 담당자 : {{ clickedProductCost.send_production_request ? clickedProductCost.send_production_request : '' }}</p>
+
+              <div class="estimate_content">
+
+                <div style="width:47%; float:left;">
                   <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
                     <tr class="text-body-1">
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업체명</td>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">업체명</td>
                       <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.company_name ? clickedProductCost.company_name : '' }}</td>
                     </tr>
                     <tr class="text-body-1">
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">업체 담당자</td>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">업체 담당자</td>
                       <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.company_manager ? clickedProductCost.company_manager : '' }}</td>
                     </tr>
                     <tr class="text-body-1">
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">프로젝트 코드</td>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">프로젝트 코드</td>
                       <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.project_code ? clickedProductCost.project_code : '' }}</td>
                     </tr>
                     <tr class="text-body-1">
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">{{ clickedProductCost.obtain_type === '용역' ? '용역명' : '프로젝트명' }}</td>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">{{ clickedProductCost.obtain_type === '용역' ? '용역명' : '프로젝트명' }}</td>
                       <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_name ? clickedProductCost.service_name : '' }}</td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">{{ clickedProductCost.obtain_type === '용역' ? '용역기간' : '프로젝트기간' }}</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.service_period ? clickedProductCost.service_period : '' }}</td>
+                      <td class="estimate_info estimate_title text-center" style="border-left:thin solid rgba(0, 0, 0, 0.12)">{{ clickedProductCost.obtain_type === '용역' ? '용역기간' : '프로젝트기간' }}</td>
+                      <td class="estimate_info">{{ clickedProductCost.service_period ? clickedProductCost.service_period : '' }}</td>
                     </tr>
                   </table>
-                </v-col>
-                <v-col align-self="center" cols="12" sm="6" class="pb-0">
+                </div>
+                <div style="width:47%; float:right;">
                   <table style=" border-spacing: 0px; width: 100%;" class="mt-1">
                     <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">사내 견적번호</td>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">사내 견적번호</td>
                       <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.inhouse_bid_number ? clickedProductCost.inhouse_bid_number : '' }}</td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">기업 입찰번호</td>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">기업 입찰번호</td>
                       <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.company_bid_number ? clickedProductCost.company_bid_number : '' }}</td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">납기일</td>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">납기일</td>
                       <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.due_date ? clickedProductCost.due_date : '' }}</td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:1px solid #b6b6b6">인도조건</td>
+                      <td class="estimate_info estimate_title text-center" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">인도조건</td>
                       <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.delivery_condition ? clickedProductCost.delivery_condition : '' }}</td>
                     </tr>
                     <tr>
-                      <td class="estimate_info estimate_title text-center" style="border-left:1px solid #b6b6b6">특이사항</td>
-                      <td class="estimate_info" style="border-bottom: 0px;">{{ clickedProductCost.remark ? clickedProductCost.remark : '' }}</td>
+                      <td class="estimate_info estimate_title text-center" style="border-left:thin solid rgba(0, 0, 0, 0.12)">특이사항</td>
+                      <td class="estimate_info">{{ clickedProductCost.remark ? clickedProductCost.remark : '' }}</td>
                     </tr>
                   </table>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" sm="12">
-                  <v-data-table
-                    dense
-                    :headers="production_request_headers"
-                    :items="searched_datas.product_cost_calc_detail ? searched_datas.product_cost_calc_detail.filter(item => item.cost_calc_code === clickedProductCost.cost_calc_code) : []"
-                    hide-default-footer
-                    disable-pagination
-                    disable-sort
-                  ></v-data-table>
-                </v-col>
-              </v-row>
-            </v-card-text>
+                </div>
+              </div>
+              <div class="estimate_content" style="margin-top:10px">
+                <v-data-table
+                  dense
+                  :headers="production_request_headers"
+                  :items="searched_datas.product_cost_calc_detail ? searched_datas.product_cost_calc_detail.filter(item => item.cost_calc_code === clickedProductCost.cost_calc_code) : []"
+                  hide-default-footer
+                  disable-pagination
+                  disable-sort
+                  style="border: thin solid rgba(0, 0, 0, 0.12)"
+                  class="cost_table_border"
+                ></v-data-table>
+              </div>
+            </div>
           </v-card>
         </v-tab-item>
       </v-tabs-items>
@@ -1508,9 +1503,11 @@ export default {
         }
       }
 
+      this.costTitlePrint = true;
       setTimeout(async () => {
         if (fileName){
           await mux.Util.downloadPDF(this.$refs.printLaborTable, {fileName, rowCountPerPage: 37, mmWidth: 500, isLandscape: true});
+          this.costTitlePrint = false;
 
           // if (navClicked) {
           //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
@@ -1518,6 +1515,7 @@ export default {
           // this.print_labor_table = false;
         }else {
           await mux.Util.print(this.$refs.printLaborTable, {rowCountPerPage: 37, mmWidth: 500, isLandscape: true});
+          this.costTitlePrint = false;
 
           // if (navClicked) {
           //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));

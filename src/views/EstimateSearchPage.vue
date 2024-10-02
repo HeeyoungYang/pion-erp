@@ -153,7 +153,7 @@
                 :items="labor_cost_data"
                 hide-default-footer
                 disable-pagination
-                style="border:1px solid #b6b6b6"
+                style="border:thin solid rgba(0, 0, 0, 0.12)"
                 class="elevation-1 labor_cost_list no-scroll"
                 disable-sort
               >
@@ -389,7 +389,7 @@
                     </table>
                     <table style=" border-spacing: 0px; width: 100%;">
                       <tr>
-                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
                             발행일
                           </span>
@@ -401,7 +401,7 @@
                         </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
                             용역명
                           </span>
@@ -413,7 +413,7 @@
                         </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
                             용역기간
                           </span>
@@ -425,7 +425,7 @@
                         </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                        <td class="estimate_info estimate_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
                             유효기간
                           </span>
@@ -449,7 +449,7 @@
                     />
                     <table style=" border-spacing: 0px; width: 100%;">
                       <tr>
-                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
                             등록번호
                           </span>
@@ -461,7 +461,7 @@
                         </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
                             상호
                           </span>
@@ -483,7 +483,7 @@
                         </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
                             주소
                           </span>
@@ -495,7 +495,7 @@
                         </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
                             업태
                           </span>
@@ -517,7 +517,7 @@
                         </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                        <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
                             대표전화
                           </span>
@@ -539,7 +539,7 @@
                         </td>
                       </tr>
                       <tr>
-                        <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                        <td class="estimate_info estimate_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
                             담당자
                           </span>
@@ -645,7 +645,7 @@
           <!-- 산출내역서 -->
           <v-tab-item>
             <v-card style="border: 1px solid #ccc;" elevation="0">
-              <v-card-title>
+              <div class="mb-3">
                 <v-menu offset-y>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
@@ -676,9 +676,9 @@
                     </v-list-item>
                   </v-list>
                 </v-menu>
-              </v-card-title>
-              <v-card-text ref="calcDetailCard">
-              <p v-if="costTitlePrint" class="text-h7 font-weight-black black--text mb-2">산출내역서</p>
+              </div>
+              <div ref="calcDetailCard">
+                <h3 v-if="costTitlePrint" style="font-weight: black; font-size: 23px; margin-bottom:40px">산출내역서</h3>
                 <v-form ref="surveyCostForm">
                   <CostTableComponent
                     :headers="survey_cost_headers"
@@ -691,21 +691,21 @@
                   >
                   </CostTableComponent>
                 </v-form>
-              </v-card-text>
+              </div>
             </v-card>
           </v-tab-item>
 
           <!-- 노무비 산출 -->
           <v-tab-item>
-            <v-card ref="printLaborTable" style="border: 1px solid #ccc;" elevation="0">
-              <v-card-title>
+            <v-card style="border: 1px solid #ccc;" elevation="0">
+              <div class="mb-3">
                 <v-menu offset-y>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
                       color="success"
                       fab
                       x-small
-                      class="float-right dont_print"
+                      class="dont_print"
                       elevation="0"
                       v-bind="attrs"
                       v-on="on"
@@ -729,8 +729,9 @@
                     </v-list-item>
                   </v-list>
                 </v-menu>
-              </v-card-title>
-              <v-card-text>
+              </div>
+              <div ref="printLaborTable">
+                <h3 v-if="costTitlePrint" style="font-weight: black; font-size: 23px; margin-bottom:40px">노무비 산출</h3>
                 <v-data-table
                   dense
                   :headers="labor_cost_headers"
@@ -757,7 +758,7 @@
                     </tr>
                   </template>
                 </v-data-table>
-              </v-card-text>
+              </div>
             </v-card>
           </v-tab-item>
         </v-tabs-items>
@@ -1512,10 +1513,12 @@ export default {
         }
       }
 
+      this.costTitlePrint = true;
       setTimeout(async () => {
         if (fileName){
           await mux.Util.downloadPDF(this.$refs.printLaborTable, {fileName, rowCountPerPage: 37, mmWidth: 500, isLandscape: true});
 
+          this.costTitlePrint = false;
           // if (navClicked) {
           //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
           // }
@@ -1523,6 +1526,7 @@ export default {
         }else {
           await mux.Util.print(this.$refs.printLaborTable, {rowCountPerPage: 37, mmWidth: 500, isLandscape: true});
 
+          this.costTitlePrint = false;
           // if (navClicked) {
           //   document.querySelector(".v-app-bar__nav-icon").dispatchEvent(new Event('click'));
           // }
@@ -2087,6 +2091,7 @@ export default {
       if (!validate) return;
 
       mux.Util.showLoading();
+      this.costTitlePrint = true;
       let mail_data = JSON.parse(JSON.stringify(this.mailData));
       // mail_data.content = mail_data.content.replaceAll("style=\"", "style="").replaceAll(";\"", ";"")
 
@@ -2155,6 +2160,7 @@ export default {
 
         // 산출내역서 PDF 파일 생성
         if (sendData.specification) {
+
           const origin_tab = this.tab_search;
           this.tab_search = 1;
           if (!this.$refs.calcDetailCard){ // 산출내역서 탭을 load 한 적이 없는 것을 대비
@@ -2259,8 +2265,10 @@ export default {
         await mux.Server.sendEmail(sendData);
         mux.Util.showAlert('메일 발송이 완료되었습니다.', '발송 완료', 3000);
         this.mailDialog = false;
+        this.costTitlePrint = false;
       } catch (error) {
         this.mailDialog = true;
+        this.costTitlePrint = false;
         mux.Util.showAlert(error);
       }
       mux.Util.hideLoading();

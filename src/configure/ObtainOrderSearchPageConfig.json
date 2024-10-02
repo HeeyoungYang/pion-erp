@@ -17,11 +17,11 @@
   ],
 
   "production_request_headers":[
-    { "text": "제품코드", "align": "center", "value": "product_code"},
-    { "text": "제품명", "align": "center", "value": "product_name"},
-    { "text": "모델명", "align": "center", "value": "product_model"},
-    { "text": "사양", "align": "center", "value": "product_spec"},
-    { "text": "제조사", "align": "center", "value": "manufacturer"}
+    { "text": "제품코드", "align": "start", "value": "product_code"},
+    { "text": "제품명", "align": "start", "value": "product_name"},
+    { "text": "모델명", "align": "start", "value": "product_model"},
+    { "text": "사양", "align": "start", "value": "product_spec"},
+    { "text": "제조사", "align": "start", "value": "manufacturer"}
   ],
 
   "estimate_approve_headers": [

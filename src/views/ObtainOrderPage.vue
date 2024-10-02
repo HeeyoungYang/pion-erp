@@ -161,7 +161,7 @@
                           </table>
                           <table style=" border-spacing: 0px; width: 100%;">
                             <tr>
-                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
                                   발행일
                                 </span>
@@ -173,7 +173,7 @@
                               </td>
                             </tr>
                             <tr>
-                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
                                   {{ clickedProductCost.obtain_type === '용역' ? '용역명' : '프로젝트명' }}
                                 </span>
@@ -185,7 +185,7 @@
                               </td>
                             </tr>
                             <tr>
-                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
                                   {{ clickedProductCost.obtain_type === '용역' ? '용역기간' : '프로젝트기간' }}
                                 </span>
@@ -197,7 +197,7 @@
                               </td>
                             </tr>
                             <tr>
-                              <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                              <td class="estimate_info estimate_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
                                   유효기간
                                 </span>
@@ -221,7 +221,7 @@
                           />
                           <table style=" border-spacing: 0px; width: 100%;">
                             <tr>
-                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
                                   등록번호
                                 </span>
@@ -233,7 +233,7 @@
                               </td>
                             </tr>
                             <tr>
-                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
                                   상호
                                 </span>
@@ -255,7 +255,7 @@
                               </td>
                             </tr>
                             <tr>
-                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
                                   주소
                                 </span>
@@ -267,7 +267,7 @@
                               </td>
                             </tr>
                             <tr>
-                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
                                   업태
                                 </span>
@@ -289,7 +289,7 @@
                               </td>
                             </tr>
                             <tr>
-                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                              <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
                                   대표전화
                                 </span>
@@ -311,7 +311,7 @@
                               </td>
                             </tr>
                             <tr>
-                              <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                              <td class="estimate_info estimate_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
                                   담당자
                                 </span>
@@ -550,106 +550,98 @@
                 </v-tab-item>
                 <!-- 산출내역서 -->
                 <v-tab-item>
-                  <v-card ref="calcDetailCard">
-                    <v-card-title>
-                      <v-row>
-                        <v-col cols="12" sm="9">
-                          <h3 style="font-weight: black; font-size: 23px; margin-bottom:10px">산출내역서</h3>
-                        </v-col>
-
-                        <v-col v-show="edit_buttons_show" cols="12" sm="3">
-                          <v-menu offset-y>
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-btn
-                                v-show="edit_survey_cost_num_disabled"
-                                color="success"
-                                fab
-                                x-small
-                                class="float-right dont_print"
-                                elevation="0"
-                                v-bind="attrs"
-                                v-on="on"
-                                data-html2canvas-ignore="true"
-                              >
-                                <v-icon
-                                  small
-                                >mdi-content-save</v-icon>
-                              </v-btn>
-                            </template>
-                            <v-list>
-                              <v-list-item
-                                v-for="(item, index) in content_save_items"
-                                :key="index"
-                                dense
-                                @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data')
-                                        : item.click === 'excel' ? mux.Excel.downloadTable(survey_cost_headers, calc_cost_detail_data, '산출내역서')
-                                        : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data', '산출내역서') : ''"
-                              >
-                                <v-list-item-title>{{ item.title }}</v-list-item-title>
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
+                  <v-card class="pt-9">
+                    <div v-show="edit_buttons_show" style="position: absolute; right: 25px; top: 38px;">
+                      <v-menu offset-y>
+                        <template v-slot:activator="{ on, attrs }">
                           <v-btn
-                            v-show="!edit_survey_cost_num_disabled"
-                            color="error"
+                            v-show="edit_survey_cost_num_disabled"
+                            color="success"
                             fab
                             x-small
                             class="float-right dont_print"
                             elevation="0"
+                            v-bind="attrs"
+                            v-on="on"
                             data-html2canvas-ignore="true"
-                            @click="edit_survey_cost_num_disabled = true; during_edit = false"
                           >
                             <v-icon
                               small
-                            >mdi-undo-variant</v-icon>
+                            >mdi-content-save</v-icon>
                           </v-btn>
-                          <v-btn
-                            v-if="clickedProductCost.creater && clickedProductCost.creater === $cookies.get($configJson.cookies.id.key)
-                              && !clickedProductCost.approved_date
-                              && edit_survey_cost_num_disabled && !during_edit"
-                            color="primary"
-                            fab
-                            x-small
-                            class="mr-3 float-right dont_print"
-                            elevation="0"
-                            data-html2canvas-ignore="true"
-                            @click="edit_survey_cost_num_disabled = false; during_edit = true"
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            v-for="(item, index) in content_save_items"
+                            :key="index"
+                            dense
+                            @click="item.click === 'print' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data')
+                                    : item.click === 'excel' ? mux.Excel.downloadTable(survey_cost_headers, calc_cost_detail_data, '산출내역서')
+                                    : item.click === 'pdf' ? costDetailPrintOrPDF('calc_cost_detail_data', $refs.calcDetailCard, 'edit_survey_cost_data', '산출내역서') : ''"
                           >
-                            <v-icon
-                              small
-                            >mdi-pencil</v-icon>
-                          </v-btn>
-                          <v-btn
-                            v-if="!edit_survey_cost_num_disabled"
-                            color="primary"
-                            fab
-                            x-small
-                            class="mr-3 float-right dont_print"
-                            elevation="0"
-                            data-html2canvas-ignore="true"
-                            @click="surveyCostNumEditSave"
-                          >
-                            <v-icon
-                              small
-                            >mdi-check</v-icon>
-                          </v-btn>
+                            <v-list-item-title>{{ item.title }}</v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                      <v-btn
+                        v-show="!edit_survey_cost_num_disabled"
+                        color="error"
+                        fab
+                        x-small
+                        class="float-right dont_print"
+                        elevation="0"
+                        data-html2canvas-ignore="true"
+                        @click="edit_survey_cost_num_disabled = true; during_edit = false"
+                      >
+                        <v-icon
+                          small
+                        >mdi-undo-variant</v-icon>
+                      </v-btn>
+                      <v-btn
+                        v-if="clickedProductCost.creater && clickedProductCost.creater === $cookies.get($configJson.cookies.id.key)
+                          && !clickedProductCost.approved_date
+                          && edit_survey_cost_num_disabled && !during_edit"
+                        color="primary"
+                        fab
+                        x-small
+                        class="mr-3 float-right dont_print"
+                        elevation="0"
+                        data-html2canvas-ignore="true"
+                        @click="edit_survey_cost_num_disabled = false; during_edit = true"
+                      >
+                        <v-icon
+                          small
+                        >mdi-pencil</v-icon>
+                      </v-btn>
+                      <v-btn
+                        v-if="!edit_survey_cost_num_disabled"
+                        color="primary"
+                        fab
+                        x-small
+                        class="mr-3 float-right dont_print"
+                        elevation="0"
+                        data-html2canvas-ignore="true"
+                        @click="surveyCostNumEditSave"
+                      >
+                        <v-icon
+                          small
+                        >mdi-check</v-icon>
+                      </v-btn>
 
-                          <v-btn
-                            v-if="!edit_survey_cost_num_disabled"
-                            color="grey"
-                            small
-                            class="mr-3 float-right dont_print white--text"
-                            elevation="0"
-                            data-html2canvas-ignore="true"
-                            @click="clickedProductCost.obtain_type !== '기술료' ? dialog_search_product = true : dialog_payment = true"
-                          >
-                            재료 수정
-                          </v-btn>
-                        </v-col>
-                      </v-row>
-
-                    </v-card-title>
-                    <v-card-text>
+                      <v-btn
+                        v-if="!edit_survey_cost_num_disabled"
+                        color="grey"
+                        small
+                        class="mr-3 float-right dont_print white--text"
+                        elevation="0"
+                        data-html2canvas-ignore="true"
+                        @click="clickedProductCost.obtain_type !== '기술료' ? dialog_search_product = true : dialog_payment = true"
+                      >
+                        재료 수정
+                      </v-btn>
+                    </div>
+                    <div ref="calcDetailCard">
+                      <h3 style="font-weight: black; font-size: 23px; margin-bottom:40px">산출내역서</h3>
                       <v-form ref="surveyCostForm">
                         <CostTableComponent
                           :headers="survey_cost_headers"
@@ -662,71 +654,64 @@
                         >
                         </CostTableComponent>
                       </v-form>
-                    </v-card-text>
+                    </div>
                   </v-card>
                 </v-tab-item>
 
                 <!-- 노무비 산출 -->
                 <v-tab-item>
-                  <v-card ref="printLaborTable">
-                    <v-card-title>
-                      <v-row>
-                        <v-col cols="12" sm="10">
-                          <h3 style="font-weight: black; font-size: 23px; margin-bottom:10px">노무비 산출</h3>
-                        </v-col>
-                        <v-col v-show="edit_buttons_show" cols="12" sm="2">
-                          <v-menu offset-y>
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-btn
-                                color="success"
-                                fab
-                                x-small
-                                class="float-right dont_print"
-                                elevation="0"
-                                v-bind="attrs"
-                                v-on="on"
-                                data-html2canvas-ignore="true"
-                              >
-                                <v-icon
-                                  small
-                                >mdi-content-save</v-icon>
-                              </v-btn>
-                            </template>
-                            <v-list>
-                              <v-list-item
-                                v-for="(item, index) in content_save_items"
-                                :key="index"
-                                dense
-                                @click="item.click === 'print' ? printLaborCost()
-                                        : item.click === 'excel' ? mux.Excel.downloadTable(labor_cost_headers, labor_cost_data, '노무비 산출')
-                                        : item.click === 'pdf' ? printLaborCost('노무비 산출') : ''"
-                              >
-                                <v-list-item-title>{{ item.title }}</v-list-item-title>
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
-
+                  <v-card class="pt-9">
+                    <div v-show="edit_buttons_show" style="position: absolute; right: 25px; top: 38px;">
+                      <v-menu offset-y>
+                        <template v-slot:activator="{ on, attrs }">
                           <v-btn
-                            v-if="clickedProductCost.creater && clickedProductCost.creater === $cookies.get($configJson.cookies.id.key)
-                              && !clickedProductCost.approved_date
-                              && !during_edit"
-                            color="primary"
+                            color="success"
                             fab
                             x-small
-                            class="mr-3 float-right dont_print"
+                            class="float-right dont_print"
                             elevation="0"
+                            v-bind="attrs"
+                            v-on="on"
                             data-html2canvas-ignore="true"
-                            @click="dialog_calculate_labor = true"
                           >
                             <v-icon
                               small
-                            >mdi-pencil</v-icon>
+                            >mdi-content-save</v-icon>
                           </v-btn>
-                        </v-col>
-                      </v-row>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            v-for="(item, index) in content_save_items"
+                            :key="index"
+                            dense
+                            @click="item.click === 'print' ? printLaborCost()
+                                    : item.click === 'excel' ? mux.Excel.downloadTable(labor_cost_headers, labor_cost_data, '노무비 산출')
+                                    : item.click === 'pdf' ? printLaborCost('노무비 산출') : ''"
+                          >
+                            <v-list-item-title>{{ item.title }}</v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
 
-                    </v-card-title>
-                    <v-card-text>
+                      <v-btn
+                        v-if="clickedProductCost.creater && clickedProductCost.creater === $cookies.get($configJson.cookies.id.key)
+                          && !clickedProductCost.approved_date
+                          && !during_edit"
+                        color="primary"
+                        fab
+                        x-small
+                        class="mr-3 float-right dont_print"
+                        elevation="0"
+                        data-html2canvas-ignore="true"
+                        @click="dialog_calculate_labor = true"
+                      >
+                        <v-icon
+                          small
+                        >mdi-pencil</v-icon>
+                      </v-btn>
+                    </div>
+                    <div ref="printLaborTable">
+                      <h3 style="font-weight: black; font-size: 23px; margin-bottom:40px">노무비 산출</h3>
                       <v-data-table
                         dense
                         :headers="labor_cost_headers"
@@ -753,7 +738,7 @@
                           </tr>
                         </template>
                       </v-data-table>
-                    </v-card-text>
+                    </div>
                   </v-card>
                 </v-tab-item>
               </v-tabs-items>
@@ -957,7 +942,7 @@
                       </table>
                       <table style=" border-spacing: 0px; width: 100%;">
                         <tr>
-                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
                               발행일
                             </span>
@@ -969,7 +954,7 @@
                           </td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
                               {{ type_obtain === '용역' ? '용역명' : '프로젝트명' }}
                             </span>
@@ -981,7 +966,7 @@
                           </td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
                               {{ type_obtain === '용역' ? '용역기간' : '프로젝트기간' }}
                             </span>
@@ -993,7 +978,7 @@
                           </td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                          <td class="estimate_info estimate_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
                               유효기간
                             </span>
@@ -1017,7 +1002,7 @@
                       />
                       <table style=" border-spacing: 0px; width: 100%;">
                         <tr>
-                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
                               등록번호
                             </span>
@@ -1029,7 +1014,7 @@
                           </td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
                               상호
                             </span>
@@ -1051,7 +1036,7 @@
                           </td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
                               주소
                             </span>
@@ -1063,7 +1048,7 @@
                           </td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
                               업태
                             </span>
@@ -1085,7 +1070,7 @@
                           </td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:1px solid #b6b6b6">
+                          <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
                               대표전화
                             </span>
@@ -1107,7 +1092,7 @@
                           </td>
                         </tr>
                         <tr>
-                          <td class="estimate_info estimate_title" style="border-left:1px solid #b6b6b6">
+                          <td class="estimate_info estimate_title" style="border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
                               담당자
                             </span>
@@ -1185,7 +1170,7 @@
                 :items="labor_cost_data"
                 hide-default-footer
                 disable-pagination
-                style="border:1px solid #b6b6b6"
+                style="border:thin solid rgba(0, 0, 0, 0.12)"
                 class="elevation-1 labor_cost_list no-scroll"
                 disable-sort
               >
@@ -5177,7 +5162,7 @@ export default {
 }
 </script>
 <style>
-/* .estimate_info{border:1px solid #b6b6b6; padding: 2px 15px; font-size: 11px; border-left: 0px;} */
+/* .estimate_info{border:thin solid rgba(0, 0, 0, 0.12); padding: 2px 15px; font-size: 11px; border-left: 0px;} */
 /* .estimate_price_info{border-top:3px solid #b6b6b6; border-bottom:3px solid #b6b6b6; padding: 5px 15px; font-size: 16px; border-left: 0px;} */
 /* .estimate_price_title{background-color: #efefef; font-weight: bold;} */
 
