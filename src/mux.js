@@ -1791,7 +1791,7 @@ mux.Util = {
           a4Width = `${mmWidth+marginLeftRight*2}mm`;
           a4Height = `${pageCount*((isLandscape ? mmWidth/1.4141 : mmWidth*1.4141)+marginTopBottom*2*2)}mm`;
 
-          const styleCopy = this.copyStyleToNewWindowWithoutHover();
+          const styleCopy = (await this.copyStyleToNewWindowWithoutHover()).replaceAll(`32pxborder-top-left-radius:0border-top-right-radius:0border-bottom-left-radius:0border-bottom-right-radius:0`, `32px; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;`);
           // 미리보기 팝업을 띄우기
           if (await this.showConfirm(`프린트를 위한 팝업창을 허용하시겠습니까?`) === false) {
             resolve('팝업창 허용이 필요합니다.');
@@ -2184,7 +2184,7 @@ mux.Util = {
           a4Width = `${mmWidth+marginLeftRight*2}mm`;
           a4Height = `${pageCount*((isLandscape ? mmWidth/1.4141 : mmWidth*1.4141)+marginTopBottom*2*2)}mm`;
 
-          const styleCopy = this.copyStyleToNewWindowWithoutHover();
+          const styleCopy = (await this.copyStyleToNewWindowWithoutHover()).replaceAll(`32pxborder-top-left-radius:0border-top-right-radius:0border-bottom-left-radius:0border-bottom-right-radius:0`, `32px; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;`);
           // 미리보기 팝업을 띄우기
           if (await this.showConfirm(`PDF 파일 생성을 위한 팝업창을 허용하시겠습니까?`) === false) {
             resolve('팝업창 허용이 필요합니다.');
@@ -2577,7 +2577,7 @@ mux.Util = {
           a4Width = `${mmWidth+marginLeftRight*2}mm`;
           a4Height = `${pageCount*((isLandscape ? mmWidth/1.4141 : mmWidth*1.4141)+marginTopBottom*2*2)}mm`;
 
-          const styleCopy = this.copyStyleToNewWindowWithoutHover();
+          const styleCopy = (await this.copyStyleToNewWindowWithoutHover()).replaceAll(`32pxborder-top-left-radius:0border-top-right-radius:0border-bottom-left-radius:0border-bottom-right-radius:0`, `32px; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;`);
           // 미리보기 팝업을 띄우기
           if (await this.showConfirm(`PDF 파일 다운로드를 위한 팝업창을 허용하시겠습니까?`) === false) {
             resolve('팝업창 허용이 필요합니다.');
@@ -3069,26 +3069,33 @@ mux.Util = {
 
     return styles;
   },
-  copyStyleToNewWindowWithoutHover() {
+  
+  async copyStyleToNewWindowWithoutHover() {
     var styles = '';
     var styleElements = document.querySelectorAll('style, link[rel="stylesheet"]');
-    styleElements.forEach(function(styleElement) {
-        var clonedElement = styleElement.cloneNode(true); // 복제본 생성
-        var styleText = clonedElement.textContent || clonedElement.innerText; // 스타일 텍스트 추출
-
-        // hover와 관련된 스타일 제거
-        styleText = styleText.replace(/(?:^|\})([^{]*):hover([^{]*)\{/g, '');
-
-        // 수정된 스타일을 다시 요소에 설정
-        if ('textContent' in clonedElement) {
-            clonedElement.textContent = styleText;
+    
+    for (let styleElement of styleElements) {
+        if (styleElement.tagName === 'LINK') {
+            // 외부 CSS 파일을 가져옴 (비동기 처리)
+            const response = await fetch(styleElement.href);
+            let css = await response.text();
+            css = css.replace(/(?:^|\})([^{]*):hover([^{]*)\{/g, ''); // :hover 제거
+            styles += `<style type="text/css">${css}</style>`;
         } else {
-            clonedElement.innerText = styleText;
+            // 인라인 스타일 복제 (동기 처리)
+            var clonedElement = styleElement.cloneNode(true);
+            
+            // textContent 대신 innerHTML 사용
+            var styleText = clonedElement.innerHTML; // CSS를 포함한 HTML을 복사
+            styleText = styleText.replace(/(?:^|\})([^{]*):hover([^{]*)\{/g, ''); // :hover 제거
+
+            // 수정된 스타일을 다시 설정
+            clonedElement.innerHTML = styleText;
+
+            // 복제된 스타일 태그를 결과에 추가
+            styles += clonedElement.outerHTML;
         }
-
-        styles += clonedElement.outerHTML;
-    });
-
+    }
     return styles;
   },
 
