@@ -284,7 +284,7 @@
                     </td>
                     <td class="approve_list_date">
                       <span style="display: block;margin-top:-3px">
-                        {{ order_form_info.approved_date === '' ? '미승인' : order_form_info.approved_date.split(' ')[0] }}
+                        {{ !order_form_info.approved_date ? '미승인' : order_form_info.approved_date.split(' ')[0] }}
                       </span>
                     </td>
                   </tr>
