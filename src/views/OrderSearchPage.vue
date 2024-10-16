@@ -592,6 +592,14 @@
                       </td>
                     </tr>
                   </template>
+                  <template slot="body.append">
+                    <tr class="font-weight-black amber lighten-5" style="font-weight: bold; background-color: #fff8e1;">
+                      <td colspan="5" style="font-size: 15px;">합계 (TOTAL)</td>
+                      <td colspan="2" >
+                        {{ order_form_total }}
+                      </td>
+                    </tr>
+                  </template>
                 </v-data-table>
               </div>
             </div>
@@ -961,6 +969,7 @@ export default {
       mailDialog: false,
       uploadFilesDialog: false,
 
+      order_form_total : 0,
       search_by_code: '',
       email_sign:'',
       fileCode: '',
@@ -1012,6 +1021,13 @@ export default {
       val || this.closeOrderDetail()
       this.mailData = JSON.parse(JSON.stringify(this.defaultMailData));
     },
+    order_form_data(items){
+      this.order_form_total = 0;
+      this.order_form_total = mux.Number.withComma(Math.round(items.reduce((prev, cur)=>{
+        return (prev += cur.unit_price ? cur.unit_price * cur.ordered_num : 0);
+      }, 0) ))
+      console.log(this.order_form_total);
+    }
   },
   created () {
     this.initialize()
@@ -1918,9 +1934,9 @@ export default {
     printOrder(fileName){
       setTimeout(async () => {
         if (fileName){
-          mux.Util.downloadPDF(this.$refs.orderForm, {fileName, rowCountPerPage: 28});
+          mux.Util.downloadPDF(this.$refs.orderForm, {fileName,hasTotalRow: true, rowCountPerPage: 28});
         }else {
-          mux.Util.print(this.$refs.orderForm, {rowCountPerPage: 28});
+          mux.Util.print(this.$refs.orderForm, {hasTotalRow: true, rowCountPerPage: 28});
         }
       }, 500);
     },
