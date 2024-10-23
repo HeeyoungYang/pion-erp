@@ -2908,6 +2908,12 @@ export default {
 
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
 
+          if(this.check_module_code_type === 'with_model' && this.module_model_naming === ''){
+            mux.Util.showAlert('모델형 관리코드는 모델명이 필수입니다.');
+            mux.Util.hideLoading();
+            return;
+          }
+
           const currDate = new Date();
           let new_code = '';
           if(this.check_module_code_type === 'with_model')
