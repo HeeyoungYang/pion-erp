@@ -1692,7 +1692,7 @@ export default {
         {
           "type":"",
           "classification":"",
-          "item_code": '임시코드-'+ ('00' + (added + 1)).slice(-3),
+          "item_code": '임시코드-'+ ('000' + (added + 1)).slice(-4),
           "name":"",
           "model":"",
           "spec":"",

@@ -678,10 +678,19 @@ export default {
             let currentCode = await mux.Get.getCurrentCode(code_name, param_info, script_file_name, script_file_path)
 
             if(currentCode === ''){
-              new_code = set_code + '-001';
+              if(belong.type === '원부자재')
+                new_code = set_code + '-0001';
+              else if(belong.type === '반제품')
+                new_code = set_code + '-001';
             }else{
               let calc_current_code = Number(currentCode.split('-')[currentCode.split('-').length -1]) + 1;
-              calc_current_code = ('00' + calc_current_code).slice(-3);
+
+
+              if(belong.type === '원부자재')
+                calc_current_code = ('000' + calc_current_code).slice(-4);
+              else if(belong.type === '반제품')
+                calc_current_code = ('00' + calc_current_code).slice(-3);
+
               new_code = set_code + '-' + calc_current_code;
             }
 

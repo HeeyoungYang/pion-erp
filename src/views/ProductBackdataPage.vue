@@ -476,7 +476,7 @@
                             </v-row>
 
                             <v-form ref="moduleForm" class="mt-3">
-                              <span v-if="editedIndex === -1" class="error--text">※ 관리코드는 자동 설정되며 저장시 넘버링 됩니다.</span>
+                              <!-- <span v-if="editedIndex === -1" class="error--text">※ 관리코드는 자동 설정되며 저장시 넘버링 됩니다.</span> -->
                               <InputsFormComponent
                                 dense
                                 clearable
@@ -525,6 +525,55 @@
                                 </v-menu>
                               </InputsFormComponent>
                             </v-form>
+                            <v-divider class="my-7"></v-divider>
+                            <v-row align="center">
+                              <v-col cols="12" class="pb-0" align-self="center">
+                                <v-radio-group
+                                  v-model="check_module_code_type"
+                                  hide-details
+                                  row
+                                >
+                                  <span class="text-h6 font-weight-black mb-2 mr-6">
+                                    {{ editedIndex === -1 ? '반제품 코드 설정 : ' : '반제품 코드 : ' + module_code_naming }}
+                                  </span>
+                                  <v-radio
+                                    label="분류형"
+                                    value="with_type"
+                                  ></v-radio>
+                                  <v-radio
+                                    label="모델형"
+                                    value="with_model"
+                                  ></v-radio>
+                                </v-radio-group>
+                              </v-col>
+                              <v-col v-if="editedIndex === -1" cols="12" class="pb-0" align-self="center">
+                                <span class="text-h6 mb-2">
+                                  {{ check_module_code_type === 'with_type' ? module_code_naming + '-' + module_classification_naming : module_code_naming + '-' }}
+                                </span>
+                                <v-text-field
+                                  v-if="check_module_code_type === 'with_model'"
+                                  dense
+                                  hide-details
+                                  filled
+                                  style="width:250px; display: inline-block;"
+                                  class="ml-4"
+                                  label="모델명"
+                                  v-model="module_model_naming"
+                                ></v-text-field>
+                                <span
+                                  :class="check_module_code_type === 'with_model' ? 'text-h6 mb-2 mx-4' : 'text-h6 mb-2'">
+                                  - {{  this.module_manufacturer_naming }} -
+                                </span>
+                                <v-text-field
+                                  dense
+                                  hide-details
+                                  filled
+                                  style="width:250px; display: inline-block;"
+                                  label="사양(용량)코드"
+                                  v-model="module_spec_naming"
+                                ></v-text-field>
+                              </v-col>
+                            </v-row>
                             <v-divider class="my-7"></v-divider>
                             <v-row>
                               <v-col cols="3" class="pb-0">
@@ -1110,6 +1159,16 @@
                             hide-details
                             filled
                             style="width:250px; display: inline-block;"
+                            label="모델명"
+                            v-model="product_model_naming"
+                          ></v-text-field>
+                          <span v-if="editedIndex === -1" class="text-h6 mb-2 mx-4">-</span>
+                          <v-text-field
+                            v-if="editedIndex === -1"
+                            dense
+                            hide-details
+                            filled
+                            style="width:250px; display: inline-block;"
                             label="사양(용량)코드"
                             v-model="product_spec_naming"
                           ></v-text-field>
@@ -1337,7 +1396,14 @@ export default {
       productImg: '',
       set_classification_selected: '',
       set_manufacturer_selected: '',
+      check_module_code_type: 'with_type',
+      module_code_naming: '',
+      module_model_naming: '',
+      module_classification_naming: '',
+      module_manufacturer_naming: '',
+      module_spec_naming: '',
       product_code_naming: '',
+      product_model_naming: '',
       product_spec_naming: '',
       menu: false,
       editedIndex: -1,
@@ -1438,8 +1504,17 @@ export default {
     registModuleInputsManufacturer() {
       return this.registModuleInputs.find(x=>x.label === '제조사');
     },
-    registProductInputsClassification() {
-      return this.registProductInputs.find(x=>x.label === '분류');
+    registModuleInputsModel() {
+      return this.registModuleInputs.find(x=>x.label === '모델명');
+    },
+    registModuleInputsSpec() {
+      return this.registModuleInputs.find(x=>x.label === '사양');
+    },
+    // registProductInputsClassification() {
+    //   return this.registProductInputs.find(x=>x.label === '분류');
+    // },
+    registProductInputsModel() {
+      return this.registProductInputs.find(x=>x.label === '모델명');
     },
     registProductInputsSpec() {
       return this.registProductInputs.find(x=>x.label === '사양');
@@ -1479,29 +1554,44 @@ export default {
     registModuleInputsClassification: {
       handler: function (newInput) {
         let classification = newInput.value.split('-');
-        let manufacturer = this.registModuleInputs.find(x=>x.label === '제조사').value.split('-');
-
-        if(this.editedIndex === -1)
-          this.registModuleInputs.find(x=>x.label === '관리코드').value = 'PE-' + classification[classification.length-1] + '-' + manufacturer[manufacturer.length-1];
+        this.module_classification_naming = classification[classification.length-1];
       },
       deep: true
     },
     registModuleInputsManufacturer: {
       handler: function (newInput) {
         let manufacturer = newInput.value.split('-');
-        let classification = this.registModuleInputs.find(x=>x.label === '분류').value.split('-');
-
-        if(this.editedIndex === -1)
-          this.registModuleInputs.find(x=>x.label === '관리코드').value = 'PE-' + classification[classification.length-1] + '-' + manufacturer[manufacturer.length-1];
+        this.module_manufacturer_naming = manufacturer[manufacturer.length-1];
       },
       deep: true
     },
-    registProductInputsClassification: {
+    registModuleInputsModel: {
       handler: function (newInput) {
-        let classification = newInput.value.split('-');
+        let v_info = newInput.value.replace(/ /g,'_');
+        this.module_model_naming = v_info;
+      },
+      deep: true
+    },
+    registModuleInputsSpec: {
+      handler: function (newInput) {
+        let v_info = newInput.value.split(' ');
+        this.module_spec_naming = v_info[0] + v_info[1].replace('kW','K') + v_info[2].replace('Hz','H') + v_info[3].replace('Level','L');
+      },
+      deep: true
+    },
+    // registProductInputsClassification: {
+    //   handler: function (newInput) {
+    //     let classification = newInput.value.split('-');
 
-        if(this.editedIndex === -1)
-          this.product_code_naming = 'PE-' + classification[classification.length-1];
+    //     if(this.editedIndex === -1)
+    //       this.product_code_naming = 'PE-' + classification[classification.length-1];
+    //   },
+    //   deep: true
+    // },
+    registProductInputsModel: {
+      handler: function (newInput) {
+        let v_info = newInput.value.replace(/ /g,'_');
+        this.product_model_naming = v_info;
       },
       deep: true
     },
@@ -2271,10 +2361,10 @@ export default {
           let currentCode = await mux.Get.getCurrentCode('material_code', param_info, script_file_name, script_file_path)
 
           if(currentCode === ''){
-            this.editRegistMaterial.item_code = this.editRegistMaterial.item_code + '-001';
+            this.editRegistMaterial.item_code = this.editRegistMaterial.item_code + '-0001';
           }else{
             let calc_current_code = Number(currentCode.split('-')[currentCode.split('-').length -1]) + 1;
-            calc_current_code = ('00' + calc_current_code).slice(-3);
+            calc_current_code = ('000' + calc_current_code).slice(-4);
             this.editRegistMaterial.item_code = this.editRegistMaterial.item_code + '-' + calc_current_code;
           }
           let sendData = {
@@ -2618,13 +2708,21 @@ export default {
       let module_input = this.registModuleInputs;
       mux.Rules.rulesSet(module_input);
       module_input.forEach(data =>{
-        if(data.column_name == 'item_code'){
-          data.disabled = true;
-          data.value = 'PE-';
+        // if(data.column_name == 'item_code'){
+        //   data.disabled = true;
+        //   data.value = 'PE-';
+        // }else{
+        //   data.value = '';
+        // }
+        if(data.column_name == 'spec'){
+          data.value = '000V 000kW 00Hz 0Level'
         }else{
           data.value = '';
         }
       })
+      this.module_code_naming = 'PE'
+      this.module_model_naming = ''
+      this.module_spec_naming = ''
       this.module_set_material_data = [];
       this.module_dialog = true
     },
@@ -2632,6 +2730,7 @@ export default {
     async editModuleItem(item){
       mux.Util.showLoading();
 
+      this.module_code_naming = item.item_code
       const prevURL = window.location.href;
       try {
         let params;
@@ -2808,17 +2907,25 @@ export default {
         }
 
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
-          let param_info = {"module_table.module_code": this.editRegistModule.item_code};
+
+          const currDate = new Date();
+          let new_code = '';
+          if(this.check_module_code_type === 'with_model')
+            new_code = this.module_code_naming + '-' + this.module_model_naming + '-' + this.module_manufacturer_naming + '-' + this.module_spec_naming + '-' + mux.Date.format(currDate, 'yy');
+          else
+            new_code = this.module_code_naming + '-' + this.module_classification_naming + '-' + this.module_manufacturer_naming + '-' + this.module_spec_naming + '-' + mux.Date.format(currDate, 'yy');
+
+          let param_info = {"module_table.module_code": new_code};
           let script_file_name = "rooting_반제품_검색_24_05_16_13_23_FD4.json";
           let script_file_path = "data_storage_pion\\json_sql\\stock\\6_반제품_검색\\반제품_검색_24_05_16_13_24_YJO";
           let currentCode = await mux.Get.getCurrentCode('code', param_info, script_file_name, script_file_path)
 
           if(currentCode === ''){
-            this.editRegistModule.item_code = this.editRegistModule.item_code + '-001';
+            this.editRegistModule.item_code = new_code + '-001';
           }else{
             let calc_current_code = Number(currentCode.split('-')[currentCode.split('-').length -1]) + 1;
             calc_current_code = ('00' + calc_current_code).slice(-3);
-            this.editRegistModule.item_code = this.editRegistModule.item_code + '-' + calc_current_code;
+            this.editRegistModule.item_code = new_code + '-' + calc_current_code;
           }
           let sendData = {
             "module_table-insert": [{
@@ -2942,18 +3049,18 @@ export default {
                 "role": "modifier"
               },
               "data":{
-                "module_code": this.editRegistModule.item_code,
+                "module_code": this.module_code_naming,
                 "classification": this.editRegistModule.classification,
                 "manufacturer": this.editRegistModule.manufacturer,
                 "model": this.editRegistModule.model,
                 "name": this.editRegistModule.name,
-                "photo": thumbnail !== 'NULL' ? this.editRegistModule.item_code + ".png" : "",
+                "photo": thumbnail !== 'NULL' ? this.module_code_naming + ".png" : "",
                 "spec": this.editRegistModule.spec,
                 "thumbnail": thumbnail,
                 "type": this.editRegistModule.type,
                 "unit_price": this.editRegistModule.unit_price
               },
-              "update_where": {"module_code": this.editRegistModule.item_code},
+              "update_where": {"module_code": this.module_code_naming},
               "rollback": "yes"
             }]
           };
@@ -2964,7 +3071,7 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "delete_where": {"product_code": this.editRegistModule.item_code},
+            "delete_where": {"product_code": this.module_code_naming},
             "rollback": "no"
           }];
 
@@ -2980,7 +3087,7 @@ export default {
               },
               "data":{
                 "conditions": data.conditions,
-                "product_code": this.editRegistModule.item_code,
+                "product_code": this.module_code_naming,
                 "spot": data.spot,
                 "stock_num": data.stock_num,
                 "type": this.editRegistModule.type
@@ -2997,7 +3104,7 @@ export default {
               "role": "modifier"
             },
             "data": {},
-            "delete_where": {"module_code": this.editRegistModule.item_code},
+            "delete_where": {"module_code": this.module_code_naming},
             "rollback": "no"
           }];
           let delete_material_data = [];
@@ -3045,7 +3152,7 @@ export default {
                 "role": "creater"
               },
               "data":{
-                "module_code": this.editRegistModule.item_code,
+                "module_code": this.module_code_naming,
                 "material_code": data.item_code,
                 "material_num": data.num
               },
@@ -3116,9 +3223,9 @@ export default {
       // }
       let belong_item_code;
       if(this.module_set_material_data.length === 0){
-        belong_item_code = origin_code + '-001';
+        belong_item_code = origin_code + '-0001';
       }else{
-        belong_item_code = origin_code + '-' + ('00' + (this.module_set_material_data.length + 1)).slice(-3);
+        belong_item_code = origin_code + '-' + ('000' + (this.module_set_material_data.length + 1)).slice(-4);
       }
       this.module_set_material_data.push({
         classification:'',
@@ -3146,7 +3253,7 @@ export default {
       if(this.set_material_write && this.module_set_material_data.length > 0){
         if(column_name === 'item_code'){
           this.module_set_material_data.forEach((data, index) =>{
-            data.item_code =  val + '-' + ('00' + (index + 1)).slice(-3);
+            data.item_code =  val + '-' + ('000' + (index + 1)).slice(-4);
           })
         }
       }
@@ -3326,6 +3433,7 @@ export default {
         }
       })
       this.product_code_naming = 'PE'
+      this.product_model_naming = ''
       this.product_spec_naming = ''
       this.product_set_items_data = [];
       this.product_dialog = true;
@@ -3442,7 +3550,7 @@ export default {
 
         if(this.editedIndex === -1){ // editedIndex가 -1이면 등록
           const currDate = new Date();
-          let new_code = this.product_code_naming + '-' + this.product_spec_naming + '-' + mux.Date.format(currDate, 'yy');
+          let new_code = this.product_code_naming + '-' + this.product_model_naming + '-' + this.product_spec_naming + '-' + mux.Date.format(currDate, 'yy');
 
           let param_info = {"product_table.product_code": new_code};
           let script_file_name = "rooting_완제품_검색_24_05_16_13_52_1IN.json";
@@ -4316,7 +4424,7 @@ export default {
       data.splice(idx, 1);
       for(let i=0; i < data.length; i++){
         let code = data[i].item_code.slice(0, -3);
-        data[i].item_code = code  + ('00' + (i + 1)).slice(-3);
+        data[i].item_code = code  + ('000' + (i + 1)).slice(-4);
       }
     },
     moduleItemExcelLoad(){
