@@ -614,6 +614,7 @@
                                 filled
                                 hide-details
                                 style="width:150px"
+                                @change="changeType(item)"
                               ></v-autocomplete>
                             </td>
                             <td align="center">
@@ -624,15 +625,33 @@
                                 filled
                                 hide-details
                                 style="width:150px"
+                                :disabled="item.type === '' ? true : false"
+                                @change="setCode(item)"
                               ></v-autocomplete>
                             </td>
                             <td align="center">
+                              <v-radio-group
+                                v-if="item.type === '반제품'"
+                                v-model="item.code_type"
+                                hide-details
+                                row
+                                @change="setCode(item)"
+                              >
+                                <v-radio
+                                  label="분류형"
+                                  value="with_type"
+                                ></v-radio>
+                                <v-radio
+                                  label="모델형"
+                                  value="with_model"
+                                ></v-radio>
+                              </v-radio-group>
                               <v-text-field
                                 dense
                                 hide-details
-                                filled
                                 v-model="item._code"
                                 style="width:200px"
+                                disabled
                               >
                               </v-text-field>
                             </td>
@@ -643,6 +662,7 @@
                                 filled
                                 v-model="item.name"
                                 style="width:150px"
+                                :disabled="item.type === '' ? true : false"
                               >
                               </v-text-field>
                             </td>
@@ -653,6 +673,7 @@
                                 filled
                                 v-model="item.inbound_num"
                                 style="width:150px"
+                                :disabled="item.type === '' ? true : false"
                                 @keyup="calcUnitPrice(item)"
                                 :oninput="!item.inbound_num ? '' : item.inbound_num = item.inbound_num.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
                               >
@@ -665,6 +686,7 @@
                                 :items="spot_list"
                                 dense
                                 filled
+                                :disabled="item.type === '' ? true : false"
                                 hide-details
                                 style="width:150px"
                               ></v-autocomplete>
@@ -674,8 +696,10 @@
                                 dense
                                 hide-details
                                 filled
+                                :disabled="item.type === '' ? true : false"
                                 v-model="item.spec"
                                 style="width:150px"
+                                @change="setCode(item)"
                               >
                               </v-text-field>
                             </td>
@@ -684,8 +708,10 @@
                                 dense
                                 hide-details
                                 filled
+                                :disabled="item.type === '' ? true : false"
                                 v-model="item.model"
                                 style="width:150px"
+                                @change="setCode(item)"
                               >
                               </v-text-field>
                             </td>
@@ -701,9 +727,11 @@
                                 v-model="item.manufacturer"
                                 :items="manufacturer_list"
                                 dense
+                                :disabled="item.type === '' ? true : false"
                                 hide-details
                                 filled
                                 style="width:150px"
+                                @change="setCode(item)"
                               ></v-autocomplete>
 
                               <!-- </v-text-field> -->
@@ -713,6 +741,7 @@
                                 dense
                                 hide-details
                                 filled
+                                :disabled="item.type === '' ? true : false"
                                 v-model="item.unit_price"
                                 style="width:150px"
                                 :oninput="!item.unit_price ? '' : item.unit_price = item.unit_price.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,')"
@@ -1434,7 +1463,8 @@ export default {
       this.product_inbound_data.push({
         type:'',
         classification:'',
-        _code: '',
+        code_type: 'with_type',
+        _code: 'PE-',
         name: '',
         inbound_num: '',
         spot: '',
@@ -2483,7 +2513,63 @@ export default {
         })
         item.unit_price = Number(unit_price / item.inbound_num).toLocaleString();
       }
-    }
+    },
+    changeType(item){
+      if(item.type === '원부자재'){
+        item.spec = '';
+        item._code = 'PE-';
+      } else if(item.type === '반제품'){
+        item.spec = '000V 000kW 00Hz 0Level'
+        let classification = item.classification.split('-');
+        let model = item.model.replace(/ /g,'_');
+        let manufacturer = item.manufacturer.split('-');
+        let v_info = item.spec.split(' ');
+        let spec = v_info[0] + v_info[1].replace('kW','K') + v_info[2].replace('Hz','H') + v_info[3].replace('Level','L');
+        if(item.code_type === 'with_type'){
+          item._code = 'PE-' + classification[classification.length-1] + '-' + manufacturer[manufacturer.length-1] + '-' + spec;
+        }else if(item.code_type === 'with_model'){
+          item._code = 'PE-' + model + '-' + manufacturer[manufacturer.length-1] + '-' + spec;
+        }
+      }
+      else if(item.type === '완제품'){
+        item.spec = '000V 000kW 00Hz 0Level'
+        let model = item.model.replace(/ /g,'_');
+        let v_info = item.spec.split(' ');
+        let spec = v_info[0] + v_info[1].replace('kW','K') + v_info[2].replace('Hz','H') + v_info[3].replace('Level','L');
+
+        item._code = 'PE-' + model + '-' + spec;
+      }
+
+      // else{
+      //   item.spec = '000V 000kW 00Hz 0Level'
+      //   item._code = 'PE-';
+      // }
+    },
+    setCode(item){
+      if(item.type === '원부자재'){
+        let classification = item.classification.split('-');
+        item._code = 'PE-' + classification[classification.length-1];
+      }
+      else if(item.type === '반제품'){
+        let classification = item.classification.split('-');
+        let model = item.model.replace(/ /g,'_');
+        let manufacturer = item.manufacturer.split('-');
+        let v_info = item.spec.split(' ');
+        let spec = v_info[0] + v_info[1].replace('kW','K') + v_info[2].replace('Hz','H') + v_info[3].replace('Level','L');
+        if(item.code_type === 'with_type'){
+          item._code = 'PE-' + classification[classification.length-1] + '-' + manufacturer[manufacturer.length-1] + '-' + spec;
+        }else if(item.code_type === 'with_model'){
+          item._code = 'PE-' + model + '-' + manufacturer[manufacturer.length-1] + '-' + spec;
+        }
+      }
+      else if(item.type === '완제품'){
+        let model = item.model.replace(/ /g,'_');
+        let v_info = item.spec.split(' ');
+        let spec = v_info[0] + v_info[1].replace('kW','K') + v_info[2].replace('Hz','H') + v_info[3].replace('Level','L');
+
+        item._code = 'PE-' + model + '-' + spec;
+      }
+    },
   },
 
   computed: {
