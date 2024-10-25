@@ -200,10 +200,26 @@
                             <td align="center">{{ item.project_code }}</td>
                             <td align="center">{{ item.type }}</td>
                             <td align="center">{{ item.classification }}</td>
-                            <td align="center"
+                            <td align="left"
                               v-if="item.item_code.includes('임시코드')"
                             >
-                             [ {{ item.item_code }} ] {{ item.new_item_code }}
+                              <v-radio-group
+                                v-if="item.type === '반제품'"
+                                v-model="item.code_type"
+                                hide-details
+                                row
+                                style="width: 220px;"
+                              >
+                                <v-radio
+                                  label="분류형"
+                                  value="with_type"
+                                ></v-radio>
+                                <v-radio
+                                  label="모델형"
+                                  value="with_model"
+                                ></v-radio>
+                              </v-radio-group>
+                              <p>[ {{ item.item_code }} ] {{ item.new_item_code }}</p>
                             </td>
                             <td align="center"
                               v-else
@@ -231,18 +247,32 @@
                                 v-model="item.spec"
                               >
                               </v-text-field>
+                              발주 사양 : {{ item.order_spec }}
                             </td>
-                            <td align="center">{{  item.model }}</td>
-                            <!-- <td align="center">{{  item.manufacturer }}</td> -->
-                            <v-autocomplete
-                              v-model="item.manufacturer"
-                              :items="manufacturer_list"
-                              dense
-                              hide-details
-                              filled
-                              style="width:150px"
-                              @change="changeManufacturer(item)"
-                            ></v-autocomplete>
+                            <td align="center"
+                              v-if="item.item_code.includes('임시코드')"
+                            >
+                              <v-text-field
+                                  dense
+                                  hide-details
+                                  filled
+                                  style="width:150px"
+                                  v-model="item.model"
+                                >
+                                </v-text-field>
+                            </td>
+                            <td align="center" v-else>{{  item.model }}</td>
+                            <td align="center">
+                              <v-autocomplete
+                                v-model="item.manufacturer"
+                                :items="manufacturer_list"
+                                dense
+                                hide-details
+                                filled
+                                style="width:150px"
+                              ></v-autocomplete>
+                              발주업체 : {{ item.company_name }}
+                            </td>
                             <td v-if="pricePermission" align="center">{{  item.unit_price }}</td>
                             <td align="center">
                               <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
@@ -1138,7 +1168,7 @@ export default {
             mux.Util.showAlert('검색 결과가 없습니다.');
           }
 
-          let result_data = result.data.filter(x=>x.approval_phase === '승인')
+          let result_data = result.data.filter(x=>x.approval_phase !== '미승인')
 
           result_data.forEach(data => {
             for(let i=0; i<data.belong_data.length; i++){
@@ -1365,12 +1395,12 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
 
-    changeManufacturer(item){
-      if(item.item_code.includes('임시코드') && item.type === '반제품'){
-        let manudacturer = item.manufacturer.split('-');
-        item.new_item_code = item.new_item_code + '-' + manudacturer[manudacturer.length-1];
-      }
-    },
+    // changeManufacturer(item){
+    //   if(item.item_code.includes('임시코드') && item.type === '반제품'){
+    //     let manudacturer = item.manufacturer.split('-');
+    //     item.new_item_code = item.new_item_code + '-' + manudacturer[manudacturer.length-1];
+    //   }
+    // },
     addItems(){
       let check_code = '';
       let check_duplicate=[];
@@ -1395,6 +1425,7 @@ export default {
             if(item.item_code === selected_item[d][check_code]){
               check_duplicate.push(item.item_code);
             }
+            item.manufacturer = selected_item[d].company_name;
           }else if(this.add_self === '재입고'){
             if(item.table_code === selected_item[d][check_code]){
               check_duplicate.push(selected_item[d].product_code);
@@ -1416,6 +1447,9 @@ export default {
             data.dont_select_ship = false;
             data.order_code = data.code;
             data.inbound_num = data.ordered_num;
+            data.order_spec = data.spec;
+            data.code_type = 'with_type';
+            data.spec = '000V 000kW 00Hz 0Level';
             if(data.item_code.includes('임시코드')){
               let classification = data.classification.split('-');
               data.new_item_code = 'PE-' + classification[classification.length-1];

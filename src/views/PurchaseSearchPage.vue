@@ -2466,7 +2466,7 @@ export default {
 
       let set_order_data = [];
       this.order_purchase_list_data.forEach(data => {
-        set_order_data.push({project_code : data.project_code, item_code: data.item_code, ordered_num: data.purchase_num});
+        set_order_data.push({project_code : data.project_code, item_code: data.item_code, ordered_num: data.purchase_num, type: data.type, classification: data.classification});
       })
       set_order_data.forEach(data => {
         for(let u=0; u<order_data_unique.length; u++){
@@ -2529,6 +2529,8 @@ export default {
               "code" : code,
               "project_code" : data.project_code === '' ? '-' : data.project_code,
               "item_code" : data.item_code,
+              "type" : data.type,
+              "classification" : data.classification,
               "name" : data.name,
               "spec" : data.spec,
               "unit_price" : data.unit_price,

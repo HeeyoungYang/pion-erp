@@ -619,10 +619,6 @@ export default {
             ship = belong.ship_code.split('/');
             useShipCode = true;
           }
-          update_inbound_data_products.push({
-            "product_code": belong.product_code,
-            "type": belong.type
-          })
 
           // //ship_code가 있을 경우 ship_confirmation_table update
           // if(belong.ship_code !== null && belong.ship_code !== undefined && belong.ship_code !== ''){
@@ -764,6 +760,58 @@ export default {
               }
           }else{
             // product_code기준 재고(자재)검색
+            if(item.add_data === '직접기입형'){
+              let origin_code = belong.product_code;
+              if(belong.type === '원부자재'){
+                let param_info = {"material_table.material_code": belong.product_code};
+                let script_file_name = "rooting_원자재_검색_24_05_07_09_42_KFS.json";
+                let script_file_path = "data_storage_pion\\json_sql\\stock\\2_원부자재_검색\\원자재_검색_24_05_07_09_42_G83";
+                let currentCode = await mux.Get.getCurrentCode('material_code', param_info, script_file_name, script_file_path)
+
+                if(currentCode === ''){
+                  belong.product_code = belong.product_code + '-0001';
+                }else{
+                  let calc_current_code = Number(currentCode.split('-')[currentCode.split('-').length -1]) + 1;
+                  calc_current_code = ('000' + calc_current_code).slice(-4);
+                  belong.product_code = belong.product_code + '-' + calc_current_code;
+                }
+              }else {
+                let new_code = belong.product_code + '-' + mux.Date.format(currDate, 'yy');
+                let currentCode = ''
+                if(belong.type === '반제품'){
+                  let param_info = {"module_table.module_code": new_code};
+                  let script_file_name = "rooting_반제품_검색_24_05_16_13_23_FD4.json";
+                  let script_file_path = "data_storage_pion\\json_sql\\stock\\6_반제품_검색\\반제품_검색_24_05_16_13_24_YJO";
+                  currentCode = await mux.Get.getCurrentCode('code', param_info, script_file_name, script_file_path)
+
+                }else if(belong.type === '완제품'){
+                  let param_info = {"product_table.product_code": new_code};
+                  let script_file_name = "rooting_완제품_검색_24_05_16_13_52_1IN.json";
+                  let script_file_path = "data_storage_pion\\json_sql\\stock\\10_완제품_검색\\완제품_검색_24_05_16_13_53_MZJ";
+                  currentCode = await mux.Get.getCurrentCode('code', param_info, script_file_name, script_file_path)
+                }
+
+                if(currentCode === ''){
+                  belong.product_code = new_code + '-001';
+                }else{
+                  let calc_current_code = Number(currentCode.split('-')[currentCode.split('-').length -1]) + 1;
+                  calc_current_code = ('00' + calc_current_code).slice(-3);
+                  belong.product_code = new_code + '-' + calc_current_code;
+                }
+              }
+
+              update_inbound_data.push({
+                "user_info": {
+                  "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                  "role": "modifier"
+                },
+                "data":{
+                  "product_code": belong.product_code
+                },
+                "update_where": {"code": send_data.code, "product_code": origin_code},
+                "rollback": "yes"
+              });
+            }
             let stock_check = await mux.Server.post({
               path: '/api/common_rest_api/',
               params: [
@@ -1115,6 +1163,10 @@ export default {
           }
 
 
+          update_inbound_data_products.push({
+            "product_code": belong.product_code,
+            "type": belong.type
+          })
           sendData["stock_table-update"] = update_stock_data;
           sendData["stock_table-insert"] = insert_stock_data;
           sendData["material_table-insert"] = insert_material_data;
