@@ -1574,8 +1574,8 @@ export default {
     },
     registModuleInputsSpec: {
       handler: function (newInput) {
-        let v_info = newInput.value.split(' ');
-        this.module_spec_naming = v_info[0] + v_info[1].replace('kW','K') + v_info[2].replace('Hz','H') + v_info[3].replace('Level','L');
+        let v_info = newInput.value.replace(/ /g,'_');
+        this.module_spec_naming = v_info;
       },
       deep: true
     },
@@ -2714,11 +2714,7 @@ export default {
         // }else{
         //   data.value = '';
         // }
-        if(data.column_name == 'spec'){
-          data.value = '000V 000kW 00Hz 0Level'
-        }else{
-          data.value = '';
-        }
+        data.value = '';
       })
       this.module_code_naming = 'PE'
       this.module_model_naming = ''
@@ -3378,6 +3374,10 @@ export default {
               }
             }else {
               data.item_price = 0;
+            }
+
+            if (!data.belong_data) {
+              data.belong_data = [];
             }
 
             data.belong_data.push({

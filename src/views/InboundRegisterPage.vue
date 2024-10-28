@@ -200,30 +200,33 @@
                             <td align="center">{{ item.project_code }}</td>
                             <td align="center">{{ item.type }}</td>
                             <td align="center">{{ item.classification }}</td>
-                            <td align="left"
-                              v-if="item.item_code.includes('임시코드')"
-                            >
-                              <v-radio-group
-                                v-if="item.type === '반제품'"
-                                v-model="item.code_type"
-                                hide-details
-                                row
-                                style="width: 220px;"
+                            <td align="left">
+                              <div
+                                v-if="item.origin_item_code.includes('임시코드')"
                               >
-                                <v-radio
-                                  label="분류형"
-                                  value="with_type"
-                                ></v-radio>
-                                <v-radio
-                                  label="모델형"
-                                  value="with_model"
-                                ></v-radio>
-                              </v-radio-group>
-                              <p>[ {{ item.item_code }} ] {{ item.new_item_code }}</p>
+                                <v-radio-group
+                                  v-if="item.type === '반제품'"
+                                  hide-details
+                                  row
+                                  style="width: 220px;"
+                                  v-model="item.code_type"
+                                  @change="setCode(item)"
+                                >
+                                  <v-radio
+                                    label="분류형"
+                                    value="with_type"
+                                  ></v-radio>
+                                  <v-radio
+                                    label="모델형"
+                                    value="with_model"
+                                  ></v-radio>
+                                </v-radio-group>
+
+                                <!-- [ {{ item.item_code }} ] {{ item.new_item_code }} -->
+                                {{ item.item_code }}
+                              </div>
+                              <div v-else>{{ item.item_code }}</div>
                             </td>
-                            <td align="center"
-                              v-else
-                            >{{ item.item_code }}</td>
                             <td align="center">{{ item.name }}</td>
                             <td align="center">{{ item.inbound_num }}</td>
                             <td
@@ -245,12 +248,13 @@
                                 filled
                                 style="width:150px"
                                 v-model="item.spec"
+                                @change="setCode(item)"
                               >
                               </v-text-field>
                               발주 사양 : {{ item.order_spec }}
                             </td>
                             <td align="center"
-                              v-if="item.item_code.includes('임시코드')"
+                              v-if="item.origin_item_code.includes('임시코드')"
                             >
                               <v-text-field
                                   dense
@@ -258,6 +262,7 @@
                                   filled
                                   style="width:150px"
                                   v-model="item.model"
+                                  @change="setCode(item)"
                                 >
                                 </v-text-field>
                             </td>
@@ -270,6 +275,7 @@
                                 hide-details
                                 filled
                                 style="width:150px"
+                                @change="setCode(item)"
                               ></v-autocomplete>
                               발주업체 : {{ item.company_name }}
                             </td>
@@ -659,12 +665,13 @@
                                 @change="setCode(item)"
                               ></v-autocomplete>
                             </td>
-                            <td align="center">
+                            <td align="left">
                               <v-radio-group
                                 v-if="item.type === '반제품'"
                                 v-model="item.code_type"
                                 hide-details
                                 row
+                                style="min-width: 200px;"
                                 @change="setCode(item)"
                               >
                                 <v-radio
@@ -676,14 +683,15 @@
                                   value="with_model"
                                 ></v-radio>
                               </v-radio-group>
-                              <v-text-field
+                              {{ item._code }}
+                              <!-- <v-text-field
                                 dense
                                 hide-details
                                 v-model="item._code"
                                 style="width:200px"
                                 disabled
                               >
-                              </v-text-field>
+                              </v-text-field> -->
                             </td>
                             <td align="center">
                               <v-text-field
@@ -1408,8 +1416,8 @@ export default {
       let selected_item;
 
       if(this.add_self === '발주입고'){
-        selected_item = this.selected_order_data
-        check_code = 'item_code'
+        selected_item = JSON.parse(JSON.stringify(this.selected_order_data));
+        check_code = 'id'
       }else if(this.add_self === '재입고'){
         selected_item = this.selected_ship_data
         check_code = 'table_code'
@@ -1422,8 +1430,8 @@ export default {
         for(let d=0; d<selected_item.length; d++){
 
           if(this.add_self === '발주입고'){
-            if(item.item_code === selected_item[d][check_code]){
-              check_duplicate.push(item.item_code);
+            if(item.id === selected_item[d][check_code]){
+              check_duplicate.push(item.order_code + '의 ' + item.item_code);
             }
             item.manufacturer = selected_item[d].company_name;
           }else if(this.add_self === '재입고'){
@@ -1444,15 +1452,21 @@ export default {
       }else{
         selected_item.forEach(data =>{
           if(this.add_self === '발주입고'){
+
+            if(!data.model){
+              data.model = '';
+            }
             data.dont_select_ship = false;
             data.order_code = data.code;
             data.inbound_num = data.ordered_num;
             data.order_spec = data.spec;
             data.code_type = 'with_type';
-            data.spec = '000V 000kW 00Hz 0Level';
+
             if(data.item_code.includes('임시코드')){
               let classification = data.classification.split('-');
-              data.new_item_code = 'PE-' + classification[classification.length-1];
+              data.origin_item_code = data.item_code;
+              data.item_code = 'PE-' + classification[classification.length-1];
+              // data.new_item_code = 'PE-' + classification[classification.length-1];
             }
           }else if(this.add_self === '재입고'){
             data._code = data.product_code
@@ -1666,6 +1680,12 @@ export default {
               if(inbound_product_data[d].spot == '' || inbound_product_data[d].spot == null){
                 mux.Util.showAlert('입고장소 필수 입력');
                 return success = false;
+              }else if(inbound_product_data[d].code_type === 'with_model' && inbound_product_data[d].model == ''){
+                mux.Util.showAlert('모델형 관리코드는 모델 정보 필수 입력');
+                return success = false;
+              }else if(inbound_product_data[d].manufacturer == ''){
+                mux.Util.showAlert('제조사 필수 입력');
+                return success = false;
               }
             }
           }else if(this.add_self === '자재선택'){
@@ -1827,7 +1847,7 @@ export default {
                       "code" : set.code,
                       "type" : inbound_data.type,
                       "classification" : inbound_data.classification,
-                      "product_code" : inbound_data.item_code.includes('임시코드') ? inbound_data.new_item_code+'('+inbound_data.item_code+')' : inbound_data.item_code,
+                      "product_code" : inbound_data.origin_item_code.includes('임시코드') ? inbound_data.item_code+'('+inbound_data.origin_item_code+')' : inbound_data.item_code,
                       "name" : inbound_data.name,
                       "inbound_num" : inbound_data.inbound_num.replace(/,/g,''),
                       "spot" : inbound_data.spot,
@@ -2553,16 +2573,14 @@ export default {
         item.spec = '';
         item._code = 'PE-';
       } else if(item.type === '반제품'){
-        item.spec = '000V 000kW 00Hz 0Level'
         let classification = item.classification.split('-');
         let model = item.model.replace(/ /g,'_');
-        let manufacturer = item.manufacturer.split('-');
-        let v_info = item.spec.split(' ');
-        let spec = v_info[0] + v_info[1].replace('kW','K') + v_info[2].replace('Hz','H') + v_info[3].replace('Level','L');
+        let manufacturer = item.manufacturer;
+        let spec = item.spec.replace(/ /g,'_');
         if(item.code_type === 'with_type'){
-          item._code = 'PE-' + classification[classification.length-1] + '-' + manufacturer[manufacturer.length-1] + '-' + spec;
+          item._code = 'PE-' + classification[classification.length-1] + '-' + manufacturer + '-' + spec;
         }else if(item.code_type === 'with_model'){
-          item._code = 'PE-' + model + '-' + manufacturer[manufacturer.length-1] + '-' + spec;
+          item._code = 'PE-' + model + '-' + manufacturer + '-' + spec;
         }
       }
       else if(item.type === '완제품'){
@@ -2580,28 +2598,31 @@ export default {
       // }
     },
     setCode(item){
+      let code = '';
+      if(this.add_self === '발주입고'){
+        code = 'item_code'
+      }else if(this.add_self === '직접기입'){
+        code = '_code'
+      }
       if(item.type === '원부자재'){
         let classification = item.classification.split('-');
-        item._code = 'PE-' + classification[classification.length-1];
-      }
-      else if(item.type === '반제품'){
+        item[code] = 'PE-' + classification[classification.length-1];
+      } else if(item.type === '반제품'){
         let classification = item.classification.split('-');
         let model = item.model.replace(/ /g,'_');
-        let manufacturer = item.manufacturer.split('-');
-        let v_info = item.spec.split(' ');
-        let spec = v_info[0] + v_info[1].replace('kW','K') + v_info[2].replace('Hz','H') + v_info[3].replace('Level','L');
+        let manufacturer = item.manufacturer;
+        let spec = item.spec.replace(/ /g,'_');
         if(item.code_type === 'with_type'){
-          item._code = 'PE-' + classification[classification.length-1] + '-' + manufacturer[manufacturer.length-1] + '-' + spec;
+          item[code] = 'PE-' + classification[classification.length-1] + '-' + manufacturer + '-' + spec;
         }else if(item.code_type === 'with_model'){
-          item._code = 'PE-' + model + '-' + manufacturer[manufacturer.length-1] + '-' + spec;
+          item[code] = 'PE-' + model + '-' + manufacturer + '-' + spec;
         }
-      }
-      else if(item.type === '완제품'){
+      } else if(item.type === '완제품'){
         let model = item.model.replace(/ /g,'_');
         let v_info = item.spec.split(' ');
         let spec = v_info[0] + v_info[1].replace('kW','K') + v_info[2].replace('Hz','H') + v_info[3].replace('Level','L');
 
-        item._code = 'PE-' + model + '-' + spec;
+        item[code] = 'PE-' + model + '-' + spec;
       }
     },
   },
