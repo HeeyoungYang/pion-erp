@@ -2137,10 +2137,10 @@ export default {
         }
         delete sendData.business_license;
 
-        if (sendData.bankbook_copy) {
-          attachment.push({folder: 'common', fileName: 'bankbook_copy_test.pdf', newName: '통장사본.pdf'});
-        }
-        delete sendData.bankbook_copy;
+        // if (sendData.bankbook_copy) {
+        //   attachment.push({folder: 'common', fileName: 'bankbook_copy_test.pdf', newName: '통장사본.pdf'});
+        // }
+        // delete sendData.bankbook_copy;
 
         sendData.attachment = attachment;
       }else{
@@ -2253,10 +2253,10 @@ export default {
         }
         delete sendData.business_license;
 
-        if (sendData.bankbook_copy) {
-          attachment.push({folder: 'common', fileName: 'bankbook_copy_test.pdf', newName: '통장사본.pdf'});
-        }
-        delete sendData.bankbook_copy;
+        // if (sendData.bankbook_copy) {
+        //   attachment.push({folder: 'common', fileName: 'bankbook_copy_test.pdf', newName: '통장사본.pdf'});
+        // }
+        // delete sendData.bankbook_copy;
 
         sendData.attachment = attachment;
       }

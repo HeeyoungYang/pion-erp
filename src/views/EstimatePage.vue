@@ -4384,17 +4384,28 @@ export default {
       console.log(this.input_approval_file2.value);
       console.log(this.input_blueprint_file2.value);
       console.log(this.input_etc_file2.value);
+
+      let fileNames = [];
+      
       if (!this.input_approval_file2.value){
-        mux.Util.showAlert('승인서 파일을 첨부해야 합니다.');
-        this.tab_write = 0;
-        return;
+        const confirm = await mux.Util.showConfirm('승인서를 첨부하지 않았습니다. 계속 진행 하시겠습니까?', '확인', false, '예', '아니오');
+        if (!confirm){
+          this.tab_write = 0;
+          return;
+        }
+      }else{
+        fileNames.push(this.input_approval_file2.value.name);
       }
       if (!this.input_blueprint_file2.value){
-        mux.Util.showAlert('도면 파일을 첨부해야 합니다.');
-        this.tab_write = 0;
-        return;
+        const confirm = await mux.Util.showConfirm('도면을 첨부하지 않았습니다. 계속 진행 하시겠습니까?', '확인', false, '예', '아니오');
+        if (!confirm){
+          this.tab_write = 0;
+          return;
+        }
+      }else{
+        fileNames.push(this.input_blueprint_file2.value.name);
       }
-      let fileNames = [this.input_approval_file2.value.name, this.input_blueprint_file2.value.name];
+
       if (Array.isArray(this.input_etc_file2.value)){
         for (let i = 0; i < this.input_etc_file2.value.length; i++){
           fileNames.push(this.input_etc_file2.value[i].name);
@@ -4497,10 +4508,10 @@ export default {
             checked_date: sendDataCheckedDate,
             approver: this.estimate_member_info2[1].name,
             approver_id: this.estimate_member_info2[1].user_id,
-            approval_file: new_cost_calc_code + '_' + this.input_approval_file2.value.name,
-            approval_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_approval_file2.value, 1, false, 1000, 1000)),
-            blueprint_file: new_cost_calc_code + '_' + this.input_blueprint_file2.value.name,
-            blueprint_thumbnail: mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_blueprint_file2.value, 1, false, 1000, 1000)),
+            approval_file: this.input_approval_file2.value ? new_cost_calc_code + '_' + this.input_approval_file2.value.name : null,
+            approval_thumbnail: this.input_approval_file2.value ? mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_approval_file2.value, 1, false, 1000, 1000)) : null,
+            blueprint_file: this.input_blueprint_file2.value ? new_cost_calc_code + '_' + this.input_blueprint_file2.value.name : null,
+            blueprint_thumbnail: this.input_blueprint_file2.value ? mux.Util.uint8ArrayToHexString(await mux.Util.getPdfThumbnail(this.input_blueprint_file2.value, 1, false, 1000, 1000)) : null,
             etc_files: this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value && this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value.length > 0
             ? this.estimateWriteFilesInputs.find(x=>x.column_name === 'files').value.map(x=>new_cost_calc_code + '_' + x.name).join('/')
             : '',
