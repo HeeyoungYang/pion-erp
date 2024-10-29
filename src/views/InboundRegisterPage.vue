@@ -765,7 +765,7 @@
                                 v-model="item.manufacturer"
                                 :items="manufacturer_list"
                                 dense
-                                :disabled="item.type === '' ? true : false"
+                                :disabled="item.type === '' || item.type === '완제품' ? true : false"
                                 hide-details
                                 filled
                                 style="width:150px"
@@ -2585,6 +2585,7 @@ export default {
       }
       else if(item.type === '완제품'){
         item.spec = '000V 000kW 00Hz 0Level'
+        item.manufacturer = '파이온일렉트릭';
         let model = item.model.replace(/ /g,'_');
         let v_info = item.spec.split(' ');
         let spec = v_info[0] + v_info[1].replace('kW','K') + v_info[2].replace('Hz','H') + v_info[3].replace('Level','L');

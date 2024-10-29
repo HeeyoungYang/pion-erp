@@ -1713,12 +1713,17 @@ export default {
       this.orderRequestDialog = true;
     },
     async clickApproveData(item){
-      await this.clickedSearchThumbnail(item);
-      if(item.approval_phase === '진행중'){
-        await this.clickedSearchObtain(item);
+      if(this.login_info.id !== item.approver_id && this.login_info.id !== item.checker_id && this.login_info.id !== item.creater && this.login_info.department !== '경영진'){
+        mux.Util.showAlert('신청자, 확인자, 승인자만 상세 내역을 확인할 수 있습니다.');
+        return;
+      }else{
+        await this.clickedSearchThumbnail(item);
+        if(item.approval_phase === '진행중'){
+          await this.clickedSearchObtain(item);
+        }
+        mux.Util.hideLoading();
+        this.purchase_detail_dialog = true;
       }
-      mux.Util.hideLoading();
-      this.purchase_detail_dialog = true;
     },
 
     async clickedSearchObtain(item){

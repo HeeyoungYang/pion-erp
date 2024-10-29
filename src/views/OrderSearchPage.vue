@@ -120,7 +120,7 @@
                       approval
                       dense
                       :loginId="login_info.id"
-                      @clickTr="clickApproveData"
+                      @clickTr="checkAuthority"
                       @setApprovalPhase="setApprovalPhase"
                     />
                   </v-col>
@@ -145,7 +145,7 @@
                 approval
                 dense
                 :loginId="login_info.id"
-                @clickTr="clickApproveData"
+                @clickTr="checkAuthority"
                 @setApprovalPhase="setApprovalPhase"
               />
             </div>
@@ -1317,13 +1317,15 @@ export default {
     closeOrderDetail(){
       this.order_detail_dialog = false;
     },
+    async checkAuthority(item){
+      if(this.login_info.id !== item.approver_id && this.login_info.id !== item.checker_id && this.login_info.id !== item.creater && this.login_info.department !== '경영진'){
+        mux.Util.showAlert('신청자, 확인자, 승인자만 상세 내역을 확인할 수 있습니다.');
+        return;
+      }else{
+        await this.clickApproveData(item);
+      }
+    },
     async clickApproveData(item){
-
-      //thumbnail
-      // this.orderConfirmationThumbnail = item.order_confirmation_thumbnail
-      // this.businessRegistrationThumbnail = item.business_registration_thumbnail
-      // this.bankbookThumbnail = item.bankbook_thumbnail
-
       const prevURL = window.location.href;
       try {
         let thumbnail_result = await mux.Server.post({

@@ -3434,6 +3434,8 @@ export default {
       product_input.forEach(data =>{
         if(data.column_name == 'spec'){
           data.value = '000V 000kW 00Hz 0Level'
+        }else if(data.column_name == 'manufacturer'){
+          data.value = '파이온일렉트릭'
         }else{
           data.value = '';
         }

@@ -310,7 +310,7 @@
     {"label":"완제품명", "column_name":"name",  "col":"12", "sm":"3", "lg":"3", "value": "", "rule_set":true},
     {"label":"모델명", "column_name":"model",  "col":"12", "sm":"3", "lg":"3", "value": "", "rule_set":true},
     {"label":"사양", "column_name":"spec", "col":"12", "sm":"3", "lg":"3", "value": "", "rule_set":true},
-    {"label":"제조사", "column_name":"manufacturer", "type":"auto",  "col":"12", "sm":"3", "lg":"3", "value": "", "rule_set":true},
+    {"label":"제조사", "column_name":"manufacturer", "col":"12", "sm":"3", "lg":"3", "value": "", "rule_set":true, "disabled":true},
     {"label":"단가", "type":"number_comma", "column_name":"unit_price", "col":"12", "sm":"3", "lg":"3", "value": "", "rule_set":false},
     {"label":"사진", "column_name":"photo", "type":"file", "col":"12", "sm":"1", "lg":"1", "value": "", "hide_input":true, "icon":"mdi-image-edit", "accept":".png, .jpg, .jpeg"}
   ],
