@@ -173,7 +173,7 @@
                             <tr>
                               <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
-                                  용역명
+                                  {{ clickedProductCost.estimate_type === '용역' ? '용역명' : '프로젝트명' }}
                                 </span>
                               </td>
                               <td class="estimate_info" style="border-bottom: 0px;">
@@ -185,7 +185,7 @@
                             <tr>
                               <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                                 <span style="display: block;margin-top:-2px">
-                                  용역기간
+                                  {{ clickedProductCost.estimate_type === '용역' ? '용역기간' : '프로젝트기간' }}
                                 </span>
                               </td>
                               <td class="estimate_info" style="border-bottom: 0px;">
@@ -433,7 +433,7 @@
                             class="mr-3 float-right dont_print"
                             elevation="0"
                             data-html2canvas-ignore="true"
-                            @click="edit_estimate_info_disabled = false; during_edit = true"
+                            @click="estimate_type = clickedProductCost.estimate_type; edit_estimate_info_disabled = false; during_edit = true"
                           >
                             <v-icon
                               small
@@ -459,6 +459,20 @@
                     <v-card-text>
                       <v-form ref="estimateInfoForm">
                         <p class="text-h6 font-weight-bold py-2 px-4" style="background-color: #E3F2FD;" >견적서 정보</p>
+                        <v-radio-group
+                          v-if="!edit_estimate_info_disabled"
+                          v-model="estimate_type"
+                          row
+                        >
+                          <v-radio
+                            label="프로젝트"
+                            value="프로젝트"
+                          ></v-radio>
+                          <v-radio
+                            label="용역"
+                            value="용역"
+                          ></v-radio>
+                        </v-radio-group>
                         <InputsFormComponent
                           dense
                           clearable
@@ -632,8 +646,9 @@
                         class="mr-3 float-right dont_print white--text"
                         elevation="0"
                         data-html2canvas-ignore="true"
-                        @click="clickedProductCost.estimate_type === '재료비' ? dialog_search_product = true : dialog_payment = true"
+                        @click="dialog_search_product = true"
                       >
+                      <!-- @click="clickedProductCost.estimate_type === '재료비' ? dialog_search_product = true : dialog_payment = true" -->
                         재료 수정
                       </v-btn>
                     </div>
@@ -785,7 +800,20 @@
                     </v-card-title>
                     <v-card-text>
                       <v-form ref="estimateInfoForm2">
-                        <p class="text-h6 font-weight-bold py-2 px-4 mb-8" style="background-color: #E3F2FD;" >견적서 정보</p>
+                        <p class="text-h6 font-weight-bold py-2 px-4 mb-2" style="background-color: #E3F2FD;" >견적서 정보</p>
+                        <v-radio-group
+                          v-model="estimate_type"
+                          row
+                        >
+                          <v-radio
+                            label="프로젝트"
+                            value="프로젝트"
+                          ></v-radio>
+                          <v-radio
+                            label="용역"
+                            value="용역"
+                          ></v-radio>
+                        </v-radio-group>
                         <InputsFormComponent
                           dense
                           clearable
@@ -960,7 +988,7 @@
                         <tr>
                           <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
-                              용역명
+                              {{ estimate_type === '용역' ? '용역명' : '프로젝트명' }}
                             </span>
                           </td>
                           <td class="estimate_info" style="border-bottom: 0px;">
@@ -972,7 +1000,7 @@
                         <tr>
                           <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                             <span style="display: block;margin-top:-2px">
-                              용역기간
+                              {{ estimate_type === '용역' ? '용역기간' : '프로젝트기간' }}
                             </span>
                           </td>
                           <td class="estimate_info" style="border-bottom: 0px;">
@@ -1430,7 +1458,7 @@
       </ModalDialogComponent>
 
     <!-- 기술료 작성 Modal -->
-    <ModalDialogComponent
+    <!-- <ModalDialogComponent
         :dialog-value="dialog_payment"
         max-width="1000px"
         title-class=" "
@@ -1440,7 +1468,6 @@
         :persistent="true"
       >
         <v-container>
-          <!-- 모달 내용 구성 -->
           <v-row>
             <v-col cols="12" sm="12">
               <v-btn
@@ -1530,7 +1557,7 @@
             </v-col>
           </v-row>
         </v-container>
-      </ModalDialogComponent>
+      </ModalDialogComponent> -->
 
     <!-- 노무비 산출 Modal -->
       <ModalDialogComponent
@@ -3717,6 +3744,7 @@ export default {
             },
             "data":{
               "cost_calc_code": new_cost_calc_code,
+              "estimate_type": this.estimate_type,
               "issue_date": this.input_issue_date.value,
               "inhouse_bid_number": new_inhouse_bid_number,
               "company_bid_number": this.input_company_bid_number.value,
@@ -4118,7 +4146,7 @@ export default {
 
         const new_product_cost_calc_detail = [];
         const new_construction_materials_data = [];
-        if (this.clickedProductCost.estimate_type === '재료비'){
+        if (this.clickedProductCost.estimate_type === '용역' || this.clickedProductCost.estimate_type === '프로젝트'){
           const product_cost_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('재료'));
           if (product_cost_materials){
             product_cost_materials.belong_data.forEach(data => {
@@ -4199,7 +4227,7 @@ export default {
             this.origin_calc_cost_detail_data = JSON.parse(JSON.stringify(this.calc_cost_detail_data));
             // this.clickedProductCost.product = this.calc_cost_detail_data_product_cost.belong_data[0].cost_list;
 
-            if (this.clickedProductCost.estimate_type === '재료비'){
+            if (this.clickedProductCost.estimate_type === '용역' || this.clickedProductCost.estimate_type === '프로젝트'){
               const product_cost_materials = this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('재료'));
               this.searched_datas.product_cost_calc_detail = this.searched_datas.product_cost_calc_detail.filter(item => item.cost_calc_code !== this.clickedProductCost.cost_calc_code);
               const new_product_cost_calc_detail = [];
@@ -4386,7 +4414,7 @@ export default {
       console.log(this.input_etc_file2.value);
 
       let fileNames = [];
-      
+
       if (!this.input_approval_file2.value){
         const confirm = await mux.Util.showConfirm('승인서를 첨부하지 않았습니다. 계속 진행 하시겠습니까?', '확인', false, '예', '아니오');
         if (!confirm){
@@ -4490,7 +4518,7 @@ export default {
             cost_calc_code: new_cost_calc_code,
             given_name: this.$cookies.get(this.$configJson.cookies.name.key),
             office_phone_number: this.$cookies.get(this.$configJson.cookies.office_phone_number.key),
-            estimate_type: '재료비',
+            estimate_type: this.estimate_type,
             issue_date: this.input_issue_date2.value,
             inhouse_bid_number: new_inhouse_bid_number,
             company_bid_number: this.input_company_bid_number2.value ? this.input_company_bid_number2.value : '',
@@ -4755,7 +4783,7 @@ export default {
     },
     addDatas(){
       if (this.tab_main === 0){
-        if (this.clickedProductCost.estimate_type === '재료비'){
+        if (this.clickedProductCost.estimate_type === '용역' || this.clickedProductCost.estimate_type === '프로젝트'){
           if (!this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재'))){
             this.calc_cost_detail_data_product_cost.belong_data.push(
               {
@@ -4794,7 +4822,7 @@ export default {
           );
         }
       }else {
-        if (this.estimate_type === '재료비'){
+        if (this.estimate_type === '용역' || this.estimate_type === '프로젝트'){
           if (!this.calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재'))){
             this.calc_cost_detail_data_product_cost2.belong_data.push(
               {
@@ -4834,13 +4862,13 @@ export default {
     },
     deleteInboundDataRow(index){
       if (this.tab_main === 0){
-        if (this.clickedProductCost.estimate_type === '재료비'){
+        if (this.clickedProductCost.estimate_type === '용역' || this.clickedProductCost.estimate_type === '프로젝트'){
           this.calc_cost_detail_data_product_cost.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재')).belong_data.splice(index, 1);
         }else {
           this.calc_cost_detail_data_product_cost.belong_data.splice(index, 1);
         }
       }else {
-        if (this.estimate_type === '재료비'){
+        if (this.estimate_type === '용역' || this.estimate_type === '프로젝트'){
           this.calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재')).belong_data.splice(index, 1);
         }else {
           this.calc_cost_detail_data_product_cost2.belong_data.splice(index, 1);
@@ -4882,7 +4910,7 @@ export default {
       labor_list:[],
       labor_occupation_list:[],
 
-      estimate_type: '재료비',
+      estimate_type: '프로젝트',
       search_complete_product_code: '',
       search_complete_product_name: '',
       search_product_capacity: '',

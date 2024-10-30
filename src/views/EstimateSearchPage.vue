@@ -403,7 +403,7 @@
                       <tr>
                         <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
-                            용역명
+                            {{ clickedProductCost.estimate_type === '용역' ? '용역명' : '프로젝트명' }}
                           </span>
                         </td>
                         <td class="estimate_info" style="border-bottom: 0px;">
@@ -415,7 +415,7 @@
                       <tr>
                         <td class="estimate_info estimate_title" style="border-bottom: 0px;border-left:thin solid rgba(0, 0, 0, 0.12)">
                           <span style="display: block;margin-top:-2px">
-                            용역기간
+                            {{ clickedProductCost.estimate_type === '용역' ? '용역기간' : '프로젝트기간' }}
                           </span>
                         </td>
                         <td class="estimate_info" style="border-bottom: 0px;">
@@ -682,7 +682,7 @@
                 <v-form ref="surveyCostForm">
                   <CostTableComponent
                     :headers="survey_cost_headers"
-                    :items="calc_cost_detail_data"
+                    :items="change_cost_detail === false ? calc_cost_detail_data : changed_cost_detail_data"
                     item-key="product_code"
                     trStyle="background-color:#efefef; "
                     trClass="font-weight-black cost_table_tr"
@@ -851,6 +851,7 @@ export default {
       },
 
       etc_estimate: false,
+      change_cost_detail: false,
       show_childs_parent_index_arr: [0],
       show_grand_childs_parent_index_arr: [0, 1],
       estimate_info_data:{},
@@ -875,6 +876,7 @@ export default {
       labor_cost_data: [],
       merged_labor_cost_data: [],
       calc_cost_detail_data: JSON.parse(JSON.stringify(EstimateSearchPageConfig.calc_cost_detail_data)),
+      changed_cost_detail_data: [],
       estimate_detail_data: [],
       estimate_approve_data:[],
       members: [],
@@ -1864,6 +1866,7 @@ export default {
     },
     closeProductList(){
       this.estimate_product_list_dialog = false;
+      this.change_cost_detail = false;
       this.clickedProductCost = {};
       this.show_childs_parent_index_arr = [0];
       this.show_grand_childs_parent_index_arr = [0, 1];
@@ -2274,6 +2277,7 @@ export default {
       mux.Util.hideLoading();
     },
     async estimateCheckbox(type, name){
+      this.change_cost_detail = true;
       if(name !== '재료비' && !this.estimate_checkbox[type]){
         const confirm = await mux.Util.showConfirm('재료비에 ' + name + '을(를) 포함하시겠습니까?', '금액 확인', false, '예', '아니오');
 
@@ -2314,6 +2318,8 @@ export default {
         this.show_childs_parent_index_arr = [];
         this.show_grand_childs_parent_index_arr = [];
       }
+
+      this.changed_cost_detail_data = JSON.parse(JSON.stringify(this.estimate_detail_data));
     },
   },
 }
