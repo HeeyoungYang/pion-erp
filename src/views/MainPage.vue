@@ -85,8 +85,11 @@ export default {
               this.$cookies.get(this.$configJson.cookies.id.key),
               this.passwords.newPassword,
               this.$cookies.get(this.$configJson.cookies.savedID.key) ? true : false
-            );
-            this.first_login_dialog = false;
+            ).then(() => {
+              this.first_login_dialog = false;
+              //새로고침하여 페이지 다시 로드
+              window.location.reload();
+            });
           } catch (error) {
             mux.Server.logOut();
           }

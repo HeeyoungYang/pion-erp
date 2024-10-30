@@ -961,68 +961,77 @@ mux.Server = {
    * mux.Server.logIn('userId', 'userPw12#', true);
    */
   logIn(id, pw, saveIdCheck) {
-    this.get({
-      path:'/api/security/'
-    }).then(security => {
-      if(security.code == 0){
-        const salt = security.data['salt']
-        const hashed_key = security.data['hashed_key']
-        const aes256Crypto = new Aes256Crypto()
-        const encrypted_id = aes256Crypto.encrypt(id, hashed_key)
-        const encrypted_pw = aes256Crypto.encrypt(pw, hashed_key)
+    return new Promise((resolve) => {
+      this.get({
+        path:'/api/security/'
+      }).then(security => {
+        if(security.code == 0){
+          const salt = security.data['salt']
+          const hashed_key = security.data['hashed_key']
+          const aes256Crypto = new Aes256Crypto()
+          const encrypted_id = aes256Crypto.encrypt(id, hashed_key)
+          const encrypted_pw = aes256Crypto.encrypt(pw, hashed_key)
 
-        this.post({
-          path:'/api/user/login/', user_name:encrypted_id, password:encrypted_pw, salt:salt
-        }).then(result => {
-          if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)
-            || result['code'] == 5031 || (typeof result['data'] === 'object' && result['data']['code'] == 5031) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 5031)
-            || result.temporary_password || (typeof result['data'] === 'object' && result['data'].temporary_password) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data'].temporary_password)){
-            if (saveIdCheck){
-              Vue.$cookies.set(configJson.cookies.savedID.key, id, configJson.cookies.savedID.expiration);
-            }else {
-              Vue.$cookies.remove(configJson.cookies.savedID.key);
-            }
-            Vue.$cookies.set(configJson.cookies.id.key, id, configJson.cookies.id.expiration);
-            // 최초 로그인 시 쿠키는 추후에 저장
-            if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
-              this.setUserCookies().then(() => {
+          this.post({
+            path:'/api/user/login/', user_name:encrypted_id, password:encrypted_pw, salt:salt
+          }).then(result => {
+            if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)
+              || result['code'] == 5031 || (typeof result['data'] === 'object' && result['data']['code'] == 5031) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 5031)
+              || result.temporary_password || (typeof result['data'] === 'object' && result['data'].temporary_password) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data'].temporary_password)){
+              if (saveIdCheck){
+                Vue.$cookies.set(configJson.cookies.savedID.key, id, configJson.cookies.savedID.expiration);
+              }else {
+                Vue.$cookies.remove(configJson.cookies.savedID.key);
+              }
+              Vue.$cookies.set(configJson.cookies.id.key, id, configJson.cookies.id.expiration);
+              // 최초 로그인 시 쿠키는 추후에 저장
+              if (result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
+                this.setUserCookies().then(() => {
+                  result.data.path = '/home';
+                  this.move(result.data);
+                  resolve();
+                }).catch((error) => {
+                  // console.log('사용자 정보 쿠키 저장 실패:', error);
+                  mux.Util.showAlert(error, '로그인 실패');
+                  mux.Server.logOut();
+                  resolve();
+                });
+              }else {
                 result.data.path = '/home';
                 this.move(result.data);
-              }).catch((error) => {
-                // console.log('사용자 정보 쿠키 저장 실패:', error);
-                mux.Util.showAlert(error, '로그인 실패');
-                mux.Server.logOut();
-              });
+                resolve();
+              }
             }else {
-              result.data.path = '/home';
-              this.move(result.data);
+              // console.error('로그인 실패:', result.message);
+              mux.Util.showAlert(result.message);
+              resolve();
             }
-          }else {
-            // console.error('로그인 실패:', result.message);
-            mux.Util.showAlert(result.message);
-          }
-        }).catch(err => {
-          // console.error('err :>>>>> ', err);
-          switch (err.message) {
-            // case 'password':
-            //   mux.Util.showAlert('비밀번호 오류');
-            //   break;
-            // case 'id':
-            //   mux.Util.showAlert('존재하지 않는 아이디');
-            //   break;
+          }).catch(err => {
+            // console.error('err :>>>>> ', err);
+            switch (err.message) {
+              // case 'password':
+              //   mux.Util.showAlert('비밀번호 오류');
+              //   break;
+              // case 'id':
+              //   mux.Util.showAlert('존재하지 않는 아이디');
+              //   break;
 
-            default:
-              mux.Util.showAlert('아이디 또는 비밀번호를 확인해주세요.', '로그인 오류', 3000);
-              break;
-          }
-        });
+              default:
+                mux.Util.showAlert('아이디 또는 비밀번호를 확인해주세요.', '로그인 오류', 3000);
+                break;
+            }
+            resolve();
+          });
 
-      }else{
-        mux.Util.showAlert("확인코드를 확인해주세요.");
-      }
-    }).catch(() => {
-      // console.error('err :>> ', err);
-      mux.Util.showAlert('확인코드를 확인해주세요.');
+        }else{
+          mux.Util.showAlert("확인코드를 확인해주세요.");
+          resolve();
+        }
+      }).catch(() => {
+        // console.error('err :>> ', err);
+        mux.Util.showAlert('확인코드를 확인해주세요.');
+        resolve();
+      });
     });
   },
 
