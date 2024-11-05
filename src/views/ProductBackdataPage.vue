@@ -537,10 +537,12 @@
                                     {{ editedIndex === -1 ? '반제품 코드 설정 : ' : '반제품 코드 : ' + module_code_naming }}
                                   </span>
                                   <v-radio
+                                    v-if="editedIndex === -1"
                                     label="분류형"
                                     value="with_type"
                                   ></v-radio>
                                   <v-radio
+                                    v-if="editedIndex === -1"
                                     label="모델형"
                                     value="with_model"
                                   ></v-radio>
@@ -2299,6 +2301,8 @@ export default {
     async uploadMaterial () {
       // 저장버튼 클릭 시 registMaterialInputs의 value를 editRegistMaterial에 전달
       // 수정, 등록 둘 다 editRegistMaterial 요청, editedIndex에 따라 구분
+
+      const prevURL = window.location.href;
       let material_input = this.registMaterialInputs;
       let item = this.editRegistMaterial;
       let stock_input = this.registMaterialSpotInputs;
@@ -2464,6 +2468,31 @@ export default {
             }]
           };
 
+          // 수정 전 재고 데이터 검색
+          let searched_stock_data = [];
+          let stock_check = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: [
+              {
+                "product_table.product_code": this.editRegistMaterial.item_code,
+                "module_table.module_code": this.editRegistMaterial.item_code,
+                "material_table.material_code": this.editRegistMaterial.item_code,
+                "material_table.directly_written": 0,
+              }
+            ],
+            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+          });
+          if (prevURL !== window.location.href) return;
+
+          if (typeof stock_check === 'string'){
+            stock_check = JSON.parse(stock_check);
+          }
+          if(stock_check['code'] == 0){
+            searched_stock_data.push(...stock_check['data']);
+          }
+
+          // 재고 데이터 삭제
           sendData["stock_table-delete"] = [{
             "user_info": {
               "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -2474,30 +2503,72 @@ export default {
             "rollback": "no"
           }];
 
+          // 새 재고 데이터 업로드
           let stock_data = [];
+          // 업로드할 재고 데이터가 없을 경우
           if (stock_item.length === 0){
-            stock_item.push({spot: 'EMPTY', stock_num: 0, usable_num: 0, conditions: 'E'});
-          }
-          stock_item.forEach(data =>{
             stock_data.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
                 "role": "creater"
               },
               "data":{
-                "conditions": data.conditions,
+                "conditions": 'E',
                 "product_code": this.editRegistMaterial.item_code,
-                "spot": data.spot,
-                "stock_num": data.stock_num,
+                "spot": 'EMPTY',
+                "stock_num": 0,
+                "usable_num": 0,
                 "type": this.editRegistMaterial.type
               },
               "select_where": {"product_code": "!JUST_INSERT!"},
               "rollback": "no"
             });
-          });
+          }else{ // 업로드할 재고 데이터가 있을 경우
+            stock_item.forEach(data =>{
+              let origin_data = searched_stock_data.filter(x => x.spot === data.spot);
+              // 원본 데이터에 spot이 동일한 재고가 없을 경우
+              if(origin_data.length === 0){
+                stock_data.push({
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "creater"
+                  },
+                  "data":{
+                    "conditions": data.conditions,
+                    "product_code": this.editRegistMaterial.item_code,
+                    "spot": data.spot,
+                    "stock_num": data.stock_num,
+                    "usable_num": data.stock_num,
+                    "type": this.editRegistMaterial.type
+                  },
+                  "select_where": {"product_code": "!JUST_INSERT!"},
+                  "rollback": "no"
+                });
+              }else{// 원본 데이터에 spot이 동일한 재고가 있을 경우 usable_num 계산
+                let origin_usable_num = origin_data[0].usable_num;
+                let origin_stock_num = origin_data[0].stock_num;
+                let stock_difference = data.stock_num - origin_stock_num;
+                let set_usable_num = origin_usable_num + stock_difference;
+                stock_data.push({
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "creater"
+                  },
+                  "data":{
+                    "conditions": data.conditions,
+                    "product_code": this.editRegistMaterial.item_code,
+                    "spot": data.spot,
+                    "stock_num": data.stock_num,
+                    "usable_num": set_usable_num,
+                    "type": this.editRegistMaterial.type
+                  },
+                  "select_where": {"product_code": "!JUST_INSERT!"},
+                  "rollback": "no"
+                });
+              }
+            });
+          }
           sendData["stock_table-insert"] = stock_data;
-
-          const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
               path: '/api/common_rest_api/',
@@ -2842,6 +2913,7 @@ export default {
     async uploadModule(){
       // 저장버튼 클릭 시 registModuleInputs value를 editRegistModule에 전달
       // 수정, 등록 둘 다 editRegistModule에 요청, editedIndex에 따라 구분
+      const prevURL = window.location.href;
       let module_input = this.registModuleInputs;
       let item = this.editRegistModule;
       let stock_input = this.registModuleSpotInputs;
@@ -3018,7 +3090,6 @@ export default {
           sendData["module_material_table-insert"] = module_material_data;
           sendData["material_table-insert"] = new_material_data;
 
-          const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
               path: '/api/common_rest_api/',
@@ -3066,7 +3137,31 @@ export default {
               "rollback": "yes"
             }]
           };
+          // 수정 전 재고 데이터 검색
+          let searched_stock_data = [];
+          let stock_check = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: [
+              {
+                "product_table.product_code": this.module_code_naming,
+                "module_table.module_code": this.module_code_naming,
+                "material_table.material_code": this.module_code_naming,
+                "material_table.directly_written": 0,
+              }
+            ],
+            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+          });
+          if (prevURL !== window.location.href) return;
 
+          if (typeof stock_check === 'string'){
+            stock_check = JSON.parse(stock_check);
+          }
+          if(stock_check['code'] == 0){
+            searched_stock_data.push(...stock_check['data']);
+          }
+
+          // 재고 데이터 삭제
           sendData["stock_table-delete"] = [{
             "user_info": {
               "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -3077,27 +3172,73 @@ export default {
             "rollback": "no"
           }];
 
+          // 새 재고 데이터 업로드
           let stock_data = [];
+          // 업로드할 재고 데이터가 없을 경우
           if (stock_item.length === 0){
-            stock_item.push({spot: 'EMPTY', stock_num: 0, usable_num: 0, conditions: 'E'});
-          }
-          stock_item.forEach(data =>{
+            // stock_item.push({spot: 'EMPTY', stock_num: 0, usable_num: 0, conditions: 'E'});
             stock_data.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
                 "role": "creater"
               },
               "data":{
-                "conditions": data.conditions,
+                "conditions": 'E',
                 "product_code": this.module_code_naming,
-                "spot": data.spot,
-                "stock_num": data.stock_num,
+                "spot": 'EMPTY',
+                "stock_num": 0,
+                "usable_num": 0,
                 "type": this.editRegistModule.type
               },
               "select_where": {"product_code": "!JUST_INSERT!"},
               "rollback": "no"
             });
-          });
+          }else{ // 업로드할 재고 데이터가 있을 경우
+            stock_item.forEach(data =>{
+              let origin_data = searched_stock_data.filter(x => x.spot === data.spot);
+              // 원본 데이터에 spot이 동일한 재고가 없을 경우
+              if(origin_data.length === 0){
+                stock_data.push({
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "creater"
+                  },
+                  "data":{
+                    "conditions": data.conditions,
+                    "product_code": this.module_code_naming,
+                    "spot": data.spot,
+                    "stock_num": data.stock_num,
+                    "usable_num": data.stock_num,
+                    "type": this.editRegistModule.type
+                  },
+                  "select_where": {"product_code": "!JUST_INSERT!"},
+                  "rollback": "no"
+                });
+              }else{// 원본 데이터에 spot이 동일한 재고가 있을 경우 usable_num 계산
+                let origin_usable_num = origin_data[0].usable_num;
+                let origin_stock_num = origin_data[0].stock_num;
+                let stock_difference = data.stock_num - origin_stock_num;
+                let set_usable_num = origin_usable_num + stock_difference;
+                stock_data.push({
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "creater"
+                  },
+                  "data":{
+                    "conditions": data.conditions,
+                    "product_code": this.module_code_naming,
+                    "spot": data.spot,
+                    "stock_num": data.stock_num,
+                    "usable_num": set_usable_num,
+                    "type": this.editRegistModule.type
+                  },
+                  "select_where": {"product_code": "!JUST_INSERT!"},
+                  "rollback": "no"
+                });
+              }
+            });
+          }
+
           sendData["stock_table-insert"] = stock_data;
 
           sendData["module_material_table-delete"] = [{
@@ -3166,7 +3307,7 @@ export default {
           sendData["material_table-delete"] = delete_material_data;
           sendData["material_table-insert"] = new_material_data;
 
-          const prevURL = window.location.href;
+          // const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
               path: '/api/common_rest_api/',
@@ -3487,6 +3628,7 @@ export default {
     async uploadProduct(){
       // 수정, 등록 둘 다 editRegistProduct에 요청, editedIndex에 따라 구분
       // 저장버튼 클릭 시 registProductInputs value를 editRegistProduct에 전달
+      const prevURL = window.location.href;
       let product_input = this.registProductInputs;
       let item = this.editRegistProduct;
       let stock_input = this.registProductSpotInputs;
@@ -3663,7 +3805,7 @@ export default {
           });
           sendData["product_material_table-insert"] = product_material_data;
 
-          const prevURL = window.location.href;
+          // const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
               path: '/api/common_rest_api/',
@@ -3711,7 +3853,31 @@ export default {
               "rollback": "yes"
             }]
           };
+          // 수정 전 재고 데이터 검색
+          let searched_stock_data = [];
+          let stock_check = await mux.Server.post({
+            path: '/api/common_rest_api/',
+            params: [
+              {
+                "product_table.product_code": this.product_code_naming,
+                "module_table.module_code": this.product_code_naming,
+                "material_table.material_code": this.product_code_naming,
+                "material_table.directly_written": 0,
+              }
+            ],
+            "script_file_name": "rooting_재고_검색_24_05_07_11_46_16P.json",
+            "script_file_path": "data_storage_pion\\json_sql\\stock\\1_재고검색\\재고_검색_24_05_07_11_46_H8D"
+          });
+          if (prevURL !== window.location.href) return;
 
+          if (typeof stock_check === 'string'){
+            stock_check = JSON.parse(stock_check);
+          }
+          if(stock_check['code'] == 0){
+            searched_stock_data.push(...stock_check['data']);
+          }
+
+          // 재고 데이터 삭제
           sendData["stock_table-delete"] = [{
             "user_info": {
               "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
@@ -3722,27 +3888,73 @@ export default {
             "rollback": "no"
           }];
 
+          // 새 재고 데이터 업로드
           let stock_data = [];
+          // 업로드할 재고 데이터가 없을 경우
           if (stock_item.length === 0){
-            stock_item.push({spot: 'EMPTY', stock_num: 0, usable_num: 0, conditions: 'E'});
-          }
-          stock_item.forEach(data =>{
+            // stock_item.push({spot: 'EMPTY', stock_num: 0, usable_num: 0, conditions: 'E'});
             stock_data.push({
               "user_info": {
                 "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
                 "role": "creater"
               },
               "data":{
-                "conditions": data.conditions,
+                "conditions": 'E',
                 "product_code": this.product_code_naming,
-                "spot": data.spot,
-                "stock_num": data.stock_num,
+                "spot": 'EMPTY',
+                "stock_num": 0,
+                "usable_num": 0,
                 "type": this.editRegistProduct.type
               },
               "select_where": {"product_code": "!JUST_INSERT!"},
               "rollback": "no"
             });
-          });
+          }else{ // 업로드할 재고 데이터가 있을 경우
+            stock_item.forEach(data =>{
+              let origin_data = searched_stock_data.filter(x => x.spot === data.spot);
+              // 원본 데이터에 spot이 동일한 재고가 없을 경우
+              if(origin_data.length === 0){
+                stock_data.push({
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "creater"
+                  },
+                  "data":{
+                    "conditions": data.conditions,
+                    "product_code": this.product_code_naming,
+                    "spot": data.spot,
+                    "stock_num": data.stock_num,
+                    "usable_num": data.stock_num,
+                    "type": this.editRegistProduct.type
+                  },
+                  "select_where": {"product_code": "!JUST_INSERT!"},
+                  "rollback": "no"
+                });
+              }else{// 원본 데이터에 spot이 동일한 재고가 있을 경우 usable_num 계산
+                let origin_usable_num = origin_data[0].usable_num;
+                let origin_stock_num = origin_data[0].stock_num;
+                let stock_difference = data.stock_num - origin_stock_num;
+                let set_usable_num = origin_usable_num + stock_difference;
+                stock_data.push({
+                  "user_info": {
+                    "user_id": this.$cookies.get(this.$configJson.cookies.id.key),
+                    "role": "creater"
+                  },
+                  "data":{
+                    "conditions": data.conditions,
+                    "product_code": this.product_code_naming,
+                    "spot": data.spot,
+                    "stock_num": data.stock_num,
+                    "usable_num": set_usable_num,
+                    "type": this.editRegistProduct.type
+                  },
+                  "select_where": {"product_code": "!JUST_INSERT!"},
+                  "rollback": "no"
+                });
+              }
+            });
+          }
+          
           sendData["stock_table-insert"] = stock_data;
 
           sendData["product_module_table-delete"] = [{
@@ -3805,7 +4017,6 @@ export default {
           });
           sendData["product_material_table-insert"] = product_material_data;
 
-          const prevURL = window.location.href;
           try {
             let result = await mux.Server.post({
               path: '/api/common_rest_api/',
