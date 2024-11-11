@@ -2058,6 +2058,44 @@ export default {
         thumbnail_dict[file.name] = mux.Util.uint8ArrayToHexString(await mux.Util.resizeImageToBinary(file, 500, 500));
       }
 
+      let material_code_arr = [];
+      for (let m = 0; m < this.material_excel_upload_data.length; m++) {
+        const row = this.material_excel_upload_data[m];
+        if(row.classification === ''){
+          mux.Util.showAlert(`${m+1}번째 행의 분류가 입력되지 않았습니다.`);
+          mux.Util.hideLoading();
+          return;
+        }else{
+          material_code_arr.push('PE-'+row.classification.split('-')[1]);
+        }
+      }
+      let code_type_arr = material_code_arr.filter((element, index) => {
+          return material_code_arr.indexOf(element) === index;
+      });
+
+      let set_code_arr = [];
+      for(let ct=0; ct<code_type_arr.length; ct++){
+        let data = code_type_arr[ct];
+        let script_file_name = "rooting_원자재_검색_24_05_07_09_42_KFS.json";
+        let script_file_path = "data_storage_pion\\json_sql\\stock\\2_원부자재_검색\\원자재_검색_24_05_07_09_42_G83";
+        let currentCode = await mux.Get.getCurrentCode('material_code', {"material_table.material_code": data}, script_file_name, script_file_path)
+        if(currentCode === ''){
+          set_code_arr[data] =  '0000';
+        }else{
+          set_code_arr[data] =  currentCode.split('-')[2];
+        }
+      }
+      // code_type_arr.forEach(async data =>{
+      //   let script_file_name = "rooting_원자재_검색_24_05_07_09_42_KFS.json";
+      //   let script_file_path = "data_storage_pion\\json_sql\\stock\\2_원부자재_검색\\원자재_검색_24_05_07_09_42_G83";
+      //   let currentCode = await mux.Get.getCurrentCode('material_code', {"material_table.material_code": data}, script_file_name, script_file_path)
+      //   if(currentCode === ''){
+      //     set_code_arr[data] =  '0000';
+      //   }else{
+      //     set_code_arr[data] =  currentCode.split('-')[2];
+      //   }
+      // })
+      console.log(set_code_arr)
       let material_info_arr = [];
       let stock_data = [];
       for (let i = 0; i < this.material_excel_upload_data.length; i++) {
@@ -2075,11 +2113,11 @@ export default {
         if (!row.classification){
           row.classification = '그 외';
         }
-        if (!row.item_code){
-          mux.Util.showAlert(`${i+1}번째 행의 관리코드가 입력되지 않았습니다.`);
-          mux.Util.hideLoading();
-          return;
-        }
+        // if (!row.item_code){
+        //   mux.Util.showAlert(`${i+1}번째 행의 관리코드가 입력되지 않았습니다.`);
+        //   mux.Util.hideLoading();
+        //   return;
+        // }
         if (!row.name){
           mux.Util.showAlert(`${i+1}번째 행의 제품명이 입력되지 않았습니다.`);
           mux.Util.hideLoading();
@@ -2112,6 +2150,12 @@ export default {
             return;
           }
         }
+
+        let code_key = set_code_arr['PE-'+row.classification.split('-')[1]];
+        // let code_key = set_code_arr.find(x => Object.keys(x) === 'PE-'+row.classification.split('-')[1]).data
+        let calc_code_key = ('000' + (Number(code_key)+1)).slice(-4);
+        row.item_code = 'PE-'+row.classification.split('-')[1]+'-'+calc_code_key;
+        set_code_arr['PE-'+row.classification.split('-')[1]] = calc_code_key;
 
 
         if (material_info_arr.find(x => x.data.material_code === row.item_code)) {
@@ -2157,9 +2201,10 @@ export default {
               "product_code": row.item_code,
               "spot": row.spot,
               "stock_num": row.stock_num,
+              "usable_num": row.stock_num,
               "type": type
             },
-            "select_where": {"product_code": this.editRegistMaterial.item_code, "spot": row.spot},
+            "select_where": {"product_code": row.item_code, "spot": row.spot},
             "rollback": "yes"
           });
         }
@@ -3954,7 +3999,7 @@ export default {
               }
             });
           }
-          
+
           sendData["stock_table-insert"] = stock_data;
 
           sendData["product_module_table-delete"] = [{
