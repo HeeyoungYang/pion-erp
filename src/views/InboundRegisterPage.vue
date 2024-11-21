@@ -1462,9 +1462,9 @@ export default {
             data.order_spec = data.spec;
             data.code_type = 'with_type';
 
+            data.origin_item_code = data.item_code;
             if(data.item_code.includes('임시코드')){
               let classification = data.classification.split('-');
-              data.origin_item_code = data.item_code;
               data.item_code = 'PE-' + classification[classification.length-1];
               // data.new_item_code = 'PE-' + classification[classification.length-1];
             }
