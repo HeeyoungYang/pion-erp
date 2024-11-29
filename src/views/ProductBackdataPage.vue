@@ -3387,16 +3387,29 @@ export default {
       this.selected_material_for_module_data = [];
       this.search_material_for_module_data = [];
       let origin_code;
-      for(let o=0; o<this.registModuleInputs.length; o++){
-        let inputs = this.registModuleInputs[o];
-        if(inputs.column_name == 'item_code'){
-          if(inputs.value !== '' && inputs.value !== undefined){
-            origin_code = inputs.value;
-          }else {
-            origin_code = '반제품 관리코드 미기입'
-          }
-        }
+      if(this.module_classification_naming === '' || this.module_manufacturer_naming === '' || this.module_spec_naming === ''){
+        mux.Util.showAlert('반제품 정보를 우선 입력해주세요.');
+        return;
       }
+      if(this.check_module_code_type === 'with_type'){
+        origin_code = this.module_code_naming + '-' + this.module_classification_naming + '-' + this.module_manufacturer_naming + '-' + this.module_spec_naming;
+      }else{
+        if(this.module_model_naming === ''){
+          mux.Util.showAlert('모델형 관리코드를 사용할 경우 모델명도 함께 입력후 진행해주세요.');
+          return;
+        }
+        origin_code = this.module_code_naming + '-' + this.module_model_naming + '-' + this.module_manufacturer_naming + '-' + this.module_spec_naming;
+      }
+      // for(let o=0; o<this.registModuleInputs.length; o++){
+      //   let inputs = this.registModuleInputs[o];
+      //   if(inputs.column_name == 'item_code'){
+      //     if(inputs.value !== '' && inputs.value !== undefined){
+      //       origin_code = inputs.value;
+      //     }else {
+      //       origin_code = '반제품 관리코드 미기입'
+      //     }
+      //   }
+      // }
 
       if(!this.set_material_write){
         const confirm = await mux.Util.showConfirm('부자재 직접 입력형으로 전환되며, \n선택한 자재는 선택 해제됩니다. ', '전환 확인');
