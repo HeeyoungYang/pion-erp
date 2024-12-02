@@ -1318,8 +1318,16 @@ export default {
       this.order_detail_dialog = false;
     },
     async checkAuthority(item){
-      if(this.login_info.id !== item.approver_id && this.login_info.id !== item.checker_id && this.login_info.id !== item.creater && this.login_info.department !== '경영진'){
-        mux.Util.showAlert('신청자, 확인자, 승인자만 상세 내역을 확인할 수 있습니다.');
+      const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+      if(
+        this.login_info.id !== item.approver_id
+        && this.login_info.id !== item.checker_id
+        && this.login_info.id !== item.creater
+        && this.login_info.department !== '경영진'
+        && !permission_group_ids.includes('1') //관리자 권한
+        && !permission_group_ids.includes('15') //master 권한
+      ){
+        mux.Util.showAlert('상세 내역은 권한자만 확인 가능합니다.\n(작성자, 결재 라인, 경영진, 관리자)');
         return;
       }else{
         await this.clickApproveData(item);

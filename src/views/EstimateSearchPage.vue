@@ -1875,6 +1875,18 @@ export default {
       });
     },
     async clickApproveData(item){
+      const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+      if(
+        this.login_info.id !== item.approver_id
+        && this.login_info.id !== item.checker_id
+        && this.login_info.id !== item.creater
+        && this.login_info.department !== '경영진'
+        && !permission_group_ids.includes('1') //관리자 권한
+        && !permission_group_ids.includes('15') //master 권한
+      ){
+        mux.Util.showAlert('상세 내역은 권한자만 확인 가능합니다.\n(작성자, 결재 라인, 경영진, 관리자)');
+        return;
+      }
       if(item.estimate_type === '기타'){
         this.etc_estimate = true;
       }else{
