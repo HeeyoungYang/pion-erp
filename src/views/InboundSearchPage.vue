@@ -105,7 +105,7 @@
           <v-col cols="12">
             <p></p>
             <v-data-table
-              :headers="pricePermission ? inbound_product_list_headers : inbound_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'inbound_price')"
+              :headers="pricePermission || check_creater || check_checker || check_approver ? inbound_product_list_headers : inbound_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'inbound_price')"
               :items="inbound_product_list_data"
               :item-key="inbound_product_list_data.product_code"
               class="elevation-1"
@@ -223,6 +223,10 @@ export default {
 
       ship_searched_table: false,
       ship_data_searched:[],
+
+      check_creater: false,
+      check_checker: false,
+      check_approver: false,
 
       change_approve:{},
 
@@ -395,9 +399,14 @@ export default {
     closeProductList(){
       this.inbound_product_list_dialog = false;
       this.ship_searched_table = false;
+      this.check_creater = false;
+      this.check_checker = false;
+      this.check_approver = false;
     },
     async clickApproveData(item){
-
+      this.check_creater = item.creater;
+      this.check_checker = item.checker_id;
+      this.check_approver = item.approver_id;
       let belong_datas = item.belong_data
       this.inbound_product_list_data = [];
       this.inbound_info_data = {};

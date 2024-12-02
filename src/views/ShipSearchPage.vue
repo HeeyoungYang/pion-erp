@@ -87,8 +87,8 @@
           <v-col cols="12">
             <v-data-table
               :headers="phase_check
-                        ? (pricePermission ? ship_approved_product_list_headers : ship_approved_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price'))
-                        : (pricePermission ? ship_product_list_headers : ship_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price'))"
+                        ? (pricePermission || check_creater || check_checker || check_approver ? ship_approved_product_list_headers : ship_approved_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price'))
+                        : (pricePermission || check_creater || check_checker || check_approver ? ship_product_list_headers : ship_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price'))"
               :items="ship_product_list_data"
               item-key="product_code"
               class="elevation-1"
@@ -190,7 +190,7 @@
         <v-row>
           <v-col cols="12">
             <v-data-table
-              :headers="pricePermission ? ship_product_list_headers : ship_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price')"
+              :headers="pricePermission || check_creater || check_checker || check_approver ? ship_product_list_headers : ship_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price')"
               :items="ship_product_list_data"
               item-key="product_code"
               class="elevation-1"
@@ -253,6 +253,9 @@ export default {
       loading_dialog: false,
       phase_check:false,
       clickTrSet:true,
+      check_creater: false,
+      check_checker: false,
+      check_approver: false,
       inspectionReportThumbnail:'',
       ship_date_set:'',
 
@@ -442,10 +445,18 @@ export default {
     closeProductList(){
       this.ship_product_list_dialog = false;
       this.reshipment_dialog = false;
+      this.clickTrSet = true;
+      this.check_creater = false;
+      this.check_checker = false;
+      this.check_approver = false;
     },
     clickApproveData(item){
-      if(this.clickTrSet === true)
+      if(this.clickTrSet === true){
+        this.check_creater = item.creater;
+        this.check_checker = item.checker_id;
+        this.check_approver = item.approver_id;
         this.loadApproveData(item);
+      }
     },
     async loadApproveData(item){
       if(item.approval_phase == '승인' || item.approval_phase == '추가 승인' || item.approval_phase == '반려'){
@@ -1720,6 +1731,10 @@ export default {
       this.ship_info_data = {};
       this.clickTrSet = false;
       this.reshipment_dialog = true;
+      
+      this.check_creater = item.creater;
+      this.check_checker = item.checker_id;
+      this.check_approver = item.approver_id;
 
       this.ship_info_data = item
       let belong_datas = item.belong_data;
@@ -1844,6 +1859,7 @@ export default {
           if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
             // console.log('result :>> ', result);
             mux.Util.showAlert('추가 출고 승인 요청이 완료되었습니다', '요청 완료', 3000);
+            this.clickTrSet = true;
             mux.Util.hideLoading();
 
             //메일 알림 관련
