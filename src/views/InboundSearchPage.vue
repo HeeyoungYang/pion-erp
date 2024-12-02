@@ -90,8 +90,8 @@
                 <td class="approve_text" style="width:15%" v-if="inbound_info_data.add_data !== '재입고'">{{ inbound_info_data.project_code }}</td>
                 <td class="approve_title" style="width:10%" v-if="inbound_info_data.add_data !== '재입고'">품질검사결과</td>
                 <td class="approve_text" style="width:25%" v-if="inbound_info_data.add_data !== '재입고'">
-                  <p class="mb-0 font-weight-bold">{{ inbound_info_data.abnormal_reason == '' ? '이상 없음' : '이상 있음' }}</p>
-                  <p class="mb-0 error--text" v-if="inbound_info_data.abnormal_reason != ''"> : {{ inbound_info_data.abnormal_reason }}</p>
+                  <p class="mb-0 font-weight-bold">{{ inbound_info_data.abnormal_reason == '' || inbound_info_data.abnormal_reason == null ? '이상 없음' : '이상 있음' }}</p>
+                  <p class="mb-0 error--text" v-if="inbound_info_data.abnormal_reason !== '' && inbound_info_data.abnormal_reason !== null"> : {{ inbound_info_data.abnormal_reason }}</p>
                 </td>
                 <td class="approve_title" style="width:10%">{{ inbound_info_data.add_data !== '재입고' ? '비고' : '재입고 사유'}}</td>
                 <td class="approve_text" style="width:30%">

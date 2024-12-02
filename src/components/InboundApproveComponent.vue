@@ -39,22 +39,22 @@
           <p class="doc_list_title">개요</p>
           <table class="doc_table">
             <tr>
-              <td class="approve_title">작성일</td>
-              <td class="approve_text">{{ inboundData.created_time}}</td>
-              <td class="approve_title">구매담당자</td>
-              <td class="approve_text">{{inboundData.purchase_manager}}</td>
+              <td class="approve_title" style="width:15%">작성일</td>
+              <td class="approve_text" style="width:35%">{{ inboundData.created_time}}</td>
+              <td class="approve_title" style="width:15%">구매담당자</td>
+              <td class="approve_text" style="width:35%">{{inboundData.purchase_manager.split('-')[0]}}</td>
             </tr>
             <tr>
-              <td class="approve_title">입고일자</td>
-              <td class="approve_text">{{ inboundData.inbound_date}}</td>
-              <td class="approve_title">자재담당자</td>
-              <td class="approve_text">{{inboundData.material_manager}}</td>
+              <td class="approve_title" style="width:15%">입고일자</td>
+              <td class="approve_text" style="width:35%">{{ inboundData.inbound_date}}</td>
+              <td class="approve_title" style="width:15%">자재담당자</td>
+              <td class="approve_text" style="width:35%">{{inboundData.material_manager.split('-')[0]}}</td>
             </tr>
             <tr>
-              <td class="approve_title">업체명</td>
-              <td class="approve_text">(주)파이온 일렉트릭</td>
-              <td class="approve_title">프로젝트 코드</td>
-              <td class="approve_text">{{inboundData.project_code}}</td>
+              <td class="approve_title" style="width:15%">업체명</td>
+              <td class="approve_text" style="width:35%">(주)파이온 일렉트릭</td>
+              <td class="approve_title" style="width:15%">프로젝트 코드</td>
+              <td class="approve_text" style="width:35%">{{inboundData.project_code}}</td>
             </tr>
           </table>
           <p class="doc_list_title" style="margin-top:20px">내용</p>
@@ -84,8 +84,8 @@
             <tr>
               <td class="approve_title">품질검사결과</td>
               <td class="approve_text">
-                <p style="margin-bottom:0px; font-weight:bold">{{ inboundData.abnormal_reason == '' ? '이상 없음' : '이상 있음' }}</p>
-                <p style="margin-bottom:0px; color:red" v-if="inboundData.abnormal_reason != ''"> : {{ inboundData.abnormal_reason }}</p>
+                <p style="margin-bottom:0px; font-weight:bold">{{ inboundData.abnormal_reason == '' || inboundData.abnormal_reason == null ? '이상 없음' : '이상 있음' }}</p>
+                <p style="margin-bottom:0px; color:red" v-if="inboundData.abnormal_reason !== '' && inboundData.abnormal_reason !== null"> : {{ inboundData.abnormal_reason }}</p>
               </td>
             </tr>
             <tr>
