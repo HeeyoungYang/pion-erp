@@ -154,7 +154,7 @@ export default {
       //   reqURL += (inputs[0] || inputs[1] || inputs[2]) ? '&issue_start_date=' + inputs[3].split(',')[0] : '?issue_start_date=' + inputs[3].split(',')[0];
       //   reqURL += inputs[3].split(',').length > 1 ? '&issue_end_date=' + inputs[3].split(',')[1] : '&issue_end_date=' + inputs[3].split(',')[0];
       // }
-      
+
       try {
         let result = await mux.Server.get({path: reqURL});
         if (prevURL !== window.location.href) return;
@@ -167,6 +167,19 @@ export default {
         // this.searchResult = JSON.parse(JSON.stringify(EstimateCostSearchDialogConfig.test_product_cost_data));
         // this.searchResult.confirmation.reverse(); // 최신순으로 정렬
         // this.searchResult.confirmation 을 각 객체의 created_time 을 기준으로 최신순 정렬
+
+        // 로그인한 계정이 경영진이나, 관리자 권한, master권한이 아닐 경우 작성자가 본인인 데이터만 필터링
+        const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+        if(this.$cookies.get(this.$configJson.cookies.department.key) !== '경영진'
+            && !permission_group_ids.includes('1') //관리자 권한
+            && !permission_group_ids.includes('15') //master 권한
+        ){
+          for (const key in this.searchResult) {
+            if (Array.isArray(this.searchResult[key])) {
+              this.searchResult[key] = this.searchResult[key].filter(item => item.cost_calc_code.includes(this.$cookies.get(this.$configJson.cookies.id.key)));
+            }
+          }
+        }
         this.searchResult.confirmation.sort((a, b) => {
           return new Date(b.created_time) - new Date(a.created_time);
         });
@@ -224,7 +237,7 @@ export default {
           });
         }
       });
-      
+
       this.$emit("apply", applyObj);
       this.initialize();
     },

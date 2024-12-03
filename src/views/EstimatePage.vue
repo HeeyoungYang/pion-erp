@@ -2494,6 +2494,21 @@ export default {
         if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           const searchResult = result.data;
           // const searchResult = JSON.parse(JSON.stringify(EstimatePageConfig.test_product_cost_data));
+
+          // 로그인한 계정이 경영진이나, 관리자 권한, master권한이 아닐 경우 작성자가 본인인 데이터만 필터링
+          const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+          if(this.$cookies.get(this.$configJson.cookies.department.key) !== '경영진'
+             && !permission_group_ids.includes('1') //관리자 권한
+             && !permission_group_ids.includes('15') //master 권한
+          ){
+            for (const key in searchResult) {
+              if (Array.isArray(searchResult[key])) {
+                searchResult[key] = searchResult[key].filter(item => item.cost_calc_code.includes(this.$cookies.get(this.$configJson.cookies.id.key)));
+              }
+            }
+          }
+
+
           searchResult.confirmation.reverse(); // 최신순으로 정렬
           const uniqueConfirmation = [];
           const confirmationMap = new Map();

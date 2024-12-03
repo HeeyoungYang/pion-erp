@@ -140,8 +140,9 @@ export default {
 
       const prevURL = window.location.href;
       let reqURL = '/api/obtain-order/';
-      reqURL += '?send_production_request_id=' + this.$cookies.get(this.$configJson.cookies.id.key);
-      reqURL += '&approval_phase=승인';
+      // reqURL += '?send_production_request_id=' + this.$cookies.get(this.$configJson.cookies.id.key);
+      // reqURL += '&approval_phase=승인';
+      reqURL += '?approval_phase=승인';
       let reqURL2 = '/api/design-production-search/';
       // project_code = '';
       if (inputs[0]){
@@ -156,7 +157,7 @@ export default {
         reqURL += '&company_name=' + inputs[2];
         reqURL2 += (inputs[0] || inputs[1]) ? '&company_name=' + inputs[2] : '?company_name=' + inputs[2];
       }
-      
+
       try {
         let result = await mux.Server.get({path: reqURL});
         if (prevURL !== window.location.href) return;
@@ -167,8 +168,14 @@ export default {
         if(result['code'] == 0 || (typeof result['data'] === 'object' && result['data']['code'] == 0) || (typeof result['response'] === 'object' && typeof result['response']['data'] === 'object' && result['response']['data']['code'] == 0)){
           this.searchResult = result.data;
           // this.searchResult = JSON.parse(JSON.stringify(ObtainCostSearchDialogConfig.test_product_cost_data));
-          this.searchResult.confirmation = this.searchResult.confirmation.filter(x => this.searchResult.last_confirmation.find(xx=>xx.cost_calc_code === x.cost_calc_code) && x.send_production_request_id === this.$cookies.get(this.$configJson.cookies.id.key));
-
+          // 로그인한 계정이 경영진이나, 관리자 권한, master권한이 아닐 경우 작성자가 본인인 데이터만 필터링
+          const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
+          if(this.$cookies.get(this.$configJson.cookies.department.key) !== '경영진'
+             && !permission_group_ids.includes('1') //관리자 권한
+             && !permission_group_ids.includes('15') //master 권한
+          ){
+            this.searchResult.confirmation = this.searchResult.confirmation.filter(x => this.searchResult.last_confirmation.find(xx=>xx.cost_calc_code === x.cost_calc_code) && x.send_production_request_id === this.$cookies.get(this.$configJson.cookies.id.key));
+          }
           let result2 = await mux.Server.get({path: reqURL2});
           if (prevURL !== window.location.href) return;
 
@@ -177,7 +184,7 @@ export default {
           }
           if(result2['code'] == 0 || (typeof result2['data'] === 'object' && result2['data']['code'] == 0) || (typeof result2['response'] === 'object' && typeof result2['response']['data'] === 'object' && result2['response']['data']['code'] == 0)){
             this.searchResult.confirmation = this.searchResult.confirmation.filter(x => result2.data.confirmation.findIndex(xx=>xx.obtain_cost_calc_code === x.cost_calc_code) === -1);
-            
+
           }else{
             mux.Util.showAlert(result2['failed_info']);
           }
@@ -238,7 +245,7 @@ export default {
           });
         }
       });
-      
+
       this.$emit("apply", applyObj);
       this.initialize();
     },
