@@ -993,7 +993,7 @@
                           </td>
                           <td class="estimate_info" style="border-bottom: 0px;">
                             <span style="display: block;margin-top:-2px">
-                              {{ estimateWriteDefaultInfoInputs2.find(x=>x.label === '용역명').value }}
+                              {{ estimateWriteDefaultInfoInputs2.find(x=>x.label === '프로젝트/용역 명').value }}
                             </span>
                           </td>
                         </tr>
@@ -1005,7 +1005,7 @@
                           </td>
                           <td class="estimate_info" style="border-bottom: 0px;">
                             <span style="display: block;margin-top:-2px">
-                              {{ estimateWriteDefaultInfoInputs2.find(x=>x.label === '용역기간').value }}
+                              {{ estimateWriteDefaultInfoInputs2.find(x=>x.label === '프로젝트/용역 기간').value }}
                             </span>
                           </td>
                         </tr>
@@ -2199,8 +2199,8 @@ export default {
     input_inhouse_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '사내 견적번호') },
     input_company_bid_number() { return this.estimateSearchDefaultInfoInputs.find(x=>x.label === '기업별 입찰번호') },
     input_due_date() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '납기') },
-    input_service_name() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '용역명') },
-    input_service_period() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '용역기간') },
+    input_service_name() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '프로젝트/용역 명') },
+    input_service_period() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '프로젝트/용역 기간') },
     input_remark() { return this.estimateSearchDefaultInfoInputs2.find(x=>x.label === '특이사항') },
     input_company_name() { return this.estimateSearchCompanyInfoInputs.find(x=>x.label === '업체명') },
     input_company_manager() { return this.estimateSearchCompanyInfoInputs.find(x=>x.label === '담당자') },
@@ -2266,8 +2266,8 @@ export default {
     input_inhouse_bid_number2() { return this.estimateWriteDefaultInfoInputs.find(x=>x.label === '사내 견적번호') },
     input_company_bid_number2() { return this.estimateWriteDefaultInfoInputs.find(x=>x.label === '기업별 입찰번호') },
     input_due_date2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '납기') },
-    input_service_name2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '용역명') },
-    input_service_period2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '용역기간') },
+    input_service_name2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '프로젝트/용역 명') },
+    input_service_period2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '프로젝트/용역 기간') },
     input_remark2() { return this.estimateWriteDefaultInfoInputs2.find(x=>x.label === '특이사항') },
     input_company_name2() { return this.estimateWriteCompanyInfoInputs.find(x=>x.label === '업체명') },
     input_company_manager2() { return this.estimateWriteCompanyInfoInputs.find(x=>x.label === '담당자') },

@@ -36,8 +36,8 @@
   ],
   "estimateSearchDefaultInfoInputs2":[
     {"label":"납기", "type": "dateSingle", "menu":"" , "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
-    {"label":"용역명", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
-    {"label":"용역기간", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
+    {"label":"프로젝트/용역 명", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
+    {"label":"프로젝트/용역 기간", "col":"12", "sm":"4", "lg":"4", "value": "", "disabled":true},
     {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": "", "disabled":true}
   ],
   "estimateWriteDefaultInfoInputs":[    
@@ -47,8 +47,8 @@
   ],
   "estimateWriteDefaultInfoInputs2":[
     {"label":"납기", "type": "dateSingle", "menu": "", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"용역명", "col":"12", "sm":"4", "lg":"4", "value": ""},
-    {"label":"용역기간", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"프로젝트/용역 명", "col":"12", "sm":"4", "lg":"4", "value": ""},
+    {"label":"프로젝트/용역 기간", "col":"12", "sm":"4", "lg":"4", "value": ""},
     {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": ""}
   ],
   "estimateSearchCompanyInfoInputs":[
