@@ -59,7 +59,7 @@ const routes = [
     name: 'StockSearchPage',
     component: StockSearchPage,
     meta: {
-      permission: ['member']
+      permission: []
     }
   },
   {
@@ -67,7 +67,7 @@ const routes = [
     name: 'MaterialSearchPage',
     component: MaterialSearchPage,
     meta: {
-      permission: ['member']
+      permission: []
     }
   },
   {
@@ -75,7 +75,7 @@ const routes = [
     name: 'ModuleSearchPage',
     component: ModuleSearchPage,
     meta: {
-      permission: ['member']
+      permission: []
     }
   },
   {
@@ -83,7 +83,7 @@ const routes = [
     name: 'ProductSearchPage',
     component: ProductSearchPage,
     meta: {
-      permission: ['member']
+      permission: []
     }
   },
   {
@@ -107,7 +107,7 @@ const routes = [
     name: 'InboundRegisterPage',
     component: InboundRegisterPage,
     meta: {
-      permission: ['member']
+      permission: []
     }
   },
   {
@@ -123,7 +123,7 @@ const routes = [
     name: 'ShipRegisterPage',
     component: ShipRegisterPage,
     meta: {
-      permission: ['member']
+      permission: []
     }
   },
   {
