@@ -87,8 +87,8 @@
           <v-col cols="12">
             <v-data-table
               :headers="phase_check
-                        ? (pricePermission || check_creater || check_checker || check_approver ? ship_approved_product_list_headers : ship_approved_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price'))
-                        : (pricePermission || check_creater || check_checker || check_approver ? ship_product_list_headers : ship_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price'))"
+                        ? (pricePermission ? ship_approved_product_list_headers : ship_approved_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price'))
+                        : (pricePermission ? ship_product_list_headers : ship_product_list_headers.filter(x => x.value !== 'unit_price' && x.value !== 'ship_price'))"
               :items="ship_product_list_data"
               item-key="product_code"
               class="elevation-1"
@@ -1731,7 +1731,7 @@ export default {
       this.ship_info_data = {};
       this.clickTrSet = false;
       this.reshipment_dialog = true;
-      
+
       this.check_creater = item.creater;
       this.check_checker = item.checker_id;
       this.check_approver = item.approver_id;
