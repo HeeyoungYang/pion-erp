@@ -404,11 +404,14 @@ export default {
       this.check_approver = false;
     },
     async clickApproveData(item){
+      console.log(item);
       const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
       if(
         this.login_info.id !== item.approver_id
         && this.login_info.id !== item.checker_id
         && this.login_info.id !== item.creater
+        && this.login_info.id !== item.purchase_manager.split('-')[1]
+        && this.login_info.id !== item.material_manager.split('-')[1]
         && this.login_info.department !== '경영진'
         && !permission_group_ids.includes('1') //관리자 권한
         && !permission_group_ids.includes('15') //master 권한
