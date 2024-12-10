@@ -52,16 +52,16 @@
     {"label":"특이사항", "col":"12", "sm":"4", "lg":"12", "value": ""}
   ],
   "estimateSearchCompanyInfoInputs":[
-    {"label":"업체명", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true},
-    {"label":"담당자", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true},
-    {"label":"담당자 E-mail", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true},
-    {"label":"담당자 연락처", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true}
+    {"label":"업체명", "column_name":"company_name", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true},
+    {"label":"담당자", "column_name":"company_manager", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true},
+    {"label":"담당자 E-mail", "column_name":"company_manager_email", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true},
+    {"label":"담당자 연락처", "column_name":"company_manager_phone", "col":"12", "sm":"4", "lg":"6", "value": "", "disabled":true}
   ],
   "estimateWriteCompanyInfoInputs":[
-    {"label":"업체명", "col":"12", "sm":"4", "lg":"6", "value": ""},
-    {"label":"담당자", "col":"12", "sm":"4", "lg":"6", "value": ""},
-    {"label":"담당자 E-mail", "col":"12", "sm":"4", "lg":"6", "value": ""},
-    {"label":"담당자 연락처", "col":"12", "sm":"4", "lg":"6", "value": ""}
+    {"label":"업체명", "column_name":"company_name", "col":"12", "sm":"4", "lg":"6", "value": ""},
+    {"label":"담당자", "column_name":"company_manager", "col":"12", "sm":"4", "lg":"6", "value": ""},
+    {"label":"담당자 E-mail", "column_name":"company_manager_email", "col":"12", "sm":"4", "lg":"6", "value": ""},
+    {"label":"담당자 연락처", "column_name":"company_manager_phone", "col":"12", "sm":"4", "lg":"6", "value": ""}
   ],
   "estimateFilesInputs":[
     {"label":"승인서", "column_name":"approval", "type":"file", "col":"12", "sm":"4", "lg":"4", "icon":"", "appendIcon":"mdi-paperclip", "smallChips":true, "accept":".pdf"},

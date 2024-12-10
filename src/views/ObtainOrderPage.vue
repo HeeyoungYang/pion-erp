@@ -465,6 +465,7 @@
                           dense
                           clearable
                           :inputs="estimateSearchCompanyInfoInputs"
+                          @textFieldKeyup="phoneNumberKeyup"
                         >
                         </InputsFormComponent>
 
@@ -823,6 +824,7 @@
                           dense
                           clearable
                           :inputs="estimateWriteCompanyInfoInputs"
+                          @textFieldKeyup="phoneNumberKeyup"
                         >
                         </InputsFormComponent>
                         <p class="text-h6 font-weight-bold py-2 px-4 mt-12" style="background-color: #E3F2FD;" >첨부</p>
@@ -5012,6 +5014,45 @@ export default {
           this.calc_cost_detail_data_product_cost2.belong_data.find(x=>x.cost_list && x.cost_list.includes('공사 자재')).belong_data.splice(index, 1);
         }else {
           this.calc_cost_detail_data_product_cost2.belong_data.splice(index, 1);
+        }
+      }
+    },
+
+    phoneNumberKeyup(column_name, value){
+      if(column_name === 'company_manager_phone'){
+        if(!value) return value
+        value = value.replace(/[^0-9]/g, '')
+        let res = '';
+        if(value.length < 3) {
+          res = value
+        }else {
+          if(value.substr(0, 2) =='02') {
+            if(value.length <= 5) {//02-123-5678
+              res = value.substr(0, 2) + '-' + value.substr(2, 3)
+            } else if(value.length > 5 && value.length <= 9) {//02-123-5678
+              res = value.substr(0, 2) + '-' + value.substr(2, 3) + '-' + value.substr(5)
+            } else if(value.length > 9) {//02-1234-5678
+              res = value.substr(0, 2) + '-' + value.substr(2, 4) + '-' + value.substr(6)
+            }
+          } else {
+            if(value.length < 8) {
+              res = value
+            } else if(value.length == 8){
+              res = value.substr(0, 4) + '-' + value.substr(4)
+            } else if(value.length == 9){
+              res = value.substr(0, 3) + '-' + value.substr(3, 3) + '-' + value.substr(6)
+            } else if(value.length == 10){
+              res = value.substr(0, 3) + '-' + value.substr(3, 3) + '-' + value.substr(6)
+            } else if(value.length > 10) { //010-1234-5678
+              res = value.substr(0, 3) + '-' + value.substr(3, 4) + '-' + value.substr(7)
+            }
+          }
+        }
+        // return res
+        if(this.tab_main === 0){
+          this.estimateSearchCompanyInfoInputs.find(x=>x.column_name === column_name).value = res;
+        }else{
+          this.estimateWriteCompanyInfoInputs.find(x=>x.column_name === column_name).value = res;
         }
       }
     },

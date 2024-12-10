@@ -676,6 +676,7 @@
                             filled
                             hide-details
                             :inputs="orderRequestInfoInputs"
+                            @textFieldKeyup="phoneNumberKeyup"
                           >
                             <v-col cols="12" sm="4" align-self="center">
                               <v-btn
@@ -2845,6 +2846,40 @@ export default {
         }
       }
     },
+    phoneNumberKeyup(column_name, value){
+      if(column_name === 'company_phone'){
+        if(!value) return value
+        value = value.replace(/[^0-9]/g, '')
+        let res = '';
+        if(value.length < 3) {
+          res = value
+        }else {
+          if(value.substr(0, 2) =='02') {
+            if(value.length <= 5) {//02-123-5678
+              res = value.substr(0, 2) + '-' + value.substr(2, 3)
+            } else if(value.length > 5 && value.length <= 9) {//02-123-5678
+              res = value.substr(0, 2) + '-' + value.substr(2, 3) + '-' + value.substr(5)
+            } else if(value.length > 9) {//02-1234-5678
+              res = value.substr(0, 2) + '-' + value.substr(2, 4) + '-' + value.substr(6)
+            }
+          } else {
+            if(value.length < 8) {
+              res = value
+            } else if(value.length == 8){
+              res = value.substr(0, 4) + '-' + value.substr(4)
+            } else if(value.length == 9){
+              res = value.substr(0, 3) + '-' + value.substr(3, 3) + '-' + value.substr(6)
+            } else if(value.length == 10){
+              res = value.substr(0, 3) + '-' + value.substr(3, 3) + '-' + value.substr(6)
+            } else if(value.length > 10) { //010-1234-5678
+              res = value.substr(0, 3) + '-' + value.substr(3, 4) + '-' + value.substr(7)
+            }
+          }
+        }
+        // return res
+        this.orderRequestInfoInputs.find(x=>x.column_name === column_name).value = res;
+      }
+    }
   },
 }
 </script>

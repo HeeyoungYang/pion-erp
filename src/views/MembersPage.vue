@@ -44,6 +44,7 @@
                         <InputsFormComponent
                           clearable
                           :inputs="registMemberInputs"
+                          @textFieldKeyup="phoneNumberKeyup"
                         ></InputsFormComponent>
                       </v-form>
                     </v-container>
@@ -144,7 +145,7 @@ export default {
         {label:MemberPageConfig.regist_member_inputs[4].label, column_name:MemberPageConfig.regist_member_inputs[4].column_name, col:'12', sm:'6', lg:'6', value: '',
         rules: [
           v => !!v || '전화번호 입력',
-          v => !!(v &&  /^(0(2|3[1-3]|4[1-4]|5[1-5]|6[1-4]|70))-(\d{3,4})-(\d{4})$/.test(v) ) || '번호 형식 확인(ex : 070-1234-5678)',
+          v => !!(v &&  /^(0(2|3[1-3]|4[1-4]|5[1-5]|6[1-4]|70))-(\d{3,4})-(\d{4})$/.test(v) ) || '번호 형식 확인(숫자만 입력,자동 하이픈)',
         ]},
         {label:MemberPageConfig.regist_member_inputs[5].label, column_name:MemberPageConfig.regist_member_inputs[5].column_name, col:'12', sm:'6', lg:'6', value: '',
         rules: [
@@ -434,6 +435,41 @@ export default {
         this.editedIndex = -1
       })
     },
+
+    phoneNumberKeyup(column_name, value){
+      if(column_name === 'office_phone_number' || column_name === 'phone_number'){
+        if(!value) return value
+        value = value.replace(/[^0-9]/g, '')
+        let res = '';
+        if(value.length < 3) {
+          res = value
+        }else {
+          if(value.substr(0, 2) =='02') {
+            if(value.length <= 5) {//02-123-5678
+              res = value.substr(0, 2) + '-' + value.substr(2, 3)
+            } else if(value.length > 5 && value.length <= 9) {//02-123-5678
+              res = value.substr(0, 2) + '-' + value.substr(2, 3) + '-' + value.substr(5)
+            } else if(value.length > 9) {//02-1234-5678
+              res = value.substr(0, 2) + '-' + value.substr(2, 4) + '-' + value.substr(6)
+            }
+          } else {
+            if(value.length < 8) {
+              res = value
+            } else if(value.length == 8){
+              res = value.substr(0, 4) + '-' + value.substr(4)
+            } else if(value.length == 9){
+              res = value.substr(0, 3) + '-' + value.substr(3, 3) + '-' + value.substr(6)
+            } else if(value.length == 10){
+              res = value.substr(0, 3) + '-' + value.substr(3, 3) + '-' + value.substr(6)
+            } else if(value.length > 10) { //010-1234-5678
+              res = value.substr(0, 3) + '-' + value.substr(3, 4) + '-' + value.substr(7)
+            }
+          }
+        }
+        // return res
+        this.registMemberInputs.find(x=>x.column_name === column_name).value = res;
+      }
+    }
   },
 }
 </script>
