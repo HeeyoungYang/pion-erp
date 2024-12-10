@@ -172,7 +172,7 @@ export default {
           const permission_group_ids = this.$cookies.get(this.$configJson.cookies.permission_group_ids.key).split(',');
           if(this.$cookies.get(this.$configJson.cookies.department.key) !== '경영진'
              && !permission_group_ids.includes('1') //관리자 권한
-             && !permission_group_ids.includes('15') //master 권한
+             && !permission_group_ids.includes('11') //master 권한
           ){
             this.searchResult.confirmation = this.searchResult.confirmation.filter(x => this.searchResult.last_confirmation.find(xx=>xx.cost_calc_code === x.cost_calc_code) && x.send_production_request_id === this.$cookies.get(this.$configJson.cookies.id.key));
           }
