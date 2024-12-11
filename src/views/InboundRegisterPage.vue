@@ -66,11 +66,12 @@
                       class="elevation-1"
                       dense
                       v-model="selected_order_data"
-                      :headers="pricePermission ? order_search_headers : order_search_headers.filter(x => x.value !== 'unit_price')"
+                      :headers="order_search_headers"
                       :items="order_search_data"
                       item-key="id"
                       show-select
                       />
+                      <!-- :headers="pricePermission ? order_search_headers : order_search_headers.filter(x => x.value !== 'unit_price')" -->
                   </v-col>
                 </InputsFormComponent>
               </CardComponent>
@@ -187,13 +188,14 @@
                     >
                       <v-data-table
                         dense
-                        :headers="pricePermission ? ordered_inbound_headers : ordered_inbound_headers.filter(x => x.value !== 'unit_price')"
+                        :headers="ordered_inbound_headers"
                         :items="product_inbound_data"
                         hide-default-footer
                         disable-pagination
                         item-key="id"
                         class="elevation-1"
                       >
+                        <!-- :headers="pricePermission ? ordered_inbound_headers : ordered_inbound_headers.filter(x => x.value !== 'unit_price')" -->
                         <template v-slot:item="{ item, index }">
                           <tr>
                             <td align="center">{{ item.order_code }}</td>
@@ -279,7 +281,8 @@
                               ></v-autocomplete>
                               발주업체 : {{ item.company_name }}
                             </td>
-                            <td v-if="pricePermission" align="center">{{  item.unit_price }}</td>
+                            <!-- <td v-if="pricePermission" align="center">{{  item.unit_price }}</td> -->
+                            <td align="center">{{  item.unit_price }}</td>
                             <td align="center">
                               <v-icon small color="default" style="cursor:pointer" @click="deleteInboundDataRow(index)">mdi-minus-thick</v-icon>
                             </td>
@@ -351,11 +354,20 @@
                     >추가</v-btn>
                   </v-col>
                   <v-col cols="12">
-                    <v-data-table
+                    <!-- <v-data-table
                       class="elevation-1"
                       dense
                       v-model="selected_product_data"
                       :headers="pricePermission ? product_search_headers : product_search_headers.filter(x => x.value !== 'unit_price')"
+                      :items="product_search_data"
+                      item-key="_code"
+                      show-select
+                      /> -->
+                    <v-data-table
+                      class="elevation-1"
+                      dense
+                      v-model="selected_product_data"
+                      :headers="product_search_headers"
                       :items="product_search_data"
                       item-key="_code"
                       show-select
@@ -569,9 +581,18 @@
                     <v-col
                       cols="12"
                     >
-                      <v-data-table
+                      <!-- <v-data-table
                         dense
                         :headers="pricePermission || add_self === '직접기입' ? product_inbound_headers : product_inbound_headers.filter(x => x.value !== 'unit_price')"
+                        :items="product_inbound_data"
+                        hide-default-footer
+                        disable-pagination
+                        item-key="_code"
+                        class="elevation-1"
+                      > -->
+                      <v-data-table
+                        dense
+                        :headers="product_inbound_headers"
                         :items="product_inbound_data"
                         hide-default-footer
                         disable-pagination
@@ -613,7 +634,8 @@
                             <td align="center">{{  item.spec  }}</td>
                             <td align="center">{{  item.model }}</td>
                             <td align="center">{{  item.manufacturer }}</td>
-                            <td v-if="pricePermission" align="center">{{  item.unit_price }}</td>
+                            <!-- <td v-if="pricePermission" align="center">{{  item.unit_price }}</td> -->
+                            <td align="center">{{  item.unit_price }}</td>
                             <td align="center" style="min-width: 160px;">
                               <v-checkbox
                                 v-if="item.type !== '원부자재'"
